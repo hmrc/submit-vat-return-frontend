@@ -8,3 +8,5 @@ error.summary.title = There is a problem
 session_expired.title = For your security, this service has been reset
 session_expired.heading = For your security, this service has been reset
 session_expired.guidance = The details you have given have been deleted because you did not continue the service for 15 minutes.
+
+submit_form.title = Submit return
