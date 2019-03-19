@@ -16,7 +16,7 @@
 
 package controllers
 
-import config.FrontendAppConfig
+import config.AppConfig
 import javax.inject.{Inject, Singleton}
 import play.api.i18n.{I18nSupport, MessagesApi}
 import play.api.mvc.{Action, AnyContent}
@@ -24,7 +24,7 @@ import uk.gov.hmrc.play.bootstrap.controller.FrontendController
 
 @Singleton
 class SubmitFormController @Inject()(val messagesApi: MessagesApi,
-                                     implicit val appConfig: FrontendAppConfig) extends FrontendController with I18nSupport {
+                                     implicit val appConfig: AppConfig) extends FrontendController with I18nSupport {
 
   def show(periodKey: String): Action[AnyContent] = Action { implicit request =>
     Ok(views.html.submit_form(periodKey))

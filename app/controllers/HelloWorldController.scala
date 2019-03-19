@@ -21,10 +21,11 @@ import javax.inject.{Inject, Singleton}
 import play.api.mvc._
 import play.api.i18n.{I18nSupport, MessagesApi}
 import uk.gov.hmrc.play.bootstrap.controller.FrontendController
-import config.FrontendAppConfig
+import config.AppConfig
 
 @Singleton
-class HelloWorldController @Inject()(val messagesApi: MessagesApi, implicit val appConfig: FrontendAppConfig) extends FrontendController with I18nSupport {
+class HelloWorldController @Inject()(val messagesApi: MessagesApi,
+                                     implicit val appConfig: AppConfig) extends FrontendController with I18nSupport {
 
   val helloWorld = Action { implicit request =>
     Ok(views.html.hello_world())
