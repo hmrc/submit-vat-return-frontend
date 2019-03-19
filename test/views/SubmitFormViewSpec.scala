@@ -14,26 +14,24 @@
  * limitations under the License.
  */
 
-package controllers
+package views
 
-import base.BaseSpec
-import play.api.http.Status
-import play.api.test.Helpers._
+import org.jsoup.Jsoup
+import org.jsoup.nodes.Document
 
-class HelloWorldControllerSpec extends BaseSpec {
+class SubmitFormViewSpec extends ViewBaseSpec {
 
-  lazy val controller = new HelloWorldController(messagesApi, mockAppConfig)
+  "Rendering the submit_form page" should {
 
-  "GET /" should {
-    "return 200" in {
-      val result = controller.helloWorld(fakeRequest)
-      status(result) shouldBe Status.OK
+    lazy val view = views.html.submit_form("18AA")
+    lazy implicit val document: Document = Jsoup.parse(view.body)
+
+    "have the correct title" in {
+      elementText("h1") shouldBe "Submit return"
     }
 
-    "return HTML" in {
-      val result = controller.helloWorld(fakeRequest)
-      contentType(result) shouldBe Some("text/html")
-      charset(result) shouldBe Some("utf-8")
+    "display the period key" in {
+      elementText("#content p") shouldBe "Period key: 18AA"
     }
   }
 }

@@ -14,26 +14,24 @@
  * limitations under the License.
  */
 
-package controllers
+package views
 
 import base.BaseSpec
-import play.api.http.Status
-import play.api.test.Helpers._
+import org.jsoup.nodes.{Document, Element}
 
-class HelloWorldControllerSpec extends BaseSpec {
+trait ViewBaseSpec extends BaseSpec {
 
-  lazy val controller = new HelloWorldController(messagesApi, mockAppConfig)
+  def element(cssSelector: String)(implicit document: Document): Element = {
+    val elements = document.select(cssSelector)
 
-  "GET /" should {
-    "return 200" in {
-      val result = controller.helloWorld(fakeRequest)
-      status(result) shouldBe Status.OK
+    if(elements.size == 0) {
+      fail(s"No element exists with the selector '$cssSelector'")
     }
 
-    "return HTML" in {
-      val result = controller.helloWorld(fakeRequest)
-      contentType(result) shouldBe Some("text/html")
-      charset(result) shouldBe Some("utf-8")
-    }
+    document.select(cssSelector).first()
+  }
+
+  def elementText(selector: String)(implicit document: Document): String = {
+    element(selector).text()
   }
 }

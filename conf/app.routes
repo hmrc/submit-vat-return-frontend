@@ -1,3 +1,5 @@
 # microservice specific routes
 
 GET        /hello-world             controllers.HelloWorldController.helloWorld
+
+GET        /:periodKey/submit-form  controllers.SubmitFormController.show(periodKey: String)

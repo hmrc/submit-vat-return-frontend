@@ -20,20 +20,20 @@ import base.BaseSpec
 import play.api.http.Status
 import play.api.test.Helpers._
 
-class HelloWorldControllerSpec extends BaseSpec {
+class SubmitFormControllerSpec extends BaseSpec {
 
-  lazy val controller = new HelloWorldController(messagesApi, mockAppConfig)
+  lazy val controller = new SubmitFormController(messagesApi, mockAppConfig)
 
-  "GET /" should {
+  "SubmitFormController .show" should {
+
     "return 200" in {
-      val result = controller.helloWorld(fakeRequest)
+      val result = controller.show("18AA")(fakeRequest)
       status(result) shouldBe Status.OK
     }
 
     "return HTML" in {
-      val result = controller.helloWorld(fakeRequest)
+      val result = controller.show("18AA")(fakeRequest)
       contentType(result) shouldBe Some("text/html")
-      charset(result) shouldBe Some("utf-8")
     }
   }
 }

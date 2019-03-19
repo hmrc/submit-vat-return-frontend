@@ -16,24 +16,17 @@
 
 package controllers
 
-import base.BaseSpec
-import play.api.http.Status
-import play.api.test.Helpers._
+import config.AppConfig
+import javax.inject.{Inject, Singleton}
+import play.api.i18n.{I18nSupport, MessagesApi}
+import play.api.mvc.{Action, AnyContent}
+import uk.gov.hmrc.play.bootstrap.controller.FrontendController
 
-class HelloWorldControllerSpec extends BaseSpec {
+@Singleton
+class SubmitFormController @Inject()(val messagesApi: MessagesApi,
+                                     implicit val appConfig: AppConfig) extends FrontendController with I18nSupport {
 
-  lazy val controller = new HelloWorldController(messagesApi, mockAppConfig)
-
-  "GET /" should {
-    "return 200" in {
-      val result = controller.helloWorld(fakeRequest)
-      status(result) shouldBe Status.OK
-    }
-
-    "return HTML" in {
-      val result = controller.helloWorld(fakeRequest)
-      contentType(result) shouldBe Some("text/html")
-      charset(result) shouldBe Some("utf-8")
-    }
+  def show(periodKey: String): Action[AnyContent] = Action { implicit request =>
+    Ok(views.html.submit_form(periodKey))
   }
 }
