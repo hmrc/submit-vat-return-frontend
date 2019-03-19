@@ -18,6 +18,7 @@ package mocks
 
 import config.AppConfig
 import play.api.Mode.Mode
+import play.api.mvc.Call
 import play.api.{Configuration, Mode}
 
 class MockConfig(implicit val runModeConfiguration: Configuration) extends AppConfig {
@@ -29,5 +30,9 @@ class MockConfig(implicit val runModeConfiguration: Configuration) extends AppCo
   override val reportAProblemNonJSUrl: String = ""
   override val betaFeedbackUrl: String = ""
   override val betaFeedbackUnauthenticatedUrl: String = ""
+  override val whitelistEnabled: Boolean = false
+  override val whitelistedIps: Seq[String] = Seq("")
+  override val whitelistExcludedPaths: Seq[Call] = Nil
+  override val shutterPage: String = "https://www.tax.service.gov.uk/shutter/vat-through-software"
 
 }
