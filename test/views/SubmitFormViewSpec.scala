@@ -14,26 +14,24 @@
  * limitations under the License.
  */
 
-package controllers
+package views
 
-import base.BaseSpec
-import play.api.http.Status
-import play.api.test.Helpers._
+import org.jsoup.Jsoup
+import org.jsoup.nodes.Document
 
-class SubmitFormControllerSpec extends BaseSpec {
+class SubmitFormViewSpec extends ViewBaseSpec {
 
-  lazy val controller = new SubmitFormController(messagesApi, mockAppConfig)
+  "Rendering the submit_form page" should {
 
-  "SubmitFormController .show" should {
+    lazy val view = views.html.submit_form("18AA")
+    lazy implicit val document: Document = Jsoup.parse(view.body)
 
-    "return 200" in {
-      val result = controller.show("18AA")(fakeRequest)
-      status(result) shouldBe Status.OK
+    "have the correct title" in {
+      elementText("h1") shouldBe "Submit return"
     }
 
-    "return HTML" in {
-      val result = controller.show("18AA")(fakeRequest)
-      contentType(result) shouldBe Some("text/html")
+    "display the period key" in {
+      elementText("#content p") shouldBe "Period key: 18AA"
     }
   }
 }
