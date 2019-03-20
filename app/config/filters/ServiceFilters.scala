@@ -14,18 +14,14 @@
  * limitations under the License.
  */
 
-package common
+package config.filters
 
-object ConfigKeys {
+import javax.inject.Inject
+import play.api.http.DefaultHttpFilters
+import play.filters.csrf.CSRFFilter
+import uk.gov.hmrc.play.bootstrap.filters.FrontendFilters
 
-  val googleAnalyticsToken: String = "google-analytics.token"
-  val googleAnalyticsHost: String = "google-analytics.host"
-
-  val contactFrontendService: String = "contact-frontend.host"
-
-  val whitelistEnabled: String = "whitelist.enabled"
-  val whitelistedIps: String = "whitelist.allowedIps"
-  val whitelistExcludedPaths: String = "whitelist.excludedPaths"
-  val whitelistShutterPage: String = "whitelist.shutter-page-url"
-
-}
+class ServiceFilters @Inject()(defaultFilters: FrontendFilters, excludingCSRFFilter: ExcludingCSRFFilter, whitelistFilter: WhitelistFilter)
+  extends DefaultHttpFilters({
+    defaultFilters.filters.filterNot(f => f.isInstanceOf[CSRFFilter]) :+ excludingCSRFFilter :+ whitelistFilter
+  }:_*)
