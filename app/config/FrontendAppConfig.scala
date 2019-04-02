@@ -19,6 +19,7 @@ package config
 import java.util.Base64
 
 import javax.inject.{Inject, Singleton}
+import config.features.Features
 import play.api.{Configuration, Environment}
 import play.api.Mode.Mode
 import uk.gov.hmrc.play.config.ServicesConfig
@@ -28,19 +29,28 @@ import play.api.mvc.Call
 trait AppConfig extends ServicesConfig {
   val analyticsToken: String
   val analyticsHost: String
-  val reportAProblemPartialUrl: String
-  val reportAProblemNonJSUrl: String
   val betaFeedbackUrl: String
   val betaFeedbackUnauthenticatedUrl: String
+  val features: Features
+  val finalReturnPeriodKey: String
+  val reportAProblemPartialUrl: String
+  val reportAProblemNonJSUrl: String
+  val vatApiBaseUrl: String
+  val vatObligationsBaseUrl: String
+  val vatReturnsBaseUrl: String
+  val financialDataBaseUrl: String
+  val staticDateValue: String
+  val future2020DateValue: String
   val whitelistedIps: Seq[String]
   val whitelistEnabled: Boolean
   val whitelistExcludedPaths: Seq[Call]
   val shutterPage: String
 
+
 }
 
 @Singleton
-class FrontendAppConfig @Inject()(val runModeConfiguration: Configuration, environment: Environment) extends AppConfig {
+class FrontendAppConfig @Inject()(val runModeConfiguration: Configuration, val environment: Environment) extends AppConfig {
   override protected def mode: Mode = environment.mode
 
   private val contactHost = getString(ConfigKeys.contactFrontendService)
