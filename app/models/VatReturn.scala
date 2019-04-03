@@ -19,7 +19,7 @@ package models
 import play.api.libs.functional.syntax._
 import play.api.libs.json._
 
-case class VatSubmitReturn(periodKey: String,
+case class VatReturn(periodKey: String,
                      vatDueSales: BigDecimal, // Box 1
                      vatDueAcquisitions: BigDecimal, // Box 2
                      totalVatDue: BigDecimal, // Box 3
@@ -30,9 +30,9 @@ case class VatSubmitReturn(periodKey: String,
                      totalValueGoodsSuppliedExVAT: BigDecimal, // Box 8
                      totalAcquisitionsExVAT: BigDecimal)   // Box 9
 
-object VatSubmitReturn {
+object VatReturn {
 
-  implicit val vatReturnWrites: Writes[VatSubmitReturn] = (
+  implicit val vatReturnWrites: Writes[VatReturn] = (
     (JsPath \ "periodKey").write[String] and
       (JsPath \ "vatDueSales").write[BigDecimal] and
       (JsPath \ "vatDueAcquisitions").write[BigDecimal] and
@@ -43,9 +43,9 @@ object VatSubmitReturn {
       (JsPath \ "totalValuePurchasesExVAT").write[BigDecimal] and
       (JsPath \ "totalValueGoodsSuppliedExVAT").write[BigDecimal] and
       (JsPath \ "totalAcquisitionsExVAT").write[BigDecimal]
-    ) (unlift(VatSubmitReturn.unapply))
+    ) (unlift(VatReturn.unapply))
 
-  implicit val vatReturnReads: Reads[VatSubmitReturn] = (
+  implicit val vatReturnReads: Reads[VatReturn] = (
     (JsPath \ "periodKey").read[String] and
       (JsPath \ "vatDueSales").read[BigDecimal] and
       (JsPath \ "vatDueAcquisitions").read[BigDecimal] and
@@ -56,5 +56,5 @@ object VatSubmitReturn {
       (JsPath \ "totalValuePurchasesExVAT").read[BigDecimal] and
       (JsPath \ "totalValueGoodsSuppliedExVAT").read[BigDecimal] and
       (JsPath \ "totalAcquisitionsExVAT").read[BigDecimal]
-    ) (VatSubmitReturn.apply _)
+    ) (VatReturn.apply _)
 }

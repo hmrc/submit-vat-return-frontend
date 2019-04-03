@@ -18,11 +18,10 @@ package connectors
 
 import java.net.URLEncoder
 import java.nio.charset.StandardCharsets.UTF_8
-
 import config.AppConfig
 import connectors.httpParsers.ResponseHttpParsers.HttpGetResult
 import javax.inject.{Inject, Singleton}
-import models.VatSubmitReturn
+import models.VatReturn
 import play.api.Logger
 import play.api.http.HeaderNames
 import services.MetricsService
@@ -50,14 +49,16 @@ class VatReturnsConnector @Inject()(http: HttpClient,
   )
 
   def getVatReturnDetails(vrn: String, periodKey: String)
-                         (implicit hc: HeaderCarrier, ec: ExecutionContext): Future[HttpGetResult[VatSubmitReturn]] = {
+                         (implicit hc: HeaderCarrier, ec: ExecutionContext): Future[HttpGetResult[VatReturn]] = {
+
+    import connectors.httpParsers.VatReturnHttpParser.VatReturnReads
 
     val timer = metrics.getVatReturnTimer.time()
 
     val httpRequest = http.GET(
       returnUrl(vrn, periodKey)
     )(
-      implicitly[HttpReads[HttpGetResult[VatSubmitReturn]]],
+      implicitly[HttpReads[HttpGetResult[VatReturn]]],
       headerCarrier(hc),
       implicitly[ExecutionContext]
     )

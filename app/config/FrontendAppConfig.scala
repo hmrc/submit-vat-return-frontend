@@ -23,14 +23,14 @@ import config.features.Features
 import play.api.{Configuration, Environment}
 import play.api.Mode.Mode
 import uk.gov.hmrc.play.config.ServicesConfig
-import common.ConfigKeys
+import config.{ConfigKeys => Keys}
 import play.api.mvc.Call
 
 trait AppConfig extends ServicesConfig {
   val analyticsToken: String
   val analyticsHost: String
-  val betaFeedbackUrl: String
-  val betaFeedbackUnauthenticatedUrl: String
+//  val betaFeedbackUrl: String
+//  val betaFeedbackUnauthenticatedUrl: String
   val features: Features
   val finalReturnPeriodKey: String
   val reportAProblemPartialUrl: String
@@ -51,17 +51,32 @@ trait AppConfig extends ServicesConfig {
 
 @Singleton
 class FrontendAppConfig @Inject()(val runModeConfiguration: Configuration, val environment: Environment) extends AppConfig {
-  override protected def mode: Mode = environment.mode
+
+  override val mode: Mode = environment.mode
 
   private val contactHost = getString(ConfigKeys.contactFrontendService)
   private val contactFormServiceIdentifier = "VATC"
+
+  override val features = new Features(runModeConfiguration)
 
   override lazy val analyticsToken: String = getString(ConfigKeys.googleAnalyticsToken)
   override lazy val analyticsHost: String = getString(ConfigKeys.googleAnalyticsHost)
   lazy val reportAProblemPartialUrl = s"$contactHost/contact/problem_reports_ajax?service=$contactFormServiceIdentifier"
   lazy val reportAProblemNonJSUrl = s"$contactHost/contact/problem_reports_nonjs?service=$contactFormServiceIdentifier"
-  override lazy val betaFeedbackUrl = s"$contactHost/contact/beta-feedback"
-  override lazy val betaFeedbackUnauthenticatedUrl = s"$contactHost/contact/beta-feedback-unauthenticated"
+//  override lazy val betaFeedbackUrl = s"$contactHost/contact/beta-feedback"
+//  override lazy val betaFeedbackUnauthenticatedUrl = s"$contactHost/contact/beta-feedback-unauthenticated"
+
+  override lazy val staticDateValue: String = getString(Keys.staticDateValue)
+  override lazy val future2020DateValue: String = getString(Keys.future2020DateValue)
+
+  override lazy val finalReturnPeriodKey: String = getString(Keys.finalReturnPeriodKey)
+
+
+  override val vatApiBaseUrl: String = baseUrl("vat-api")
+  override val vatReturnsBaseUrl: String = baseUrl("vat-returns")
+  override lazy val vatObligationsBaseUrl: String = baseUrl(Keys.vatObligations)
+
+  override val financialDataBaseUrl: String = baseUrl("financial-transactions")
 
   //Whitelist config
   private def whitelistConfig(key: String): Seq[String] = Some(new String(Base64.getDecoder

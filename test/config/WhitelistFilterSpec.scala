@@ -14,25 +14,25 @@
  * limitations under the License.
  */
 
-package config.filters
+package config
 
-import mocks.MockConfig
+import mocks.MockAppConfig
 import org.scalatestplus.play.PlaySpec
 import org.scalatestplus.play.guice.GuiceOneServerPerSuite
-import play.api.{Application, Configuration}
 import play.api.inject.guice.GuiceApplicationBuilder
 import play.api.mvc.Results.Ok
 import play.api.mvc.{Action, Call}
 import play.api.test.FakeRequest
 import play.api.test.Helpers._
+import play.api.{Application, Configuration}
 
 class WhitelistFilterSpec extends PlaySpec with GuiceOneServerPerSuite {
 
   lazy implicit val config: Configuration = app.configuration
 
-  lazy val mockConfig: MockConfig = new MockConfig()
+  lazy val mockAppConfig = new MockAppConfig
 
-  override implicit lazy val app: Application = {
+  override implicit lazy val app: Application =
     new GuiceApplicationBuilder()
       .configure(Configuration(
         "whitelist.enabled" -> true
@@ -42,11 +42,10 @@ class WhitelistFilterSpec extends PlaySpec with GuiceOneServerPerSuite {
         case _ => Action(Ok("failure"))
       })
       .build()
-  }
 
-  "Whitelist filter" when {
+  "WhitelistFilter" when {
 
-    "supplied with a non whitelisted IP" should {
+    "supplied with a non-whitelisted IP" should {
 
       lazy val fakeRequest = FakeRequest("GET", "/hello-world").withHeaders(
         "True-Client-IP" -> "127.0.0.2"
@@ -61,7 +60,7 @@ class WhitelistFilterSpec extends PlaySpec with GuiceOneServerPerSuite {
       }
 
       "redirect to shutter page" in {
-        redirectLocation(result) mustBe Some(mockConfig.shutterPage)
+        redirectLocation(result) mustBe Some(mockAppConfig.shutterPage)
       }
     }
 

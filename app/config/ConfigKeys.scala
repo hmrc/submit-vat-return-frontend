@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package config.filters
+package config
 
 object ConfigKeys {
 

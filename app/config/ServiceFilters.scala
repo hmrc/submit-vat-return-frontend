@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package config.filters
+package config
 
 import javax.inject.Inject
 import play.api.http.DefaultHttpFilters

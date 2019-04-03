@@ -14,26 +14,14 @@
  * limitations under the License.
  */
 
-package controllers
+package models
 
-import base.BaseSpec
-import play.api.http.Status
-import play.api.test.Helpers._
+import play.api.libs.json.{Format, Json}
 
-class HelloWorldControllerSpec extends BaseSpec {
+case class VatReturnObligations(obligations: Seq[VatReturnObligation])
 
-  lazy val controller = new HelloWorldController(messagesApi, mockAppConfig)
+object VatReturnObligations {
 
-  "GET /" should {
-    "return 200" in {
-      val result = controller.helloWorld(fakeRequest)
-      status(result) shouldBe Status.OK
-    }
+  implicit val format: Format[VatReturnObligations] = Json.format[VatReturnObligations]
 
-    "return HTML" in {
-      val result = controller.helloWorld(fakeRequest)
-      contentType(result) shouldBe Some("text/html")
-      charset(result) shouldBe Some("utf-8")
-    }
-  }
 }

@@ -21,23 +21,23 @@ import java.time.LocalDate
 import play.api.libs.functional.syntax._
 import play.api.libs.json._
 
-case class VatSubmitReturnObligation(start: LocalDate,
+case class VatReturnObligation(start: LocalDate,
                                end: LocalDate,
                                due: LocalDate,
                                status: String,
                                received: Option[LocalDate],
                                periodKey: String) extends Obligation
 
-object VatSubmitReturnObligation {
+object VatReturnObligation {
 
-  implicit val vatReturnObligationWrites: Writes[VatSubmitReturnObligation] = Json.writes[VatSubmitReturnObligation]
+  implicit val vatReturnObligationWrites: Writes[VatReturnObligation] = Json.writes[VatReturnObligation]
 
-  implicit val vatReturnObligationReads: Reads[VatSubmitReturnObligation] = (
+  implicit val vatReturnObligationReads: Reads[VatReturnObligation] = (
     (JsPath \ "start").read[LocalDate] and
       (JsPath \ "end").read[LocalDate] and
       (JsPath \ "due").read[LocalDate] and
       (JsPath \ "status").read[String] and
       (JsPath \ "received").readNullable[LocalDate] and
       (JsPath \ "periodKey").read[String]
-    ) (VatSubmitReturnObligation.apply _)
+    ) (VatReturnObligation.apply _)
 }

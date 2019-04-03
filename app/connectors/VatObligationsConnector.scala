@@ -19,15 +19,15 @@ package connectors
 import java.time.LocalDate
 
 import config.AppConfig
+import connectors.httpParsers.ResponseHttpParsers.HttpGetResult
 import javax.inject.{Inject, Singleton}
+import models.Obligation.Status
+import models.VatReturnObligations
 import play.api.Logger
 import play.api.http.HeaderNames
+import services.MetricsService
 import uk.gov.hmrc.http.{HeaderCarrier, HttpReads}
 import uk.gov.hmrc.play.bootstrap.http.HttpClient
-import services.MetricsService
-import connectors.httpParsers.ResponseHttpParsers.HttpGetResult
-import models.Obligation.Status
-import models._
 
 import scala.concurrent.{ExecutionContext, Future}
 
@@ -52,7 +52,9 @@ class VatObligationsConnector @Inject()(http: HttpClient,
   )
 
   def getVatReturnObligations(vrn: String, from: Option[LocalDate] = None, to: Option[LocalDate] = None, status: Status.Value)
-                             (implicit hc: HeaderCarrier, ec: ExecutionContext): Future[HttpGetResult[VatSubmitReturnObligations]] = {
+                             (implicit hc: HeaderCarrier, ec: ExecutionContext): Future[HttpGetResult[VatReturnObligations]] = {
+
+    import connectors.httpParsers.VatReturnObligationsHttpParser.VatReturnObligationsReads
 
     val timer = metrics.getObligationsTimer.time()
     val queryString: Seq[(String, String)] = (to, from) match {
@@ -64,7 +66,7 @@ class VatObligationsConnector @Inject()(http: HttpClient,
       obligationsUrl(vrn),
       queryString
     )(
-      implicitly[HttpReads[HttpGetResult[VatSubmitReturnObligations]]],
+      implicitly[HttpReads[HttpGetResult[VatReturnObligations]]],
       headerCarrier(hc),
       implicitly[ExecutionContext]
     )

@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package config.filters
+package config
 
 import akka.util.ByteString
 import javax.inject.Inject

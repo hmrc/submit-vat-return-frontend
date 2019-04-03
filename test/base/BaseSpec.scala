@@ -17,7 +17,7 @@
 package base
 
 import config.AppConfig
-import mocks.MockConfig
+import mocks.MockAppConfig
 import org.scalatest.{Matchers, WordSpec}
 import org.scalatestplus.play.guice._
 import play.api.Configuration
@@ -32,7 +32,7 @@ trait BaseSpec extends WordSpec with Matchers with GuiceOneAppPerSuite {
 
   implicit val config: Configuration = app.configuration
 
-  implicit val mockAppConfig: AppConfig = new MockConfig
+  implicit val mockAppConfig: AppConfig = new MockAppConfig
 
   implicit lazy val messagesApi: MessagesApi = injector.instanceOf[MessagesApi]
 

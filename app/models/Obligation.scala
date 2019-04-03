@@ -27,9 +27,9 @@ trait Obligation {
 object Obligation {
 
   object Status extends Enumeration {
-    val All: Status.Value = Value("A")
-    val Outstanding: Status.Value = Value("O")
-    val Fulfilled: Status.Value = Value("F")
+   val All: Status.Value = Value("A")
+   val Outstanding: Status.Value = Value("O")
+   val Fulfilled: Status.Value = Value("F")
   }
 }
 
