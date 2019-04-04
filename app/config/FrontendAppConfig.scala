@@ -29,8 +29,6 @@ import play.api.mvc.Call
 trait AppConfig extends ServicesConfig {
   val analyticsToken: String
   val analyticsHost: String
-//  val betaFeedbackUrl: String
-//  val betaFeedbackUnauthenticatedUrl: String
   val features: Features
   val finalReturnPeriodKey: String
   val reportAProblemPartialUrl: String
@@ -46,7 +44,6 @@ trait AppConfig extends ServicesConfig {
   val whitelistExcludedPaths: Seq[Call]
   val shutterPage: String
 
-
 }
 
 @Singleton
@@ -54,7 +51,7 @@ class FrontendAppConfig @Inject()(val runModeConfiguration: Configuration, val e
 
   override val mode: Mode = environment.mode
 
-  private val contactHost = getString(ConfigKeys.contactFrontendService)
+  private val contactHost = getString(ConfigKeys.contactFrontendHost)
   private val contactFormServiceIdentifier = "VATC"
 
   override val features = new Features(runModeConfiguration)
@@ -63,8 +60,6 @@ class FrontendAppConfig @Inject()(val runModeConfiguration: Configuration, val e
   override lazy val analyticsHost: String = getString(ConfigKeys.googleAnalyticsHost)
   lazy val reportAProblemPartialUrl = s"$contactHost/contact/problem_reports_ajax?service=$contactFormServiceIdentifier"
   lazy val reportAProblemNonJSUrl = s"$contactHost/contact/problem_reports_nonjs?service=$contactFormServiceIdentifier"
-//  override lazy val betaFeedbackUrl = s"$contactHost/contact/beta-feedback"
-//  override lazy val betaFeedbackUnauthenticatedUrl = s"$contactHost/contact/beta-feedback-unauthenticated"
 
   override lazy val staticDateValue: String = getString(Keys.staticDateValue)
   override lazy val future2020DateValue: String = getString(Keys.future2020DateValue)
