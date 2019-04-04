@@ -18,6 +18,7 @@ package base
 
 import config.AppConfig
 import mocks.MockConfig
+import org.scalamock.scalatest.MockFactory
 import org.scalatest.{Matchers, WordSpec}
 import org.scalatestplus.play.guice._
 import play.api.Configuration
@@ -26,7 +27,9 @@ import play.api.inject.Injector
 import play.api.mvc.AnyContentAsEmpty
 import play.api.test.FakeRequest
 
-trait BaseSpec extends WordSpec with Matchers with GuiceOneAppPerSuite {
+import scala.concurrent.Awaitable
+
+trait BaseSpec extends WordSpec with Matchers with GuiceOneAppPerSuite with MockFactory {
 
   lazy val injector: Injector = app.injector
 
@@ -40,4 +43,5 @@ trait BaseSpec extends WordSpec with Matchers with GuiceOneAppPerSuite {
 
   implicit lazy val messages: Messages = messagesApi.preferred(fakeRequest)
 
+  def await[T](awaitable: Awaitable[T]): T = scala.concurrent.Await.result(awaitable, scala.concurrent.duration.Duration.Inf)
 }

@@ -51,8 +51,9 @@ val test = Seq(
   "org.pegdown" % "pegdown" % "1.6.0",
   "org.jsoup" % "jsoup" % "1.11.3",
   "com.typesafe.play" %% "play-test" % PlayVersion.current,
-  "org.scalamock" %% "scalamock-scalatest-support" % "3.6.0"
-).map(_ % Test)
+  "org.scalamock" %% "scalamock-scalatest-support" % "3.6.0",
+  "com.github.tomakehurst" % "wiremock" % "2.21.0"
+).map(_ % s"$Test, $IntegrationTest")
 
 def oneForkedJvmPerTest(tests: Seq[TestDefinition]): Seq[Group] = tests map {
   test =>
@@ -85,10 +86,11 @@ lazy val microservice: Project = Project(appName, file("."))
   .settings(inConfig(IntegrationTest)(Defaults.itSettings): _*)
   .settings(
     Keys.fork in IntegrationTest := false,
-    unmanagedSourceDirectories in IntegrationTest := (baseDirectory in IntegrationTest) (base => Seq(base / "it")).value,
+    unmanagedSourceDirectories in IntegrationTest <<= (baseDirectory in IntegrationTest)(base => Seq(base / "it")),
     addTestReportOption(IntegrationTest, "int-test-reports"),
     testGrouping in IntegrationTest := oneForkedJvmPerTest((definedTests in IntegrationTest).value),
-    parallelExecution in IntegrationTest := false)
+    parallelExecution in IntegrationTest := false,
+    resourceDirectory in IntegrationTest := baseDirectory.value / "it" / "resources")
   .settings(resolvers ++= Seq(
     Resolver.bintrayRepo("hmrc", "releases"),
     Resolver.jcenterRepo

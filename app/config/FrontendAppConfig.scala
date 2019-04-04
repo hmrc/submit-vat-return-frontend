@@ -36,7 +36,7 @@ trait AppConfig extends ServicesConfig {
   val whitelistEnabled: Boolean
   val whitelistExcludedPaths: Seq[Call]
   val shutterPage: String
-
+  def vatSubscriptionUrl(vrn: String, endpoint: String): String
 }
 
 @Singleton
@@ -53,7 +53,8 @@ class FrontendAppConfig @Inject()(val runModeConfiguration: Configuration, envir
   override lazy val betaFeedbackUrl = s"$contactHost/contact/beta-feedback"
   override lazy val betaFeedbackUnauthenticatedUrl = s"$contactHost/contact/beta-feedback-unauthenticated"
 
-  //Whitelist config
+  //White
+  // list config
   private def whitelistConfig(key: String): Seq[String] = Some(new String(Base64.getDecoder
     .decode(getString(key)), "UTF-8"))
     .map(_.split(",")).getOrElse(Array.empty).toSeq
@@ -64,5 +65,7 @@ class FrontendAppConfig @Inject()(val runModeConfiguration: Configuration, envir
     (path => Call("GET", path))
   override val shutterPage: String = getString(ConfigKeys.whitelistShutterPage)
 
-
+  private val vatSubscriptionHost = getString(ConfigKeys.vatSubscriptionHost)
+  private val vatSubscriptionPort = getString(ConfigKeys.vatSubscriptionPort)
+  override def vatSubscriptionUrl(vrn: String, endpoint: String): String = baseUrl("vat-subscription") + s"/vat-subscription/$vrn/$endpoint"
 }
