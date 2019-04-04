@@ -14,19 +14,16 @@
  * limitations under the License.
  */
 
-package connectors
+package connectors.httpParsers
 
-import base.BaseISpec
-import models.{CustomerDetails, ErrorModel, FailedToParseCustomerDetails}
-import play.api.http.Status._
+import base.BaseSpec
+import connectors.httpParsers.CustomerDetailsHttpParser.CustomerDetailsReads
+import models.{CustomerDetails, FailedToParseCustomerDetails}
 import play.api.libs.json.{JsObject, Json}
-import uk.gov.hmrc.http.HeaderCarrier
+import uk.gov.hmrc.http.HttpResponse
+import play.api.http.Status._
 
-import scala.concurrent.ExecutionContext.Implicits.global
-
-class VatSubscriptionConnectorISpec extends BaseISpec {
-
-  implicit val hc: HeaderCarrier = HeaderCarrier()
+class CustomerDetailsHttpParserISpec extends BaseSpec {
 
   val correctReturnJson: JsObject = Json.obj(
     "firstName" -> "Rath",
@@ -41,12 +38,15 @@ class VatSubscriptionConnectorISpec extends BaseISpec {
     "bestWeapon" -> "Swaxe"
   )
 
-  "getCustomerDetails" should {
-    "return a CustomerDetails model" when {
-      "correct JSON is returned from vat-subscription" in {
-        val vrn = "111111111"
+  "CustomerDetailsReads" should {
+    "parse the HTTP response correctly" when {
+      "the returned JSON is valid" in {
+        val httpResponse = HttpResponse(
+          OK,
+          Some(correctReturnJson)
+        )
 
-        val expectedReturn = CustomerDetails(
+        val expectedResult = CustomerDetails(
           Some("Rath"),
           Some("Alos"),
           Some("Blue Rathalos"),
@@ -54,22 +54,23 @@ class VatSubscriptionConnectorISpec extends BaseISpec {
           hasFlatRateScheme = true
         )
 
-        stubGet(s"/vat-subscription/$vrn/customer-details", Json.stringify(correctReturnJson), OK)
+        val result = CustomerDetailsReads.read("", "", httpResponse)
 
-        val result: Either[ErrorModel, CustomerDetails] = await(connector.getCustomerDetails(vrn))
-        result shouldBe Right(expectedReturn)
+        result shouldBe Right(expectedResult)
       }
     }
     "return an error model" when {
-      "the JSON cannot be parsed" in {
-        val vrn = "111111111"
+      "there is invalid json" in {
+        val httpResponse = HttpResponse(
+          OK,
+          Some(incorrectReturnJson)
+        )
 
-        val expectedReturn = FailedToParseCustomerDetails
+        val expectedResult = FailedToParseCustomerDetails
 
-        stubGet(s"/vat-subscription/$vrn/customer-details", Json.stringify(incorrectReturnJson), OK)
+        val result = CustomerDetailsReads.read("", "", httpResponse)
 
-        val result: Either[ErrorModel, CustomerDetails] = await(connector.getCustomerDetails(vrn))
-        result shouldBe Left(expectedReturn)
+        result shouldBe Left(expectedResult)
       }
     }
   }

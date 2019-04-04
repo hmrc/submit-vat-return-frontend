@@ -20,7 +20,7 @@ import config.AppConfig
 import connectors.VatSubscriptionConnector
 import org.scalatest.{BeforeAndAfterEach, Matchers, WordSpec}
 import org.scalatestplus.play.guice.GuiceOneServerPerSuite
-import play.api.libs.ws.WSClient
+import uk.gov.hmrc.play.bootstrap.http.HttpClient
 import utils.WireMockHelper
 
 import scala.concurrent.duration.Duration
@@ -29,9 +29,9 @@ import scala.concurrent.{Await, Awaitable}
 trait BaseISpec extends WordSpec with WireMockHelper with Matchers with
   BeforeAndAfterEach with GuiceOneServerPerSuite {
 
-  lazy val ws: WSClient = app.injector.instanceOf[WSClient]
+  lazy val httpClient: HttpClient = app.injector.instanceOf[HttpClient]
   lazy val appConfig: AppConfig = app.injector.instanceOf[AppConfig]
-  lazy val connector: VatSubscriptionConnector = new VatSubscriptionConnector(ws, appConfig)
+  lazy val connector: VatSubscriptionConnector = new VatSubscriptionConnector(httpClient, appConfig)
 
    override def beforeEach(): Unit = {
     super.beforeEach()

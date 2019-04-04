@@ -14,17 +14,14 @@
  * limitations under the License.
  */
 
-package services
+package connectors.httpParsers
 
-import connectors.VatSubscriptionConnector
-import javax.inject.Inject
-import models.{CustomerDetails, ErrorModel}
-import uk.gov.hmrc.http.HeaderCarrier
+import models.ErrorModel
 
-import scala.concurrent.{ExecutionContext, Future}
+trait ResponseHttpParsers {
 
-class VatSubscriptionService @Inject()(vatSubscriptionConnector: VatSubscriptionConnector) {
-  def getCustomerDetails(vrn: String)(implicit hc: HeaderCarrier, ec: ExecutionContext): Future[Either[ErrorModel, CustomerDetails]] = {
-    vatSubscriptionConnector.getCustomerDetails(vrn)
-  }
+}
+
+object ResponseHttpParsers {
+  type HttpGetResponse[T] = Either[ErrorModel, T]
 }

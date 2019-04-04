@@ -17,22 +17,19 @@
 package connectors
 
 import config.AppConfig
+import connectors.httpParsers.ResponseHttpParsers.HttpGetResponse
 import javax.inject.Inject
-import models.{CustomerDetails, ErrorModel, FailedToParseCustomerDetails}
-import play.api.libs.ws.WSClient
-
+import models.{CustomerDetails, ErrorModel}
+import uk.gov.hmrc.http.HeaderCarrier
+import uk.gov.hmrc.play.bootstrap.http.HttpClient
+import connectors.httpParsers.CustomerDetailsHttpParser._
 import scala.concurrent.{ExecutionContext, Future}
 
-class VatSubscriptionConnector @Inject()(wSClient: WSClient, appConfig: AppConfig) {
+class VatSubscriptionConnector @Inject()(httpClient: HttpClient, appConfig: AppConfig) {
   private lazy val endpoint: String = "customer-details"
   private lazy val urlToCall: String => String = vrn => appConfig.vatSubscriptionUrl(vrn, endpoint)
 
-  def getCustomerDetails(vrn: String)(implicit ec: ExecutionContext): Future[Either[ErrorModel, CustomerDetails]] = {
-    wSClient.url(urlToCall(vrn)).get().map { response =>
-      response.json.asOpt[CustomerDetails] match {
-        case Some(cd: CustomerDetails) => Right(cd)
-        case None => Left(FailedToParseCustomerDetails)
-      }
-    }
+  def getCustomerDetails(vrn: String)(implicit hc: HeaderCarrier, ec: ExecutionContext): Future[Either[ErrorModel, CustomerDetails]] = {
+    httpClient.GET[HttpGetResponse[CustomerDetails]](urlToCall(vrn))
   }
 }

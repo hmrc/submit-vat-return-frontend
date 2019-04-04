@@ -19,11 +19,14 @@ package services
 import base.BaseSpec
 import connectors.VatSubscriptionConnector
 import models.{CustomerDetails, FailedToParseCustomerDetails}
+import uk.gov.hmrc.http.HeaderCarrier
 
 import scala.concurrent.{ExecutionContext, Future}
 import scala.concurrent.ExecutionContext.Implicits.global
 
 class VatSubscriptionServiceSpec extends BaseSpec {
+
+  implicit val hc: HeaderCarrier = HeaderCarrier()
 
   val mockConnector: VatSubscriptionConnector = mock[VatSubscriptionConnector]
   val service: VatSubscriptionService = new VatSubscriptionService(mockConnector)
@@ -39,8 +42,8 @@ class VatSubscriptionServiceSpec extends BaseSpec {
           hasFlatRateScheme = true
         )
 
-        (mockConnector.getCustomerDetails(_: String)(_: ExecutionContext))
-          .expects("111111111", *)
+        (mockConnector.getCustomerDetails(_: String)(_: HeaderCarrier, _: ExecutionContext))
+          .expects("111111111", *, *)
           .returning(Future.successful(Right(expectedResult)))
 
         val result = await(service.getCustomerDetails("111111111"))
@@ -52,8 +55,8 @@ class VatSubscriptionServiceSpec extends BaseSpec {
       "an error is returned from the connector" in {
         val expectedResult = FailedToParseCustomerDetails
 
-        (mockConnector.getCustomerDetails(_: String)(_: ExecutionContext))
-          .expects("111111111", *)
+        (mockConnector.getCustomerDetails(_: String)(_: HeaderCarrier, _: ExecutionContext))
+          .expects("111111111", *, *)
           .returning(Future.successful(Left(expectedResult)))
 
         val result = await(service.getCustomerDetails("111111111"))
