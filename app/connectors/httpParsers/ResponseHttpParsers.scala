@@ -18,10 +18,6 @@ package connectors.httpParsers
 
 import models.ErrorModel
 
-trait ResponseHttpParsers {
-
-}
-
 object ResponseHttpParsers {
   type HttpGetResponse[T] = Either[ErrorModel, T]
 }

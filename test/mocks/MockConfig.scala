@@ -34,5 +34,4 @@ class MockConfig(implicit val runModeConfiguration: Configuration) extends AppCo
   override val whitelistedIps: Seq[String] = Seq("")
   override val whitelistExcludedPaths: Seq[Call] = Nil
   override val shutterPage: String = "https://www.tax.service.gov.uk/shutter/vat-through-software"
-  override def vatSubscriptionUrl(vrn: String, endpoint: String): String = s"http://localhost:9567/vat-subscription/$vrn/$endpoint"
 }

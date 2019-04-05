@@ -23,11 +23,14 @@ import models.{CustomerDetails, ErrorModel}
 import uk.gov.hmrc.http.HeaderCarrier
 import uk.gov.hmrc.play.bootstrap.http.HttpClient
 import connectors.httpParsers.CustomerDetailsHttpParser._
+
 import scala.concurrent.{ExecutionContext, Future}
 
 class VatSubscriptionConnector @Inject()(httpClient: HttpClient, appConfig: AppConfig) {
+  private def vatSubscriptionUrl(vrn: String, endpoint: String): String = appConfig.baseUrl("vat-subscription") + s"/vat-subscription/$vrn/$endpoint"
+
   private lazy val endpoint: String = "customer-details"
-  private lazy val urlToCall: String => String = vrn => appConfig.vatSubscriptionUrl(vrn, endpoint)
+  private lazy val urlToCall: String => String = vrn => vatSubscriptionUrl(vrn, endpoint)
 
   def getCustomerDetails(vrn: String)(implicit hc: HeaderCarrier, ec: ExecutionContext): Future[Either[ErrorModel, CustomerDetails]] = {
     httpClient.GET[HttpGetResponse[CustomerDetails]](urlToCall(vrn))

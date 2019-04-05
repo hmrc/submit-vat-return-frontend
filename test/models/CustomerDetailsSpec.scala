@@ -28,10 +28,10 @@ class CustomerDetailsSpec extends BaseSpec {
               organisationName: Option[String],
               hasFlatRateScheme: Boolean = false
             ): JsValue = {
-    firstName.fold(Json.obj())(firstName => Json.obj("firstName" -> firstName)) ++
-      lastName.fold(Json.obj())(firstName => Json.obj("lastName" -> lastName)) ++
-      tradingName.fold(Json.obj())(firstName => Json.obj("tradingName" -> tradingName)) ++
-      organisationName.fold(Json.obj())(firstName => Json.obj("organisationName" -> organisationName)) ++
+    firstName.fold(Json.obj())(firstNameResult => Json.obj("firstName" -> firstNameResult)) ++
+      lastName.fold(Json.obj())(lastNameResult => Json.obj("lastName" -> lastNameResult)) ++
+      tradingName.fold(Json.obj())(tradingNameResult => Json.obj("tradingName" -> tradingNameResult)) ++
+      organisationName.fold(Json.obj())(organisationNameResult => Json.obj("organisationName" -> organisationNameResult)) ++
       Json.obj("hasFlatRateScheme" -> hasFlatRateScheme)
   }
 

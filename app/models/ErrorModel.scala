@@ -17,10 +17,14 @@
 package models
 
 import play.api.libs.json.{Json, OFormat}
+import play.api.http.Status._
 
-case class ErrorModel(code: String, message: String)
+case class ErrorModel(code: String, httpStatus: Int, message: String)
 
-object FailedToParseCustomerDetails extends ErrorModel("PARSING_ERROR", "There was an error parsing the Json returned from vat-subscription")
+object FailedToParseCustomerDetails extends
+  ErrorModel("PARSING_ERROR", INTERNAL_SERVER_ERROR, "There was an error parsing the Json returned from vat-subscription")
+object FailedToRetrieveCustomerDetails extends
+  ErrorModel("DOWNSTREAM_ERROR", INTERNAL_SERVER_ERROR, "Downstream error returned when retrieving CustomerDetails")
 
 object ErrorModel {
   implicit val formats: OFormat[ErrorModel] = Json.format[ErrorModel]

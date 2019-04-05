@@ -18,7 +18,7 @@ package connectors.httpParsers
 
 import base.BaseSpec
 import connectors.httpParsers.CustomerDetailsHttpParser.CustomerDetailsReads
-import models.{CustomerDetails, FailedToParseCustomerDetails}
+import models.{CustomerDetails, FailedToParseCustomerDetails, FailedToRetrieveCustomerDetails}
 import play.api.libs.json.{JsObject, Json}
 import uk.gov.hmrc.http.HttpResponse
 import play.api.http.Status._
@@ -30,6 +30,10 @@ class CustomerDetailsHttpParserISpec extends BaseSpec {
     "lastName" -> "Alos",
     "tradingName" -> "Blue Rathalos",
     "organisationName" -> "Silver Rathalos",
+    "hasFlatRateScheme" -> true
+  )
+
+  val correctEmptyReturnJson: JsObject = Json.obj(
     "hasFlatRateScheme" -> true
   )
 
@@ -58,6 +62,24 @@ class CustomerDetailsHttpParserISpec extends BaseSpec {
 
         result shouldBe Right(expectedResult)
       }
+      "the returned JSON is mostly empty" in {
+        val httpResponse = HttpResponse(
+          OK,
+          Some(correctEmptyReturnJson)
+        )
+
+        val expectedResult = CustomerDetails(
+          None,
+          None,
+          None,
+          None,
+          hasFlatRateScheme = true
+        )
+
+        val result = CustomerDetailsReads.read("", "", httpResponse)
+
+        result shouldBe Right(expectedResult)
+      }
     }
     "return an error model" when {
       "there is invalid json" in {
@@ -67,6 +89,18 @@ class CustomerDetailsHttpParserISpec extends BaseSpec {
         )
 
         val expectedResult = FailedToParseCustomerDetails
+
+        val result = CustomerDetailsReads.read("", "", httpResponse)
+
+        result shouldBe Left(expectedResult)
+      }
+      "a non OK status is returned" in {
+        val httpResponse = HttpResponse(
+          INTERNAL_SERVER_ERROR,
+          None
+        )
+
+        val expectedResult = FailedToRetrieveCustomerDetails
 
         val result = CustomerDetailsReads.read("", "", httpResponse)
 

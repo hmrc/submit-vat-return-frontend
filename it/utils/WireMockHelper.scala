@@ -25,6 +25,7 @@ import org.scalatestplus.play.guice.GuiceOneServerPerSuite
 import play.api.http.Status.OK
 
 object WireMockHelper {
+  val wireMockHost = "localhost"
   val wireMockPort = 11111
   val wireMockConf: WireMockConfiguration = new WireMockConfiguration().port(wireMockPort)
   val wireMockServer = new WireMockServer(wireMockConf)

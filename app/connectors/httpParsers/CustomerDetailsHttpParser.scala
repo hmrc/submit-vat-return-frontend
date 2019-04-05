@@ -17,13 +17,14 @@
 package connectors.httpParsers
 
 import connectors.httpParsers.ResponseHttpParsers.HttpGetResponse
-import models.{CustomerDetails, FailedToParseCustomerDetails}
+import models.{CustomerDetails, ErrorModel, FailedToParseCustomerDetails, FailedToRetrieveCustomerDetails}
+import play.api.Logger
 import uk.gov.hmrc.http.{HttpReads, HttpResponse}
 import play.api.http.Status._
 
 import scala.util.{Failure, Success, Try}
 
-object CustomerDetailsHttpParser extends ResponseHttpParsers {
+object CustomerDetailsHttpParser {
   implicit object CustomerDetailsReads extends HttpReads[HttpGetResponse[CustomerDetails]] {
     override def read(method: String, url: String, response: HttpResponse): HttpGetResponse[CustomerDetails] = {
       response.status match {
@@ -31,8 +32,14 @@ object CustomerDetailsHttpParser extends ResponseHttpParsers {
           response.json.as[CustomerDetails]
         } match {
           case Success(parsedModel) => Right(parsedModel)
-          case Failure(_) => Left(FailedToParseCustomerDetails)
+          case Failure(reason) =>
+            Logger.debug(s"[CustomerDetailsHttpParser][CustomerDetailsReads]: Invalid Json - $reason")
+            Logger.warn("[CustomerDetailsHttpParser][CustomerDetailsReads]: Invalid Json returned")
+            Left(FailedToParseCustomerDetails)
         }
+        case status =>
+          Logger.warn(s"[CustomerDetailsHttpParser][CustomerDetailsReads]: Unexpected Response, Status $status returned")
+          Left(FailedToRetrieveCustomerDetails)
       }
     }
   }
