@@ -17,14 +17,15 @@
 package services
 
 import connectors.VatSubscriptionConnector
+import connectors.httpParsers.ResponseHttpParsers.HttpGetResult
 import javax.inject.Inject
-import models.{CustomerDetails, ErrorModel}
+import models.CustomerDetails
 import uk.gov.hmrc.http.HeaderCarrier
 
 import scala.concurrent.{ExecutionContext, Future}
 
 class VatSubscriptionService @Inject()(vatSubscriptionConnector: VatSubscriptionConnector) {
-  def getCustomerDetails(vrn: String)(implicit hc: HeaderCarrier, ec: ExecutionContext): Future[Either[ErrorModel, CustomerDetails]] = {
+  def getCustomerDetails(vrn: String)(implicit hc: HeaderCarrier, ec: ExecutionContext): Future[HttpGetResult[CustomerDetails]] = {
     vatSubscriptionConnector.getCustomerDetails(vrn)
   }
 }

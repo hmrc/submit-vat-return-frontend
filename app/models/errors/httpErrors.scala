@@ -16,6 +16,7 @@
 
 package models.errors
 
+
 sealed trait HttpError {
   def message: String
 }
@@ -37,6 +38,10 @@ case class UnexpectedStatusError(code: String, errorResponse: String) extends Ht
 
 object UnexpectedJsonFormat extends HttpError {
   override val message: String = "The server you connecting to returned unexpected JSON."
+}
+
+object FailedToRetrieveCustomerDetails extends HttpError{
+  override val message: String = "Downstream error returned when retrieving CustomerDetails"
 }
 
 case class MultipleErrors(code: String, errorResponse: String) extends HttpError {

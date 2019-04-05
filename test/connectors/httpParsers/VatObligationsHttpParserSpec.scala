@@ -16,7 +16,14 @@
 
 package connectors.httpParsers
 
+import java.time.LocalDate
+
 import base.BaseSpec
+import models.errors.UnexpectedJsonFormat
+import models.{VatObligation, VatObligations}
+import play.api.http.Status._
+import play.api.libs.json.Json
+import uk.gov.hmrc.http.HttpResponse
 
 class VatObligationsHttpParserSpec extends BaseSpec {
 
@@ -28,13 +35,47 @@ class VatObligationsHttpParserSpec extends BaseSpec {
 
         "return a sequence of obligations" in {
 
+          val validJson = Json.obj(
+            "obligations" -> Json.arr(Json.obj(
+              "start" -> "2017-01-01",
+              "end" -> "2017-03-30",
+              "due" -> "2017-04-30",
+              "periodKey" -> "#001"
+            ))
+
+          )
+          val httpResponse = HttpResponse(OK, Some(validJson))
+          val result = VatObligationsHttpParser.VatObligationsReads.read("", "", httpResponse)
+          val expectedResponse = Right(VatObligations(Seq(
+            VatObligation(
+              LocalDate.parse("2017-01-01"),
+              LocalDate.parse("2017-03-30"),
+              LocalDate.parse("2017-04-30"),
+              periodKey = "#001"
+            )
+          )))
+
+          result shouldBe expectedResponse
         }
       }
 
       "body of response is invalid" should {
 
         "return UnexpectedJsonFormat" in {
+          val validJson = Json.obj(
+            "obligations" -> Json.arr(Json.obj(
+              "start" -> "2017-01-01",
+              "end" -> "2017-03-30",
+              "due" -> "2017-04-30",
+              "periodkey" -> "#001"
+            ))
 
+          )
+          val httpResponse = HttpResponse(OK, Some(validJson))
+          val result = VatObligationsHttpParser.VatObligationsReads.read("", "", httpResponse)
+          val expectedResponse = Left(UnexpectedJsonFormat)
+
+          result shouldBe expectedResponse
         }
       }
     }

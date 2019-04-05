@@ -67,5 +67,5 @@ class FrontendAppConfig @Inject()(val runModeConfiguration: Configuration, envir
 
   private val vatObligationContextUrl = getString(ConfigKeys.vatObligationsContextUrl)
 
-  override def obligationUrl(vrn: String): String = s"${getString(ConfigKeys.vatObligationsService)}$vatObligationContextUrl/$vrn/obligations"
+  override def obligationUrl(vrn: String): String = s"${baseUrl(ConfigKeys.vatObligationsService)}$vatObligationContextUrl/$vrn/obligations"
  }

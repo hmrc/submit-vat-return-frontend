@@ -23,7 +23,7 @@ object ConfigKeys {
 
   val contactFrontendService: String = "contact-frontend.host"
 
-  val vatObligationsService: String = "vat-obligations.host"
+  val vatObligationsService: String = "vat-obligations"
   val vatObligationsContextUrl: String = "vat-obligations.contextUrl"
 
   val whitelistEnabled: String = "whitelist.enabled"
