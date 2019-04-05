@@ -17,16 +17,27 @@
 package connectors
 
 import config.AppConfig
+import connectors.httpParsers.ResponseHttpParsers.HttpGetResult
 import javax.inject.Inject
+import models.VatObligations
+import uk.gov.hmrc.http.HeaderCarrier
 import uk.gov.hmrc.play.bootstrap.http.HttpClient
+
+import scala.concurrent.{ExecutionContext, Future}
 
 class VatObligationsConnector @Inject()(http: HttpClient,
                                         appConfig: AppConfig) {
 
-def getObligations(vrn:String) = {
+  def getObligations(vrn: String)(implicit hc: HeaderCarrier, ec: ExecutionContext): Future[HttpGetResult[VatObligations]] = {
 
-}
+    import connectors.httpParsers.VatObligationsHttpParser.VatObligationsReads
 
-  
+    val queryParams: Seq[(String, String)] = Seq("status" -> "O")
+
+    http.GET[HttpGetResult[VatObligations]](
+      appConfig.obligationUrl(vrn),
+      queryParams
+    )
+  }
 }
 

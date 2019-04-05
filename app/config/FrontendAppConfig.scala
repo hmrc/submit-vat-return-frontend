@@ -36,6 +36,8 @@ trait AppConfig extends ServicesConfig {
   val whitelistEnabled: Boolean
   val whitelistExcludedPaths: Seq[Call]
   val shutterPage: String
+  def obligationUrl(vrn : String) : String
+
 }
 
 @Singleton
@@ -62,4 +64,8 @@ class FrontendAppConfig @Inject()(val runModeConfiguration: Configuration, envir
   override lazy val whitelistExcludedPaths: Seq[Call] = whitelistConfig(ConfigKeys.whitelistExcludedPaths) map
     (path => Call("GET", path))
   override val shutterPage: String = getString(ConfigKeys.whitelistShutterPage)
-}
+
+  private val vatObligationContextUrl = getString(ConfigKeys.vatObligationsContextUrl)
+
+  override def obligationUrl(vrn: String): String = s"${getString(ConfigKeys.vatObligationsService)}$vatObligationContextUrl/$vrn/obligations"
+ }
