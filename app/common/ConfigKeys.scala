@@ -28,4 +28,6 @@ object ConfigKeys {
   val whitelistExcludedPaths: String = "whitelist.excludedPaths"
   val whitelistShutterPage: String = "whitelist.shutter-page-url"
 
+  val vatSubscriptionHost: String = "microservice.services.vat-subscription.host"
+  val vatSubscriptionPort: String = "microservice.services.vat-subscription.port"
 }

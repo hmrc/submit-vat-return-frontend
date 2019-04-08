@@ -36,7 +36,6 @@ trait AppConfig extends ServicesConfig {
   val whitelistEnabled: Boolean
   val whitelistExcludedPaths: Seq[Call]
   val shutterPage: String
-
 }
 
 @Singleton
@@ -63,6 +62,4 @@ class FrontendAppConfig @Inject()(val runModeConfiguration: Configuration, envir
   override lazy val whitelistExcludedPaths: Seq[Call] = whitelistConfig(ConfigKeys.whitelistExcludedPaths) map
     (path => Call("GET", path))
   override val shutterPage: String = getString(ConfigKeys.whitelistShutterPage)
-
-
 }
