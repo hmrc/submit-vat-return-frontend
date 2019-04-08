@@ -19,7 +19,7 @@ package connectors.httpParsers
 import java.time.LocalDate
 
 import base.BaseSpec
-import models.errors.{BadRequestError, ServerSideError, UnexpectedJsonFormat, UnexpectedStatusError}
+import models.errors._
 import models.{VatObligation, VatObligations}
 import play.api.http.Status._
 import play.api.libs.json.Json
@@ -129,6 +129,41 @@ class VatObligationsHttpParserSpec extends BaseSpec {
         val httpResponse = HttpResponse(PROXY_AUTHENTICATION_REQUIRED, Some(emptyReturn))
         val result = VatObligationsHttpParser.VatObligationsReads.read("", "", httpResponse)
         val expectedResponse = Left(UnexpectedStatusError(s"$PROXY_AUTHENTICATION_REQUIRED", "{ }"))
+
+        result shouldBe expectedResponse
+      }
+    }
+
+    s"response is $BAD_REQUEST and there are multiple errors" should {
+      "return MultipleErrors" in {
+        val multipleReturn = Json.obj(
+          "code" -> s"$BAD_REQUEST",
+          "message" -> "My god... What have I done?",
+          "errors" -> Json.arr(
+            Json.obj(
+              "code" -> "this did a thing",
+              "message" -> "the thing it did went really wrong in some way or another"
+            ),
+            Json.obj(
+              "code" -> "this is a second error code",
+              "message" -> "TWO ERRORS AT THE SAME TIME?! THE WORLD HAS GONE MAD!"
+            )
+          )
+        )
+        val expectedBody = Json.arr(
+          Json.obj(
+            "code" -> "this did a thing",
+            "message" -> "the thing it did went really wrong in some way or another"
+          ),
+          Json.obj(
+            "code" -> "this is a second error code",
+            "message" -> "TWO ERRORS AT THE SAME TIME?! THE WORLD HAS GONE MAD!"
+          )
+        )
+
+        val httpResponse = HttpResponse(BAD_REQUEST, Some(multipleReturn))
+        val result = VatObligationsHttpParser.VatObligationsReads.read("", "", httpResponse)
+        val expectedResponse = Left(MultipleErrors(s"$BAD_REQUEST", Json.stringify(expectedBody)))
 
         result shouldBe expectedResponse
       }

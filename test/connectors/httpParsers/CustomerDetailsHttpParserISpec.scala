@@ -29,7 +29,7 @@ class CustomerDetailsHttpParserISpec extends BaseSpec {
   val correctReturnJson: JsObject = Json.obj(
     "firstName" -> "Rath",
     "lastName" -> "Alos",
-    "tradingName" -> "Blue Rathalos",
+    "tradingName" -> "Azure Rathalos",
     "organisationName" -> "Silver Rathalos",
     "hasFlatRateScheme" -> true
   )
@@ -54,7 +54,7 @@ class CustomerDetailsHttpParserISpec extends BaseSpec {
         val expectedResult = CustomerDetails(
           Some("Rath"),
           Some("Alos"),
-          Some("Blue Rathalos"),
+          Some("Azure Rathalos"),
           Some("Silver Rathalos"),
           hasFlatRateScheme = true
         )
