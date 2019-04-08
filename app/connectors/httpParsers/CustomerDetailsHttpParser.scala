@@ -17,8 +17,8 @@
 package connectors.httpParsers
 
 import connectors.httpParsers.ResponseHttpParsers.HttpGetResult
-import models.errors.{FailedToRetrieveCustomerDetails, UnexpectedJsonFormat}
 import models.CustomerDetails
+import models.errors.{ServerSideError, UnexpectedJsonFormat}
 import play.api.Logger
 import play.api.http.Status._
 import uk.gov.hmrc.http.{HttpReads, HttpResponse}
@@ -40,7 +40,7 @@ object CustomerDetailsHttpParser {
         }
         case status =>
           Logger.warn(s"[CustomerDetailsHttpParser][CustomerDetailsReads]: Unexpected Response, Status $status returned")
-          Left(FailedToRetrieveCustomerDetails)
+          Left(ServerSideError(s"$status", "Received downstream error when retrieving customer details."))
       }
     }
   }
