@@ -16,11 +16,16 @@
 
 @import config.AppConfig
 
-@(periodKey: String)(implicit request: Request[_], messages: Messages, appConfig: AppConfig)
+@(periodKey: String, clientName: Option[String], flatRateScheme: Boolean)(implicit request: Request[_], messages: Messages, appConfig: AppConfig)
 
 @main_template(messages("submit_form.title"), appConfig = appConfig, bodyClasses = None) {
 
     <h1>@messages("submit_form.title")</h1>
 
     <p>Period key: @periodKey</p>
+
+    <p>Client name: @clientName.getOrElse("NAME NOT FOUND")</p>
+
+    <p>FlatRateScheme: @flatRateScheme</p>
+
 }
