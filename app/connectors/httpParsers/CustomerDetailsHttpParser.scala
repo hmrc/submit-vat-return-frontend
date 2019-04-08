@@ -25,7 +25,7 @@ import uk.gov.hmrc.http.{HttpReads, HttpResponse}
 
 import scala.util.{Failure, Success, Try}
 
-object CustomerDetailsHttpParser {
+object CustomerDetailsHttpParser extends ResponseHttpParsers {
   implicit object CustomerDetailsReads extends HttpReads[HttpGetResult[CustomerDetails]] {
     override def read(method: String, url: String, response: HttpResponse): HttpGetResult[CustomerDetails] = {
       response.status match {

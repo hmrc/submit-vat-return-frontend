@@ -23,7 +23,7 @@ class SubmitFormViewSpec extends ViewBaseSpec {
 
   "Rendering the submit_form page" should {
 
-    lazy val view = views.html.submit_form("18AA", Some("ABC Studios"), true)
+    lazy val view = views.html.submit_form("18AA", Some("ABC Studios"), flatRateScheme = true, "12th January 2019", "12th April 2019", "12th May 2019")
     lazy implicit val document: Document = Jsoup.parse(view.body)
 
     "have the correct title" in {
@@ -40,6 +40,18 @@ class SubmitFormViewSpec extends ViewBaseSpec {
 
     "display the flat rate scheme passed into the view" in {
       elementText("#content p:nth-of-type(3)") shouldBe "FlatRateScheme: true"
+    }
+
+    "display the start date passed into the view" in {
+      elementText("#content p:nth-of-type(4)") shouldBe "Start date: 12th January 2019"
+    }
+
+    "display the end date passed into the view" in {
+      elementText("#content p:nth-of-type(5)") shouldBe "End date: 12th April 2019"
+    }
+
+    "display the due date passed into the view" in {
+      elementText("#content p:nth-of-type(6)") shouldBe "Due date: 12th May 2019"
     }
   }
 }

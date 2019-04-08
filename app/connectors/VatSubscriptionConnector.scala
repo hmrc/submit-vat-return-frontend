@@ -17,7 +17,6 @@
 package connectors
 
 import config.AppConfig
-import connectors.httpParsers.CustomerDetailsHttpParser._
 import connectors.httpParsers.ResponseHttpParsers.HttpGetResult
 import javax.inject.Inject
 import models.CustomerDetails
@@ -33,6 +32,9 @@ class VatSubscriptionConnector @Inject()(httpClient: HttpClient, appConfig: AppC
   private lazy val urlToCall: String => String = vrn => vatSubscriptionUrl(vrn, endpoint)
 
   def getCustomerDetails(vrn: String)(implicit hc: HeaderCarrier, ec: ExecutionContext): Future[HttpGetResult[CustomerDetails]] = {
+
+    import connectors.httpParsers.CustomerDetailsHttpParser.CustomerDetailsReads
+
     httpClient.GET[HttpGetResult[CustomerDetails]](urlToCall(vrn))
   }
 }

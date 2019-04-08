@@ -19,6 +19,9 @@ package controllers
 import base.BaseSpec
 import connectors.httpParsers.ResponseHttpParsers.HttpGetResult
 import models.CustomerDetails
+import models.errors.UnexpectedJsonFormat
+import org.jsoup.Jsoup
+import org.jsoup.nodes.Document
 import play.api.http.Status
 import play.api.mvc.Result
 import play.api.test.Helpers._
@@ -36,7 +39,7 @@ class SubmitFormControllerSpec extends BaseSpec {
     )
 
     val vatSubscriptionResponse: Future[HttpGetResult[CustomerDetails]] = Future.successful(Right(customerInformation))
-
+    val vatSubscriptionErrorResponse: Future[HttpGetResult[CustomerDetails]] = Future.successful(Left(UnexpectedJsonFormat))
     val mockVatSubscriptionService: VatSubscriptionService = mock[VatSubscriptionService]
 
     def setupMocks(): Unit = {}
@@ -48,35 +51,71 @@ class SubmitFormControllerSpec extends BaseSpec {
       new SubmitFormController(
         messagesApi,
         mockVatSubscriptionService,
+        mockErrorHandler,
         mockAppConfig
       )
     }
   }
 
-  "SubmitFormController .show" should {
+  "SubmitFormController .show" when {
 
-    "return 200" in new Test {
+    "a successful response is received from the service" should {
 
-      override def setupMocks(): Unit = {
-        (mockVatSubscriptionService.getCustomerDetails(_: String)(_: HeaderCarrier, _: ExecutionContext))
-          .expects(*, *, *)
-          .returns(vatSubscriptionResponse)
+      "return 200" in new Test {
+
+        override def setupMocks(): Unit = {
+          (mockVatSubscriptionService.getCustomerDetails(_: String)(_: HeaderCarrier, _: ExecutionContext))
+            .expects(*, *, *)
+            .returns(vatSubscriptionResponse)
+        }
+
+        val result: Future[Result] = target.show("18AA")(fakeRequest)
+        status(result) shouldBe Status.OK
       }
 
-      val result: Future[Result] = target.show("18AA")(fakeRequest)
-      status(result) shouldBe Status.OK
+      "return HTML" in new Test {
+
+        override def setupMocks(): Unit = {
+          (mockVatSubscriptionService.getCustomerDetails(_: String)(_: HeaderCarrier, _: ExecutionContext))
+            .expects(* , *, *)
+            .returns(vatSubscriptionResponse)
+        }
+
+        val result: Future[Result] = target.show("18AA")(fakeRequest)
+        contentType(result) shouldBe Some("text/html")
+      }
+
     }
 
-    "return HTML" in new Test {
+    "an error response is returned from the service" should {
 
-      override def setupMocks(): Unit = {
-        (mockVatSubscriptionService.getCustomerDetails(_: String)(_: HeaderCarrier, _: ExecutionContext))
-          .expects(* , *, *)
-          .returns(vatSubscriptionResponse)
+      "return an internal server status" in new Test {
+
+        override val vatSubscriptionResponse: Future[HttpGetResult[CustomerDetails]] = Future.successful(Left(UnexpectedJsonFormat))
+
+        override def setupMocks(): Unit = {
+          (mockVatSubscriptionService.getCustomerDetails(_: String)(_: HeaderCarrier, _: ExecutionContext))
+            .expects(*, *, *)
+            .returns(vatSubscriptionErrorResponse)
+        }
+
+        val result: Future[Result] = target.show("18AA")(fakeRequest)
+        status(result) shouldBe Status.INTERNAL_SERVER_ERROR
       }
 
-      val result: Future[Result] = target.show("18AA")(fakeRequest)
-      contentType(result) shouldBe Some("text/html")
+      "return the error page" in new Test {
+        override val vatSubscriptionResponse: Future[HttpGetResult[CustomerDetails]] = Future.successful(Left(UnexpectedJsonFormat))
+
+        override def setupMocks(): Unit = {
+          (mockVatSubscriptionService.getCustomerDetails(_: String)(_: HeaderCarrier, _: ExecutionContext))
+            .expects(*, *, *)
+            .returns(vatSubscriptionErrorResponse)
+        }
+
+        val result: Future[Result] = target.show("18AA")(fakeRequest)
+        lazy val document: Document = Jsoup.parse(bodyOf(result))
+        document.select("h1").text shouldBe "Internal server error"
+      }
     }
   }
 }

@@ -20,25 +20,22 @@ import config.AppConfig
 import javax.inject.{Inject, Singleton}
 import play.api.i18n.{I18nSupport, MessagesApi}
 import play.api.mvc.{Action, AnyContent}
+import config.ErrorHandler
 import services.VatSubscriptionService
 import uk.gov.hmrc.play.bootstrap.controller.FrontendController
-
-import scala.concurrent.Future
 
 @Singleton
 class SubmitFormController @Inject()(val messagesApi: MessagesApi,
                                      val vatSubscriptionService: VatSubscriptionService,
+                                     val errorHandler: ErrorHandler,
                                      implicit val appConfig: AppConfig) extends FrontendController with I18nSupport {
 
   def show(periodKey: String):Action[AnyContent] = Action.async { implicit request =>
 
-    vatSubscriptionService.getCustomerDetails("1234565789").map {
+    vatSubscriptionService.getCustomerDetails("1234565789") map {
       case Right(customerDetails) =>
-        Ok(views.html.submit_form(periodKey,customerDetails.clientName,flatRateScheme = true))
-      case Left(error) =>
-        Ok(views.html.errors.session_expired(appConfig))
+        Ok(views.html.submit_form(periodKey,customerDetails.clientName,flatRateScheme = true, "12th January 2019", "12th April 2019", "12th May 2019"))
+      case Left(_) => errorHandler.showInternalServerError
     }
-
-
   }
 }
