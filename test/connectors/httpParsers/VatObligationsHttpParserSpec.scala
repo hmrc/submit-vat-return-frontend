@@ -19,7 +19,7 @@ package connectors.httpParsers
 import java.time.LocalDate
 
 import base.BaseSpec
-import models.errors.UnexpectedJsonFormat
+import models.errors.{BadRequestError, ServerSideError, UnexpectedJsonFormat, UnexpectedStatusError}
 import models.{VatObligation, VatObligations}
 import play.api.http.Status._
 import play.api.libs.json.Json
@@ -83,28 +83,54 @@ class VatObligationsHttpParserSpec extends BaseSpec {
     "response is 404" should {
 
       "return an empty sequence" in {
+        val emptyReturn = Json.obj()
 
+        val httpResponse = HttpResponse(NOT_FOUND, Some(emptyReturn))
+        val result = VatObligationsHttpParser.VatObligationsReads.read("", "", httpResponse)
+        val expectedResponse = Right(VatObligations(Seq()))
+
+        result shouldBe expectedResponse
       }
     }
 
     "response is 400" should {
 
       "return BadRequestError" in {
+        val emptyReturn = Json.obj(
+          "code" -> "NOOO!",
+          "message" -> "summet gon messed up"
+        )
 
+        val httpResponse = HttpResponse(BAD_REQUEST, Some(emptyReturn))
+        val result = VatObligationsHttpParser.VatObligationsReads.read("", "", httpResponse)
+        val expectedResponse = Left(BadRequestError("NOOO!", "summet gon messed up"))
+
+        result shouldBe expectedResponse
       }
     }
 
     "response is 500" should {
 
       "return ServerSideError" in {
+        val emptyReturn = Json.obj()
 
+        val httpResponse = HttpResponse(INTERNAL_SERVER_ERROR, Some(emptyReturn))
+        val result = VatObligationsHttpParser.VatObligationsReads.read("", "", httpResponse)
+        val expectedResponse = Left(ServerSideError(s"$INTERNAL_SERVER_ERROR", "{ }"))
+
+        result shouldBe expectedResponse
       }
     }
 
     "response is unexpected" should {
-
       "return UnexpectedStatusError" in {
+        val emptyReturn = Json.obj()
 
+        val httpResponse = HttpResponse(PROXY_AUTHENTICATION_REQUIRED, Some(emptyReturn))
+        val result = VatObligationsHttpParser.VatObligationsReads.read("", "", httpResponse)
+        val expectedResponse = Left(UnexpectedStatusError(s"$PROXY_AUTHENTICATION_REQUIRED", "{ }"))
+
+        result shouldBe expectedResponse
       }
     }
   }
