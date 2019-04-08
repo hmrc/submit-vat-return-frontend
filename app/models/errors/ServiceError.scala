@@ -14,18 +14,14 @@
  * limitations under the License.
  */
 
-package models
+package models.errors
 
-import play.api.libs.json.{Json, OFormat}
-import play.api.http.Status._
+sealed trait ServiceError
 
-case class ErrorModel(code: String, httpStatus: Int, message: String)
+case object PaymentSetupError extends ServiceError
+case object NotFoundError extends ServiceError
+case object VatReturnError extends ServiceError
+case object ObligationError extends ServiceError
+case object DirectDebitStatusError extends ServiceError
+case object MandationStatusError extends ServiceError
 
-object FailedToParseCustomerDetails extends
-  ErrorModel("PARSING_ERROR", INTERNAL_SERVER_ERROR, "There was an error parsing the Json returned from vat-subscription")
-object FailedToRetrieveCustomerDetails extends
-  ErrorModel("DOWNSTREAM_ERROR", INTERNAL_SERVER_ERROR, "Downstream error returned when retrieving CustomerDetails")
-
-object ErrorModel {
-  implicit val formats: OFormat[ErrorModel] = Json.format[ErrorModel]
-}

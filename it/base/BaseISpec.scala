@@ -22,18 +22,21 @@ import org.scalatest.{BeforeAndAfterEach, Matchers, WordSpec}
 import org.scalatestplus.play.guice.GuiceOneServerPerSuite
 import play.api.{Application, Environment, Mode}
 import play.api.inject.guice.GuiceApplicationBuilder
+import uk.gov.hmrc.http.HeaderCarrier
 import uk.gov.hmrc.play.bootstrap.http.HttpClient
 import utils.WireMockHelper
 
 import scala.concurrent.duration.Duration
-import scala.concurrent.{Await, Awaitable}
+import scala.concurrent.{Await, Awaitable, ExecutionContext}
 
 trait BaseISpec extends WordSpec with WireMockHelper with Matchers with
   BeforeAndAfterEach with GuiceOneServerPerSuite {
 
   def servicesConfig: Map[String, String] = Map(
     "microservice.services.vat-subscription.host" -> WireMockHelper.wireMockHost,
-    "microservice.services.vat-subscription.port" -> WireMockHelper.wireMockPort.toString
+    "microservice.services.vat-subscription.port" -> WireMockHelper.wireMockPort.toString,
+    "microservice.services.vat-obligations.host" -> WireMockHelper.wireMockHost,
+    "microservice.services.vat-obligations.port" -> WireMockHelper.wireMockPort.toString
   )
 
   override implicit lazy val app: Application = new GuiceApplicationBuilder()
@@ -43,7 +46,6 @@ trait BaseISpec extends WordSpec with WireMockHelper with Matchers with
 
   lazy val httpClient: HttpClient = app.injector.instanceOf[HttpClient]
   lazy val appConfig: AppConfig = app.injector.instanceOf[AppConfig]
-  lazy val connector: VatSubscriptionConnector = new VatSubscriptionConnector(httpClient, appConfig)
 
    override def beforeEach(): Unit = {
     super.beforeEach()

@@ -18,17 +18,18 @@ package connectors.httpParsers
 
 import base.BaseSpec
 import connectors.httpParsers.CustomerDetailsHttpParser.CustomerDetailsReads
-import models.{CustomerDetails, FailedToParseCustomerDetails, FailedToRetrieveCustomerDetails}
+import models.CustomerDetails
+import models.errors.{ServerSideError, UnexpectedJsonFormat}
+import play.api.http.Status._
 import play.api.libs.json.{JsObject, Json}
 import uk.gov.hmrc.http.HttpResponse
-import play.api.http.Status._
 
 class CustomerDetailsHttpParserISpec extends BaseSpec {
 
   val correctReturnJson: JsObject = Json.obj(
     "firstName" -> "Rath",
     "lastName" -> "Alos",
-    "tradingName" -> "Blue Rathalos",
+    "tradingName" -> "Azure Rathalos",
     "organisationName" -> "Silver Rathalos",
     "hasFlatRateScheme" -> true
   )
@@ -53,7 +54,7 @@ class CustomerDetailsHttpParserISpec extends BaseSpec {
         val expectedResult = CustomerDetails(
           Some("Rath"),
           Some("Alos"),
-          Some("Blue Rathalos"),
+          Some("Azure Rathalos"),
           Some("Silver Rathalos"),
           hasFlatRateScheme = true
         )
@@ -88,7 +89,7 @@ class CustomerDetailsHttpParserISpec extends BaseSpec {
           Some(incorrectReturnJson)
         )
 
-        val expectedResult = FailedToParseCustomerDetails
+        val expectedResult = UnexpectedJsonFormat
 
         val result = CustomerDetailsReads.read("", "", httpResponse)
 
@@ -100,11 +101,11 @@ class CustomerDetailsHttpParserISpec extends BaseSpec {
           None
         )
 
-        val expectedResult = FailedToRetrieveCustomerDetails
+        val expectedResult = Left(ServerSideError("500", "Received downstream error when retrieving customer details."))
 
         val result = CustomerDetailsReads.read("", "", httpResponse)
 
-        result shouldBe Left(expectedResult)
+        result shouldBe expectedResult
       }
     }
   }

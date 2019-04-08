@@ -18,7 +18,8 @@ package services
 
 import base.BaseSpec
 import connectors.VatSubscriptionConnector
-import models.{CustomerDetails, FailedToParseCustomerDetails}
+import models.CustomerDetails
+import models.errors.UnexpectedJsonFormat
 import uk.gov.hmrc.http.HeaderCarrier
 
 import scala.concurrent.{ExecutionContext, Future}
@@ -53,7 +54,7 @@ class VatSubscriptionServiceSpec extends BaseSpec {
     }
     "return an error model" when {
       "an error is returned from the connector" in {
-        val expectedResult = FailedToParseCustomerDetails
+        val expectedResult = UnexpectedJsonFormat
 
         (mockConnector.getCustomerDetails(_: String)(_: HeaderCarrier, _: ExecutionContext))
           .expects("111111111", *, *)

@@ -17,7 +17,9 @@
 package connectors
 
 import base.BaseISpec
-import models.{CustomerDetails, ErrorModel, FailedToParseCustomerDetails}
+import connectors.httpParsers.ResponseHttpParsers.HttpGetResult
+import models.CustomerDetails
+import models.errors.UnexpectedJsonFormat
 import play.api.http.Status._
 import play.api.libs.json.{JsObject, Json}
 import uk.gov.hmrc.http.HeaderCarrier
@@ -27,6 +29,7 @@ import scala.concurrent.ExecutionContext.Implicits.global
 class VatSubscriptionConnectorISpec extends BaseISpec {
 
   implicit val hc: HeaderCarrier = HeaderCarrier()
+  lazy val connector: VatSubscriptionConnector = new VatSubscriptionConnector(httpClient, appConfig)
 
   val correctReturnJson: JsObject = Json.obj(
     "firstName" -> "Rath",
@@ -56,7 +59,7 @@ class VatSubscriptionConnectorISpec extends BaseISpec {
 
         stubGet(s"/vat-subscription/$vrn/customer-details", Json.stringify(correctReturnJson), OK)
 
-        val result: Either[ErrorModel, CustomerDetails] = await(connector.getCustomerDetails(vrn))
+        val result: HttpGetResult[CustomerDetails] = await(connector.getCustomerDetails(vrn))
         result shouldBe Right(expectedReturn)
       }
     }
@@ -64,11 +67,11 @@ class VatSubscriptionConnectorISpec extends BaseISpec {
       "the JSON cannot be parsed" in {
         val vrn = "111111111"
 
-        val expectedReturn = FailedToParseCustomerDetails
+        val expectedReturn = UnexpectedJsonFormat
 
         stubGet(s"/vat-subscription/$vrn/customer-details", Json.stringify(incorrectReturnJson), OK)
 
-        val result: Either[ErrorModel, CustomerDetails] = await(connector.getCustomerDetails(vrn))
+        val result: HttpGetResult[CustomerDetails] = await(connector.getCustomerDetails(vrn))
         result shouldBe Left(expectedReturn)
       }
     }

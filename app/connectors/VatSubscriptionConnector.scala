@@ -17,12 +17,12 @@
 package connectors
 
 import config.AppConfig
-import connectors.httpParsers.ResponseHttpParsers.HttpGetResponse
+import connectors.httpParsers.CustomerDetailsHttpParser._
+import connectors.httpParsers.ResponseHttpParsers.HttpGetResult
 import javax.inject.Inject
-import models.{CustomerDetails, ErrorModel}
+import models.CustomerDetails
 import uk.gov.hmrc.http.HeaderCarrier
 import uk.gov.hmrc.play.bootstrap.http.HttpClient
-import connectors.httpParsers.CustomerDetailsHttpParser._
 
 import scala.concurrent.{ExecutionContext, Future}
 
@@ -32,7 +32,7 @@ class VatSubscriptionConnector @Inject()(httpClient: HttpClient, appConfig: AppC
   private lazy val endpoint: String = "customer-details"
   private lazy val urlToCall: String => String = vrn => vatSubscriptionUrl(vrn, endpoint)
 
-  def getCustomerDetails(vrn: String)(implicit hc: HeaderCarrier, ec: ExecutionContext): Future[Either[ErrorModel, CustomerDetails]] = {
-    httpClient.GET[HttpGetResponse[CustomerDetails]](urlToCall(vrn))
+  def getCustomerDetails(vrn: String)(implicit hc: HeaderCarrier, ec: ExecutionContext): Future[HttpGetResult[CustomerDetails]] = {
+    httpClient.GET[HttpGetResult[CustomerDetails]](urlToCall(vrn))
   }
 }

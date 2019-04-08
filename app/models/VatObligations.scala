@@ -14,18 +14,14 @@
  * limitations under the License.
  */
 
-package services
+package models
 
-import connectors.VatSubscriptionConnector
-import connectors.httpParsers.ResponseHttpParsers.HttpGetResult
-import javax.inject.Inject
-import models.CustomerDetails
-import uk.gov.hmrc.http.HeaderCarrier
+import play.api.libs.json.{Format, Json}
 
-import scala.concurrent.{ExecutionContext, Future}
+case class VatObligations(obligations: Seq[VatObligation])
 
-class VatSubscriptionService @Inject()(vatSubscriptionConnector: VatSubscriptionConnector) {
-  def getCustomerDetails(vrn: String)(implicit hc: HeaderCarrier, ec: ExecutionContext): Future[HttpGetResult[CustomerDetails]] = {
-    vatSubscriptionConnector.getCustomerDetails(vrn)
-  }
+object VatObligations {
+
+  implicit val format: Format[VatObligations] = Json.format[VatObligations]
+
 }
