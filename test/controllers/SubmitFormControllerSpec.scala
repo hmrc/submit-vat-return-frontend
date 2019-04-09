@@ -25,9 +25,8 @@ import models.{CustomerDetails, VatObligation, VatObligations}
 import models.errors.UnexpectedJsonFormat
 import play.api.http.Status
 import play.api.test.Helpers._
-import uk.gov.hmrc.http.HeaderCarrier
 
-import scala.concurrent.{ExecutionContext, Future}
+import scala.concurrent.Future
 
 class SubmitFormControllerSpec extends BaseSpec with MockVatSubscriptionService with MockVatObligationsService {
 
@@ -55,12 +54,8 @@ class SubmitFormControllerSpec extends BaseSpec with MockVatSubscriptionService 
       lazy val result = TestSubmitFormController.show("18AA")(fakeRequest)
 
       "return 200" in {
-        (mockVatSubscriptionService.getCustomerDetails(_: String)(_: HeaderCarrier, _: ExecutionContext))
-          .expects(*, *, *)
-          .returns(vatSubscriptionResponse)
-        (mockVatObligationsService.getObligations(_: String)(_: HeaderCarrier, _: ExecutionContext))
-          .expects(*, *, *)
-          .returns(vatObligationsResponse)
+        setupVatSubscriptionService(vatSubscriptionResponse)
+        setupVatObligationsService(vatObligationsResponse)
         status(result) shouldBe Status.OK
       }
 
@@ -77,12 +72,8 @@ class SubmitFormControllerSpec extends BaseSpec with MockVatSubscriptionService 
         val vatSubscriptionErrorResponse: Future[HttpGetResult[CustomerDetails]] = Future.successful(Left(UnexpectedJsonFormat))
         val vatObligationsErrorResponse: Future[HttpGetResult[VatObligations]] = Future.successful(Left(UnexpectedJsonFormat))
 
-          (mockVatSubscriptionService.getCustomerDetails(_: String)(_: HeaderCarrier, _: ExecutionContext))
-            .expects(*, *, *)
-            .returns(vatSubscriptionErrorResponse)
-        (mockVatObligationsService.getObligations(_: String)(_: HeaderCarrier, _: ExecutionContext))
-          .expects(*, *, *)
-          .returns(vatObligationsErrorResponse)
+        setupVatSubscriptionService(vatSubscriptionErrorResponse)
+        setupVatObligationsService(vatObligationsErrorResponse)
 
         lazy val result = TestSubmitFormController.show("18AA")(fakeRequest)
         status(result) shouldBe Status.INTERNAL_SERVER_ERROR
