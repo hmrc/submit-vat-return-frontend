@@ -28,9 +28,10 @@ import play.api.i18n.{Messages, MessagesApi}
 import play.api.inject.Injector
 import play.api.mvc.AnyContentAsEmpty
 import play.api.test.FakeRequest
+import uk.gov.hmrc.http.HeaderCarrier
 import uk.gov.hmrc.play.test.UnitSpec
 
-import scala.concurrent.Awaitable
+import scala.concurrent.{Awaitable, ExecutionContext}
 
 trait BaseSpec extends WordSpec with Matchers with GuiceOneAppPerSuite with MockFactory with UnitSpec {
 
@@ -42,7 +43,7 @@ trait BaseSpec extends WordSpec with Matchers with GuiceOneAppPerSuite with Mock
 
   implicit lazy val messagesApi: MessagesApi = injector.instanceOf[MessagesApi]
 
-  lazy val mockErrorHandler: ErrorHandler = mock[ErrorHandler]
+  lazy val errorHandler: ErrorHandler = injector.instanceOf[ErrorHandler]
 
   implicit lazy val fakeRequest: FakeRequest[AnyContentAsEmpty.type] = FakeRequest("", "")
 
@@ -50,6 +51,8 @@ trait BaseSpec extends WordSpec with Matchers with GuiceOneAppPerSuite with Mock
 
   implicit val system: ActorSystem = ActorSystem()
   implicit val materializer: Materializer = ActorMaterializer()
+  implicit lazy val hc: HeaderCarrier = HeaderCarrier()
+  implicit lazy val ec: ExecutionContext = injector.instanceOf[ExecutionContext]
 
   def await[T](awaitable: Awaitable[T]): T = scala.concurrent.Await.result(awaitable, scala.concurrent.duration.Duration.Inf)
 }

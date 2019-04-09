@@ -21,21 +21,31 @@ import javax.inject.{Inject, Singleton}
 import play.api.i18n.{I18nSupport, MessagesApi}
 import play.api.mvc.{Action, AnyContent}
 import config.ErrorHandler
-import services.VatSubscriptionService
+import services.{VatObligationsService, VatSubscriptionService}
 import uk.gov.hmrc.play.bootstrap.controller.FrontendController
 
 @Singleton
 class SubmitFormController @Inject()(val messagesApi: MessagesApi,
                                      val vatSubscriptionService: VatSubscriptionService,
+                                     val vatObligationsService: VatObligationsService,
                                      val errorHandler: ErrorHandler,
                                      implicit val appConfig: AppConfig) extends FrontendController with I18nSupport {
 
-  def show(periodKey: String):Action[AnyContent] = Action.async { implicit request =>
+  def show(periodKey: String): Action[AnyContent] = Action.async { implicit request =>
 
-    vatSubscriptionService.getCustomerDetails("1234565789") map {
-      case Right(customerDetails) =>
-        Ok(views.html.submit_form(periodKey,customerDetails.clientName,flatRateScheme = true, "12th January 2019", "12th April 2019", "12th May 2019"))
-      case Left(_) => errorHandler.showInternalServerError
+    val customerInformationCall = vatSubscriptionService.getCustomerDetails("123456789")
+    val obligationsCall = vatObligationsService.getObligations("123456789")
+
+    for {
+      customerInformation <- customerInformationCall
+      obligations <- obligationsCall
+    } yield {
+      (customerInformation, obligations) match {
+        case (Right(customerDetails), Right(obs)) => {
+          Ok(views.html.submit_form(periodKey, customerDetails.clientName, customerDetails.hasFlatRateScheme, obs))
+        }
+        case (_, _ ) => errorHandler.showInternalServerError
+      }
     }
   }
 }

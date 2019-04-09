@@ -16,7 +16,8 @@
 
 @import config.AppConfig
 
-@(periodKey: String, clientName: Option[String], flatRateScheme: Boolean, startDate: String, endDate: String, dueDate: String)(implicit request: Request[_], messages: Messages, appConfig: AppConfig)
+
+@(periodKey: String, clientName: Option[String], flatRateScheme: Boolean, obligations: VatObligations)(implicit request: Request[_], messages: Messages, appConfig: AppConfig)
 
 @main_template(messages("submit_form.title"), appConfig = appConfig, bodyClasses = None) {
 
@@ -28,10 +29,9 @@
 
     <p>FlatRateScheme: @flatRateScheme</p>
 
-    <p>Start date: @startDate</p>
-
-    <p>End date: @endDate</p>
-
-    <p>Due date: @dueDate</p>
-
+    @for(obligation <- obligations.obligations){
+      <p>Start date: @obligation.start</p>
+      <p>End date: @obligation.end</p>
+      <p>Due date: @obligation.due</p>
+    }
 }

@@ -33,8 +33,6 @@ class VatObligationsServiceSpec extends BaseSpec {
   val mockConenctor: VatObligationsConnector = mock[VatObligationsConnector]
   val service = new VatObligationsService(mockConenctor)
 
-  implicit val hc: HeaderCarrier = HeaderCarrier()
-
   "getObligations" should {
     "return a VatObligations" when {
       "a VatObligations is returned from the connector" in {
