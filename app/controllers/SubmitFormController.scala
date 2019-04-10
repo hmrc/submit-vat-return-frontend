@@ -33,8 +33,8 @@ class SubmitFormController @Inject()(val messagesApi: MessagesApi,
 
   def show(periodKey: String): Action[AnyContent] = Action.async { implicit request =>
 
-    val customerInformationCall = vatSubscriptionService.getCustomerDetails("123456789")
-    val obligationsCall = vatObligationsService.getObligations("123456789")
+    val customerInformationCall = vatSubscriptionService.getCustomerDetails("968501689")
+    val obligationsCall = vatObligationsService.getObligations("999999999")
 
     for {
       customerInformation <- customerInformationCall
