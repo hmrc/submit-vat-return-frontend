@@ -23,6 +23,7 @@ lazy val coverageSettings: Seq[Setting[_]] = {
     "app.*",
     "common.*",
     "config.*",
+    "testOnly.*",
     ".*LanguageSwitchController",
     "prod.*",
     "views.*")
