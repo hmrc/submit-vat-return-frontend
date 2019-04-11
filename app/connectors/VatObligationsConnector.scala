@@ -28,6 +28,8 @@ import scala.concurrent.{ExecutionContext, Future}
 class VatObligationsConnector @Inject()(http: HttpClient,
                                         appConfig: AppConfig) {
 
+  private def vatObligationsnUrl(vrn: String): String = appConfig.baseUrl("vat-obligations") + s"/vat-obligations/$vrn/obligations"
+
   def getObligations(vrn: String)(implicit hc: HeaderCarrier, ec: ExecutionContext): Future[HttpGetResult[VatObligations]] = {
 
     import connectors.httpParsers.VatObligationsHttpParser.VatObligationsReads
@@ -35,7 +37,7 @@ class VatObligationsConnector @Inject()(http: HttpClient,
     val queryParams: Seq[(String, String)] = Seq("status" -> "O")
 
     http.GET[HttpGetResult[VatObligations]](
-      appConfig.obligationUrl(vrn),
+      vatObligationsnUrl(vrn),
       queryParams
     )
   }
