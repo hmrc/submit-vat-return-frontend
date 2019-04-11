@@ -16,12 +16,13 @@
 
 package testOnly.controllers
 
-import com.google.inject.Inject
+import javax.inject.Inject
 import play.api.libs.json.JsValue
 import play.api.mvc.{Action, AnyContent}
 import testOnly.connectors.DynamicStubConnector
 import testOnly.models.{DataModel, SchemaModel}
 import uk.gov.hmrc.play.bootstrap.controller.FrontendController
+
 import scala.concurrent.Future
 import scala.util.{Success, Try}
 
