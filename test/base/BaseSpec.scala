@@ -16,7 +16,9 @@
 
 package base
 
-import config.AppConfig
+import akka.actor.ActorSystem
+import akka.stream.{ActorMaterializer, Materializer}
+import config.{AppConfig, ErrorHandler}
 import mocks.MockConfig
 import org.scalamock.scalatest.MockFactory
 import org.scalatest.{Matchers, WordSpec}
@@ -26,10 +28,12 @@ import play.api.i18n.{Messages, MessagesApi}
 import play.api.inject.Injector
 import play.api.mvc.AnyContentAsEmpty
 import play.api.test.FakeRequest
+import uk.gov.hmrc.http.HeaderCarrier
+import uk.gov.hmrc.play.test.UnitSpec
 
-import scala.concurrent.Awaitable
+import scala.concurrent.{Awaitable, ExecutionContext}
 
-trait BaseSpec extends WordSpec with Matchers with GuiceOneAppPerSuite with MockFactory {
+trait BaseSpec extends WordSpec with Matchers with GuiceOneAppPerSuite with MockFactory with UnitSpec {
 
   lazy val injector: Injector = app.injector
 
@@ -39,9 +43,16 @@ trait BaseSpec extends WordSpec with Matchers with GuiceOneAppPerSuite with Mock
 
   implicit lazy val messagesApi: MessagesApi = injector.instanceOf[MessagesApi]
 
+  lazy val errorHandler: ErrorHandler = injector.instanceOf[ErrorHandler]
+
   implicit lazy val fakeRequest: FakeRequest[AnyContentAsEmpty.type] = FakeRequest("", "")
 
   implicit lazy val messages: Messages = messagesApi.preferred(fakeRequest)
+
+  implicit val system: ActorSystem = ActorSystem()
+  implicit val materializer: Materializer = ActorMaterializer()
+  implicit lazy val hc: HeaderCarrier = HeaderCarrier()
+  implicit lazy val ec: ExecutionContext = injector.instanceOf[ExecutionContext]
 
   def await[T](awaitable: Awaitable[T]): T = scala.concurrent.Await.result(awaitable, scala.concurrent.duration.Duration.Inf)
 }

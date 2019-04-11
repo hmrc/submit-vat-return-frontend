@@ -24,7 +24,18 @@ case class CustomerDetails(
                             tradingName: Option[String],
                             organisationName: Option[String],
                             hasFlatRateScheme: Boolean = false
-                          )
+                          ) {
+
+  val isOrg: Boolean = organisationName.isDefined
+  val isInd: Boolean = firstName.isDefined || lastName.isDefined
+  val userName: Option[String] = {
+    val name = s"${firstName.getOrElse("")} ${lastName.getOrElse("")}".trim
+    if (name.isEmpty) None else Some(name)
+  }
+  val businessName: Option[String] = if (isOrg) organisationName else userName
+  val clientName: Option[String] = if (tradingName.isDefined) tradingName else businessName
+}
+
 
 object CustomerDetails {
   implicit val formats: OFormat[CustomerDetails] = Json.format[CustomerDetails]

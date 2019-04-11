@@ -14,27 +14,25 @@
  * limitations under the License.
  */
 
-package connectors
+package mocks
 
-import config.AppConfig
 import connectors.httpParsers.ResponseHttpParsers.HttpGetResult
-import javax.inject.Inject
 import models.CustomerDetails
+import org.scalamock.scalatest.MockFactory
+import services.VatSubscriptionService
 import uk.gov.hmrc.http.HeaderCarrier
-import uk.gov.hmrc.play.bootstrap.http.HttpClient
+import uk.gov.hmrc.play.test.UnitSpec
 
 import scala.concurrent.{ExecutionContext, Future}
 
-class VatSubscriptionConnector @Inject()(httpClient: HttpClient, appConfig: AppConfig) {
-  private def vatSubscriptionUrl(vrn: String, endpoint: String): String = appConfig.baseUrl("vat-subscription") + s"/vat-subscription/$vrn/$endpoint"
+trait MockVatSubscriptionService extends UnitSpec with MockFactory {
 
-  private lazy val endpoint: String = "customer-details"
-  private lazy val urlToCall: String => String = vrn => vatSubscriptionUrl(vrn, endpoint)
+  val mockVatSubscriptionService: VatSubscriptionService = mock[VatSubscriptionService]
 
-  def getCustomerDetails(vrn: String)(implicit hc: HeaderCarrier, ec: ExecutionContext): Future[HttpGetResult[CustomerDetails]] = {
-
-    import connectors.httpParsers.CustomerDetailsHttpParser.CustomerDetailsReads
-
-    httpClient.GET[HttpGetResult[CustomerDetails]](urlToCall(vrn))
+  def setupVatSubscriptionService(response: Future[HttpGetResult[CustomerDetails]])(implicit hc: HeaderCarrier, ec: ExecutionContext): Unit = {
+    (mockVatSubscriptionService.getCustomerDetails(_: String)(_: HeaderCarrier, _: ExecutionContext))
+      .expects(*, *, *)
+      .returns(response)
   }
+
 }

@@ -27,8 +27,6 @@ import scala.concurrent.ExecutionContext.Implicits.global
 
 class VatSubscriptionServiceSpec extends BaseSpec {
 
-  implicit val hc: HeaderCarrier = HeaderCarrier()
-
   val mockConnector: VatSubscriptionConnector = mock[VatSubscriptionConnector]
   val service: VatSubscriptionService = new VatSubscriptionService(mockConnector)
 

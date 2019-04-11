@@ -20,13 +20,32 @@ import config.AppConfig
 import javax.inject.{Inject, Singleton}
 import play.api.i18n.{I18nSupport, MessagesApi}
 import play.api.mvc.{Action, AnyContent}
+import config.ErrorHandler
+import services.{VatObligationsService, VatSubscriptionService}
 import uk.gov.hmrc.play.bootstrap.controller.FrontendController
 
 @Singleton
 class SubmitFormController @Inject()(val messagesApi: MessagesApi,
+                                     val vatSubscriptionService: VatSubscriptionService,
+                                     val vatObligationsService: VatObligationsService,
+                                     val errorHandler: ErrorHandler,
                                      implicit val appConfig: AppConfig) extends FrontendController with I18nSupport {
 
-  def show(periodKey: String): Action[AnyContent] = Action { implicit request =>
-    Ok(views.html.submit_form(periodKey))
+  def show(periodKey: String): Action[AnyContent] = Action.async { implicit request =>
+
+    val customerInformationCall = vatSubscriptionService.getCustomerDetails("968501689")
+    val obligationsCall = vatObligationsService.getObligations("999999999")
+
+    for {
+      customerInformation <- customerInformationCall
+      obligations <- obligationsCall
+    } yield {
+      (customerInformation, obligations) match {
+        case (Right(customerDetails), Right(obs)) => {
+          Ok(views.html.submit_form(periodKey, customerDetails.clientName, customerDetails.hasFlatRateScheme, obs))
+        }
+        case (_, _ ) => errorHandler.showInternalServerError
+      }
+    }
   }
 }
