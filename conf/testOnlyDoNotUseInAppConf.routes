@@ -10,4 +10,16 @@
 # Failing to follow this rule may result in test routes deployed in production.
 
 # Add all the application routes to the prod.routes file
-->         /                          prod.Routes
+->         /                                                                         prod.Routes
+
+# NOCSRF
+POST        /vat-through-software/submit-vat-return/test-only/populate-schema        testOnly.controllers.DynamicStubController.populateSchema
+
+# NOCSRF
+POST        /vat-through-software/submit-vat-return/test-only/populate-stub          testOnly.controllers.DynamicStubController.populateStub
+
+# NOCSRF
+DELETE      /vat-through-software/submit-vat-return/test-only/clear-data/:schemaId   testOnly.controllers.DynamicStubController.clearDataForSchema(schemaId: String)
+
+# NOCSRF
+DELETE      /vat-through-software/submit-vat-return/test-only/clear-schema/:schemaId testOnly.controllers.DynamicStubController.clearSchema(schemaId: String)
