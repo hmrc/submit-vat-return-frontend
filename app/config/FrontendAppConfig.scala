@@ -24,6 +24,7 @@ import play.api.Mode.Mode
 import uk.gov.hmrc.play.config.ServicesConfig
 import common.ConfigKeys
 import play.api.mvc.Call
+import uk.gov.hmrc.play.binders.ContinueUrl
 
 trait AppConfig extends ServicesConfig {
   val analyticsToken: String
@@ -36,6 +37,8 @@ trait AppConfig extends ServicesConfig {
   val whitelistEnabled: Boolean
   val whitelistExcludedPaths: Seq[Call]
   val shutterPage: String
+  val signInUrl: String
+  val signInContinueUrl: String => String
 }
 
 @Singleton
@@ -62,4 +65,16 @@ class FrontendAppConfig @Inject()(val runModeConfiguration: Configuration, envir
   override lazy val whitelistExcludedPaths: Seq[Call] = whitelistConfig(ConfigKeys.whitelistExcludedPaths) map
     (path => Call("GET", path))
   override val shutterPage: String = getString(ConfigKeys.whitelistShutterPage)
- }
+
+  // Sign-in
+  private lazy val signInBaseUrl: String = getString(ConfigKeys.signInBaseUrl)
+  private lazy val signInContinueBaseUrl: String = getString(ConfigKeys.signInContinueBaseUrl)
+  private lazy val signInOrigin = getString(ConfigKeys.appName)
+  override lazy val signInContinueUrl: String => String = periodKey =>
+    ContinueUrl(
+      signInContinueBaseUrl +
+      controllers.routes.SubmitFormController.show(periodKey).url
+  ).encodedUrl
+
+  override lazy val signInUrl: String = s"$signInBaseUrl?continue=$signInContinueUrl&origin=$signInOrigin"
+}
