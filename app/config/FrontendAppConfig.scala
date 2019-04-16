@@ -38,7 +38,8 @@ trait AppConfig extends ServicesConfig {
   val whitelistExcludedPaths: Seq[Call]
   val shutterPage: String
   val signInUrl: String
-  val signInContinueUrl: String => String
+  val agentClientLookupStartUrl: String
+  val agentClientUnauthorisedUrl: String
 }
 
 @Singleton
@@ -69,12 +70,12 @@ class FrontendAppConfig @Inject()(val runModeConfiguration: Configuration, envir
   // Sign-in
   private lazy val signInBaseUrl: String = getString(ConfigKeys.signInBaseUrl)
   private lazy val signInContinueBaseUrl: String = getString(ConfigKeys.signInContinueBaseUrl)
+  private lazy val signInContinueUrl: String = signInContinueBaseUrl + getString(ConfigKeys.signInContinueUrl)
   private lazy val signInOrigin = getString(ConfigKeys.appName)
-  override lazy val signInContinueUrl: String => String = periodKey =>
-    ContinueUrl(
-      signInContinueBaseUrl +
-      controllers.routes.SubmitFormController.show(periodKey).url
-  ).encodedUrl
-
   override lazy val signInUrl: String = s"$signInBaseUrl?continue=$signInContinueUrl&origin=$signInOrigin"
+
+  // Agent Client Lookup
+  private lazy val agentClientLookupHost = getString(ConfigKeys.vatAgentClientLookupFrontendHost)
+  override lazy val agentClientLookupStartUrl: String = agentClientLookupHost + getString(ConfigKeys.vatAgentClientLookupFrontendStartUrl)
+  override lazy val agentClientUnauthorisedUrl: String = agentClientLookupHost + getString(ConfigKeys.vatAgentClientLookupFrontendUnauthorisedUrl)
 }

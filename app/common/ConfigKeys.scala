@@ -37,8 +37,10 @@ object ConfigKeys {
 
   val signInBaseUrl: String = "signIn.url"
   val signInContinueBaseUrl: String = "signIn.continueBaseUrl"
+  val signInContinueUrl: String = "signIn.continueUrl"
   val appName: String = "appName"
   val vatAgentClientLookupFrontendHost: String = "vat-agent-client-lookup-frontend.host"
-  val vatAgentClientLookupFrontendUrl: String = "vat-agent-client-lookup-frontend.url"
+  val vatAgentClientLookupFrontendStartUrl: String = "vat-agent-client-lookup-frontend.startUrl"
+  val vatAgentClientLookupFrontendUnauthorisedUrl: String = "vat-agent-client-lookup-frontend.unauthorisedUrl"
 
 }

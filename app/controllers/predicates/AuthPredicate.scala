@@ -1,5 +1,5 @@
 /*
- * Copyright 2018 HM Revenue & Customs
+ * Copyright 2019 HM Revenue & Customs
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -18,45 +18,66 @@ package controllers.predicates
 
 import auth.AuthKeys
 import auth.AuthKeys.{agentEnrolmentId, delegatedAuthRule, vatEnrolmentId, vatIdentifierId}
-import config.AppConfig
+import config.{AppConfig, ErrorHandler}
 import javax.inject.Inject
 import models.auth.User
 import play.api.Logger
-import play.api.i18n.I18nSupport
+import play.api.i18n.{I18nSupport, MessagesApi}
 import play.api.mvc._
 import services.EnrolmentsAuthService
 import uk.gov.hmrc.auth.core.AffinityGroup.Agent
 import uk.gov.hmrc.auth.core.retrieve.Retrievals._
 import uk.gov.hmrc.auth.core.retrieve.~
-import uk.gov.hmrc.auth.core.{AuthorisationException, Enrolment, NoActiveSession}
+import uk.gov.hmrc.auth.core._
 import uk.gov.hmrc.play.bootstrap.controller.FrontendController
-
 import scala.concurrent.{ExecutionContext, Future}
 
 class AuthPredicate @Inject()(authService: EnrolmentsAuthService,
-                              appConfig: AppConfig) extends FrontendController
-                                                    with I18nSupport
-                                                    with ActionBuilder[User]
-                                                    with ActionFunction[Request, User] {
+                              appConfig: AppConfig,
+                              errorHandler: ErrorHandler,
+                              val messagesApi: MessagesApi,
+                              implicit val ec: ExecutionContext) extends FrontendController
+                                                                 with I18nSupport
+                                                                 with ActionBuilder[User]
+                                                                 with ActionFunction[Request, User] {
 
   override def invokeBlock[A](request: Request[A], block: User[A] => Future[Result]): Future[Result] = {
+
+    implicit val req: Request[A] = request
 
     authService
       .authorised()
       .retrieve(affinityGroup and allEnrolments) {
-
-        case Some(affinity) ~ enrolments =>
-
-          if(affinity == Agent) {
-            authoriseAsAgent(block)
-          } else {
-
-          }
+        case Some(Agent) ~ _ => authoriseAsAgent(block)
+        case Some(_) ~ enrolments => authoriseAsNonAgent(enrolments, block)
+        case None ~ _ =>
+          Logger.warn("[AuthPredicate][invokeBlock] - Missing affinity group")
+          Future.successful(errorHandler.showInternalServerError)
+      } recover {
+        case _: NoActiveSession =>
+          Logger.debug(s"[AuthPredicate][invokeBlock] - No active session. Redirecting to ${appConfig.signInUrl}")
+          Redirect(appConfig.signInUrl)
+        case _: AuthorisationException =>
+          Logger.warn("[AuthPredicate][invokeBlock] - Unauthorised exception when retrieving affinity and all enrolments")
+          errorHandler.showInternalServerError
       }
   }
 
-  private def authoriseAsAgent(block: Request[_] => Future[Result])
-                              (implicit request: Request[AnyContent], ec: ExecutionContext): Future[Result] = {
+  private def authoriseAsNonAgent[A](enrolments: Enrolments, block: User[A] => Future[Result])
+                                    (implicit request: Request[A]): Future[Result] = {
+    enrolments.enrolments.collectFirst {
+      case Enrolment(AuthKeys.vatEnrolmentId, EnrolmentIdentifier(_, vrn) :: _, _, _) => vrn
+    } match {
+      case Some(vrn) => block(User(vrn))
+      case None =>
+        Logger.debug("[AuthPredicate][authoriseAsNonAgent] - Non-agent with no HMRC-MTD-VAT enrolment. Rendering unauthorised view.")
+        //TODO: Add non-agent unauthorised view
+        Future.successful(Forbidden("no HMRC-MTD-VAT enrolment"))
+    }
+  }
+
+  private def authoriseAsAgent[A](block: User[A] => Future[Result])
+                                 (implicit request: Request[A]): Future[Result] = {
 
     val agentDelegatedAuthorityRule: String => Enrolment = vrn =>
       Enrolment(vatEnrolmentId)
@@ -70,27 +91,27 @@ class AuthPredicate @Inject()(authService: EnrolmentsAuthService,
           .retrieve(allEnrolments) {
             enrolments =>
               enrolments.enrolments.collectFirst {
-                case Enrolment(`agentEnrolmentId`, _ :: _, _, _) => block(request)
-              } getOrElse Future.successful(Forbidden(views.html.errors.unauthorised()))
+                case Enrolment(AuthKeys.agentEnrolmentId, EnrolmentIdentifier(_, arn) :: _, _, _) => arn
+              } match {
+                case Some(arn) => block(User(vrn, Some(arn)))
+                case None =>
+                  Logger.debug("[AuthPredicate][authoriseAsAgent] - Agent with no HMRC-AS-AGENT enrolment. Rendering unauthorised view.")
+                  //TODO: add agent unauthorised view
+                  Future.successful(Forbidden("no HMRC-AS-AGENT enrolment"))
+              }
           } recover {
             case _: NoActiveSession =>
-              Logger.debug("AuthoriseAsAgentWithClient][invokeBlock] - Agent does not have an active session, redirect to GG Sign In")
+              Logger.debug(s"AuthoriseAsAgentWithClient][authoriseAsAgent] - No active session. Redirecting to ${appConfig.signInUrl}")
               Redirect(appConfig.signInUrl)
             case _: AuthorisationException =>
-              Logger.warn(s"[AuthoriseAsAgentWithClient][invokeBlock] - Agent does not have delegated authority for Client")
+              Logger.debug(s"[AuthoriseAsAgentWithClient][authoriseAsAgent] - Agent does not have delegated authority for Client. " +
+                s"Redirecting to ${appConfig.agentClientUnauthorisedUrl}")
               Redirect(appConfig.agentClientUnauthorisedUrl)
           }
 
       case None =>
-        Logger.debug(s"[AuthPredicate][authoriseAsAgent] - No Client VRN in session, redirecting to VACLUF")
-        Future.successful(Redirect(appConfig.agentClientLookupUrl))
+        Logger.debug(s"[AuthPredicate][authoriseAsAgent] - No Client VRN in session. Redirecting to ${appConfig.agentClientLookupStartUrl}")
+        Future.successful(Redirect(appConfig.agentClientLookupStartUrl))
     }
-  }
-
-  private def authExceptionAction: PartialFunction[Throwable, Result] = {
-    case _: NoActiveSession =>
-      Logger.debug(s"[AuthPredicate][authExceptionAction] - User has no active session")
-      Redirect(appConfig.signInUrl)
-    case ex: AuthorisationException => forbiddenAction(ex.reason)
   }
 }

@@ -29,6 +29,6 @@ class ErrorHandler @Inject()(val messagesApi: MessagesApi, implicit val appConfi
     views.html.templates.error_template(pageTitle, heading, message)
   }
 
-  def showInternalServerError(implicit request: Request[_]): Result = InternalServerError
+  def showInternalServerError(implicit request: Request[_]): Result = InternalServerError(internalServerErrorTemplate)
 
 }
