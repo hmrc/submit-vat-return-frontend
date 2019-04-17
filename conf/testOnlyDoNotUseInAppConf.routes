@@ -23,4 +23,8 @@ DELETE      /vat-through-software/submit-vat-return/test-only/clear-data/:schema
 # NOCSRF
 DELETE      /vat-through-software/submit-vat-return/test-only/clear-schema/:schemaId testOnly.controllers.DynamicStubController.clearSchema(schemaId: String)
 
-->         /                                                                         prod.Routes
+GET        /vat-through-software/submit-vat-return/test-only/vaclf-stub              testOnly.controllers.StubAgentClientLookupController.show(redirectUrl: String)
+GET        /vat-through-software/submit-vat-return/test-only/vaclf-stub-unauth       testOnly.controllers.StubAgentClientLookupController.unauthorised(redirectUrl: String)
+POST       /vat-through-software/submit-vat-return/test-only/vaclf-stub              testOnly.controllers.StubAgentClientLookupController.post
+
+->         /                                                                   prod.Routes

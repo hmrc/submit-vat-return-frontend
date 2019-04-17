@@ -38,8 +38,8 @@ trait AppConfig extends ServicesConfig {
   val whitelistExcludedPaths: Seq[Call]
   val shutterPage: String
   val signInUrl: String
-  val agentClientLookupStartUrl: String
-  val agentClientUnauthorisedUrl: String
+  val agentClientLookupStartUrl: String => String
+  val agentClientUnauthorisedUrl: String => String
   val govUkGuidanceMtdVat: String
   val govUkGuidanceAgentServices: String
 }
@@ -62,7 +62,7 @@ class FrontendAppConfig @Inject()(val runModeConfiguration: Configuration, envir
   override lazy val govUkGuidanceMtdVat: String = getString(ConfigKeys.govUkGuidanceMtdVat)
   override lazy val govUkGuidanceAgentServices: String = getString(ConfigKeys.govUkGuidanceAgentServices)
 
-  //Whitelist config
+  // Whitelist config
   private def whitelistConfig(key: String): Seq[String] = Some(new String(Base64.getDecoder
     .decode(getString(key)), "UTF-8"))
     .map(_.split(",")).getOrElse(Array.empty).toSeq
@@ -81,7 +81,15 @@ class FrontendAppConfig @Inject()(val runModeConfiguration: Configuration, envir
   override lazy val signInUrl: String = s"$signInBaseUrl?continue=$signInContinueUrl&origin=$signInOrigin"
 
   // Agent Client Lookup
+  private lazy val platformHost = getString(ConfigKeys.platformHost)
+  private lazy val agentClientLookupRedirectUrl: String => String = uri => ContinueUrl(platformHost + uri).encodedUrl
   private lazy val agentClientLookupHost = getString(ConfigKeys.vatAgentClientLookupFrontendHost)
-  override lazy val agentClientLookupStartUrl: String = agentClientLookupHost + getString(ConfigKeys.vatAgentClientLookupFrontendStartUrl)
-  override lazy val agentClientUnauthorisedUrl: String = agentClientLookupHost + getString(ConfigKeys.vatAgentClientLookupFrontendUnauthorisedUrl)
+  override lazy val agentClientLookupStartUrl: String => String = uri =>
+    agentClientLookupHost +
+    getString(ConfigKeys.vatAgentClientLookupFrontendStartUrl) +
+    s"?redirectUrl=${agentClientLookupRedirectUrl(uri)}"
+  override lazy val agentClientUnauthorisedUrl: String => String = uri =>
+    agentClientLookupHost +
+    getString(ConfigKeys.vatAgentClientLookupFrontendUnauthorisedUrl) +
+    s"?redirectUrl=${agentClientLookupRedirectUrl(uri)}"
 }

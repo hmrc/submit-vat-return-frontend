@@ -30,7 +30,6 @@ import uk.gov.hmrc.auth.core._
 import uk.gov.hmrc.auth.core.retrieve.Retrievals._
 import uk.gov.hmrc.auth.core.retrieve.~
 import uk.gov.hmrc.play.bootstrap.controller.FrontendController
-
 import scala.concurrent.{ExecutionContext, Future}
 
 @Singleton
@@ -105,13 +104,13 @@ class AuthPredicate @Inject()(authService: EnrolmentsAuthService,
               Redirect(appConfig.signInUrl)
             case _: AuthorisationException =>
               Logger.debug(s"[AuthoriseAsAgentWithClient][authoriseAsAgent] - Agent does not have delegated authority for Client. " +
-                s"Redirecting to ${appConfig.agentClientUnauthorisedUrl}")
-              Redirect(appConfig.agentClientUnauthorisedUrl)
+                s"Redirecting to ${appConfig.agentClientUnauthorisedUrl(request.uri)}")
+              Redirect(appConfig.agentClientUnauthorisedUrl(request.uri))
           }
 
       case None =>
         Logger.debug(s"[AuthPredicate][authoriseAsAgent] - No Client VRN in session. Redirecting to ${appConfig.agentClientLookupStartUrl}")
-        Future.successful(Redirect(appConfig.agentClientLookupStartUrl))
+        Future.successful(Redirect(appConfig.agentClientLookupStartUrl(request.uri)))
     }
   }
 }

@@ -38,9 +38,14 @@ object VatObligationsHttpParser extends ResponseHttpParsers {
             Left(UnexpectedJsonFormat)
         }
         case NOT_FOUND => Right(VatObligations(Seq.empty))
-        case BAD_REQUEST => handleBadRequest(response.json)(ApiSingleError.apiSingleErrorReads)
-        case status if status >= 500 && status < 600 => Left(ServerSideError(response.status.toString, response.body))
-        case status => Left(UnexpectedStatusError(status.toString, response.body))
+        case BAD_REQUEST => Logger.warn(s"[VatReturnObligationsReads][read] Unexpected response: $BAD_REQUEST")
+          handleBadRequest(response.json)(ApiSingleError.apiSingleErrorReads)
+        case status if status >= 500 && status < 600 =>
+          Logger.warn(s"[VatReturnObligationsReads][read] Unexpected response: $status. Body: ${response.body}")
+          Left(ServerSideError(response.status.toString, response.body))
+        case status =>
+          Logger.warn(s"[VatReturnObligationsReads][read] Unexpected response: $status. Body: ${response.body}")
+          Left(UnexpectedStatusError(status.toString, response.body))
       }
     }
   }

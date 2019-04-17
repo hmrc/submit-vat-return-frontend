@@ -77,14 +77,16 @@ class AuthPredicateSpec extends MockAuth {
           val authResponse = Future.successful(new ~(Some(Agent), otherEnrolment))
           lazy val result = target()(FakeRequest().withSession("CLIENT_VRN" -> "999999999"))
 
+          val redirectUrl = mockAppConfig.agentClientUnauthorisedUrl("/")
+
           "return 303" in {
             mockAuthoriseAsAgent(authResponse, Future.failed(InsufficientEnrolments()))
 
             status(result) shouldBe Status.SEE_OTHER
           }
 
-          s"redirect to ${mockAppConfig.agentClientUnauthorisedUrl}" in {
-            redirectLocation(result) shouldBe Some(mockAppConfig.agentClientUnauthorisedUrl)
+          s"redirect to $redirectUrl" in {
+            redirectLocation(result) shouldBe Some(redirectUrl)
           }
         }
 
@@ -110,14 +112,16 @@ class AuthPredicateSpec extends MockAuth {
         val authResponse = Future.successful(new ~(Some(Agent), agentServicesEnrolment))
         lazy val result = target()(FakeRequest())
 
+        val redirectUrl = mockAppConfig.agentClientLookupStartUrl("/")
+
         "return 303" in {
           mockAuthorise(authResponse)
 
           status(result) shouldBe Status.SEE_OTHER
         }
 
-        s"redirect to ${mockAppConfig.agentClientLookupStartUrl}" in {
-          redirectLocation(result) shouldBe Some(mockAppConfig.agentClientLookupStartUrl)
+        s"redirect to $redirectUrl" in {
+          redirectLocation(result) shouldBe Some(redirectUrl)
         }
       }
     }
