@@ -56,6 +56,7 @@ class UnauthorisedAgentViewSpec extends ViewBaseSpec {
     }
 
     s"have a link to sign out" in {
+      //TODO: add sign out link
       element(Selectors.button).attr("href") shouldBe ""
     }
   }
