@@ -17,7 +17,7 @@
 package controllers.predicates
 
 import auth.AuthKeys
-import auth.AuthKeys.{agentEnrolmentId, delegatedAuthRule, vatEnrolmentId, vatIdentifierId}
+import auth.AuthKeys.{delegatedAuthRule, vatEnrolmentId, vatIdentifierId}
 import config.{AppConfig, ErrorHandler}
 import javax.inject.Inject
 import models.auth.User
@@ -26,17 +26,18 @@ import play.api.i18n.{I18nSupport, MessagesApi}
 import play.api.mvc._
 import services.EnrolmentsAuthService
 import uk.gov.hmrc.auth.core.AffinityGroup.Agent
+import uk.gov.hmrc.auth.core._
 import uk.gov.hmrc.auth.core.retrieve.Retrievals._
 import uk.gov.hmrc.auth.core.retrieve.~
-import uk.gov.hmrc.auth.core._
 import uk.gov.hmrc.play.bootstrap.controller.FrontendController
+
 import scala.concurrent.{ExecutionContext, Future}
 
 class AuthPredicate @Inject()(authService: EnrolmentsAuthService,
-                              appConfig: AppConfig,
                               errorHandler: ErrorHandler,
                               val messagesApi: MessagesApi,
-                              implicit val ec: ExecutionContext) extends FrontendController
+                              implicit val ec: ExecutionContext,
+                              implicit val appConfig: AppConfig) extends FrontendController
                                                                  with I18nSupport
                                                                  with ActionBuilder[User]
                                                                  with ActionFunction[Request, User] {
@@ -71,8 +72,7 @@ class AuthPredicate @Inject()(authService: EnrolmentsAuthService,
       case Some(vrn) => block(User(vrn))
       case None =>
         Logger.debug("[AuthPredicate][authoriseAsNonAgent] - Non-agent with no HMRC-MTD-VAT enrolment. Rendering unauthorised view.")
-        //TODO: Add non-agent unauthorised view
-        Future.successful(Forbidden("no HMRC-MTD-VAT enrolment"))
+        Future.successful(Forbidden(views.html.errors.unauthorised_non_agent()))
     }
   }
 
@@ -96,8 +96,7 @@ class AuthPredicate @Inject()(authService: EnrolmentsAuthService,
                 case Some(arn) => block(User(vrn, Some(arn)))
                 case None =>
                   Logger.debug("[AuthPredicate][authoriseAsAgent] - Agent with no HMRC-AS-AGENT enrolment. Rendering unauthorised view.")
-                  //TODO: add agent unauthorised view
-                  Future.successful(Forbidden("no HMRC-AS-AGENT enrolment"))
+                  Future.successful(Forbidden(views.html.errors.unauthorised_agent()))
               }
           } recover {
             case _: NoActiveSession =>

@@ -40,6 +40,8 @@ trait AppConfig extends ServicesConfig {
   val signInUrl: String
   val agentClientLookupStartUrl: String
   val agentClientUnauthorisedUrl: String
+  val govUkGuidanceMtdVat: String
+  val govUkGuidanceAgentServices: String
 }
 
 @Singleton
@@ -55,6 +57,10 @@ class FrontendAppConfig @Inject()(val runModeConfiguration: Configuration, envir
   lazy val reportAProblemNonJSUrl = s"$contactHost/contact/problem_reports_nonjs?service=$contactFormServiceIdentifier"
   override lazy val betaFeedbackUrl = s"$contactHost/contact/beta-feedback"
   override lazy val betaFeedbackUnauthenticatedUrl = s"$contactHost/contact/beta-feedback-unauthenticated"
+
+  // Gov.uk guidance
+  override lazy val govUkGuidanceMtdVat: String = getString(ConfigKeys.govUkGuidanceMtdVat)
+  override lazy val govUkGuidanceAgentServices: String = getString(ConfigKeys.govUkGuidanceAgentServices)
 
   //Whitelist config
   private def whitelistConfig(key: String): Seq[String] = Some(new String(Base64.getDecoder

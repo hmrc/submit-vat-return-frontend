@@ -29,7 +29,7 @@ class MockAuth extends BaseSpec {
 
   lazy val mockAuthConnector: AuthConnector = mock[AuthConnector]
   lazy val mockEnrolmentsAuthService: EnrolmentsAuthService = new EnrolmentsAuthService(mockAuthConnector)
-  lazy val mockAuthPredicate: AuthPredicate = new AuthPredicate(mockEnrolmentsAuthService, mockAppConfig, errorHandler, messagesApi, ec)
+  lazy val mockAuthPredicate: AuthPredicate = new AuthPredicate(mockEnrolmentsAuthService, errorHandler, messagesApi, ec, mockAppConfig)
 
   def mockAuthorise(authResponse: Future[~[Option[AffinityGroup], Enrolments]]): Unit = {
     (mockAuthConnector.authorise(_: Predicate, _: Retrieval[_])(_: HeaderCarrier, _: ExecutionContext))

@@ -24,8 +24,8 @@ import play.api.mvc.{Action, AnyContent}
 import play.api.test.FakeRequest
 import play.api.test.Helpers._
 import uk.gov.hmrc.auth.core.AffinityGroup.{Agent, Individual}
-import uk.gov.hmrc.auth.core.{AuthorisationException, BearerTokenExpired, InsufficientEnrolments, UnsupportedCredentialRole}
 import uk.gov.hmrc.auth.core.retrieve.~
+import uk.gov.hmrc.auth.core.{BearerTokenExpired, InsufficientEnrolments, UnsupportedCredentialRole}
 
 import scala.concurrent.Future
 
@@ -67,9 +67,7 @@ class AuthPredicateSpec extends MockAuth {
             }
 
             "render Agent unauthorised view" in {
-
-              //TODO
-
+              Jsoup.parse(bodyOf(result)).title() shouldBe "You can’t use this service yet"
             }
           }
         }
@@ -150,7 +148,7 @@ class AuthPredicateSpec extends MockAuth {
         }
 
         "render the unauthorised view" in {
-          //TODO
+          Jsoup.parse(bodyOf(result)).title() shouldBe "You can’t use this service yet"
         }
       }
     }
