@@ -67,7 +67,7 @@ class AuthPredicate @Inject()(authService: EnrolmentsAuthService,
   private def authoriseAsNonAgent[A](enrolments: Enrolments, block: User[A] => Future[Result])
                                     (implicit request: Request[A]): Future[Result] = {
     enrolments.enrolments.collectFirst {
-      case Enrolment(AuthKeys.vatEnrolmentId, EnrolmentIdentifier(_, vrn) :: _, _, _) => vrn
+      case Enrolment(AuthKeys.vatEnrolmentId, EnrolmentIdentifier(_, vrn) :: _, AuthKeys.activated, _) => vrn
     } match {
       case Some(vrn) => block(User(vrn))
       case None =>
@@ -91,7 +91,7 @@ class AuthPredicate @Inject()(authService: EnrolmentsAuthService,
           .retrieve(allEnrolments) {
             enrolments =>
               enrolments.enrolments.collectFirst {
-                case Enrolment(AuthKeys.agentEnrolmentId, EnrolmentIdentifier(_, arn) :: _, _, _) => arn
+                case Enrolment(AuthKeys.agentEnrolmentId, EnrolmentIdentifier(_, arn) :: _, AuthKeys.activated, _) => arn
               } match {
                 case Some(arn) => block(User(vrn, Some(arn)))
                 case None =>
