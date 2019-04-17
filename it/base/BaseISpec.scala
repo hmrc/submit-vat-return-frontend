@@ -17,17 +17,16 @@
 package base
 
 import config.AppConfig
-import connectors.VatSubscriptionConnector
 import org.scalatest.{BeforeAndAfterEach, Matchers, WordSpec}
 import org.scalatestplus.play.guice.GuiceOneServerPerSuite
-import play.api.{Application, Environment, Mode}
 import play.api.inject.guice.GuiceApplicationBuilder
-import uk.gov.hmrc.http.HeaderCarrier
+import play.api.libs.ws.{WSClient, WSRequest, WSResponse}
+import play.api.{Application, Environment, Mode}
 import uk.gov.hmrc.play.bootstrap.http.HttpClient
 import utils.WireMockHelper
 
 import scala.concurrent.duration.Duration
-import scala.concurrent.{Await, Awaitable, ExecutionContext}
+import scala.concurrent.{Await, Awaitable}
 
 trait BaseISpec extends WordSpec with WireMockHelper with Matchers with
   BeforeAndAfterEach with GuiceOneServerPerSuite {
@@ -36,7 +35,9 @@ trait BaseISpec extends WordSpec with WireMockHelper with Matchers with
     "microservice.services.vat-subscription.host" -> WireMockHelper.wireMockHost,
     "microservice.services.vat-subscription.port" -> WireMockHelper.wireMockPort.toString,
     "microservice.services.vat-obligations.host" -> WireMockHelper.wireMockHost,
-    "microservice.services.vat-obligations.port" -> WireMockHelper.wireMockPort.toString
+    "microservice.services.vat-obligations.port" -> WireMockHelper.wireMockPort.toString,
+    "microservice.services.auth.host" -> WireMockHelper.wireMockHost,
+    "microservice.services.auth.port" -> WireMockHelper.wireMockPort.toString
   )
 
   override implicit lazy val app: Application = new GuiceApplicationBuilder()
@@ -45,9 +46,11 @@ trait BaseISpec extends WordSpec with WireMockHelper with Matchers with
     .build()
 
   lazy val httpClient: HttpClient = app.injector.instanceOf[HttpClient]
+  lazy val wsClient: WSClient = app.injector.instanceOf[WSClient]
   lazy val appConfig: AppConfig = app.injector.instanceOf[AppConfig]
+  val appRouteContext: String = "/vat-through-software/submit-vat-return"
 
-   override def beforeEach(): Unit = {
+  override def beforeEach(): Unit = {
     super.beforeEach()
     startServer()
   }
@@ -58,4 +61,12 @@ trait BaseISpec extends WordSpec with WireMockHelper with Matchers with
   }
 
   def await[T](awaitable: Awaitable[T]): T = Await.result(awaitable, Duration.Inf)
+
+  def get(path: String): WSResponse = await(
+    buildRequest(path).get()
+  )
+
+  def buildRequest(path: String): WSRequest =
+    wsClient.url(s"http://localhost:$port$appRouteContext$path")
+      .withFollowRedirects(false)
 }
