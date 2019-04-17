@@ -16,16 +16,22 @@
 
 package mocks
 
+import akka.util.Timeout
 import base.BaseSpec
 import controllers.predicates.AuthPredicate
+import play.api.http.Status
+import play.api.mvc.{Action, AnyContent, Request}
+import play.api.test.Helpers.redirectLocation
 import services.EnrolmentsAuthService
+import uk.gov.hmrc.auth.core.AffinityGroup.{Agent, Individual}
 import uk.gov.hmrc.auth.core.authorise.Predicate
 import uk.gov.hmrc.auth.core.retrieve.{Retrieval, ~}
 import uk.gov.hmrc.auth.core._
 import uk.gov.hmrc.http.HeaderCarrier
+
 import scala.concurrent.{ExecutionContext, Future}
 
-class MockAuth extends BaseSpec {
+trait MockAuth extends BaseSpec {
 
   lazy val mockAuthConnector: AuthConnector = mock[AuthConnector]
   lazy val mockEnrolmentsAuthService: EnrolmentsAuthService = new EnrolmentsAuthService(mockAuthConnector)
@@ -48,6 +54,33 @@ class MockAuth extends BaseSpec {
       .returns(secondAuthResponse)
   }
 
+  def authControllerChecks(action: Action[AnyContent], request: Request[AnyContent])(implicit timeout: Timeout): Unit = {
+
+    "user is unauthenticated" should {
+
+      lazy val result = action(request)
+
+      "return 303" in {
+        mockAuthorise(Future.failed(BearerTokenExpired()))
+        status(result) shouldBe Status.SEE_OTHER
+      }
+
+      "redirect to sign-in" in {
+        redirectLocation(result) shouldBe Some(mockAppConfig.signInUrl)
+      }
+    }
+
+    "user is unauthorised" should {
+
+      lazy val result = action(request)
+
+      "return 403" in {
+        mockAuthorise(Future.successful(new ~(Some(Individual), otherEnrolment)))
+        status(result) shouldBe Status.FORBIDDEN
+      }
+    }
+  }
+
   private def createEnrolment(key: String,
                               identifierKey: String,
                               identifierValue: String,
@@ -65,5 +98,6 @@ class MockAuth extends BaseSpec {
   val agentServicesEnrolment: Enrolments = createEnrolment("HMRC-AS-AGENT", "AgentReferenceNumber", "XAIT1234567", Some("mtd-vat-auth"))
   val mtdVatEnrolment: Enrolments = createEnrolment("HMRC-MTD-VAT", "VRN", "999999999")
   val otherEnrolment: Enrolments = createEnrolment("OTHER-ENROLMENT", "BLAH", "12345")
-
+  val mtdVatAuthorisedResponse: Future[~[Option[AffinityGroup], Enrolments]] = Future.successful(new ~(Some(Individual), mtdVatEnrolment))
+  val agentAuthorisedResponse: Future[~[Option[AffinityGroup], Enrolments]] = Future.successful(new ~(Some(Agent), agentServicesEnrolment))
 }

@@ -19,7 +19,7 @@ package controllers.predicates
 import auth.AuthKeys
 import auth.AuthKeys.{delegatedAuthRule, vatEnrolmentId, vatIdentifierId}
 import config.{AppConfig, ErrorHandler}
-import javax.inject.Inject
+import javax.inject.{Inject, Singleton}
 import models.auth.User
 import play.api.Logger
 import play.api.i18n.{I18nSupport, MessagesApi}
@@ -33,6 +33,7 @@ import uk.gov.hmrc.play.bootstrap.controller.FrontendController
 
 import scala.concurrent.{ExecutionContext, Future}
 
+@Singleton
 class AuthPredicate @Inject()(authService: EnrolmentsAuthService,
                               errorHandler: ErrorHandler,
                               val messagesApi: MessagesApi,
