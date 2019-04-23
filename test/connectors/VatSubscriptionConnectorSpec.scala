@@ -21,7 +21,8 @@ import mocks.MockHttp
 import assets.TestConstants.vrn
 import assets.CustomerDetailsTestAssets._
 import connectors.httpParsers.ResponseHttpParsers.HttpGetResult
-import models.CustomerDetails
+import models.{CustomerDetails, MandationStatus}
+import common.MandationStatuses.nonMTDfB
 import play.api.http.Status
 import uk.gov.hmrc.http.HttpResponse
 
@@ -30,6 +31,7 @@ import scala.concurrent.Future
 class VatSubscriptionConnectorSpec extends BaseSpec with MockHttp {
 
   val errorModel = HttpResponse(Status.BAD_REQUEST, responseString = Some("Error Message"))
+
 
   object TestVatSubscriptionConnector extends VatSubscriptionConnector(mockHttp, mockAppConfig)
 
@@ -65,6 +67,25 @@ class VatSubscriptionConnectorSpec extends BaseSpec with MockHttp {
       }
     }
 
-  }
+    "calling the 'getMandationStatus' method" when {
 
+      def result: Future[HttpGetResult[MandationStatus]] = TestVatSubscriptionConnector.getCustomerMandationStatus(vrn)
+
+      "a successful response is returned" should {
+
+        "return a mandation status" in {
+          setupMockHttpGet(TestVatSubscriptionConnector.vatSubscriptionUrl(vrn, "mandation-status"))(Right(MandationStatus(nonMTDfB)))
+          await(result) shouldBe Right(MandationStatus(nonMTDfB))
+        }
+      }
+
+      "an error is returned" should {
+
+        "return a Left with an ErrorModel" in {
+          setupMockHttpGet(TestVatSubscriptionConnector.vatSubscriptionUrl(vrn, "mandation-status"))(Left(errorModel))
+          await(result) shouldBe Left(errorModel)
+        }
+      }
+    }
+  }
 }

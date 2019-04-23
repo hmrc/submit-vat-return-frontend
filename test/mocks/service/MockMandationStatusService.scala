@@ -16,34 +16,22 @@
 
 package mocks.service
 
-import common.MandationStatuses.nonMTDfB
 import connectors.httpParsers.ResponseHttpParsers.HttpGetResult
 import models.MandationStatus
-import org.mockito.ArgumentMatchers
-import org.mockito.Mockito.{reset, when}
-import org.mockito.stubbing.OngoingStubbing
-import org.scalatest.BeforeAndAfterEach
-import org.scalatest.mockito.MockitoSugar
+import org.scalamock.scalatest.MockFactory
 import services.MandationStatusService
+import uk.gov.hmrc.http.HeaderCarrier
 import uk.gov.hmrc.play.test.UnitSpec
 
-import scala.concurrent.Future
+import scala.concurrent.{ExecutionContext, Future}
 
-trait MockMandationStatusService extends UnitSpec with MockitoSugar with BeforeAndAfterEach {
+trait MockMandationStatusService extends UnitSpec with MockFactory {
 
   val mockMandationStatusService: MandationStatusService = mock[MandationStatusService]
 
-  override def beforeEach(): Unit = {
-    super.beforeEach()
-    reset(mockMandationStatusService)
-  }
-
-  def setupMockMandationStatus(vrn: String)(response: HttpGetResult[MandationStatus]): OngoingStubbing[Future[HttpGetResult[MandationStatus]]] = {
-    when(mockMandationStatusService.getMandationStatus(ArgumentMatchers.eq(vrn))(ArgumentMatchers.any(), ArgumentMatchers.any()))
-      .thenReturn(Future.successful(response))
-  }
-
-  def setupMockMandationStatusSuccess(): OngoingStubbing[Future[HttpGetResult[MandationStatus]]] = {
-    setupMockMandationStatus("968501689")(Right(MandationStatus(nonMTDfB)))
+  def setupMockMandationStatus(response: Future[HttpGetResult[MandationStatus]])(implicit hc: HeaderCarrier, ec: ExecutionContext): Unit = {
+    (mockMandationStatusService.getMandationStatus(_: String)(_: HeaderCarrier, _: ExecutionContext))
+      .expects(*, *, *)
+      .returns(response)
   }
 }

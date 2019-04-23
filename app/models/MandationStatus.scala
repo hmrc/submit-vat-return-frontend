@@ -18,9 +18,7 @@ package models
 
 import play.api.libs.json.{Json, Reads}
 
-case class MandationStatus(
-                            mandationStatus: String
-                          )
+case class MandationStatus(mandationStatus: String)
 
 object MandationStatus {
   implicit def reads: Reads[MandationStatus] = Json.reads[MandationStatus]

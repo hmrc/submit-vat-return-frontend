@@ -19,10 +19,15 @@ package controllers
 import java.time.LocalDate
 
 import base.BaseSpec
+import common.MandationStatuses.nonMTDfB
 import connectors.httpParsers.ResponseHttpParsers.HttpGetResult
 import mocks.MockAuth
 import mocks.service.{MockVatObligationsService, MockVatSubscriptionService}
 import mocks.MockPredicate
+<<<<<<< HEAD
+=======
+import models.{CustomerDetails, MandationStatus, VatObligation, VatObligations}
+>>>>>>> Added tests for mandation status predicate
 import models.errors.UnexpectedJsonFormat
 import models.{CustomerDetails, VatObligation, VatObligations}
 import play.api.http.Status
@@ -61,8 +66,21 @@ class SubmitFormControllerSpec extends BaseSpec with MockVatSubscriptionService 
           )
         ))
 
+<<<<<<< HEAD
         val vatSubscriptionResponse: Future[HttpGetResult[CustomerDetails]] = Future.successful(Right(customerInformation))
         val vatObligationsResponse: Future[HttpGetResult[VatObligations]] = Future.successful(Right(obligations))
+=======
+      lazy val result = {
+        setupMockMandationStatus(Right(MandationStatus(nonMTDfB)))
+        TestSubmitFormController.show("18AA")(fakeRequest)
+      }
+
+      "return 200" in {
+        setupVatSubscriptionService(vatSubscriptionResponse)
+        setupVatObligationsService(vatObligationsResponse)
+        status(result) shouldBe Status.OK
+      }
+>>>>>>> Added tests for mandation status predicate
 
         lazy val result = {
           setupMockMandationStatusSuccess()
@@ -88,6 +106,7 @@ class SubmitFormControllerSpec extends BaseSpec with MockVatSubscriptionService 
           val vatSubscriptionErrorResponse: Future[HttpGetResult[CustomerDetails]] = Future.successful(Left(UnexpectedJsonFormat))
           val vatObligationsErrorResponse: Future[HttpGetResult[VatObligations]] = Future.successful(Left(UnexpectedJsonFormat))
 
+<<<<<<< HEAD
           mockAuthorise(mtdVatAuthorisedResponse)
           setupVatSubscriptionService(vatSubscriptionErrorResponse)
           setupVatObligationsService(vatObligationsErrorResponse)
@@ -95,6 +114,11 @@ class SubmitFormControllerSpec extends BaseSpec with MockVatSubscriptionService 
 
           lazy val result = TestSubmitFormController.show("18AA")(fakeRequest)
           status(result) shouldBe Status.INTERNAL_SERVER_ERROR
+=======
+        lazy val result = {
+          setupMockMandationStatus(Right(MandationStatus(nonMTDfB)))
+          TestSubmitFormController.show("18AA")(fakeRequest)
+>>>>>>> Added tests for mandation status predicate
         }
       }
     }

@@ -48,12 +48,5 @@ class VatSubscriptionConnector @Inject()(httpClient: HttpClient, appConfig: AppC
     lazy val endpoint: String = "mandation-status"
 
     httpClient.GET[HttpGetResult[MandationStatus]](urlToCall(vrn, endpoint))
-      .map {
-        case mandationStatus@Right(_) =>
-          mandationStatus
-        case httpError@Left(error) =>
-          Logger.warn("[VatSubscriptionConnector][getCustomerMandationStatus] Error received: " + error)
-          httpError
-      }
   }
 }

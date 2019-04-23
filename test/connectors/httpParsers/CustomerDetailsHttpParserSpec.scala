@@ -24,7 +24,7 @@ import play.api.http.Status._
 import play.api.libs.json.{JsObject, Json}
 import uk.gov.hmrc.http.HttpResponse
 
-class CustomerDetailsHttpParserISpec extends BaseSpec {
+class CustomerDetailsHttpParserSpec extends BaseSpec {
 
   val correctReturnJson: JsObject = Json.obj(
     "firstName" -> "Rath",

@@ -16,35 +16,31 @@
 
 package services
 
-import java.time.LocalDate
-
 import base.BaseSpec
-import connectors.VatObligationsConnector
+import common.MandationStatuses.nonMTDfB
+import connectors.VatSubscriptionConnector
 import connectors.httpParsers.ResponseHttpParsers.HttpGetResult
+import models.MandationStatus
 import models.errors.UnexpectedJsonFormat
-import models.{VatObligation, VatObligations}
 import uk.gov.hmrc.http.HeaderCarrier
 
 import scala.concurrent.{ExecutionContext, Future}
-import scala.concurrent.ExecutionContext.Implicits.global
 
-class VatObligationsServiceSpec extends BaseSpec {
+class MandationStatusServiceSpec extends BaseSpec {
 
-  val mockConnector: VatObligationsConnector = mock[VatObligationsConnector]
-  val service = new VatObligationsService(mockConnector)
+  val mockConnector: VatSubscriptionConnector = mock[VatSubscriptionConnector]
+  val service = new MandationStatusService(mockConnector)
 
-  "getObligations" should {
-    "return a VatObligations" when {
-      "a VatObligations is returned from the connector" in {
-        val expectedResult = Right(VatObligations(Seq(VatObligation(
-          LocalDate.now(), LocalDate.now(), LocalDate.now(), "AA"
-        ))))
+  "getMandationStatus" should {
+    "return a Mandation Status" when {
+      "a successful response is returned from the connector" in {
+        val expectedResult = Right(MandationStatus(nonMTDfB))
 
-        (mockConnector.getObligations(_: String)(_: HeaderCarrier, _: ExecutionContext))
+        (mockConnector.getCustomerMandationStatus(_: String)(_: HeaderCarrier, _: ExecutionContext))
           .expects(*, *, *)
           .returning(Future.successful(expectedResult))
 
-        val result: HttpGetResult[VatObligations] = await(service.getObligations("101202303"))
+        val result: HttpGetResult[MandationStatus] = await(service.getMandationStatus("101202303"))
         result shouldBe expectedResult
       }
     }
@@ -52,11 +48,11 @@ class VatObligationsServiceSpec extends BaseSpec {
       "an error is returned from the connector" in {
         val expectedResult = Left(UnexpectedJsonFormat)
 
-        (mockConnector.getObligations(_: String)(_: HeaderCarrier, _: ExecutionContext))
+        (mockConnector.getCustomerMandationStatus(_: String)(_: HeaderCarrier, _: ExecutionContext))
           .expects(*, *, *)
           .returning(Future.successful(expectedResult))
 
-        val result: HttpGetResult[VatObligations] = await(service.getObligations("101202303"))
+        val result: HttpGetResult[MandationStatus] = await(service.getMandationStatus("101202303"))
         result shouldBe expectedResult
       }
     }

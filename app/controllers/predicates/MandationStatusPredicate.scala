@@ -54,15 +54,13 @@ class MandationStatusPredicate @Inject()(mandationStatusService: MandationStatus
 
     mandationStatusService.getMandationStatus("968501689") map {
       case Right(MandationStatus(`nonMTDfB`)) => Right(request)
-      case Right(a) =>
-        Logger.debug(s"[MandationStatusPredicate][refine] - Incorrect mandation status returned. Status returned was: $a")
+      case Right(unsupportedMandationStatus) =>
+        Logger.debug(s"[MandationStatusPredicate][refine] - Incorrect mandation status returned. Status returned was: $unsupportedMandationStatus")
         Left(Redirect(controllers.routes.HelloWorldController.helloWorld()))
       case error =>
-        Logger.warn(s"something Bad")
+        Logger.info(s"[MandationStatusPredicate][refine] - Error has been received $error")
+        Logger.warn(s"[MandationStatusPredicate][refine] - Error has been received")
         Left(Redirect(controllers.routes.HelloWorldController.helloWorld()))
-
     }
-
   }
-
 }
