@@ -17,13 +17,12 @@
 package pages
 
 import base.BaseISpec
-import play.api.http.Status
-import play.api.libs.ws.WSResponse
-import stubs.AuthStub._
-import stubs.VatSubscriptionStub._
-import stubs.VatObligationsStub._
 import play.api.http.Status._
 import play.api.libs.json.Json
+import play.api.libs.ws.WSResponse
+import stubs.AuthStub._
+import stubs.VatObligationsStub._
+import stubs.VatSubscriptionStub._
 import stubs.{AuthStub, VatObligationsStub, VatSubscriptionStub}
 
 class SubmitFormPageSpec extends BaseISpec {

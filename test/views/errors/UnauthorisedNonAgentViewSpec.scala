@@ -35,27 +35,27 @@ class UnauthorisedNonAgentViewSpec extends ViewBaseSpec {
     lazy val view = views.html.errors.unauthorised_non_agent()(fakeRequest, messages, mockAppConfig)
     lazy implicit val document: Document = Jsoup.parse(view.body)
 
-    s"have the correct document title" in {
+    "have the correct document title" in {
       document.title shouldBe "You can’t use this service yet"
     }
 
-    s"have a the correct page heading" in {
+    "have a the correct page heading" in {
       elementText(Selectors.pageHeading) shouldBe "You can’t use this service yet"
     }
 
-    s"have the correct instructions on the page" in {
+    "have the correct instructions on the page" in {
       elementText(Selectors.instructions) shouldBe "You need to sign up to use software to submit your VAT returns."
     }
 
-    s"have a link to GOV.UK guidance" in {
+    "have a link to GOV.UK guidance" in {
       element(Selectors.instructionsLink).attr("href") shouldBe "mtd-vat"
     }
 
-    s"have a Sign out button" in {
+    "have a Sign out button" in {
       elementText(Selectors.button) shouldBe "Sign out"
     }
 
-    s"have a link to sign out" in {
+    "have a link to sign out" in {
       //TODO: add sign out link
       element(Selectors.button).attr("href") shouldBe ""
     }
