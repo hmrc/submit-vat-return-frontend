@@ -21,6 +21,7 @@ import javax.inject.{Inject, Singleton}
 import play.api.i18n.{I18nSupport, MessagesApi}
 import play.api.mvc.{Action, AnyContent}
 import config.ErrorHandler
+import controllers.predicates.AuthPredicate
 import services.{VatObligationsService, VatSubscriptionService}
 import uk.gov.hmrc.play.bootstrap.controller.FrontendController
 
@@ -29,12 +30,14 @@ class SubmitFormController @Inject()(val messagesApi: MessagesApi,
                                      val vatSubscriptionService: VatSubscriptionService,
                                      val vatObligationsService: VatObligationsService,
                                      val errorHandler: ErrorHandler,
+                                     authPredicate: AuthPredicate,
                                      implicit val appConfig: AppConfig) extends FrontendController with I18nSupport {
 
-  def show(periodKey: String): Action[AnyContent] = Action.async { implicit request =>
+  def show(periodKey: String): Action[AnyContent] = authPredicate async {
+    implicit user =>
 
-    val customerInformationCall = vatSubscriptionService.getCustomerDetails("968501689")
-    val obligationsCall = vatObligationsService.getObligations("999999999")
+    val customerInformationCall = vatSubscriptionService.getCustomerDetails(user.vrn)
+    val obligationsCall = vatObligationsService.getObligations(user.vrn)
 
     for {
       customerInformation <- customerInformationCall

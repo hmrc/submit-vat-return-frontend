@@ -20,64 +20,78 @@ import java.time.LocalDate
 
 import base.BaseSpec
 import connectors.httpParsers.ResponseHttpParsers.HttpGetResult
-import mocks.{MockVatObligationsService, MockVatSubscriptionService}
-import models.{CustomerDetails, VatObligation, VatObligations}
+import mocks.{MockAuth, MockVatObligationsService, MockVatSubscriptionService}
 import models.errors.UnexpectedJsonFormat
+import models.{CustomerDetails, VatObligation, VatObligations}
 import play.api.http.Status
 import play.api.test.Helpers._
 
 import scala.concurrent.Future
 
-class SubmitFormControllerSpec extends BaseSpec with MockVatSubscriptionService with MockVatObligationsService {
+class SubmitFormControllerSpec extends BaseSpec with MockVatSubscriptionService with MockVatObligationsService with MockAuth {
 
   object TestSubmitFormController extends SubmitFormController(
     messagesApi,
     mockVatSubscriptionService,
     mockVatObligationsService,
     errorHandler,
+    mockAuthPredicate,
     mockAppConfig
   )
 
   "SubmitFormController .show" when {
 
-    "a successful response is received from the service" should {
+    "user is authorised" when {
 
-      val customerInformation: CustomerDetails = CustomerDetails(
-        Some("Test"), Some("User"), Some("ABC Solutions"), Some("ABCL"), hasFlatRateScheme = true
-      )
+      "a successful response is received from the service" should {
 
-      val obligations: VatObligations = VatObligations(Seq(VatObligation(LocalDate.parse("2019-01-12"), LocalDate.parse("2019-04-12"), LocalDate.parse("2019-05-12"), "18AA")))
+        val customerInformation: CustomerDetails = CustomerDetails(
+          Some("Test"), Some("User"), Some("ABC Solutions"), Some("ABCL"), hasFlatRateScheme = true
+        )
 
-      val vatSubscriptionResponse: Future[HttpGetResult[CustomerDetails]] = Future.successful(Right(customerInformation))
-      val vatObligationsResponse: Future[HttpGetResult[VatObligations]] = Future.successful(Right(obligations))
+        val obligations: VatObligations = VatObligations(Seq(
+          VatObligation(
+            LocalDate.parse("2019-01-12"),
+            LocalDate.parse("2019-04-12"),
+            LocalDate.parse("2019-05-12"),
+            "18AA"
+          )
+        ))
 
-      lazy val result = TestSubmitFormController.show("18AA")(fakeRequest)
-
-      "return 200" in {
-        setupVatSubscriptionService(vatSubscriptionResponse)
-        setupVatObligationsService(vatObligationsResponse)
-        status(result) shouldBe Status.OK
-      }
-
-      "return HTML" in {
-        contentType(result) shouldBe Some("text/html")
-      }
-
-    }
-
-    "an error response is returned from the service" should {
-
-      "return an internal server status" in {
-
-        val vatSubscriptionErrorResponse: Future[HttpGetResult[CustomerDetails]] = Future.successful(Left(UnexpectedJsonFormat))
-        val vatObligationsErrorResponse: Future[HttpGetResult[VatObligations]] = Future.successful(Left(UnexpectedJsonFormat))
-
-        setupVatSubscriptionService(vatSubscriptionErrorResponse)
-        setupVatObligationsService(vatObligationsErrorResponse)
+        val vatSubscriptionResponse: Future[HttpGetResult[CustomerDetails]] = Future.successful(Right(customerInformation))
+        val vatObligationsResponse: Future[HttpGetResult[VatObligations]] = Future.successful(Right(obligations))
 
         lazy val result = TestSubmitFormController.show("18AA")(fakeRequest)
-        status(result) shouldBe Status.INTERNAL_SERVER_ERROR
+
+        "return 200" in {
+          mockAuthorise(mtdVatAuthorisedResponse)
+          setupVatSubscriptionService(vatSubscriptionResponse)
+          setupVatObligationsService(vatObligationsResponse)
+          status(result) shouldBe Status.OK
+        }
+
+        "return HTML" in {
+          contentType(result) shouldBe Some("text/html")
+        }
+      }
+
+      "an error response is returned from the service" should {
+
+        "return an internal server status" in {
+
+          val vatSubscriptionErrorResponse: Future[HttpGetResult[CustomerDetails]] = Future.successful(Left(UnexpectedJsonFormat))
+          val vatObligationsErrorResponse: Future[HttpGetResult[VatObligations]] = Future.successful(Left(UnexpectedJsonFormat))
+
+          mockAuthorise(mtdVatAuthorisedResponse)
+          setupVatSubscriptionService(vatSubscriptionErrorResponse)
+          setupVatObligationsService(vatObligationsErrorResponse)
+
+          lazy val result = TestSubmitFormController.show("18AA")(fakeRequest)
+          status(result) shouldBe Status.INTERNAL_SERVER_ERROR
+        }
       }
     }
+
+    authControllerChecks(TestSubmitFormController.show("18AA"), fakeRequest)
   }
 }

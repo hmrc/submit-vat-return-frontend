@@ -34,4 +34,17 @@ object ConfigKeys {
 
   val vatSubscriptionHost: String = "microservice.services.vat-subscription.host"
   val vatSubscriptionPort: String = "microservice.services.vat-subscription.port"
+
+  val signInBaseUrl: String = "signIn.url"
+  val signInContinueBaseUrl: String = "signIn.continueBaseUrl"
+  val signInContinueUrl: String = "signIn.continueUrl"
+  val appName: String = "appName"
+  val vatAgentClientLookupFrontendHost: String = "vat-agent-client-lookup-frontend.host"
+  val vatAgentClientLookupFrontendStartUrl: String = "vat-agent-client-lookup-frontend.startUrl"
+  val vatAgentClientLookupFrontendUnauthorisedUrl: String = "vat-agent-client-lookup-frontend.unauthorisedUrl"
+  val platformHost: String = "platform.host"
+
+  val govUkGuidanceMtdVat: String = "gov-uk.guidance.mtdVat.url"
+  val govUkGuidanceAgentServices: String = "gov-uk.guidance.agentServices.url"
+
 }

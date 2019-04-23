@@ -1,7 +1,7 @@
 common.service-name = Business tax account
+common.fullStop = .
+common.signOut = Sign out
 
-error.browser.title.prefix = Error:
-error.boolean = Please give an answer
 error.required = Please enter a value
 error.summary.title = There is a problem
 
@@ -10,3 +10,12 @@ session_expired.heading = For your security, this service has been reset
 session_expired.guidance = The details you have given have been deleted because you did not continue the service for 15 minutes.
 
 submit_form.title = Submit return
+
+unauthorised_agent.title = You can’t use this service yet
+unauthorised_agent.useThisService = To use this service, you need to
+unauthorised_agent.setUpAccount = set up an agent services account
+
+unauthorised_non_agent.title = You can’t use this service yet
+unauthorised_non_agent.heading = You can’t use this service yet
+unauthorised_non_agent.text = You need to
+unauthorised_non_agent.link = sign up to use software to submit your VAT returns

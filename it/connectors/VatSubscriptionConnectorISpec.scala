@@ -19,11 +19,10 @@ package connectors
 import base.BaseISpec
 import connectors.httpParsers.ResponseHttpParsers.HttpGetResult
 import models.CustomerDetails
-import models.errors.UnexpectedJsonFormat
+import models.errors.{ServerSideError, UnexpectedJsonFormat}
 import play.api.http.Status._
-import play.api.libs.json.{JsObject, Json}
+import stubs.VatSubscriptionStub._
 import uk.gov.hmrc.http.HeaderCarrier
-
 import scala.concurrent.ExecutionContext.Implicits.global
 
 class VatSubscriptionConnectorISpec extends BaseISpec {
@@ -31,48 +30,51 @@ class VatSubscriptionConnectorISpec extends BaseISpec {
   implicit val hc: HeaderCarrier = HeaderCarrier()
   lazy val connector: VatSubscriptionConnector = new VatSubscriptionConnector(httpClient, appConfig)
 
-  val correctReturnJson: JsObject = Json.obj(
-    "firstName" -> "Rath",
-    "lastName" -> "Alos",
-    "tradingName" -> "Blue Rathalos",
-    "organisationName" -> "Silver Rathalos",
-    "hasFlatRateScheme" -> true
-  )
+  "getCustomerDetails" when {
 
-  val incorrectReturnJson: JsObject = Json.obj(
-    "monster" -> "Rathalos",
-    "bestWeapon" -> "Swaxe"
-  )
+    val vrn = "111111111"
 
-  "getCustomerDetails" should {
-    "return a CustomerDetails model" when {
-      "correct JSON is returned from vat-subscription" in {
-        val vrn = "111111111"
+    "response is 200" when {
 
-        val expectedReturn = CustomerDetails(
-          Some("Rath"),
-          Some("Alos"),
-          Some("Blue Rathalos"),
-          Some("Silver Rathalos"),
-          hasFlatRateScheme = true
-        )
+      "response JSON is valid" should {
 
-        stubGet(s"/vat-subscription/$vrn/customer-details", Json.stringify(correctReturnJson), OK)
+        "return a CustomerDetails model" in {
 
-        val result: HttpGetResult[CustomerDetails] = await(connector.getCustomerDetails(vrn))
-        result shouldBe Right(expectedReturn)
+          val expectedModel = CustomerDetails(
+            Some("Rath"),
+            Some("Alos"),
+            Some("Blue Rathalos"),
+            Some("Silver Rathalos"),
+            hasFlatRateScheme = true
+          )
+
+          stubGet(s"/vat-subscription/$vrn/customer-details", vatSubscriptionSuccessJson.toString(), OK)
+
+          val result: HttpGetResult[CustomerDetails] = await(connector.getCustomerDetails(vrn))
+          result shouldBe Right(expectedModel)
+        }
+      }
+
+      "response JSON is invalid" should {
+
+        "return an error model" in {
+
+          stubGet(s"/vat-subscription/$vrn/customer-details", vatSubscriptionInvalidJson.toString(), OK)
+
+          val result: HttpGetResult[CustomerDetails] = await(connector.getCustomerDetails(vrn))
+          result shouldBe Left(UnexpectedJsonFormat)
+        }
       }
     }
-    "return an error model" when {
-      "the JSON cannot be parsed" in {
-        val vrn = "111111111"
 
-        val expectedReturn = UnexpectedJsonFormat
+    "response is not 200" should {
 
-        stubGet(s"/vat-subscription/$vrn/customer-details", Json.stringify(incorrectReturnJson), OK)
+      "return an error model" in {
+
+        stubGet(s"/vat-subscription/$vrn/customer-details", "", SERVICE_UNAVAILABLE)
 
         val result: HttpGetResult[CustomerDetails] = await(connector.getCustomerDetails(vrn))
-        result shouldBe Left(expectedReturn)
+        result shouldBe Left(ServerSideError("503", "Received downstream error when retrieving customer details."))
       }
     }
   }

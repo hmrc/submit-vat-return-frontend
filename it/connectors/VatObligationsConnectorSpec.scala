@@ -17,40 +17,33 @@
 package connectors
 
 import java.time.LocalDate
-
-import play.api.http.Status._
 import base.BaseISpec
 import models.errors.UnknownError
 import models.{VatObligation, VatObligations}
+import play.api.http.Status._
 import play.api.libs.json.Json
 import uk.gov.hmrc.http.HeaderCarrier
-
 import scala.concurrent.ExecutionContext.Implicits.global
 
 class VatObligationsConnectorSpec extends BaseISpec {
 
   val connector: VatObligationsConnector = new VatObligationsConnector(httpClient, appConfig)
-  val startDate: LocalDate = LocalDate.now()
-  val endDate: LocalDate = LocalDate.now()
-  val dueDate: LocalDate = LocalDate.now()
 
   implicit val hc: HeaderCarrier = HeaderCarrier()
 
   "Calling .getObligations" when {
 
-
     "response is 200" should {
 
       "return a sequence of obligations" in {
         val expectedResults = VatObligations(Seq (
-          VatObligation(startDate,endDate,dueDate,"#001")
+          VatObligation(LocalDate.now(), LocalDate.now(), LocalDate.now(), "#001")
         ))
 
-        stubGet("/vat-obligations/vrn/obligations?status=O",Json.toJson(expectedResults).toString())
+        stubGet("/vat-obligations/999999999/obligations?status=O", Json.toJson(expectedResults).toString())
 
-        val result = await(connector.getObligations("vrn"))
+        val result = await(connector.getObligations("999999999"))
         result shouldBe Right(expectedResults)
-
       }
     }
 
@@ -58,11 +51,11 @@ class VatObligationsConnectorSpec extends BaseISpec {
 
       "return a BadRequestError" in {
         val expectedResults = UnknownError
-        stubGet("/vat-obligations/vrn/obligations?status=O","{}",BAD_REQUEST)
 
-        val result = await(connector.getObligations("vrn"))
+        stubGet("/vat-obligations/999999999/obligations?status=O","{}",BAD_REQUEST)
+
+        val result = await(connector.getObligations("999999999"))
         result shouldBe Left(expectedResults)
-
       }
     }
   }
