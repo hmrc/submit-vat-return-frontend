@@ -20,11 +20,16 @@ import common.MandationStatuses.nonMTDfB
 import mocks.MockPredicate
 import mocks.service.MockMandationStatusService
 import models.MandationStatus
+import models.auth.User
 import models.errors.BadRequestError
 import play.api.mvc.Results.Redirect
 import play.api.http.Status.BAD_REQUEST
+import play.api.mvc.AnyContentAsEmpty
 
 class MandationStatusPredicateSpec extends MockPredicate with MockMandationStatusService {
+
+  val userWithSession: User[AnyContentAsEmpty.type] =
+    User[AnyContentAsEmpty.type]("123456789")(fakeRequest)
 
   "Mandation status predicate is called" when {
 
@@ -32,13 +37,11 @@ class MandationStatusPredicateSpec extends MockPredicate with MockMandationStatu
 
       lazy val result = {
         setupMockMandationStatus(Right(MandationStatus(nonMTDfB)))
-        await(mockMandationStatusPredicate.refine(fakeRequest))
+        await(mockMandationStatusPredicate.refine(userWithSession))
       }
 
       "allow the request to pass through the predicate" in {
-
-        result shouldBe Right(fakeRequest)
-
+        result shouldBe Right(userWithSession)
       }
     }
 
@@ -46,7 +49,7 @@ class MandationStatusPredicateSpec extends MockPredicate with MockMandationStatu
 
       lazy val result = {
         setupMockMandationStatus(Right(MandationStatus("NON SUPPORTED MANDATION STATUS")))
-        await(mockMandationStatusPredicate.refine(fakeRequest)).left.get
+        await(mockMandationStatusPredicate.refine(userWithSession)).left.get
       }
 
       //TODO: redirect back to other page once discussed with design
@@ -59,7 +62,7 @@ class MandationStatusPredicateSpec extends MockPredicate with MockMandationStatu
 
       lazy val result = {
         setupMockMandationStatus(Left(BadRequestError(BAD_REQUEST.toString, "Error response")))
-        await(mockMandationStatusPredicate.refine(fakeRequest)).left.get
+        await(mockMandationStatusPredicate.refine(userWithSession)).left.get
       }
 
       //TODO: redirect back to other page once discussed with design

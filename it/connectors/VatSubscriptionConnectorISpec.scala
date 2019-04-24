@@ -48,7 +48,7 @@ class VatSubscriptionConnectorISpec extends BaseISpec {
             hasFlatRateScheme = true
           )
 
-          stubGet(s"/vat-subscription/$vrn/customer-details", vatSubscriptionSuccessJson.toString(), OK)
+          stubGet(s"/vat-subscription/$vrn/customer-details", customerInformationSuccessJson.toString(), OK)
 
           val result: HttpGetResult[CustomerDetails] = await(connector.getCustomerDetails(vrn))
           result shouldBe Right(expectedModel)

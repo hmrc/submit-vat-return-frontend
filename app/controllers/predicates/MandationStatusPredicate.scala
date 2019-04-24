@@ -37,14 +37,6 @@ class MandationStatusPredicate @Inject()(mandationStatusService: MandationStatus
                                          implicit val appConfig: AppConfig,
                                          implicit val ec: ExecutionContext) extends ActionRefiner[User, User] with I18nSupport {
 
-  /*
-
-  //TODO: Update tests as had to change to return the user instead of a result (as VRN is needed for future calls)
-
-
-
-
-   */
 
   override def refine[A](request: User[A]): Future[Either[Result, User[A]]] = {
 
@@ -52,7 +44,7 @@ class MandationStatusPredicate @Inject()(mandationStatusService: MandationStatus
     implicit val req: User[A] = request
 
 
-    mandationStatusService.getMandationStatus("968501689") map {
+    mandationStatusService.getMandationStatus(req.vrn) map {
       case Right(MandationStatus(`nonMTDfB`)) => Right(request)
       case Right(unsupportedMandationStatus) =>
         Logger.debug(s"[MandationStatusPredicate][refine] - Incorrect mandation status returned. Status returned was: $unsupportedMandationStatus")
