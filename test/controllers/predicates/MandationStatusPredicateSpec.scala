@@ -22,9 +22,10 @@ import mocks.service.MockMandationStatusService
 import models.MandationStatus
 import models.auth.User
 import models.errors.BadRequestError
-import play.api.mvc.Results.Redirect
+import org.jsoup.Jsoup
 import play.api.http.Status.BAD_REQUEST
 import play.api.mvc.AnyContentAsEmpty
+import play.mvc.Http.Status
 
 class MandationStatusPredicateSpec extends MockPredicate with MockMandationStatusService {
 
@@ -52,9 +53,13 @@ class MandationStatusPredicateSpec extends MockPredicate with MockMandationStatu
         await(mockMandationStatusPredicate.refine(userWithSession)).left.get
       }
 
-      //TODO: redirect back to other page once discussed with design
-      "block the request and redirect back to the HelloWorld route" in {
-        result shouldBe Redirect(controllers.routes.HelloWorldController.helloWorld())
+      "return a forbidden" in {
+        status(result) shouldBe Status.FORBIDDEN
+      }
+
+      //TODO: Update test once correct page is in play
+      "show unsupported mandation status error view" in {
+        Jsoup.parse(bodyOf(result)).title shouldBe "You can’t use this service yet"
       }
     }
 
@@ -65,9 +70,12 @@ class MandationStatusPredicateSpec extends MockPredicate with MockMandationStatu
         await(mockMandationStatusPredicate.refine(userWithSession)).left.get
       }
 
-      //TODO: redirect back to other page once discussed with design
-      "block the request and redirect back to the HelloWorld route" in {
-        result shouldBe Redirect(controllers.routes.HelloWorldController.helloWorld())
+      "return an internal server error" in {
+        status(result) shouldBe Status.INTERNAL_SERVER_ERROR
+      }
+
+      "display the internal sever error page" in {
+        Jsoup.parse(bodyOf(result)).title shouldBe "Sorry, we are experiencing technical difficulties - 500"
       }
     }
   }

@@ -21,8 +21,8 @@ import javax.inject.Inject
 import models.MandationStatus
 import play.api.Logger
 import play.api.i18n.{I18nSupport, MessagesApi}
-import play.api.mvc.{ActionRefiner, Request, Result}
-import play.api.mvc.Results.Redirect
+import play.api.mvc.{ActionRefiner, Result}
+import play.api.mvc.Results.Forbidden
 import services.MandationStatusService
 import uk.gov.hmrc.http.HeaderCarrier
 import uk.gov.hmrc.play.HeaderCarrierConverter
@@ -47,12 +47,13 @@ class MandationStatusPredicate @Inject()(mandationStatusService: MandationStatus
     mandationStatusService.getMandationStatus(req.vrn) map {
       case Right(MandationStatus(`nonMTDfB`)) => Right(request)
       case Right(unsupportedMandationStatus) =>
-        Logger.debug(s"[MandationStatusPredicate][refine] - Incorrect mandation status returned. Status returned was: $unsupportedMandationStatus")
-        Left(Redirect(controllers.routes.HelloWorldController.helloWorld()))
+        Logger.debug(s"[MandationStatusPredicate][refine] - User has a non 'non MTDfB' status received. Status returned was: $unsupportedMandationStatus")
+        //TODO: Update in future story with correct error content
+        Left(Forbidden(views.html.errors.unauthorised_agent()))
       case error =>
         Logger.info(s"[MandationStatusPredicate][refine] - Error has been received $error")
         Logger.warn(s"[MandationStatusPredicate][refine] - Error has been received")
-        Left(Redirect(controllers.routes.HelloWorldController.helloWorld()))
+        Left(errorHandler.showInternalServerError)
     }
   }
 }

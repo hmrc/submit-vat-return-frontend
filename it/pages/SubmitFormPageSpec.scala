@@ -44,9 +44,6 @@ class SubmitFormPageSpec extends BaseISpec {
 
           val response: WSResponse = request
 
-          println()
-
-
           response.status shouldBe OK
         }
       }
@@ -96,14 +93,14 @@ class SubmitFormPageSpec extends BaseISpec {
 
     "user is not mandated" should {
 
-      "return 303" in {
+      "return 403" in {
 
         AuthStub.stubResponse(OK, mtdVatAuthResponse)
         VatSubscriptionStub.stubResponse("mandation-status", OK, unsupportedMandationStatusJson)
 
         val response: WSResponse = request
 
-        response.status shouldBe SEE_OTHER
+        response.status shouldBe FORBIDDEN
 
       }
     }

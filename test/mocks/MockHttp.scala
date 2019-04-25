@@ -16,41 +16,31 @@
 
 package mocks
 
-import org.mockito.ArgumentMatchers
-import org.mockito.Mockito._
-import org.mockito.stubbing.OngoingStubbing
-import org.scalatest.BeforeAndAfterEach
-import org.scalatest.mockito.MockitoSugar
+import org.scalamock.scalatest.MockFactory
 import play.api.libs.json.Writes
-import uk.gov.hmrc.http.HttpReads
+import uk.gov.hmrc.http.{HeaderCarrier, HttpReads}
 import uk.gov.hmrc.play.test.UnitSpec
 import uk.gov.hmrc.play.bootstrap.http.HttpClient
 
-import scala.concurrent.Future
+import scala.concurrent.ExecutionContext
 
-trait MockHttp extends UnitSpec with MockitoSugar with BeforeAndAfterEach {
+trait MockHttp extends UnitSpec with MockFactory {
 
   val mockHttp: HttpClient = mock[HttpClient]
 
-  override def beforeEach(): Unit = {
-    super.beforeEach()
-    reset(mockHttp)
-  }
+  def setupMockHttpGet[T](url: String)(response: T): Unit =
+    (mockHttp.GET[T](_: String)(_: HttpReads[T], _: HeaderCarrier, _: ExecutionContext))
+      .expects(*, *, *, *)
+      .returns(response)
 
-  def setupMockHttpGet[T](url: String)(response: T): OngoingStubbing[Future[T]] =
-    when(mockHttp.GET[T](ArgumentMatchers.eq(url))
-      (ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any())).thenReturn(Future.successful(response))
 
-  def setupMockHttpPost[I,O](url: String)(response: O): OngoingStubbing[Future[O]] =
-    when(mockHttp.POST[I,O]
-      (ArgumentMatchers.eq(url), ArgumentMatchers.any[I](), ArgumentMatchers.any())
-      (ArgumentMatchers.any[Writes[I]](),ArgumentMatchers.any[HttpReads[O]](), ArgumentMatchers.any(), ArgumentMatchers.any())
-    ).thenReturn(Future.successful(response))
+  def setupMockHttpPost[I,O](url: String)(response: O): Unit =
+    (mockHttp.POST[I,O](_: String, _: I, _: Seq[(String, String)])(_: Writes[I], _: HttpReads[O], _: HeaderCarrier, _: ExecutionContext))
+      .expects(*, *, *, *, *, *, *)
+      .returns(response)
 
-  def setupMockHttpPut[I,O](url: String)(response: O): OngoingStubbing[Future[O]] =
-    when(mockHttp.PUT[I,O]
-      (ArgumentMatchers.eq(url), ArgumentMatchers.any[I]())
-      (ArgumentMatchers.any[Writes[I]](),ArgumentMatchers.any[HttpReads[O]](), ArgumentMatchers.any(), ArgumentMatchers.any())
-    ).thenReturn(Future.successful(response))
+  def setupMockHttpPut[I,O](url: String)(response: O): Unit =
+    (mockHttp.PUT[I,O](_: String, _: I)(_: Writes[I], _: HttpReads[O], _: HeaderCarrier, _: ExecutionContext)).expects(*, *, *, *, *, *)
+      .returns(response)
 
 }

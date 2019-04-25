@@ -20,7 +20,6 @@ import config.AppConfig
 import connectors.httpParsers.ResponseHttpParsers.HttpGetResult
 import javax.inject.{Inject, Singleton}
 import models.{CustomerDetails, MandationStatus}
-import play.api.Logger
 import uk.gov.hmrc.http.HeaderCarrier
 import uk.gov.hmrc.play.bootstrap.http.HttpClient
 
@@ -36,7 +35,7 @@ class VatSubscriptionConnector @Inject()(httpClient: HttpClient, appConfig: AppC
 
     import connectors.httpParsers.CustomerDetailsHttpParser.CustomerDetailsReads
 
-    lazy val endpoint: String = "customer-details"
+    val endpoint: String = "customer-details"
 
     httpClient.GET[HttpGetResult[CustomerDetails]](urlToCall(vrn, endpoint))
   }
@@ -45,7 +44,7 @@ class VatSubscriptionConnector @Inject()(httpClient: HttpClient, appConfig: AppC
 
     import connectors.httpParsers.MandationStatusHttpParser.MandationStatusReads
 
-    lazy val endpoint: String = "mandation-status"
+    val endpoint: String = "mandation-status"
 
     httpClient.GET[HttpGetResult[MandationStatus]](urlToCall(vrn, endpoint))
   }

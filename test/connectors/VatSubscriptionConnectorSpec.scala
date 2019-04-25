@@ -50,7 +50,7 @@ class VatSubscriptionConnectorSpec extends BaseSpec with MockHttp {
 
       def result: Future[HttpGetResult[CustomerDetails]] = TestVatSubscriptionConnector.getCustomerDetails(vrn)
 
-      "called for a Right with CustomerDetails" should {
+      "a successful response is returned" should {
 
         "return a CustomerDetailsModel" in {
           setupMockHttpGet(TestVatSubscriptionConnector.vatSubscriptionUrl(vrn, "customer-details"))(Right(customerDetailsModel))
