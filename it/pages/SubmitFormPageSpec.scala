@@ -38,7 +38,8 @@ class SubmitFormPageSpec extends BaseISpec {
         "return 200" in {
 
           AuthStub.stubResponse(OK, mtdVatAuthResponse)
-          VatSubscriptionStub.stubResponse(OK, vatSubscriptionSuccessJson)
+          VatSubscriptionStub.stubResponse("customer-details", OK, customerInformationSuccessJson)
+          VatSubscriptionStub.stubResponse("mandation-status", OK, mandationStatusSuccessJson)
           VatObligationsStub.stubResponse(OK, vatObligationsSuccessJson)
 
           val response: WSResponse = request
@@ -52,7 +53,8 @@ class SubmitFormPageSpec extends BaseISpec {
         "return 500" in {
 
           AuthStub.stubResponse(OK, mtdVatAuthResponse)
-          VatSubscriptionStub.stubResponse(SERVICE_UNAVAILABLE, Json.obj())
+          VatSubscriptionStub.stubResponse("mandation-status", OK, mandationStatusSuccessJson)
+          VatSubscriptionStub.stubResponse("customer-details", SERVICE_UNAVAILABLE, Json.obj())
           VatObligationsStub.stubResponse(OK, vatObligationsSuccessJson)
 
           val response: WSResponse = request
@@ -66,7 +68,8 @@ class SubmitFormPageSpec extends BaseISpec {
         "return 500" in {
 
           AuthStub.stubResponse(OK, mtdVatAuthResponse)
-          VatSubscriptionStub.stubResponse(OK, vatSubscriptionSuccessJson)
+          VatSubscriptionStub.stubResponse("mandation-status", OK, mandationStatusSuccessJson)
+          VatSubscriptionStub.stubResponse("customer-details", OK, customerInformationSuccessJson)
           VatObligationsStub.stubResponse(SERVICE_UNAVAILABLE, Json.obj())
 
           val response: WSResponse = request
@@ -85,6 +88,20 @@ class SubmitFormPageSpec extends BaseISpec {
         val response: WSResponse = request
 
         response.status shouldBe FORBIDDEN
+      }
+    }
+
+    "user is not mandated" should {
+
+      "return 403" in {
+
+        AuthStub.stubResponse(OK, mtdVatAuthResponse)
+        VatSubscriptionStub.stubResponse("mandation-status", OK, unsupportedMandationStatusJson)
+
+        val response: WSResponse = request
+
+        response.status shouldBe FORBIDDEN
+
       }
     }
   }

@@ -19,21 +19,25 @@ package controllers
 import java.time.LocalDate
 
 import base.BaseSpec
+import common.MandationStatuses.nonMTDfB
 import connectors.httpParsers.ResponseHttpParsers.HttpGetResult
-import mocks.{MockAuth, MockVatObligationsService, MockVatSubscriptionService}
+import mocks.MockAuth
+import mocks.service.{MockVatObligationsService, MockVatSubscriptionService}
+import mocks.MockPredicate
+import models.{CustomerDetails, MandationStatus, VatObligation, VatObligations}
 import models.errors.UnexpectedJsonFormat
-import models.{CustomerDetails, VatObligation, VatObligations}
 import play.api.http.Status
 import play.api.test.Helpers._
 
 import scala.concurrent.Future
 
-class SubmitFormControllerSpec extends BaseSpec with MockVatSubscriptionService with MockVatObligationsService with MockAuth {
+class SubmitFormControllerSpec extends BaseSpec with MockVatSubscriptionService with MockVatObligationsService with MockAuth with MockPredicate {
 
   object TestSubmitFormController extends SubmitFormController(
     messagesApi,
     mockVatSubscriptionService,
     mockVatObligationsService,
+    mockMandationStatusPredicate,
     errorHandler,
     mockAuthPredicate,
     mockAppConfig
@@ -61,7 +65,10 @@ class SubmitFormControllerSpec extends BaseSpec with MockVatSubscriptionService 
         val vatSubscriptionResponse: Future[HttpGetResult[CustomerDetails]] = Future.successful(Right(customerInformation))
         val vatObligationsResponse: Future[HttpGetResult[VatObligations]] = Future.successful(Right(obligations))
 
-        lazy val result = TestSubmitFormController.show("18AA")(fakeRequest)
+        lazy val result = {
+          setupMockMandationStatus(Right(MandationStatus(nonMTDfB)))
+          TestSubmitFormController.show("18AA")(fakeRequest)
+        }
 
         "return 200" in {
           mockAuthorise(mtdVatAuthorisedResponse)
@@ -85,9 +92,11 @@ class SubmitFormControllerSpec extends BaseSpec with MockVatSubscriptionService 
           mockAuthorise(mtdVatAuthorisedResponse)
           setupVatSubscriptionService(vatSubscriptionErrorResponse)
           setupVatObligationsService(vatObligationsErrorResponse)
+          setupMockMandationStatus(Right(MandationStatus(nonMTDfB)))
 
           lazy val result = TestSubmitFormController.show("18AA")(fakeRequest)
           status(result) shouldBe Status.INTERNAL_SERVER_ERROR
+
         }
       }
     }

@@ -14,25 +14,24 @@
  * limitations under the License.
  */
 
-package mocks
+package mocks.service
 
 import connectors.httpParsers.ResponseHttpParsers.HttpGetResult
-import models.CustomerDetails
+import models.MandationStatus
 import org.scalamock.scalatest.MockFactory
-import services.VatSubscriptionService
+import services.MandationStatusService
 import uk.gov.hmrc.http.HeaderCarrier
 import uk.gov.hmrc.play.test.UnitSpec
 
 import scala.concurrent.{ExecutionContext, Future}
 
-trait MockVatSubscriptionService extends UnitSpec with MockFactory {
+trait MockMandationStatusService extends UnitSpec with MockFactory {
 
-  val mockVatSubscriptionService: VatSubscriptionService = mock[VatSubscriptionService]
+  val mockMandationStatusService: MandationStatusService = mock[MandationStatusService]
 
-  def setupVatSubscriptionService(response: Future[HttpGetResult[CustomerDetails]])(implicit hc: HeaderCarrier, ec: ExecutionContext): Unit = {
-    (mockVatSubscriptionService.getCustomerDetails(_: String)(_: HeaderCarrier, _: ExecutionContext))
+  def setupMockMandationStatus(response: Future[HttpGetResult[MandationStatus]])(implicit hc: HeaderCarrier, ec: ExecutionContext): Unit = {
+    (mockMandationStatusService.getMandationStatus(_: String)(_: HeaderCarrier, _: ExecutionContext))
       .expects(*, *, *)
       .returns(response)
   }
-
 }

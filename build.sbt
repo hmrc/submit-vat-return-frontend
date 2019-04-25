@@ -53,7 +53,8 @@ val test = Seq(
   "org.jsoup" % "jsoup" % "1.11.3",
   "com.typesafe.play" %% "play-test" % PlayVersion.current,
   "org.scalamock" %% "scalamock-scalatest-support" % "3.6.0",
-  "com.github.tomakehurst" % "wiremock" % "2.21.0"
+  "com.github.tomakehurst" % "wiremock" % "2.21.0",
+  "org.mockito" % "mockito-core" % "2.13.0"
 ).map(_ % s"$Test, $IntegrationTest")
 
 def oneForkedJvmPerTest(tests: Seq[TestDefinition]): Seq[Group] = tests map {

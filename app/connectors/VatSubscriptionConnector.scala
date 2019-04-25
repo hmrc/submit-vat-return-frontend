@@ -18,23 +18,34 @@ package connectors
 
 import config.AppConfig
 import connectors.httpParsers.ResponseHttpParsers.HttpGetResult
-import javax.inject.Inject
-import models.CustomerDetails
+import javax.inject.{Inject, Singleton}
+import models.{CustomerDetails, MandationStatus}
 import uk.gov.hmrc.http.HeaderCarrier
 import uk.gov.hmrc.play.bootstrap.http.HttpClient
 
 import scala.concurrent.{ExecutionContext, Future}
 
+@Singleton
 class VatSubscriptionConnector @Inject()(httpClient: HttpClient, appConfig: AppConfig) {
-  private def vatSubscriptionUrl(vrn: String, endpoint: String): String = appConfig.baseUrl("vat-subscription") + s"/vat-subscription/$vrn/$endpoint"
+  private[connectors] def vatSubscriptionUrl(vrn: String,endpoint: String): String = appConfig.baseUrl("vat-subscription") + s"/vat-subscription/$vrn/$endpoint"
 
-  private lazy val endpoint: String = "customer-details"
-  private lazy val urlToCall: String => String = vrn => vatSubscriptionUrl(vrn, endpoint)
+  private lazy val urlToCall: (String, String) => String = (vrn, endpoint) => vatSubscriptionUrl(vrn, endpoint)
 
   def getCustomerDetails(vrn: String)(implicit hc: HeaderCarrier, ec: ExecutionContext): Future[HttpGetResult[CustomerDetails]] = {
 
     import connectors.httpParsers.CustomerDetailsHttpParser.CustomerDetailsReads
 
-    httpClient.GET[HttpGetResult[CustomerDetails]](urlToCall(vrn))
+    val endpoint: String = "customer-details"
+
+    httpClient.GET[HttpGetResult[CustomerDetails]](urlToCall(vrn, endpoint))
+  }
+
+  def getCustomerMandationStatus(vrn: String)(implicit hc: HeaderCarrier, ec: ExecutionContext): Future[HttpGetResult[MandationStatus]] = {
+
+    import connectors.httpParsers.MandationStatusHttpParser.MandationStatusReads
+
+    val endpoint: String = "mandation-status"
+
+    httpClient.GET[HttpGetResult[MandationStatus]](urlToCall(vrn, endpoint))
   }
 }

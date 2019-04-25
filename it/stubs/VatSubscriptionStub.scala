@@ -18,12 +18,12 @@ package stubs
 
 import base.BaseISpec
 import com.github.tomakehurst.wiremock.stubbing.StubMapping
-import play.api.http.Status.OK
+import common.MandationStatuses.nonMTDfB
 import play.api.libs.json.{JsObject, Json}
 
 object VatSubscriptionStub extends BaseISpec {
 
-  val vatSubscriptionSuccessJson: JsObject = Json.obj(
+  val customerInformationSuccessJson: JsObject = Json.obj(
     "firstName" -> "Rath",
     "lastName" -> "Alos",
     "tradingName" -> "Blue Rathalos",
@@ -31,12 +31,20 @@ object VatSubscriptionStub extends BaseISpec {
     "hasFlatRateScheme" -> true
   )
 
+  val mandationStatusSuccessJson: JsObject = Json.obj(
+    "mandationStatus" -> nonMTDfB
+  )
+
+  val unsupportedMandationStatusJson: JsObject = Json.obj(
+    "mandationStatus" -> "unsupported status"
+  )
+
   val vatSubscriptionInvalidJson: JsObject = Json.obj(
     "monster" -> "Rathalos",
     "bestWeapon" -> "Swaxe"
   )
 
-  def stubResponse(status: Int, body: JsObject): StubMapping = {
-    stubGet("/vat-subscription/999999999/customer-details", Json.stringify(body), OK)
+  def stubResponse(route: String, status: Int, body: JsObject): StubMapping = {
+    stubGet(s"/vat-subscription/999999999/$route", Json.stringify(body), status)
   }
 }
