@@ -23,7 +23,7 @@ import common.MandationStatuses.nonMTDfB
 import connectors.httpParsers.ResponseHttpParsers.HttpGetResult
 import mocks.MockAuth
 import mocks.service.{MockVatObligationsService, MockVatSubscriptionService}
-import mocks.MockPredicate
+import mocks.MockMandationPredicate
 import models.{CustomerDetails, MandationStatus, VatObligation, VatObligations}
 import models.errors.UnexpectedJsonFormat
 import play.api.http.Status
@@ -31,7 +31,7 @@ import play.api.test.Helpers._
 
 import scala.concurrent.Future
 
-class SubmitFormControllerSpec extends BaseSpec with MockVatSubscriptionService with MockVatObligationsService with MockAuth with MockPredicate {
+class SubmitFormControllerSpec extends BaseSpec with MockVatSubscriptionService with MockVatObligationsService with MockAuth with MockMandationPredicate {
 
   object TestSubmitFormController extends SubmitFormController(
     messagesApi,

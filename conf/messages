@@ -1,6 +1,7 @@
 common.service-name = Business tax account
 common.fullStop = .
 common.signOut = Sign out
+common.finish = Finish
 
 error.required = Please enter a value
 error.summary.title = There is a problem
@@ -19,3 +20,8 @@ unauthorised_non_agent.title = You can’t use this service yet
 unauthorised_non_agent.heading = You can’t use this service yet
 unauthorised_non_agent.text = You need to
 unauthorised_non_agent.link = sign up to use software to submit your VAT returns
+
+confirmation_view.title = Your VAT Return
+confirmation_view.heading = VAT Return submission complete
+confirmation_view.subHeading = What happens next
+confirmation_view.paragraph = We have received your VAT Return.
