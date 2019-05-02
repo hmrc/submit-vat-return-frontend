@@ -17,7 +17,7 @@
 package controllers.predicates
 
 import common.MandationStatuses.nonMTDfB
-import mocks.MockPredicate
+import mocks.MockMandationPredicate
 import mocks.service.MockMandationStatusService
 import models.MandationStatus
 import models.auth.User
@@ -27,7 +27,7 @@ import play.api.http.Status.BAD_REQUEST
 import play.api.mvc.AnyContentAsEmpty
 import play.mvc.Http.Status
 
-class MandationStatusPredicateSpec extends MockPredicate with MockMandationStatusService {
+class MandationStatusPredicateSpec extends MockMandationPredicate with MockMandationStatusService {
 
   val userWithSession: User[AnyContentAsEmpty.type] =
     User[AnyContentAsEmpty.type]("123456789")(fakeRequest)
