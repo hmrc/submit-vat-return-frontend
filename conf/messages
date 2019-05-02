@@ -13,14 +13,13 @@ session_expired.title = For your security, this service has been reset
 session_expired.heading = For your security, this service has been reset
 session_expired.guidance = The details you have given have been deleted because you did not continue the service for 15 minutes.
 
+submit_form.title = Submit return
 submit_form.heading = Submit return
-submit_form.title = Your VAT return
 submit_form.additionalInformation = Additional information
-submit_form.submitReturn = You can submit your return on the next screen.
-
+submit_form.submitReturn = You can submit your return
 
 confirm_submission.title = Your VAT return
-
+confirm_submission.heading = Submit return
 confirm_submission.returnDueDate = Return due date: {0}
 confirm_submission.vatDetails = VAT details
 confirm_submission.returnTotal = Return total: {0}

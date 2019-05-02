@@ -10,4 +10,6 @@ GET        /hello-world             controllers.HelloWorldController.helloWorld
 GET        /:periodKey/submit-form  controllers.SubmitFormController.show(periodKey: String)
 POST       /:periodKey/submit-form  controllers.SubmitFormController.submit(frs: Boolean, obs: String, periodKey: String, name: Option[String])
 
-GET        /submission-confirmation controllers.ConfirmationController.show
+GET        /submission-confirmation       controllers.ConfirmationController.show
+
+GET        /:periodKey/confirm-submission controllers.ConfirmSubmissionController.show(periodKey: String)
