@@ -45,5 +45,6 @@ object ConfirmSubmissionMessages {
   val nowSubmitReturnHeading = "Now submit your return"
   val submitReturnInformation: String = "When you submit the above information, you are making a legal declaration that the information is correct and" +
     " complete to the best of your knowledge and belief. A false declaration can result in prosecution."
+  val submitButton = "Submit"
 
 }

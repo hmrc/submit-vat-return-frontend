@@ -23,7 +23,6 @@ import assets.messages.{ConfirmSubmissionMessages => viewMessages}
 
 class ConfirmSubmissionViewSpec extends ViewBaseSpec {
 
-  //TODO: Update selectors
   object Selectors {
     val box1Heading = "#box-one > div.column-one-quarter.form-hint"
     val box1Description = "#box-one > div.column-one-half.form-hint"
@@ -45,6 +44,10 @@ class ConfirmSubmissionViewSpec extends ViewBaseSpec {
     val box9Description = "#box-nine > div.column-one-half.form-hint"
     val returnTotalHeading = "#content > article > section > section:nth-child(6) > div > h3"
     val returnDueDate = "#content > article > section > section:nth-child(6) > div > p"
+    val changeReturnLink = "#content > article > section > section:nth-child(6) > div > a"
+    val submitVatReturnHeading = "#content > article > section > h3.bold-medium"
+    val submitReturnInformation = "#content > article > section > p"
+    val submitButton = "#content > article > section > a"
   }
 
 
@@ -53,7 +56,7 @@ class ConfirmSubmissionViewSpec extends ViewBaseSpec {
     "the user owes HMRC money" should {
 
       "displays the correct information" should {
-        
+
         lazy val view = views.html.confirm_submission()
         lazy implicit val document: Document = Jsoup.parse(view.body)
 
@@ -154,17 +157,36 @@ class ConfirmSubmissionViewSpec extends ViewBaseSpec {
         }
 
         s"the return total heading is shown as ${viewMessages.returnTotal}" in {
-          elementText(Selectors.returnTotalHeading) shouldBe viewMessages.returnTotal
+          elementText(Selectors.returnTotalHeading) shouldBe s"${viewMessages.returnTotal} {0}"
         }
 
         s"the return due date is shown as ${viewMessages.returnDueDate}" in {
-          elementText(Selectors.returnDueDate)
+          elementText(Selectors.returnDueDate) shouldBe s"${viewMessages.returnDueDate} {0}"
         }
 
+        "have the change return details link which" should {
 
+          s"the redirect url to URL NEEDED" in {
+            element(Selectors.changeReturnLink).attr("href") shouldBe "/TODO"
+          }
+
+          s"display the correct content as ${viewMessages.changeReturnLink}" in {
+            elementText(Selectors.changeReturnLink) shouldBe viewMessages.changeReturnLink
+          }
+        }
+
+        s"displays the ${viewMessages.nowSubmitReturnHeading} heading" in {
+          elementText(Selectors.submitVatReturnHeading) shouldBe viewMessages.nowSubmitReturnHeading
+        }
+
+        "display the legal declaration paragraph" in {
+          elementText(Selectors.submitReturnInformation) shouldBe viewMessages.submitReturnInformation
+        }
+
+        s"display the ${viewMessages.submitButton} button" in {
+          elementText(Selectors.submitButton) shouldBe viewMessages.submitButton
+        }
       }
-
-
     }
 
     "HMRC owes the user money" should {
