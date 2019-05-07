@@ -32,7 +32,9 @@ object ConfirmSubmissionMessages {
   val box5Heading = "Box 5"
   val box5Description = "Return total"
   val box6Heading = "Box 6"
-  val box6Description = "Total value of sales and other supplies, excluding VAT"
+  val box6DescriptionHasFRS = "" +
+    "Total value of sales and other supplies, including VAT"
+  val box6DescriptionNoFRS = "Total value of sales and other supplies, excluding VAT"
   val box7Heading = "Box 7"
   val box7Description = "Total value of purchases and other expenses, excluding VAT"
   val box8Heading = "Box 8"

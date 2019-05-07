@@ -49,4 +49,19 @@ class ConfirmSubmissionControllerSpec extends BaseSpec with MockAuth with MockMa
       }
     }
   }
+
+  "ConfirmSubmissionController .submit" when {
+    "user is authorised" should {
+
+      lazy val result: Future[Result] = TestConfirmSubmissionController.submit("18AA")(fakeRequest)
+
+      "return 303" in {
+        status(result) shouldBe Status.SEE_OTHER
+      }
+
+      s"redirect url should be ${controllers.routes.ConfirmationController.show()}" in {
+        redirectLocation(result) shouldBe Some(controllers.routes.ConfirmationController.show().url)
+      }
+    }
+  }
 }

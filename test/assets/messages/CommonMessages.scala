@@ -14,10 +14,8 @@
  * limitations under the License.
  */
 
-package models
+package assets.messages
 
-case class VatReturnsViewModel(returnYears: Seq[Int],
-                               selectedYear: Int,
-                               obligations: Seq[VatObligation],
-                               hasNonMtdVatEnrolment: Boolean,
-                               vrn: String)
+object CommonMessages {
+  val backLink = "Back"
+}

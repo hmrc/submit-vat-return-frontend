@@ -5,6 +5,7 @@ common.finish = Finish
 common.submit = Submit
 common.dateRangeSeparator = to
 common.continue = Continue
+common.back = Back
 
 error.required = Please enter a value
 error.summary.title = There is a problem
@@ -20,9 +21,9 @@ submit_form.submitReturn = You can submit your return
 
 confirm_submission.title = Your VAT return
 confirm_submission.heading = Submit return
-confirm_submission.returnDueDate = Return due date: {0}
+confirm_submission.returnDueDate = Return due date:
 confirm_submission.vatDetails = VAT details
-confirm_submission.returnTotal = Return total: {0}
+confirm_submission.returnTotal = Return total:
 
 confirm_submission.additionalInfo = Additional information
 confirm_submission.boxOne = Box 1

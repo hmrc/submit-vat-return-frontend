@@ -15,55 +15,60 @@
  *@
 
 @import config.AppConfig
+@import views.html.templates.formatters.dates.{displayDateRange, displayDate}
+@import views.html.templates.formatters.money.displayMoney
+@import uk.gov.hmrc.play.views.html.helpers
 
-@()(implicit request: Request[_], messages: Messages, appConfig: AppConfig)
+@(viewModel: ConfirmSubmissionViewModel)(implicit request: Request[_], messages: Messages, appConfig: AppConfig)
 
 @main_template(messages("confirm_submission.title"), appConfig = appConfig, bodyClasses = None) {
+
+  <a class="link-back" href='@controllers.routes.HelloWorldController.helloWorld()'>@messages("common.back")</a>
 
   <section class="grid-row">
     <h1 class="heading-xlarge">
       <span class="heading-secondary">@messages("confirm_submission.heading")</span>
-      OBLIGATION DATE
-      <p class="form-hint heading-small">@messages("confirm_submission.returnDueDate")</p>
+        @displayDateRange(viewModel.obligations.start, viewModel.obligations.end, useShortDayFormat = true)
+      <p class="form-hint heading-small">@messages("confirm_submission.returnDueDate") @displayDate(viewModel.obligations.due)</p>
     </h1>
 
-    <h2 class="heading-large">TEST</h2>
+    <h2 class="heading-large">@viewModel.userName</h2>
     <h3 class="bold-small form-group">@messages("confirm_submission.vatDetails")</h3>
     <section class="form-group divider--bottom">
       <div class="form-group">
         <div class="grid-row" id="box-one">
           <div class="column-one-quarter form-hint">@messages("confirm_submission.boxOne")</div>
           <div class="column-one-half form-hint">@messages("confirm_submission.boxOneDescription")</div>
+          <div class="column-one-quarter form-hint text--right">@displayMoney(viewModel.returnDetail.boxOne)</div>
         </div>
         <div class="grid-row" id="box-two">
           <div class="column-one-quarter form-hint">@messages("confirm_submission.boxTwo")</div>
           <div class="column-one-half form-hint">@messages("confirm_submission.boxTwoDescription")</div>
+          <div class="column-one-quarter form-hint text--right">@displayMoney(viewModel.returnDetail.boxTwo)</div>
         </div>
       </div>
       <div class="form-group">
         <div class="grid-row" id="box-three">
           <div class="column-one-quarter form-hint">@messages("confirm_submission.boxThree")</div>
           <div class="column-one-half form-hint">@messages("confirm_submission.boxThreeDescription")</div>
+          <div class="column-one-quarter form-hint text--right">@displayMoney(viewModel.returnDetail.boxThree)</div>
         </div>
         <div class="grid-row" id="box-four">
           <div class="column-one-quarter form-hint">@messages("confirm_submission.boxFour")</div>
           <div class="column-one-half form-hint">@messages("confirm_submission.boxFourDescription")</div>
-          <div class="column-one-quarter form-hint text--right" style="white-space: nowrap">
-          </div>
+          <div class="column-one-quarter form-hint text--right">@displayMoney(viewModel.returnDetail.boxFour)</div>
         </div>
       </div>
       <div class="form-group">
         <div class="grid-row" id="box-five">
-          <div class="column-one-quarter"><strong class="bold-small">@messages("confirm_submission.boxFive")</strong></div>
+          <div class="column-one-quarter">
+            <strong class="bold-small">@messages("confirm_submission.boxFive")</strong>
+          </div>
           <div class="column-one-half">
             <strong class="bold-small">@messages("confirm_submission.boxFiveDescription")</strong>
           </div>
           <div class="column-one-quarter text--right">
-            <strong class="bold-small">
-              <span class="visually-hidden">
-              @messages("confirm_submission.boxFiveDescription")
-              </span>
-            </strong>
+            <strong class="bold-small">@displayMoney(viewModel.returnDetail.boxFive)</strong>
           </div>
         </div>
       </div>
@@ -75,32 +80,35 @@
       <div class="form-group">
         <div class="grid-row" id="box-six">
           <div class="column-one-quarter form-hint">@messages("confirm_submission.boxSix")</div>
+          @if(viewModel.hasFlatRateScheme){
           <div class="column-one-half form-hint">@messages("confirm_submission.boxSixFlatRate")</div>
-          <div class="column-one-half form-hint">@messages("confirm_submission.boxSixNoFlatRate")</div>
-          <div class="column-one-quarter form-hint text--right"></div>
+          }else {
+            <div class="column-one-half form-hint">@messages("confirm_submission.boxSixNoFlatRate")</div>
+          }
+          <div class="column-one-quarter form-hint text--right">@displayMoney(viewModel.returnDetail.boxSix)</div>
         </div>
         <div class="grid-row" id="box-seven">
           <div class="column-one-quarter form-hint">@messages("confirm_submission.boxSeven")</div>
           <div class="column-one-half form-hint">@messages("confirm_submission.boxSevenDescription")</div>
-          <div class="column-one-quarter form-hint text--right"></div>
+          <div class="column-one-quarter form-hint text--right">@displayMoney(viewModel.returnDetail.boxSeven)</div>
         </div>
         <div class="grid-row" id="box-eight">
           <div class="column-one-quarter form-hint">@messages("confirm_submission.boxEight")</div>
           <div class="column-one-half form-hint">@messages("confirm_submission.boxEightDescription")</div>
-          <div class="column-one-quarter form-hint text--right"></div>
+          <div class="column-one-quarter form-hint text--right">@displayMoney(viewModel.returnDetail.boxEight)</div>
         </div>
         <div class="grid-row" id="box-nine">
           <div class="column-one-quarter form-hint">@messages("confirm_submission.boxNine")</div>
           <div class="column-one-half form-hint">@messages("confirm_submission.boxNineDescription")</div>
-          <div class="column-one-quarter form-hint text--right"></div>
+          <div class="column-one-quarter form-hint text--right">@displayMoney(viewModel.returnDetail.boxNine)</div>
         </div>
       </div>
     </section>
 
     <section class="form-group divider--bottom">
       <div class="form-group">
-        <h3 class="bold-large">@messages("confirm_submission.returnTotal")</h3>
-        <p>@messages("confirm_submission.returnDueDate")</p>
+        <h3 class="bold-large">@messages("confirm_submission.returnTotal")@displayMoney(viewModel.vatReturnTotal)</h3>
+        <p>@messages("confirm_submission.returnDueDate") @displayDate(viewModel.obligations.due)</p>
         <a href="/TODO">@messages("confirm_submission.changeDetail")</a>
       </div>
     </section>
@@ -109,7 +117,13 @@
 
     <p>@messages("confirm_submission.information")</p>
 
-    <a class="button" href=@appConfig.vatSummaryUrl>@messages("common.submit")</a>
+    @helpers.form(action = controllers.routes.ConfirmSubmissionController.submit(viewModel.obligations.periodKey)) {
+      <button
+        class="button"
+        type ="submit">
+        @messages("common.submit")
+      </button>
+    }
 
   </section>
 
