@@ -15,9 +15,10 @@
  *@
 
 @import config.AppConfig
+@import templates.inputs.moneyInput
 
 
-@(periodKey: String, clientName: Option[String], flatRateScheme: Boolean, obligations: VatObligations)(implicit request: Request[_], messages: Messages, appConfig: AppConfig)
+@(periodKey: String, clientName: Option[String], flatRateScheme: Boolean, obligations: VatObligations, form: Form[NineBoxModel])(implicit request: Request[_], messages: Messages, appConfig: AppConfig)
 
 @main_template(messages("submit_form.title"), appConfig = appConfig, bodyClasses = None) {
 
@@ -34,4 +35,92 @@
       <p>End date: @obligation.end</p>
       <p>Due date: @obligation.due</p>
     }
-}
+
+
+<div class="grid-row">
+
+            <h1 class="heading-xlarge">
+                <span class="heading-secondary">@messages("submit_form.heading")</span>
+                @periodKey
+                <span class="form-hint">@messages("confirm_submission.returnDueDate", obligations.obligations.head.due)</span>
+            </h1>
+
+            <h2 class="heading-large">@clientName</h2>
+            <h3 class="bold-small form-group">@messages("confirm_submission.vatDetails")</h3>
+            <div class="form-group">
+                <div class="grid-row" id="box-one">
+                    <div class="column-one-quarter form-hint">@messages("confirm_submission.boxOne")</div>
+                    <div class="column-one-half form-hint">@messages("confirm_submission.boxOneDescription")</div>
+                    <div class="column-one-quarter r-align form-hint">
+                        <div class="form-group">
+                            @moneyInput(
+                                field = form("box1"),
+                                label = messages(""),
+                                labelHidden = false,
+                                decimalPlace = true
+                            )
+                        </div>
+                    </div>
+                </div>
+                <div class="grid-row" id="box-two">
+                    <div class="column-one-quarter form-hint">@messages("confirm_submission.boxTwo")</div>
+                    <div class="column-one-half form-hint">@messages("confirm_submission.boxTwoDescription")</div>
+                </div>
+            </div>
+            <div class="form-group">
+                <div class="grid-row" id="box-three">
+                    <div class="column-one-quarter form-hint">@messages("confirm_submission.boxThree")</div>
+                    <div class="column-one-half form-hint">@messages("confirm_submission.boxThreeDescription")</div>
+                </div>
+                <div class="grid-row" id="box-four">
+                    <div class="column-one-quarter form-hint">@messages("confirm_submission.boxFour")</div>
+                    <div class="column-one-half form-hint">@messages("confirm_submission.boxFourDescription")</div>
+                    <div class="column-one-quarter form-hint text--right" style="white-space: nowrap">
+                    </div>
+                </div>
+            </div>
+            <div class="form-group">
+                <div class="grid-row" id="box-five">
+                    <div class="column-one-quarter"><strong class="bold-small">@messages("confirm_submission.boxFive")</strong></div>
+                    <div class="column-one-half">
+                        <strong class="bold-small">
+                        </strong>
+                    </div>
+                    <div class="column-one-quarter text--right">
+                        <strong class="bold-small">
+                            <span class="visually-hidden">
+                            @messages("confirm_submission.boxFiveDescription")
+                            </span>
+                        </strong>
+                    </div>
+                </div>
+            </div>
+
+            <div class="grid-row" id="box-six">
+                <div class="column-one-quarter form-hint">@messages("confirm_submission.boxSix")</div>
+
+                <div class="column-one-half form-hint">@messages("confirm_submission.boxSixFlatRate")</div>
+                <div class="column-one-half form-hint">@messages("confirm_submission.boxSixNoFlatRate")</div>
+
+                <div class="column-one-quarter form-hint text--right"></div>
+            </div>
+            <div class="grid-row" id="box-seven">
+                <div class="column-one-quarter form-hint">@messages("confirm_submission.boxSeven")</div>
+                <div class="column-one-half form-hint">@messages("confirm_submission.boxSevenDescription")</div>
+                <div class="column-one-quarter form-hint text--right"></div>
+            </div>
+            <div class="grid-row" id="box-eight">
+                <div class="column-one-quarter form-hint">@messages("confirm_submission.boxEight")</div>
+                <div class="column-one-half form-hint">@messages("confirm_submission.boxEightDescription")</div>
+                <div class="column-one-quarter form-hint text--right"></div>
+            </div>
+            <div class="grid-row" id="box-nine">
+                <div class="column-one-quarter form-hint">@messages("confirm_submission.boxNine")</div>
+                <div class="column-one-half form-hint">@messages("confirm_submission.boxNineDescription")</div>
+                <div class="column-one-quarter form-hint text--right"></div>
+            </div>
+</div>
+
+    <h3 class="bold-small">@messages("confirm_submission.submitReturn")</h3>
+
+    }

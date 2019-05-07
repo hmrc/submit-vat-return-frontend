@@ -23,6 +23,8 @@ import play.api.mvc.{Action, AnyContent}
 import config.ErrorHandler
 import controllers.predicates.AuthPredicate
 import controllers.predicates.MandationStatusPredicate
+import forms.NineBoxForm
+import models.NineBoxModel
 import services.{VatObligationsService, VatSubscriptionService}
 import uk.gov.hmrc.play.bootstrap.controller.FrontendController
 
@@ -46,7 +48,7 @@ class SubmitFormController @Inject()(val messagesApi: MessagesApi,
     } yield {
       (customerInformation, obligations) match {
         case (Right(customerDetails), Right(obs)) => {
-          Ok(views.html.submit_form(periodKey, customerDetails.clientName, customerDetails.hasFlatRateScheme, obs))
+          Ok(views.html.submit_form(periodKey, customerDetails.clientName, customerDetails.hasFlatRateScheme, obs, NineBoxForm.nineBoxForm.fill(NineBoxModel.empty)))
         }
         case (_, _ ) => errorHandler.showInternalServerError
       }
