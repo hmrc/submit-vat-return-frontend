@@ -15,17 +15,10 @@
  *@
 
 @(field: Field,
-        label: String,
-        labelHidden: Boolean,
         decimalPlace: Boolean,
         hint: Option[String] = None)(implicit messages: Messages)
 
 <div class="form-group @if(field.hasErrors){form-field--error}">
-
-    <label for="@field.id" class="form-label @if(labelHidden) {visuallyhidden}">
-    @label
-    </label>
-
     @hint.map { hint =>
         <span class="form-hint">
             @hint
@@ -41,7 +34,7 @@
     <span class="input-currency"></span>
 
     <input type="number"
-    class="input--no-spinner input--left-padding @if(field.hasErrors) {error-field}"
+    class="form-control moneyField input--no-spinner @if(field.hasErrors) {error-field}"
     name="@field.name"
     id="@field.id"
     value="@field.value"

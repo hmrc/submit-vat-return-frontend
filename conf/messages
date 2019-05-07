@@ -2,6 +2,9 @@ common.service-name = Business tax account
 common.fullStop = .
 common.signOut = Sign out
 common.finish = Finish
+common.submit = Submit
+common.dateRangeSeparator = to
+common.continue = Continue
 
 error.required = Please enter a value
 error.summary.title = There is a problem
@@ -12,6 +15,10 @@ session_expired.guidance = The details you have given have been deleted because 
 
 submit_form.heading = Submit return
 submit_form.title = Your VAT return
+submit_form.additionalInformation = Additional information
+submit_form.submitReturn = You can submit your return on the next screen.
+
+
 confirm_submission.title = Your VAT return
 
 confirm_submission.returnDueDate = Return due date: {0}

@@ -28,6 +28,8 @@ import models.NineBoxModel
 import services.{VatObligationsService, VatSubscriptionService}
 import uk.gov.hmrc.play.bootstrap.controller.FrontendController
 
+import scala.concurrent.Future
+
 @Singleton
 class SubmitFormController @Inject()(val messagesApi: MessagesApi,
                                      val vatSubscriptionService: VatSubscriptionService,
@@ -37,7 +39,7 @@ class SubmitFormController @Inject()(val messagesApi: MessagesApi,
                                      authPredicate: AuthPredicate,
                                      implicit val appConfig: AppConfig) extends FrontendController with I18nSupport {
 
-  def show(periodKey: String): Action[AnyContent] = (authPredicate andThen mandationStatusCheck).async { implicit user =>
+  def show(periodKey: String): Action[AnyContent] = (authPredicate).async { implicit user =>
 
     val customerInformationCall = vatSubscriptionService.getCustomerDetails(user.vrn)
     val obligationsCall = vatObligationsService.getObligations(user.vrn)
@@ -48,10 +50,18 @@ class SubmitFormController @Inject()(val messagesApi: MessagesApi,
     } yield {
       (customerInformation, obligations) match {
         case (Right(customerDetails), Right(obs)) => {
-          Ok(views.html.submit_form(periodKey, customerDetails.clientName, customerDetails.hasFlatRateScheme, obs, NineBoxForm.nineBoxForm.fill(NineBoxModel.empty)))
+          Ok(views.html.submit_form(periodKey, customerDetails.clientName, customerDetails.hasFlatRateScheme, obs, NineBoxForm.nineBoxForm))
         }
         case (_, _ ) => errorHandler.showInternalServerError
       }
     }
+  }
+
+  def submit: Action[AnyContent] = authPredicate.async { implicit user =>
+
+    NineBoxForm.nineBoxForm.bindFromRequest().fold(
+      error => Future.successful(errorHandler.showInternalServerError),
+      success => Future.successful(Redirect(controllers.routes.HelloWorldController.helloWorld()))
+    )
   }
 }
