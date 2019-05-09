@@ -18,9 +18,7 @@
 @import java.time.format.{DateTimeFormatter, ResolverStyle}
 @import play.api.i18n.Messages
 
-@(date: LocalDate, showYear: Boolean = true, useShortDayFormat: Boolean = false)(implicit messages: Messages, lang: Lang)
-
-@defining({
+@(date: LocalDate, showYear: Boolean = true, useShortDayFormat: Boolean = false)(implicit messages: Messages, lang: Lang)@{
     val englishFormat = (if(useShortDayFormat) "d MMM" else "d MMMM") + (if(showYear) " uuuu" else "")
     val welshFormat = {
         (if(useShortDayFormat) {
@@ -32,6 +30,4 @@
     val format = if(lang.language == "cy") welshFormat else englishFormat
     val formatter = DateTimeFormatter.ofPattern(format).withResolverStyle(ResolverStyle.STRICT)
     date.format(formatter)
-}) { displayDate =>
-    @displayDate
 }

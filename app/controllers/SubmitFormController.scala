@@ -19,12 +19,12 @@ package controllers
 import config.AppConfig
 import javax.inject.{Inject, Singleton}
 import play.api.i18n.{I18nSupport, MessagesApi}
-import play.api.mvc.{Action, AnyContent}
+import play.api.mvc.{Action, AnyContent, Call}
 import config.ErrorHandler
 import controllers.predicates.AuthPredicate
 import controllers.predicates.MandationStatusPredicate
 import forms.NineBoxForm
-import models.NineBoxModel
+import models.{NineBoxModel, VatObligations}
 import services.{VatObligationsService, VatSubscriptionService}
 import uk.gov.hmrc.play.bootstrap.controller.FrontendController
 
@@ -39,7 +39,7 @@ class SubmitFormController @Inject()(val messagesApi: MessagesApi,
                                      authPredicate: AuthPredicate,
                                      implicit val appConfig: AppConfig) extends FrontendController with I18nSupport {
 
-  def show(periodKey: String): Action[AnyContent] = (authPredicate).async { implicit user =>
+  def show(periodKey: String): Action[AnyContent] = (authPredicate andThen mandationStatusCheck).async { implicit user =>
 
     val customerInformationCall = vatSubscriptionService.getCustomerDetails(user.vrn)
     val obligationsCall = vatObligationsService.getObligations(user.vrn)
@@ -57,11 +57,14 @@ class SubmitFormController @Inject()(val messagesApi: MessagesApi,
     }
   }
 
-  def submit: Action[AnyContent] = authPredicate.async { implicit user =>
+  def submit(hasFlatRateScheme: Boolean, obligation: String, periodKey: String, name: Option[String]): Action[AnyContent] =
+    (authPredicate andThen mandationStatusCheck).async {implicit user =>
 
     NineBoxForm.nineBoxForm.bindFromRequest().fold(
       error => Future.successful(errorHandler.showInternalServerError),
-      success => Future.successful(Redirect(controllers.routes.HelloWorldController.helloWorld()))
+      success => Future.successful(
+        Redirect(controllers.routes.HelloWorldController.helloWorld())
+      )
     )
   }
 }

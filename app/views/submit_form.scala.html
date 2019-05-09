@@ -14,153 +14,154 @@
  * limitations under the License.
  *@
 
+@import uk.gov.hmrc.play.views.html.helpers
 @import config.AppConfig
 @import templates.inputs.moneyInput
 @import templates.formatters.dates.displayDate
 @import templates.formatters.dates.displayDateRange
-
+@import play.api.libs.json.Json
 
 @(periodKey: String, clientName: Option[String], flatRateScheme: Boolean, obligations: VatObligations, form: Form[NineBoxModel])(implicit request: Request[_], messages: Messages, appConfig: AppConfig)
 
 @main_template(messages("submit_form.title"), appConfig = appConfig, bodyClasses = None) {
 
-<div class="grid-row">
+    <div class="grid-row">
 
-    <h1 class="heading-xlarge">
-        <span class="heading-secondary">@messages("submit_form.heading")</span>
-        @{obligations.obligations.map {
-            obligation => displayDateRange(obligation.start, obligation.end)
-        }
-        }
-        <span class="form-hint">@messages("confirm_submission.returnDueDate", displayDate(obligations.obligations.head.due))</span>
-    </h1>
+        <h1 class="heading-xlarge">
+            <span class="heading-secondary">@messages("submit_form.heading")</span>
+            <span>@{obligations.obligations.map {
+                obligation => displayDateRange(obligation.start, obligation.end)
+            }
+            }</span>
+            <span class="form-hint">@messages("confirm_submission.returnDueDate", displayDate(obligations.obligations.head.due))</span>
+        </h1>
 
-    <h2 class="heading-large">@clientName</h2>
-    <h3 class="bold-small form-group">@messages("confirm_submission.vatDetails")</h3>
-    <div class="form-group">
-        <div class="grid-row" id="box-one">
-            <div class="column-one-quarter form-hint">@messages("confirm_submission.boxOne")</div>
-            <div class="column-one-half form-hint">@messages("confirm_submission.boxOneDescription")</div>
-            <div class="column-one-quarter r-align form-hint">
-                <div class="form-group">
+        <h2 class="heading-large">@clientName</h2>
+        <h3 class="bold-small form-group">@messages("confirm_submission.vatDetails")</h3>
+        @helpers.form(action = controllers.routes.SubmitFormController.submit(flatRateScheme, Json.toJson(obligations).toString, periodKey, clientName)){
+            <div class="form-group">
+                <div class="grid-row" id="box-one">
+                    <div class="column-one-quarter form-hint">@messages("confirm_submission.boxOne")</div>
+                    <div class="column-one-half form-hint">@messages("confirm_submission.boxOneDescription")</div>
+                    <div class="column-one-quarter r-align form-hint">
+                        <div class="form-group">
+                            @moneyInput(
+                                field = form("box1"),
+                                decimalPlace = true
+                            )
+                        </div>
+                    </div>
+                </div>
+                <div class="grid-row" id="box-two">
+                    <div class="column-one-quarter form-hint">@messages("confirm_submission.boxTwo")</div>
+                    <div class="column-one-half form-hint">@messages("confirm_submission.boxTwoDescription")</div>
+                    <div class="column-one-quarter r-align form-hint">
+                        <div class="form-group">
+                        @moneyInput(
+                            field = form("box2"),
+                            decimalPlace = true
+                        )
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="grid-row" id="box-three">
+                <div class="column-one-quarter form-hint">@messages("confirm_submission.boxThree")</div>
+                <div class="column-one-half form-hint">@messages("confirm_submission.boxThreeDescription")</div>
+                <div class="column-one-quarter r-align form-hint">
+                    <div class="form-group">
                     @moneyInput(
-                        field = form("box1"),
+                        field = form("box3"),
                         decimalPlace = true
                     )
+                    </div>
                 </div>
             </div>
-        </div>
-        <div class="grid-row" id="box-two">
-            <div class="column-one-quarter form-hint">@messages("confirm_submission.boxTwo")</div>
-            <div class="column-one-half form-hint">@messages("confirm_submission.boxTwoDescription")</div>
-            <div class="column-one-quarter r-align form-hint">
-                <div class="form-group">
-                @moneyInput(
-                    field = form("box2"),
-                    decimalPlace = true
-                )
+            <div class="grid-row" id="box-four">
+                <div class="column-one-quarter form-hint">@messages("confirm_submission.boxFour")</div>
+                <div class="column-one-half form-hint">@messages("confirm_submission.boxFourDescription")</div>
+                <div class="column-one-quarter r-align form-hint">
+                    <div class="form-group">
+                    @moneyInput(
+                        field = form("box4"),
+                        decimalPlace = true
+                    )
+                    </div>
                 </div>
             </div>
-        </div>
-    </div>
-    <div class="grid-row" id="box-three">
-        <div class="column-one-quarter form-hint">@messages("confirm_submission.boxThree")</div>
-        <div class="column-one-half form-hint">@messages("confirm_submission.boxThreeDescription")</div>
-        <div class="column-one-quarter r-align form-hint">
+            <div class="grid-row" id="box-five">
+                <div class="column-one-quarter form-hint">@messages("confirm_submission.boxFive")</div>
+                <div class="column-one-half form-hint">@messages("confirm_submission.boxFiveDescription")</div>
+                <div class="column-one-quarter r-align form-hint">
+                    <div class="form-group">
+                    @moneyInput(
+                        field = form("box5"),
+                        decimalPlace = true
+                    )
+                    </div>
+                </div>
+            </div>
+            <hr>
+            <div class="form-group grid-row">
+                <h3 id="additionalInfo" class="column-two-thirds bold-small">@messages("submit_form.additionalInformation")</h3>
+            </div>
             <div class="form-group">
-            @moneyInput(
-                field = form("box3"),
-                decimalPlace = true
-            )
+                <div class="grid-row" id="box-six">
+                    <div class="column-one-quarter form-hint">@messages("confirm_submission.boxSix")</div>
+                    @*<div class="column-one-half form-hint">@messages("confirm_submission.boxSixFlatRate")</div>*@
+                    <div class="column-one-half form-hint">@messages("confirm_submission.boxSixNoFlatRate")</div>
+                    <div class="column-one-quarter r-align form-hint">
+                        <div class="form-group">
+                        @moneyInput(
+                            field = form("box6"),
+                            decimalPlace = true
+                        )
+                        </div>
+                    </div>
+                </div>
+                <div class="grid-row" id="box-seven">
+                    <div class="column-one-quarter form-hint">@messages("confirm_submission.boxSeven")</div>
+                    <div class="column-one-half form-hint">@messages("confirm_submission.boxSevenDescription")</div>
+                    <div class="column-one-quarter r-align form-hint">
+                        <div class="form-group">
+                        @moneyInput(
+                            field = form("box7"),
+                            decimalPlace = true
+                        )
+                        </div>
+                    </div>
+                </div>
+                <div class="grid-row" id="box-eight">
+                    <div class="column-one-quarter form-hint">@messages("confirm_submission.boxEight")</div>
+                    <div class="column-one-half form-hint">@messages("confirm_submission.boxEightDescription")</div>
+                    <div class="column-one-quarter r-align form-hint">
+                        <div class="form-group">
+                        @moneyInput(
+                            field = form("box8"),
+                            decimalPlace = true
+                        )
+                        </div>
+                    </div>
+                </div>
+                <div class="grid-row" id="box-nine">
+                    <div class="column-one-quarter form-hint">@messages("confirm_submission.boxNine")</div>
+                    <div class="column-one-half form-hint">@messages("confirm_submission.boxNineDescription")</div>
+                    <div class="column-one-quarter r-align form-hint">
+                        <div class="form-group">
+                        @moneyInput(
+                            field = form("box9"),
+                            decimalPlace = true
+                        )
+                        </div>
+                    </div>
+                </div>
             </div>
-        </div>
-    </div>
-    <div class="grid-row" id="box-four">
-        <div class="column-one-quarter form-hint">@messages("confirm_submission.boxFour")</div>
-        <div class="column-one-half form-hint">@messages("confirm_submission.boxFourDescription")</div>
-        <div class="column-one-quarter r-align form-hint">
+            <hr>
+            <p>@messages("submit_form.submitReturn")</p>
+
             <div class="form-group">
-            @moneyInput(
-                field = form("box4"),
-                decimalPlace = true
-            )
+                <input id="continue" type="submit" class="button" value="@messages("common.continue")">
             </div>
-        </div>
+        }
     </div>
-    <div class="grid-row" id="box-five">
-        <div class="column-one-quarter form-hint">@messages("confirm_submission.boxFive")</div>
-        <div class="column-one-half form-hint">@messages("confirm_submission.boxFiveDescription")</div>
-        <div class="column-one-quarter r-align form-hint">
-            <div class="form-group">
-            @moneyInput(
-                field = form("box5"),
-                decimalPlace = true
-            )
-            </div>
-        </div>
-    </div>
-    <hr>
-    <div class="form-group grid-row">
-        <h3 class="column-two-thirds bold-small">@messages("submit_form.additionalInformation")</h3>
-    </div>
-    <div class="form-group">
-        <div class="grid-row" id="box-six">
-            <div class="column-one-quarter form-hint">@messages("confirm_submission.boxSix")</div>
-            @*<div class="column-one-half form-hint">@messages("confirm_submission.boxSixFlatRate")</div>*@
-            <div class="column-one-half form-hint">@messages("confirm_submission.boxSixNoFlatRate")</div>
-            <div class="column-one-quarter r-align form-hint">
-                <div class="form-group">
-                @moneyInput(
-                    field = form("box6"),
-                    decimalPlace = true
-                )
-                </div>
-            </div>
-        </div>
-        <div class="grid-row" id="box-seven">
-            <div class="column-one-quarter form-hint">@messages("confirm_submission.boxSeven")</div>
-            <div class="column-one-half form-hint">@messages("confirm_submission.boxSevenDescription")</div>
-            <div class="column-one-quarter r-align form-hint">
-                <div class="form-group">
-                @moneyInput(
-                    field = form("box7"),
-                    decimalPlace = true
-                )
-                </div>
-            </div>
-        </div>
-        <div class="grid-row" id="box-eight">
-            <div class="column-one-quarter form-hint">@messages("confirm_submission.boxEight")</div>
-            <div class="column-one-half form-hint">@messages("confirm_submission.boxEightDescription")</div>
-            <div class="column-one-quarter r-align form-hint">
-                <div class="form-group">
-                @moneyInput(
-                    field = form("box8"),
-                    decimalPlace = true
-                )
-                </div>
-            </div>
-        </div>
-        <div class="grid-row" id="box-nine">
-            <div class="column-one-quarter form-hint">@messages("confirm_submission.boxNine")</div>
-            <div class="column-one-half form-hint">@messages("confirm_submission.boxNineDescription")</div>
-            <div class="column-one-quarter r-align form-hint">
-                <div class="form-group">
-                @moneyInput(
-                    field = form("box9"),
-                    decimalPlace = true
-                )
-                </div>
-            </div>
-        </div>
-    </div>
-    <hr>
-</div>
-
-    <p>@messages("submit_form.submitReturn")</p>
-
-    <div class="form-group">
-        <input type="submit" class="button" value="@messages("common.continue")">
-    </div>
-
-    }
+}
