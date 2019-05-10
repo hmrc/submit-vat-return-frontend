@@ -31,16 +31,4 @@ case class NineBoxModel(box1: BigDecimal,
 
 object NineBoxModel {
   implicit val format: Format[NineBoxModel] = Json.format[NineBoxModel]
-
-  def empty: NineBoxModel = NineBoxModel(
-    BigDecimal(0),
-    BigDecimal(0),
-    BigDecimal(0),
-    BigDecimal(0),
-    BigDecimal(0),
-    BigDecimal(0),
-    BigDecimal(0),
-    BigDecimal(0),
-    BigDecimal(0)
-  )
 }
