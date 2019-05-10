@@ -123,10 +123,10 @@ class SubmitFormControllerSpec extends BaseSpec with MockVatSubscriptionService 
           "box9" -> "1000"
         )
 
-        val result = TestSubmitFormController.submit(false, "", "", Some("Duanne"))(request)
+        val result = TestSubmitFormController.submit(false, "", "93DH", None)(request)
         status(result) shouldBe SEE_OTHER
 
-        redirectLocation(result) shouldBe Some(controllers.routes.HelloWorldController.helloWorld().url)
+        redirectLocation(result).get.contains(controllers.routes.ConfirmSubmissionController.show(false, "", "", None, "93DH").url) shouldBe true
       }
     }
     "throws an internal server error" when {

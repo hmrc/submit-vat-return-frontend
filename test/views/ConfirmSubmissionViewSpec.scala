@@ -21,8 +21,8 @@ import java.time.LocalDate
 
 import org.jsoup.Jsoup
 import org.jsoup.nodes.Document
-import assets.messages.{ConfirmSubmissionMessages => viewMessages, CommonMessages}
-import models.{ConfirmSubmissionViewModel, CustomerDetails, VatObligation, VatReturnDetails}
+import assets.messages.{CommonMessages, ConfirmSubmissionMessages => viewMessages}
+import models._
 
 class ConfirmSubmissionViewSpec extends ViewBaseSpec {
 
@@ -59,16 +59,16 @@ class ConfirmSubmissionViewSpec extends ViewBaseSpec {
     organisationName = Some("ABC Trading")
   )
 
-  val vatReturn: VatReturnDetails = VatReturnDetails(
-    boxOne = 1000.00,
-    boxTwo = 1000.00,
-    boxThree = 1000.00,
-    boxFour = 1000.00,
-    boxFive = 1000.00,
-    boxSix = 1000.00,
-    boxSeven = 1000.00,
-    boxEight = 1000.00,
-    boxNine = 1000.00
+  val vatReturn: NineBoxModel = NineBoxModel(
+    box1 = 1000.00,
+    box2 = 1000.00,
+    box3 = 1000.00,
+    box4 = 1000.00,
+    box5 = 1000.00,
+    box6 = 1000.00,
+    box7 = 1000.00,
+    box8 = 1000.00,
+    box9 = 1000.00
   )
 
 
@@ -82,8 +82,7 @@ class ConfirmSubmissionViewSpec extends ViewBaseSpec {
           vatObligation,
           hasFlatRateScheme = true,
           vatReturn,
-          userName = customerDetails.clientName.getOrElse(""),
-          vatReturnTotal = 10000.00
+          userName = customerDetails.clientName
         )
 
         lazy val view = views.html.confirm_submission(viewModel)
@@ -100,7 +99,7 @@ class ConfirmSubmissionViewSpec extends ViewBaseSpec {
           }
 
           s"have the redirect url as ${controllers.routes.HelloWorldController.helloWorld()}" in {
-            element(Selectors.backLink).attr("href") shouldBe controllers.routes.HelloWorldController.helloWorld().url
+            element(Selectors.backLink).attr("href") shouldBe controllers.routes.SubmitFormController.show(vatObligation.periodKey).url
           }
         }
 
@@ -117,7 +116,7 @@ class ConfirmSubmissionViewSpec extends ViewBaseSpec {
         }
 
         s"the name is displayed as ${viewModel.userName}" in {
-          elementText("h2") shouldBe viewModel.userName
+          elementText("h2") shouldBe viewModel.userName.getOrElse("")
         }
 
         s"the subheading vat detail is displayed as ${viewMessages.subHeadingVatDetails}" in {
@@ -169,8 +168,8 @@ class ConfirmSubmissionViewSpec extends ViewBaseSpec {
           expectedInformation.indices.foreach(i => elementText(boxElement(Selectors.boxes(i), 3)) shouldBe expectedInformation(i))
         }
 
-        s"the return total heading is shown as ${viewMessages.returnTotal} ${viewModel.vatReturnTotal}" in {
-          elementText(Selectors.returnTotalHeading) shouldBe s"${viewMessages.returnTotal} £10,000"
+        s"the return total heading is shown as ${viewMessages.returnTotal} ${viewModel.returnDetail.box5}" in {
+          elementText(Selectors.returnTotalHeading) shouldBe s"${viewMessages.returnTotal} £1,000"
         }
 
         s"the return due date is shown as ${viewMessages.returnDueDate}" in {
@@ -208,8 +207,7 @@ class ConfirmSubmissionViewSpec extends ViewBaseSpec {
         vatObligation,
         hasFlatRateScheme = false,
         vatReturn,
-        userName = customerDetails.clientName.getOrElse(""),
-        vatReturnTotal = 10000.00
+        userName = customerDetails.clientName
       )
 
       lazy val view = views.html.confirm_submission(viewModel)

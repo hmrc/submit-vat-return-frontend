@@ -16,9 +16,13 @@
 
 package controllers
 
+import java.time.LocalDate
+
 import base.BaseSpec
 import mocks.{MockAuth, MockMandationPredicate}
+import models.{NineBoxModel, VatObligation, VatObligations}
 import play.api.http.Status
+import play.api.libs.json.Json
 import play.api.mvc.Result
 import play.api.test.Helpers._
 
@@ -38,7 +42,28 @@ class ConfirmSubmissionControllerSpec extends BaseSpec with MockAuth with MockMa
 
     "user is authorised" should {
 
-      lazy val result: Future[Result] = TestConfirmSubmissionController.show("18AA")(fakeRequest)
+      val obsModel: String = Json.stringify(Json.toJson(VatObligations(Seq(VatObligation(
+        LocalDate.now(),
+        LocalDate.now(),
+        LocalDate.now(),
+        "18AA"
+      )))))
+
+      val nbModel: String = Json.stringify(Json.toJson(
+        NineBoxModel(
+          1000,
+          1000,
+          1000,
+          1000,
+          1000,
+          1000,
+          1000,
+          1000,
+          1000
+        )
+      ))
+
+      lazy val result: Future[Result] = TestConfirmSubmissionController.show(frs = false, obsModel, nbModel, None, "18AA")(fakeRequest)
 
       "return 200" in {
         status(result) shouldBe Status.OK

@@ -24,6 +24,7 @@ import config.ErrorHandler
 import controllers.predicates.AuthPredicate
 import controllers.predicates.MandationStatusPredicate
 import forms.NineBoxForm
+import play.api.libs.json.Json
 import services.{VatObligationsService, VatSubscriptionService}
 import uk.gov.hmrc.play.bootstrap.controller.FrontendController
 
@@ -62,7 +63,7 @@ class SubmitFormController @Inject()(val messagesApi: MessagesApi,
     NineBoxForm.nineBoxForm.bindFromRequest().fold(
       error => Future.successful(errorHandler.showInternalServerError),
       success => Future.successful(
-        Redirect(controllers.routes.HelloWorldController.helloWorld())
+        Redirect(controllers.routes.ConfirmSubmissionController.show(hasFlatRateScheme, obligation, Json.toJson(success).toString, name, periodKey))
       )
     )
   }
