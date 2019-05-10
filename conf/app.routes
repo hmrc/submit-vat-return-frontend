@@ -1,7 +1,13 @@
 # microservice specific routes
 
+# Assets
+GET         /assets/*file           controllers.Assets.at(path="/public", file)
+
+# Pages
+
 GET        /hello-world             controllers.HelloWorldController.helloWorld
 
 GET        /:periodKey/submit-form  controllers.SubmitFormController.show(periodKey: String)
+POST       /:periodKey/submit-form  controllers.SubmitFormController.submit(frs: Boolean, obs: String, periodKey: String, name: Option[String])
 
 GET        /submission-confirmation controllers.ConfirmationController.show

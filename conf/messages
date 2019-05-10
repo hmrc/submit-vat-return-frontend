@@ -2,6 +2,9 @@ common.service-name = Business tax account
 common.fullStop = .
 common.signOut = Sign out
 common.finish = Finish
+common.submit = Submit
+common.dateRangeSeparator = to
+common.continue = Continue
 
 error.required = Please enter a value
 error.summary.title = There is a problem
@@ -10,7 +13,43 @@ session_expired.title = For your security, this service has been reset
 session_expired.heading = For your security, this service has been reset
 session_expired.guidance = The details you have given have been deleted because you did not continue the service for 15 minutes.
 
-submit_form.title = Submit return
+submit_form.heading = Submit return
+submit_form.title = Your VAT return
+submit_form.additionalInformation = Additional information
+submit_form.submitReturn = You can submit your return on the next screen.
+
+
+confirm_submission.title = Your VAT return
+
+confirm_submission.returnDueDate = Return due date: {0}
+confirm_submission.vatDetails = VAT details
+confirm_submission.returnTotal = Return total: {0}
+
+confirm_submission.additionalInfo = Additional information
+confirm_submission.boxOne = Box 1
+confirm_submission.boxOneDescription = VAT you charged on sales and other supplies
+confirm_submission.boxTwo = Box 2
+confirm_submission.boxTwoDescription = VAT you owe on goods purchased from EC countries and brought into the UK
+confirm_submission.boxThree = Box 3
+confirm_submission.boxThreeDescription = VAT you owe before deductions (this is the total of box 1 and 2)
+confirm_submission.boxFour = Box 4
+confirm_submission.boxFourDescription = VAT you have claimed back
+confirm_submission.boxFive = Box 5
+confirm_submission.boxFiveDescription = Return total
+confirm_submission.boxFiveContext = This is box 3 {0} take away box 4 {1}
+confirm_submission.boxSix = Box 6
+confirm_submission.boxSixNoFlatRate = Total value of sales and other supplies, excluding VAT
+confirm_submission.boxSixFlatRate = Total value of sales and other supplies, including VAT
+confirm_submission.boxSeven = Box 7
+confirm_submission.boxSevenDescription = Total value of purchases and other expenses, excluding VAT
+confirm_submission.boxEight = Box 8
+confirm_submission.boxEightDescription = Total value of supplied goods to EC countries and related costs (excluding VAT)
+confirm_submission.boxNine = Box 9
+confirm_submission.boxNineDescription = Total value of goods purchased from EC countries and brought into the UK, as well as any related costs (excluding VAT)
+confirm_submission.changeDetail = Change return details
+confirm_submission.information = When you submit the above information, you are making a legal declaration that the information is correct and complete to the best of your knowledge and belief. A false declaration can result in prosecution.
+confirm_submission.submitReturn = Now submit your return
+
 
 unauthorised_agent.title = You can’t use this service yet
 unauthorised_agent.useThisService = To use this service, you need to

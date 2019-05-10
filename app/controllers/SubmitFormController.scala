@@ -23,8 +23,11 @@ import play.api.mvc.{Action, AnyContent}
 import config.ErrorHandler
 import controllers.predicates.AuthPredicate
 import controllers.predicates.MandationStatusPredicate
+import forms.NineBoxForm
 import services.{VatObligationsService, VatSubscriptionService}
 import uk.gov.hmrc.play.bootstrap.controller.FrontendController
+
+import scala.concurrent.Future
 
 @Singleton
 class SubmitFormController @Inject()(val messagesApi: MessagesApi,
@@ -46,10 +49,21 @@ class SubmitFormController @Inject()(val messagesApi: MessagesApi,
     } yield {
       (customerInformation, obligations) match {
         case (Right(customerDetails), Right(obs)) => {
-          Ok(views.html.submit_form(periodKey, customerDetails.clientName, customerDetails.hasFlatRateScheme, obs))
+          Ok(views.html.submit_form(periodKey, customerDetails.clientName, customerDetails.hasFlatRateScheme, obs, NineBoxForm.nineBoxForm))
         }
         case (_, _ ) => errorHandler.showInternalServerError
       }
     }
+  }
+
+  def submit(hasFlatRateScheme: Boolean, obligation: String, periodKey: String, name: Option[String]): Action[AnyContent] =
+    (authPredicate andThen mandationStatusCheck).async {implicit user =>
+
+    NineBoxForm.nineBoxForm.bindFromRequest().fold(
+      error => Future.successful(errorHandler.showInternalServerError),
+      success => Future.successful(
+        Redirect(controllers.routes.HelloWorldController.helloWorld())
+      )
+    )
   }
 }

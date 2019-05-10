@@ -27,6 +27,7 @@ import mocks.MockMandationPredicate
 import models.{CustomerDetails, MandationStatus, VatObligation, VatObligations}
 import models.errors.UnexpectedJsonFormat
 import play.api.http.Status
+import play.api.test.FakeRequest
 import play.api.test.Helpers._
 
 import scala.concurrent.Future
@@ -102,5 +103,52 @@ class SubmitFormControllerSpec extends BaseSpec with MockVatSubscriptionService 
     }
 
     authControllerChecks(TestSubmitFormController.show("18AA"), fakeRequest)
+  }
+
+  "SubmitFormController .submit" should {
+    "redirects to next page" when {
+      "successful" in {
+        mockAuthorise(mtdVatAuthorisedResponse)
+        setupMockMandationStatus(Right(MandationStatus(nonMTDfB)))
+
+        val request = FakeRequest().withFormUrlEncodedBody(
+          "box1" -> "1000",
+          "box2" -> "1000",
+          "box3" -> "1000",
+          "box4" -> "1000",
+          "box5" -> "1000",
+          "box6" -> "1000",
+          "box7" -> "1000",
+          "box8" -> "1000",
+          "box9" -> "1000"
+        )
+
+        val result = TestSubmitFormController.submit(false, "", "", Some("Duanne"))(request)
+        status(result) shouldBe SEE_OTHER
+
+        redirectLocation(result) shouldBe Some(controllers.routes.HelloWorldController.helloWorld().url)
+      }
+    }
+    "throws an internal server error" when {
+      "an error occurs (unentered value in a box)" in {
+        mockAuthorise(mtdVatAuthorisedResponse)
+        setupMockMandationStatus(Right(MandationStatus(nonMTDfB)))
+
+        val request = FakeRequest().withFormUrlEncodedBody(
+          "box1" -> "1000",
+          "box2" -> "1000",
+          "box3" -> "1000",
+          "box4" -> "1000",
+          "box5" -> "1000",
+          "box6" -> "1000",
+          "box7" -> "1000",
+          "box8" -> "1000",
+          "box9" -> ""
+        )
+
+        val result = TestSubmitFormController.submit(false, "", "", Some("Duanne"))(request)
+        status(result) shouldBe INTERNAL_SERVER_ERROR
+      }
+    }
   }
 }
