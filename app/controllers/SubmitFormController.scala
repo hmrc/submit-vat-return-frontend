@@ -61,7 +61,7 @@ class SubmitFormController @Inject()(val messagesApi: MessagesApi,
     (authPredicate andThen mandationStatusCheck).async {implicit user =>
 
     NineBoxForm.nineBoxForm.bindFromRequest().fold(
-      error => Future.successful(errorHandler.showInternalServerError),
+      _ => Future.successful(errorHandler.showInternalServerError),
       success => Future.successful(
         Redirect(controllers.routes.ConfirmSubmissionController.show(hasFlatRateScheme, obligation, Json.toJson(success).toString, name, periodKey))
       )
