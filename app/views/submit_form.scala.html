@@ -33,6 +33,7 @@
                 obligation => displayDateRange(obligation.start, obligation.end)
             }
             }</span>
+            @println("IT IS THIS: " + obligations.obligations.head.due)
             <span class="form-hint">@messages("confirm_submission.returnDueDate", displayDate(obligations.obligations.head.due))</span>
         </h1>
 
@@ -47,6 +48,7 @@
                         <div class="form-group">
                             @moneyInput(
                                 field = form("box1"),
+                                label = messages("confirm_submission.boxOneAmt"),
                                 decimalPlace = true
                             )
                         </div>
@@ -59,6 +61,7 @@
                         <div class="form-group">
                         @moneyInput(
                             field = form("box2"),
+                            label = messages("confirm_submission.boxTwoAmt"),
                             decimalPlace = true
                         )
                         </div>
@@ -72,6 +75,7 @@
                     <div class="form-group">
                     @moneyInput(
                         field = form("box3"),
+                        label = messages("confirm_submission.boxThreeAmt"),
                         decimalPlace = true
                     )
                     </div>
@@ -84,6 +88,7 @@
                     <div class="form-group">
                     @moneyInput(
                         field = form("box4"),
+                        label = messages("confirm_submission.boxFourAmt"),
                         decimalPlace = true
                     )
                     </div>
@@ -96,6 +101,7 @@
                     <div class="form-group">
                     @moneyInput(
                         field = form("box5"),
+                        label = messages("confirm_submission.boxFiveAmt"),
                         decimalPlace = true
                     )
                     </div>
@@ -108,12 +114,12 @@
             <div class="form-group">
                 <div class="grid-row" id="box-six">
                     <div class="column-one-quarter form-hint">@messages("confirm_submission.boxSix")</div>
-                    @*<div class="column-one-half form-hint">@messages("confirm_submission.boxSixFlatRate")</div>*@
                     <div class="column-one-half form-hint">@messages("confirm_submission.boxSixNoFlatRate")</div>
                     <div class="column-one-quarter r-align form-hint">
                         <div class="form-group">
                         @moneyInput(
                             field = form("box6"),
+                            label = messages("confirm_submission.boxSixAmt"),
                             decimalPlace = true
                         )
                         </div>
@@ -126,6 +132,7 @@
                         <div class="form-group">
                         @moneyInput(
                             field = form("box7"),
+                            label = messages("confirm_submission.boxSevenAmt"),
                             decimalPlace = true
                         )
                         </div>
@@ -138,6 +145,7 @@
                         <div class="form-group">
                         @moneyInput(
                             field = form("box8"),
+                            label = messages("confirm_submission.boxEightAmt"),
                             decimalPlace = true
                         )
                         </div>
@@ -150,6 +158,7 @@
                         <div class="form-group">
                         @moneyInput(
                             field = form("box9"),
+                            label = messages("confirm_submission.boxNineAmt"),
                             decimalPlace = true
                         )
                         </div>

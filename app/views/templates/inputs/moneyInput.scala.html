@@ -15,10 +15,17 @@
  *@
 
 @(field: Field,
+        label: String,
+        labelHidden: Boolean = true,
         decimalPlace: Boolean,
         hint: Option[String] = None)(implicit messages: Messages)
 
 <div class="form-group @if(field.hasErrors){form-field--error}">
+
+    <label for="@field.id" class="form-label @if(labelHidden) {visuallyhidden}">
+        @label
+    </label>
+
     @hint.map { hint =>
         <span class="form-hint">
             @hint
