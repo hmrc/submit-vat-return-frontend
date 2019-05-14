@@ -116,7 +116,7 @@ class SubmitFormControllerSpec extends BaseSpec with MockVatSubscriptionService 
           "box2" -> "1000",
           "box3" -> "2000",
           "box4" -> "1000",
-          "box5" -> "3000",
+          "box5" -> "1000",
           "box6" -> "1000",
           "box7" -> "1000",
           "box8" -> "1000",
@@ -242,7 +242,7 @@ class SubmitFormControllerSpec extends BaseSpec with MockVatSubscriptionService 
           contentAsString(result) should include("Add the number from box 1 to the number from box 2 and write it here")
         }
         "contains box 5 error" in {
-          contentAsString(result) should include("Add the number from box 3 to the number from box 4 and write it here")
+          contentAsString(result) should include("Subtract the number in box 4 away from the number in box 3 and write it here")
         }
       }
     }

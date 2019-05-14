@@ -64,18 +64,15 @@ class NineBoxForm @Inject()(implicit messagesApi: MessagesApi) {
 
   private val box3Format: Formatter[BigDecimal] = new Formatter[BigDecimal] {
     override def bind(key: String, data: Map[String, String]): Either[Seq[FormError], BigDecimal] = {
+
+      val regex: String = "-?([0-9]{1,13}\\.[0-9]{1,2}|[0-9]{1,13})"
+
       try {
-        val firstValue: BigDecimal = data.get("box1") match {
-          case Some(value) => BigDecimal(value)
-          case _ => throw new Exception()
-        }
-        val secondValue: BigDecimal = data.get("box2") match {
-          case Some(value) => BigDecimal(value)
-          case _ => throw new Exception()
-        }
+        val firstValue: BigDecimal = returnOrError(data.get("box1"))
+        val secondValue: BigDecimal = returnOrError(data.get("box2"))
         data.get("box3") match {
           case Some(value) if value.isEmpty => Left(Seq(FormError(key, messagesApi("submit_form.error.emptyError"))))
-          case Some(value) if !value.matches("-?([0-9]{1,13}\\.[0-9]{1,2}|[0-9]{1,13})") => Left(Seq(FormError(key, messagesApi("submit_form.error.formatCheckError"))))
+          case Some(value) if !value.matches(regex) => Left(Seq(FormError(key, messagesApi("submit_form.error.formatCheckError"))))
           case Some(value) if firstValue + secondValue == BigDecimal(value) => Right(BigDecimal(value))
           case _ => Left(Seq(FormError(key, messagesApi("submit_form.error.box3Error"))))
         }
@@ -87,33 +84,48 @@ class NineBoxForm @Inject()(implicit messagesApi: MessagesApi) {
     override def unbind(key: String, value: BigDecimal): Map[String, String] = {
       Map(key -> value.toString)
     }
+
+    private def returnOrError: Option[String] => BigDecimal = {
+      case Some(value) => BigDecimal(value)
+      case _ => throw new Exception()
+    }
   }
 
   private val box5Format: Formatter[BigDecimal] = new Formatter[BigDecimal] {
     override def bind(key: String, data: Map[String, String]): Either[Seq[FormError], BigDecimal] = {
-      try {
-        val firstValue: BigDecimal = data.get("box3") match {
-          case Some(value) => BigDecimal(value)
-          case _ => throw new Exception()
-        }
-        val secondValue: BigDecimal = data.get("box4") match {
-          case Some(value) => BigDecimal(value)
-          case _ => throw new Exception()
-        }
+
+      val regex: String = "-?([0-9]{1,13}\\.[0-9]{1,2}|[0-9]{1,13})"
+
+      tryOrError({
+        val firstValue: BigDecimal = returnOrError(data.get("box3"))
+        val secondValue: BigDecimal = returnOrError(data.get("box4"))
         data.get("box5") match {
           case Some(value) if value.isEmpty => Left(Seq(FormError(key, messagesApi("submit_form.error.emptyError"))))
-          case Some(value) if !value.matches("-?([0-9]{1,13}\\.[0-9]{1,2}|[0-9]{1,13})") => Left(Seq(FormError(key, messagesApi("submit_form.error.formatCheckError"))))
+          case Some(value) if !value.matches(regex) => Left(Seq(FormError(key, messagesApi("submit_form.error.formatCheckError"))))
           case Some(value) if value.contains("-") => Left(Seq(FormError(key, messagesApi("submit_form.error.negativeError"))))
-          case Some(value) if firstValue + secondValue == BigDecimal(value) => Right(BigDecimal(value))
+          case Some(value) if (firstValue - secondValue).abs == BigDecimal(value) => Right(BigDecimal(value))
           case _ => Left(Seq(FormError(key, messagesApi("submit_form.error.box5Error"))))
         }
-      } catch {
-        case _: Throwable => Left(Seq(FormError(key, messagesApi("submit_form.error.box5Error"))))
-      }
+      },
+        Left(Seq(FormError(key, messagesApi("submit_form.error.box5Error"))))
+      )
     }
 
     override def unbind(key: String, value: BigDecimal): Map[String, String] = {
       Map(key -> value.toString)
+    }
+
+    private def returnOrError: Option[String] => BigDecimal = {
+      case Some(value) => BigDecimal(value)
+      case _ => throw new Exception()
+    }
+
+    private def tryOrError[T](input: T, ifError: T): T = {
+      try {
+        input
+      } catch {
+        case _: Throwable => ifError
+      }
     }
   }
 
