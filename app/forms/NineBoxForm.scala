@@ -16,16 +16,20 @@
 
 package forms
 
+import javax.inject.{Inject, Singleton}
 import models.NineBoxModel
 import play.api.data.Forms._
-import play.api.data.{Form, Mapping}
+import play.api.data.format.Formatter
+import play.api.data.{Form, FormError, Mapping}
+import play.api.i18n.MessagesApi
 
-object NineBoxForm {
+@Singleton
+class NineBoxForm @Inject()(implicit messagesApi: MessagesApi) {
 
   def sequentialMappings[T, O](applyConstraints: Seq[Mapping[T] => Mapping[T]], finalTransform: Mapping[T] => Mapping[O]): Mapping[T] => Mapping[O] = {
     originalMap =>
       finalTransform(
-        applyConstraints.foldRight(originalMap) { (newConstraint, passedForward) =>
+        applyConstraints.foldLeft(originalMap) { (passedForward, newConstraint) =>
           newConstraint(passedForward)
         }
       )
@@ -33,23 +37,23 @@ object NineBoxForm {
 
   def nonEmpty: Mapping[String] => Mapping[String] = { input =>
     input.verifying(
-      "Enter a maximum of 13 decimal places for pounds.\nEnter a maximum of 2 decimal places for pence.\nYou can use a negative amount eg -13.2",
+      messagesApi("submit_form.error.emptyError"),
       value => value.nonEmpty
     )
   }
 
   def validCharacters: Mapping[String] => Mapping[String] = { input =>
-    val regexCheck = "[0-9]{1,13}|[0-9]{1,13}\\.[0-9]{1,2}"
+    val regexCheck = "-?[0-9]{1,13}|[0-9]{1,13}\\.[0-9]{1,2}"
 
     input.verifying(
-      "Enter a number in the format 0.00",
+      messagesApi("submit_form.error.formatCheckError"),
       value => value.matches(regexCheck)
     )
   }
 
   def nonNegative: Mapping[String] => Mapping[String] = { input =>
     input.verifying(
-      "Enter a maximum of 13 decimal places for pounds.\nEnter a maximum of 2 decimal places for pence.\nDo not use a negative amount eg -13.2",
+      messagesApi("submit_form.error.negativeError"),
       value => !value.contains("-")
     )
   }
@@ -58,13 +62,68 @@ object NineBoxForm {
     input.transform[BigDecimal](BigDecimal(_), _.toString())
   }
 
+  private val box3Format: Formatter[BigDecimal] = new Formatter[BigDecimal] {
+    override def bind(key: String, data: Map[String, String]): Either[Seq[FormError], BigDecimal] = {
+      try {
+        val firstValue: BigDecimal = data.get("box1") match {
+          case Some(value) => BigDecimal(value)
+          case _ => throw new Exception()
+        }
+        val secondValue: BigDecimal = data.get("box2") match {
+          case Some(value) => BigDecimal(value)
+          case _ => throw new Exception()
+        }
+        data.get("box3") match {
+          case Some(value) if value.isEmpty => Left(Seq(FormError(key, messagesApi("submit_form.error.emptyError"))))
+          case Some(value) if !value.matches("-?([0-9]{1,13}\\.[0-9]{1,2}|[0-9]{1,13})") => Left(Seq(FormError(key, messagesApi("submit_form.error.formatCheckError"))))
+          case Some(value) if firstValue + secondValue == BigDecimal(value) => Right(BigDecimal(value))
+          case _ => Left(Seq(FormError(key, messagesApi("submit_form.error.box3Error"))))
+        }
+      } catch {
+        case _: Throwable => Left(Seq(FormError(key, messagesApi("submit_form.error.box3Error"))))
+      }
+    }
+
+    override def unbind(key: String, value: BigDecimal): Map[String, String] = {
+      Map(key -> value.toString)
+    }
+  }
+
+  private val box5Format: Formatter[BigDecimal] = new Formatter[BigDecimal] {
+    override def bind(key: String, data: Map[String, String]): Either[Seq[FormError], BigDecimal] = {
+      try {
+        val firstValue: BigDecimal = data.get("box3") match {
+          case Some(value) => BigDecimal(value)
+          case _ => throw new Exception()
+        }
+        val secondValue: BigDecimal = data.get("box4") match {
+          case Some(value) => BigDecimal(value)
+          case _ => throw new Exception()
+        }
+        data.get("box5") match {
+          case Some(value) if value.isEmpty => Left(Seq(FormError(key, messagesApi("submit_form.error.emptyError"))))
+          case Some(value) if !value.matches("-?([0-9]{1,13}\\.[0-9]{1,2}|[0-9]{1,13})") => Left(Seq(FormError(key, messagesApi("submit_form.error.formatCheckError"))))
+          case Some(value) if value.contains("-") => Left(Seq(FormError(key, messagesApi("submit_form.error.negativeError"))))
+          case Some(value) if firstValue + secondValue == BigDecimal(value) => Right(BigDecimal(value))
+          case _ => Left(Seq(FormError(key, messagesApi("submit_form.error.box5Error"))))
+        }
+      } catch {
+        case _: Throwable => Left(Seq(FormError(key, messagesApi("submit_form.error.box5Error"))))
+      }
+    }
+
+    override def unbind(key: String, value: BigDecimal): Map[String, String] = {
+      Map(key -> value.toString)
+    }
+  }
+
   val nineBoxForm = Form(
     mapping(
       "box1" -> sequentialMappings(Seq(nonEmpty, validCharacters), toBigDecimal)(text),
       "box2" -> sequentialMappings(Seq(nonEmpty, validCharacters), toBigDecimal)(text),
-      "box3" -> sequentialMappings(Seq(nonEmpty, validCharacters), toBigDecimal)(text),
+      "box3" -> of(box3Format),
       "box4" -> sequentialMappings(Seq(nonEmpty, validCharacters), toBigDecimal)(text),
-      "box5" -> sequentialMappings(Seq(nonEmpty, validCharacters, nonNegative), toBigDecimal)(text),
+      "box5" -> of(box5Format),
       "box6" -> sequentialMappings(Seq(nonEmpty, validCharacters), toBigDecimal)(text),
       "box7" -> sequentialMappings(Seq(nonEmpty, validCharacters), toBigDecimal)(text),
       "box8" -> sequentialMappings(Seq(nonEmpty, validCharacters), toBigDecimal)(text),

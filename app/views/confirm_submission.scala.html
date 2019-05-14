@@ -118,11 +118,7 @@
     <p>@messages("confirm_submission.information")</p>
 
     @helpers.form(action = controllers.routes.ConfirmSubmissionController.submit(viewModel.obligations.periodKey)) {
-      <button
-        class="button"
-        type ="submit">
-        @messages("common.submit")
-      </button>
+      <input id="continue" type="submit" class="button" value="@messages("common.submit")">
     }
 
   </section>

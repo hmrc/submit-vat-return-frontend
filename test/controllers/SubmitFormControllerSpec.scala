@@ -21,12 +21,12 @@ import java.time.LocalDate
 import base.BaseSpec
 import common.MandationStatuses.nonMTDfB
 import connectors.httpParsers.ResponseHttpParsers.HttpGetResult
-import mocks.MockAuth
+import mocks.{MockAuth, MockMandationPredicate}
 import mocks.service.{MockVatObligationsService, MockVatSubscriptionService}
-import mocks.MockMandationPredicate
-import models.{CustomerDetails, MandationStatus, VatObligation, VatObligations}
 import models.errors.UnexpectedJsonFormat
+import models.{CustomerDetails, MandationStatus, VatObligation, VatObligations}
 import play.api.http.Status
+import play.api.libs.json.Json
 import play.api.test.FakeRequest
 import play.api.test.Helpers._
 
@@ -114,19 +114,19 @@ class SubmitFormControllerSpec extends BaseSpec with MockVatSubscriptionService 
         val request = FakeRequest().withFormUrlEncodedBody(
           "box1" -> "1000",
           "box2" -> "1000",
-          "box3" -> "1000",
+          "box3" -> "2000",
           "box4" -> "1000",
-          "box5" -> "1000",
+          "box5" -> "3000",
           "box6" -> "1000",
           "box7" -> "1000",
           "box8" -> "1000",
           "box9" -> "1000"
         )
 
-        val result = TestSubmitFormController.submit(false, "", "93DH", None)(request)
+        val result = TestSubmitFormController.submit(hasFlatRateScheme = false, "", "93DH", None)(request)
         status(result) shouldBe SEE_OTHER
 
-        redirectLocation(result).get.contains(controllers.routes.ConfirmSubmissionController.show(false, "", "", None, "93DH").url) shouldBe true
+        redirectLocation(result).get.contains(controllers.routes.ConfirmSubmissionController.show(frs = false, "", "", None, "93DH").url) shouldBe true
       }
     }
     "throws an internal server error" when {
@@ -137,17 +137,113 @@ class SubmitFormControllerSpec extends BaseSpec with MockVatSubscriptionService 
         val request = FakeRequest().withFormUrlEncodedBody(
           "box1" -> "1000",
           "box2" -> "1000",
-          "box3" -> "1000",
+          "box3" -> "2000",
           "box4" -> "1000",
-          "box5" -> "1000",
+          "box5" -> "3000",
           "box6" -> "1000",
           "box7" -> "1000",
           "box8" -> "1000",
           "box9" -> ""
         )
 
-        val result = TestSubmitFormController.submit(false, "", "", Some("Duanne"))(request)
-        status(result) shouldBe INTERNAL_SERVER_ERROR
+        val obligationInput = Json.stringify(Json.toJson(VatObligations(Seq(VatObligation(
+          LocalDate.now(),
+          LocalDate.now(),
+          LocalDate.now(),
+          ""
+        )))))
+
+        val result = TestSubmitFormController.submit(hasFlatRateScheme = false, obligationInput, "", Some("Duanne"))(request)
+        status(result) shouldBe OK
+        contentAsString(result) should include("Enter a maximum of 13 decimal places for pounds.\nEnter a maximum of 2 decimal places for pence.\nYou can use a negative amount eg -13.2")
+      }
+      "an error occurs (incorrect format)" in {
+        mockAuthorise(mtdVatAuthorisedResponse)
+        setupMockMandationStatus(Right(MandationStatus(nonMTDfB)))
+
+        val request = FakeRequest().withFormUrlEncodedBody(
+          "box1" -> "1000",
+          "box2" -> "1000",
+          "box3" -> "2000",
+          "box4" -> "1000",
+          "box5" -> "3000",
+          "box6" -> "1000",
+          "box7" -> "12345.000",
+          "box8" -> "12345.",
+          "box9" -> "1234567890123456"
+        )
+
+        val obligationInput = Json.stringify(Json.toJson(VatObligations(Seq(VatObligation(
+          LocalDate.now(),
+          LocalDate.now(),
+          LocalDate.now(),
+          ""
+        )))))
+
+        val result = TestSubmitFormController.submit(hasFlatRateScheme = false, obligationInput, "", Some("Duanne"))(request)
+        status(result) shouldBe OK
+        contentAsString(result) should include("Enter a number in the format 0.00")
+      }
+      "an error occurs (negative number)" in {
+        mockAuthorise(mtdVatAuthorisedResponse)
+        setupMockMandationStatus(Right(MandationStatus(nonMTDfB)))
+
+        val request = FakeRequest().withFormUrlEncodedBody(
+          "box1" -> "1000",
+          "box2" -> "1000",
+          "box3" -> "2000",
+          "box4" -> "1000",
+          "box5" -> "-3000",
+          "box6" -> "1000",
+          "box7" -> "1000",
+          "box8" -> "1000",
+          "box9" -> "1000"
+        )
+
+        val obligationInput = Json.stringify(Json.toJson(VatObligations(Seq(VatObligation(
+          LocalDate.now(),
+          LocalDate.now(),
+          LocalDate.now(),
+          ""
+        )))))
+
+        val result = TestSubmitFormController.submit(hasFlatRateScheme = false, obligationInput, "", Some("Duanne"))(request)
+        status(result) shouldBe OK
+        contentAsString(result) should include("Enter a maximum of 13 decimal places for pounds.\nEnter a maximum of 2 decimal places for pence.\nDo not use a negative amount eg -13.2")
+      }
+      "an error occurs (incorrect box additions)" when {
+        mockAuthorise(mtdVatAuthorisedResponse)
+        setupMockMandationStatus(Right(MandationStatus(nonMTDfB)))
+
+        val request = FakeRequest().withFormUrlEncodedBody(
+          "box1" -> "1000",
+          "box2" -> "1000",
+          "box3" -> "12000",
+          "box4" -> "1000",
+          "box5" -> "121000",
+          "box6" -> "1000",
+          "box7" -> "1000",
+          "box8" -> "1000",
+          "box9" -> "1000"
+        )
+
+        val obligationInput = Json.stringify(Json.toJson(VatObligations(Seq(VatObligation(
+          LocalDate.now(),
+          LocalDate.now(),
+          LocalDate.now(),
+          ""
+        )))))
+        val result = TestSubmitFormController.submit(hasFlatRateScheme = false, obligationInput, "", Some("Duanne"))(request)
+
+        "status is OK" in {
+          status(result) shouldBe OK
+        }
+        "contains box 3 error" in {
+          contentAsString(result) should include("Add the number from box 1 to the number from box 2 and write it here")
+        }
+        "contains box 5 error" in {
+          contentAsString(result) should include("Add the number from box 3 to the number from box 4 and write it here")
+        }
       }
     }
   }

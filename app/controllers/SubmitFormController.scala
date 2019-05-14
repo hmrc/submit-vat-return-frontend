@@ -16,15 +16,14 @@
 
 package controllers
 
-import config.AppConfig
-import javax.inject.{Inject, Singleton}
-import play.api.i18n.{I18nSupport, MessagesApi}
-import play.api.mvc.{Action, AnyContent}
-import config.ErrorHandler
-import controllers.predicates.AuthPredicate
-import controllers.predicates.MandationStatusPredicate
+import config.{AppConfig, ErrorHandler}
+import controllers.predicates.{AuthPredicate, MandationStatusPredicate}
 import forms.NineBoxForm
+import javax.inject.{Inject, Singleton}
+import models.VatObligations
+import play.api.i18n.{I18nSupport, MessagesApi}
 import play.api.libs.json.Json
+import play.api.mvc.{Action, AnyContent}
 import services.{VatObligationsService, VatSubscriptionService}
 import uk.gov.hmrc.play.bootstrap.controller.FrontendController
 
@@ -39,6 +38,8 @@ class SubmitFormController @Inject()(val messagesApi: MessagesApi,
                                      authPredicate: AuthPredicate,
                                      implicit val appConfig: AppConfig) extends FrontendController with I18nSupport {
 
+  val NineBoxForm = new NineBoxForm()(messagesApi)
+
   def show(periodKey: String): Action[AnyContent] = (authPredicate andThen mandationStatusCheck).async { implicit user =>
 
     val customerInformationCall = vatSubscriptionService.getCustomerDetails(user.vrn)
@@ -52,19 +53,23 @@ class SubmitFormController @Inject()(val messagesApi: MessagesApi,
         case (Right(customerDetails), Right(obs)) => {
           Ok(views.html.submit_form(periodKey, customerDetails.clientName, customerDetails.hasFlatRateScheme, obs, NineBoxForm.nineBoxForm))
         }
-        case (_, _ ) => errorHandler.showInternalServerError
+        case (_, _) => errorHandler.showInternalServerError
       }
     }
   }
 
   def submit(hasFlatRateScheme: Boolean, obligation: String, periodKey: String, name: Option[String]): Action[AnyContent] =
-    (authPredicate andThen mandationStatusCheck).async {implicit user =>
-
-    NineBoxForm.nineBoxForm.bindFromRequest().fold(
-      _ => Future.successful(errorHandler.showInternalServerError),
-      success => Future.successful(
-        Redirect(controllers.routes.ConfirmSubmissionController.show(hasFlatRateScheme, obligation, Json.toJson(success).toString, name, periodKey))
+    (authPredicate andThen mandationStatusCheck).async { implicit user =>
+      NineBoxForm.nineBoxForm.bindFromRequest().fold(
+        failure =>
+          Future.successful(
+            Ok(
+              views.html.submit_form(periodKey, name, hasFlatRateScheme, Json.parse(obligation).as[VatObligations], failure)
+            )
+          ),
+        success => Future.successful(
+          Redirect(controllers.routes.ConfirmSubmissionController.show(hasFlatRateScheme, obligation, Json.toJson(success).toString, name, periodKey))
+        )
       )
-    )
-  }
+    }
 }
