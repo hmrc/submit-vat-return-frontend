@@ -6,6 +6,7 @@ common.submit = Submit
 common.dateRangeSeparator = to
 common.continue = Continue
 common.back = Back
+common.errorSummary.heading = You have one or more errors
 
 error.required = Please enter a value
 error.summary.title = There is a problem

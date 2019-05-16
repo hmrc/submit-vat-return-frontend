@@ -51,13 +51,6 @@ class NineBoxForm @Inject()(implicit messagesApi: MessagesApi) {
     )
   }
 
-  def nonNegative: Mapping[String] => Mapping[String] = { input =>
-    input.verifying(
-      messagesApi("submit_form.error.negativeError"),
-      value => !value.contains("-")
-    )
-  }
-
   def toBigDecimal: Mapping[String] => Mapping[BigDecimal] = { input =>
     input.transform[BigDecimal](BigDecimal(_), _.toString())
   }
@@ -97,7 +90,7 @@ class NineBoxForm @Inject()(implicit messagesApi: MessagesApi) {
           val firstValue: BigDecimal = returnOrError(data.get("box3"))
           val secondValue: BigDecimal = returnOrError(data.get("box4"))
           data.get("box5") match {
-            case Some(value) if value.isEmpty => Left(Seq(FormError(key, messagesApi("submit_form.error.emptyError"))))
+            case Some(value) if value.isEmpty => Left(Seq(FormError(key, messagesApi("submit_form.error.negativeError"))))
             case Some(value) if !value.matches(regex) => Left(Seq(FormError(key, messagesApi("submit_form.error.formatCheckError"))))
             case Some(value) if value.contains("-") => Left(Seq(FormError(key, messagesApi("submit_form.error.negativeError"))))
             case Some(value) if (firstValue - secondValue).abs == BigDecimal(value) => Right(BigDecimal(value))
