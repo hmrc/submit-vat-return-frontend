@@ -16,6 +16,8 @@
 
 package models
 
+import java.time.LocalDate
+
 import base.BaseSpec
 import play.api.libs.json.{JsValue, Json}
 
@@ -30,7 +32,11 @@ class NineBoxModelSpec extends BaseSpec {
     "box6" -> "1000",
     "box7" -> "1000",
     "box8" -> "1000",
-    "box9" -> "1000"
+    "box9" -> "1000",
+    "flatRateScheme" -> true,
+    "start" -> LocalDate.parse("2018-01-01").toString,
+    "end" -> LocalDate.parse("2018-01-04").toString,
+    "due" -> LocalDate.parse("2018-01-05").toString
   )
 
   val validJsonBigInt: JsValue = Json.obj(
@@ -42,10 +48,28 @@ class NineBoxModelSpec extends BaseSpec {
     "box6" -> 1000,
     "box7" -> 1000,
     "box8" -> 1000,
-    "box9" -> 1000
+    "box9" -> 1000,
+    "flatRateScheme" -> true,
+    "start" -> LocalDate.parse("2018-01-01").toString,
+    "end" -> LocalDate.parse("2018-01-04").toString,
+    "due" -> LocalDate.parse("2018-01-05").toString
   )
 
-  val validModel = NineBoxModel(1000, 1000, 1000, 1000, 1000, 1000, 1000, 1000, 1000)
+  val validModel = NineBoxModel(
+    1000.00,
+    1000.00,
+    1000.00,
+    1000.00,
+    1000.00,
+    1000.00,
+    1000.00,
+    1000.00,
+    1000.00,
+    flatRateScheme = true,
+    LocalDate.parse("2018-01-01"),
+    LocalDate.parse("2018-01-04"),
+    LocalDate.parse("2018-01-05")
+  )
 
   "NineBoxModel" should {
     "correctly parse" when {

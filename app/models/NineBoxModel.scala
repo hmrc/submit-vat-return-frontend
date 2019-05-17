@@ -16,7 +16,9 @@
 
 package models
 
-import play.api.libs.json.{Format, Json}
+import java.time.LocalDate
+
+import play.api.libs.json.{Format, Json, OFormat}
 
 case class NineBoxModel(box1: BigDecimal,
                         box2: BigDecimal,
@@ -26,9 +28,12 @@ case class NineBoxModel(box1: BigDecimal,
                         box6: BigDecimal,
                         box7: BigDecimal,
                         box8: BigDecimal,
-                        box9: BigDecimal
-                       )
+                        box9: BigDecimal,
+                        flatRateScheme: Boolean,
+                        start: LocalDate,
+                        end: LocalDate,
+                        due: LocalDate)
 
 object NineBoxModel {
-  implicit val format: Format[NineBoxModel] = Json.format[NineBoxModel]
+  implicit val format: OFormat[NineBoxModel] = Json.format[NineBoxModel]
 }

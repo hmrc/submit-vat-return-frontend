@@ -31,7 +31,7 @@ object VatObligationsStub {
         "start" -> LocalDate.now(),
         "end" -> LocalDate.now(),
         "due" -> LocalDate.now(),
-        "periodKey" -> "#001"
+        "periodKey" -> "18AA"
       )
     )
   )

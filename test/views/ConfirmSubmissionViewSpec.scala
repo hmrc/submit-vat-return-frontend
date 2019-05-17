@@ -21,7 +21,7 @@ import java.time.LocalDate
 
 import org.jsoup.Jsoup
 import org.jsoup.nodes.Document
-import assets.messages.{CommonMessages, ConfirmSubmissionMessages => viewMessages}
+import assets.messages.{ConfirmSubmissionMessages => viewMessages}
 import models._
 
 class ConfirmSubmissionViewSpec extends ViewBaseSpec {
@@ -38,7 +38,7 @@ class ConfirmSubmissionViewSpec extends ViewBaseSpec {
     val changeReturnLink = "#content > article > section > section:nth-child(6) > div > a"
     val submitVatReturnHeading = "#content > article > section > h3.bold-medium"
     val submitReturnInformation = "#content > article > section > p"
-    val submitButton = "#content > article > section > form > input"
+    val submitButton = "#content > article > section > form > button"
 
     val breadcrumbOne = "div.breadcrumbs li:nth-of-type(1)"
     val breadcrumbOneLink = "div.breadcrumbs li:nth-of-type(1) a"
@@ -50,6 +50,8 @@ class ConfirmSubmissionViewSpec extends ViewBaseSpec {
   def boxElement(box: String, column: Int): String = {
     s"$box > div:nth-child($column)"
   }
+
+  val periodKey = "17AA"
 
   val vatObligation: VatObligation = VatObligation(
     start = LocalDate.parse("2019-01-12"),
@@ -74,7 +76,11 @@ class ConfirmSubmissionViewSpec extends ViewBaseSpec {
     box6 = 1000.06,
     box7 = 1000.07,
     box8 = 1000.08,
-    box9 = 1000.09
+    box9 = 1000.09,
+    flatRateScheme = true,
+    start = LocalDate.parse("2019-01-12"),
+    end = LocalDate.parse("2019-04-12"),
+    due = LocalDate.parse("2019-05-12")
   )
 
 
@@ -85,9 +91,8 @@ class ConfirmSubmissionViewSpec extends ViewBaseSpec {
       "displays the correct information" should {
 
         val viewModel: ConfirmSubmissionViewModel = ConfirmSubmissionViewModel(
-          vatObligation,
-          hasFlatRateScheme = true,
           vatReturn,
+          periodKey,
           userName = customerDetails.clientName
         )
 
@@ -214,17 +219,32 @@ class ConfirmSubmissionViewSpec extends ViewBaseSpec {
         }
 
         s"display the ${viewMessages.submitButton} button" in {
-          element(Selectors.submitButton).`val`() shouldBe viewMessages.submitButton
+          elementText(Selectors.submitButton) shouldBe viewMessages.submitButton
         }
       }
     }
 
     "the user is not the flat rate scheme" should {
 
+      val vatReturnNoFRS: NineBoxModel = NineBoxModel(
+        box1 = 1000.01,
+        box2 = 1000.02,
+        box3 = 1000.03,
+        box4 = 1000.04,
+        box5 = 1000.05,
+        box6 = 1000.06,
+        box7 = 1000.07,
+        box8 = 1000.08,
+        box9 = 1000.09,
+        flatRateScheme = false,
+        start = LocalDate.parse("2019-01-12"),
+        end = LocalDate.parse("2019-04-12"),
+        due = LocalDate.parse("2019-05-12")
+      )
+
       val viewModel: ConfirmSubmissionViewModel = ConfirmSubmissionViewModel(
-        vatObligation,
-        hasFlatRateScheme = false,
-        vatReturn,
+        vatReturnNoFRS,
+        periodKey,
         userName = customerDetails.clientName
       )
 
@@ -240,9 +260,8 @@ class ConfirmSubmissionViewSpec extends ViewBaseSpec {
     "user is an agent" should {
 
       val viewModel: ConfirmSubmissionViewModel = ConfirmSubmissionViewModel(
-        vatObligation,
-        hasFlatRateScheme = false,
         vatReturn,
+        periodKey,
         userName = customerDetails.clientName
       )
 

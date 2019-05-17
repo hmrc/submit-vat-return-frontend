@@ -31,7 +31,7 @@ class ConfirmationController @Inject()(val messagesApi: MessagesApi,
                                        authPredicate: AuthPredicate,
                                        implicit val appConfig: AppConfig) extends FrontendController with I18nSupport {
 
-  def show(): Action[AnyContent] = (authPredicate andThen mandationStatusCheck).async { implicit user =>
+  val show: Action[AnyContent] = (authPredicate andThen mandationStatusCheck).async { implicit user =>
     Future.successful(Ok(views.html.confirmation_view()))
   }
 }

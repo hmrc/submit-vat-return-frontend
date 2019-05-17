@@ -21,14 +21,13 @@
 @import templates.formatters.dates.displayDate
 @import templates.formatters.navigationBreadcrumb
 @import templates.formatters.dates.displayDateRange
-@import play.api.libs.json.Json
 
 @(periodKey: String,
-  clientName: Option[String],
-  flatRateScheme: Boolean,
-  obligations: VatObligations,
-  form: Form[NineBoxModel],
-  isAgent: Boolean)(implicit request: Request[_], messages: Messages, appConfig: AppConfig)
+        clientName: Option[String],
+        flatRateScheme: Boolean,
+        obligation: Seq[VatObligation],
+        form: Form[NineBoxModel],
+        isAgent: Boolean)(implicit request: Request[_], messages: Messages, appConfig: AppConfig)
 
 @handleSingleError(field: Field) = {
     @field.errors.headOption.map { error =>
@@ -55,7 +54,7 @@
                 appConfig.returnDeadlinesUrl -> messages("breadcrumbs.submitVatReturn")
             ),
             messages("breadcrumbs.submitReturnForDate",
-                displayDateRange(obligations.obligations.head.start, obligations.obligations.head.end)
+                displayDateRange(obligation.head.start, obligation.head.end)
             )
         )
     }
@@ -64,11 +63,8 @@
 
         <h1 class="heading-xlarge">
             <span class="heading-secondary">@messages("submit_form.heading")</span>
-            <span>@{obligations.obligations.map {
-                obligation => displayDateRange(obligation.start, obligation.end, useShortDayFormat = true)
-            }
-            }</span>
-            <span class="form-hint">@messages("confirm_submission.returnDueDate", displayDate(obligations.obligations.head.due))</span>
+            <span>@{displayDateRange(obligation.head.start, obligation.head.end, useShortDayFormat = true)}</span>
+            <span class="form-hint">@messages("confirm_submission.returnDueDate", displayDate(obligation.head.due))</span>
         </h1>
 
         @if(form.errors.nonEmpty) {
@@ -77,7 +73,14 @@
 
         <h2 class="heading-large">@clientName</h2>
         <h3 class="bold-small form-group">@messages("confirm_submission.vatDetails")</h3>
-        @helpers.form(action = controllers.routes.SubmitFormController.submit(flatRateScheme, Json.toJson(obligations).toString, periodKey, clientName)){
+        @helpers.form(action = controllers.routes.SubmitFormController.submit(
+            periodKey,
+            clientName,
+            flatRateScheme,
+            obligation.head.start.toString,
+            obligation.head.due.toString,
+            obligation.head.end.toString
+        )){
             <div class="form-group">
                 <div class="grid-row" id="box-one">
                     @handleSingleError(form("box1"))
@@ -218,6 +221,10 @@
             <div class="form-group">
                 <input id="continue" type="submit" class="button" value="@messages("common.continue")">
             </div>
+            <input type="hidden" name="flatRateScheme" value=@flatRateScheme>
+            <input type="hidden" name="start" value=@obligation.head.start.toString>
+            <input type="hidden" name="end" value=@obligation.head.end.toString>
+            <input type="hidden" name="due" value=@obligation.head.due.toString>
         }
     </div>
 }

@@ -19,11 +19,9 @@ package views
 import java.time.LocalDate
 
 import forms.NineBoxForm
-import models.{VatObligation, VatObligations}
+import models.VatObligation
 import org.jsoup.Jsoup
 import org.jsoup.nodes.Document
-import views.html.templates.formatters.dates.displayDateRange
-import views.html.templates.formatters.dates.displayDate
 import assets.messages.SubmitFormPageMessages._
 
 class SubmitFormViewSpec extends ViewBaseSpec {
@@ -32,8 +30,9 @@ class SubmitFormViewSpec extends ViewBaseSpec {
 
     val nbr = new NineBoxForm()(messagesApi)
 
-    val obligations: VatObligations =
-      VatObligations(Seq(VatObligation(LocalDate.parse("2019-01-12"), LocalDate.parse("2019-04-12"), LocalDate.parse("2019-05-12"), "18AA")))
+    val obligations: Seq[VatObligation] = Seq(
+      VatObligation(LocalDate.parse("2019-01-12"), LocalDate.parse("2019-04-12"), LocalDate.parse("2019-05-12"), "18AA")
+    )
 
     lazy val view = views.html.submit_form("18AA", Some("ABC Studios"), flatRateScheme = true, obligations, nbr.nineBoxForm, isAgent = false)
 

@@ -16,12 +16,17 @@
 
 package controllers
 
-import config.{AppConfig, ErrorHandler}
-import controllers.predicates.{AuthPredicate, MandationStatusPredicate}
+import java.time.LocalDate
+
+import config.AppConfig
 import forms.NineBoxForm
 import javax.inject.{Inject, Singleton}
-import models.VatObligations
 import play.api.i18n.{I18nSupport, MessagesApi}
+import config.ErrorHandler
+import controllers.predicates.AuthPredicate
+import controllers.predicates.MandationStatusPredicate
+import models.VatObligation
+import play.api.Logger
 import play.api.libs.json.Json
 import play.api.mvc.{Action, AnyContent}
 import services.{VatObligationsService, VatSubscriptionService}
@@ -51,11 +56,14 @@ class SubmitFormController @Inject()(val messagesApi: MessagesApi,
     } yield {
       (customerInformation, obligations) match {
         case (Right(customerDetails), Right(obs)) => {
+
+          val obligationToSubmit: Seq[VatObligation] = obs.obligations.filter(x => x.periodKey == periodKey)
+
           Ok(views.html.submit_form(
             periodKey,
             customerDetails.clientName,
             customerDetails.hasFlatRateScheme,
-            obs,
+            obligationToSubmit,
             NineBoxForm.nineBoxForm,
             user.isAgent
           ))
@@ -65,18 +73,30 @@ class SubmitFormController @Inject()(val messagesApi: MessagesApi,
     }
   }
 
-  def submit(hasFlatRateScheme: Boolean, obligation: String, periodKey: String, name: Option[String]): Action[AnyContent] =
-    (authPredicate andThen mandationStatusCheck).async { implicit user =>
-      NineBoxForm.nineBoxForm.bindFromRequest().fold(
-        failure =>
-          Future.successful(
-            Ok(
-              views.html.submit_form(periodKey, name, hasFlatRateScheme, Json.parse(obligation).as[VatObligations], failure, user.isAgent)
-            )
-          ),
-        success => Future.successful(
-          Redirect(controllers.routes.ConfirmSubmissionController.show(hasFlatRateScheme, obligation, Json.toJson(success).toString, name, periodKey))
+  def submit(periodKey: String,
+             clientName: Option[String],
+             hasFlatRateScheme: Boolean,
+             start: String,
+             end: String,
+             due: String): Action[AnyContent] = (authPredicate andThen mandationStatusCheck).async { implicit user =>
+
+    NineBoxForm.nineBoxForm.bindFromRequest().fold(
+      failure => {
+        Future.successful(
+          Ok(
+            views.html.submit_form(periodKey,
+              clientName,
+              hasFlatRateScheme,
+              Seq(VatObligation(LocalDate.parse(start), LocalDate.parse(end), LocalDate.parse(due), periodKey)),
+              failure,
+              user.isAgent))
         )
+      },
+        success => {
+          Future.successful(
+            Redirect(controllers.routes.ConfirmSubmissionController.show(periodKey)).addingToSession("viewModel" -> Json.toJson(success).toString())
+          )
+        }
       )
     }
 }

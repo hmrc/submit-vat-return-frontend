@@ -25,23 +25,26 @@ import play.api.libs.json.Json
 import play.api.mvc._
 import uk.gov.hmrc.play.bootstrap.controller.FrontendController
 
-import scala.concurrent.Future
-
 class ConfirmSubmissionController @Inject()(val messagesApi: MessagesApi,
                                             val mandationStatusCheck: MandationStatusPredicate,
                                             val errorHandler: ErrorHandler,
                                             authPredicate: AuthPredicate,
                                             implicit val appConfig: AppConfig) extends FrontendController with I18nSupport {
 
-  def show(frs: Boolean, obs: String, nbm: String, name: Option[String], periodKey: String): Action[AnyContent] = authPredicate.async {
-    implicit user =>
-      val viewModel = ConfirmSubmissionViewModel(
-        Json.parse(obs).as[VatObligations].obligations.head, frs, Json.parse(nbm).as[NineBoxModel], name
-      )
-      Future.successful(Ok(views.html.confirm_submission(viewModel, user.isAgent)))
+
+  def show(periodKey: String): Action[AnyContent] = (authPredicate andThen mandationStatusCheck) { implicit user =>
+
+    user.session.get("viewModel") match {
+      case Some(model) => {
+        val sessionData = Json.parse(model).as[NineBoxModel]
+        val viewModel = ConfirmSubmissionViewModel(sessionData, periodKey, None)
+        Ok(views.html.confirm_submission(viewModel, user.isAgent))
+      }
+      case _ => Redirect(controllers.routes.SubmitFormController.show(periodKey))
+    }
   }
 
-  def submit(periodKey: String): Action[AnyContent] = Action.async { implicit request =>
-    Future.successful(Redirect(controllers.routes.ConfirmationController.show().url))
+  def submit(periodKey: String): Action[AnyContent] = (authPredicate andThen mandationStatusCheck) { implicit user =>
+    Redirect(controllers.routes.ConfirmationController.show().url)
   }
 }

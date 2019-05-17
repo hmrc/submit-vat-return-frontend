@@ -19,9 +19,10 @@ package controllers
 import java.time.LocalDate
 
 import base.BaseSpec
+import common.MandationStatuses.nonMTDfB
 import common.{MandationStatuses, SessionKeys}
 import mocks.{MockAuth, MockMandationPredicate}
-import models.{NineBoxModel, VatObligation, VatObligations}
+import models.{MandationStatus, NineBoxModel}
 import play.api.http.Status
 import play.api.libs.json.Json
 import play.api.mvc.Result
@@ -43,13 +44,6 @@ class ConfirmSubmissionControllerSpec extends BaseSpec with MockAuth with MockMa
 
     "user is authorised" should {
 
-      val obsModel: String = Json.stringify(Json.toJson(VatObligations(Seq(VatObligation(
-        LocalDate.now(),
-        LocalDate.now(),
-        LocalDate.now(),
-        "18AA"
-      )))))
-
       val nbModel: String = Json.stringify(Json.toJson(
         NineBoxModel(
           1000,
@@ -60,16 +54,18 @@ class ConfirmSubmissionControllerSpec extends BaseSpec with MockAuth with MockMa
           1000,
           1000,
           1000,
-          1000
+          1000,
+          flatRateScheme = true,
+          LocalDate.parse("2019-01-01"),
+          LocalDate.parse("2019-04-01"),
+          LocalDate.parse("2019-05-01"))
         )
-      ))
+      )
 
-      lazy val result: Future[Result] = TestConfirmSubmissionController.show(
-        frs = false,
-        obsModel,
-        nbModel,
-        None,
-        "18AA")(fakeRequest.withSession(SessionKeys.mandationStatus -> MandationStatuses.nonMTDfB))
+      lazy val result: Future[Result] = TestConfirmSubmissionController.show("18AA")(fakeRequest.withSession(
+        "viewModel" -> nbModel,
+        SessionKeys.mandationStatus -> MandationStatuses.nonMTDfB)
+      )
 
       "return 200" in {
         mockAuthorise(mtdVatAuthorisedResponse)
@@ -85,9 +81,12 @@ class ConfirmSubmissionControllerSpec extends BaseSpec with MockAuth with MockMa
   "ConfirmSubmissionController .submit" when {
     "user is authorised" should {
 
-      lazy val result: Future[Result] = TestConfirmSubmissionController.submit("18AA")(fakeRequest)
+      lazy val result: Future[Result] = TestConfirmSubmissionController.submit("18AA")(fakeRequest.withSession(
+        SessionKeys.mandationStatus -> MandationStatuses.nonMTDfB)
+      )
 
       "return 303" in {
+        mockAuthorise(mtdVatAuthorisedResponse)
         status(result) shouldBe Status.SEE_OTHER
       }
 

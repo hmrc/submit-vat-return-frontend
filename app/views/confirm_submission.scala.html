@@ -30,15 +30,15 @@
         appConfig.vatSummaryUrl -> messages("breadcrumbs.yourVatDetails"),
         appConfig.returnDeadlinesUrl -> messages("breadcrumbs.submitVatReturn")
       ),
-      messages("breadcrumbs.submitReturnForDate", displayDateRange(viewModel.obligations.start, viewModel.obligations.end))
+      messages("breadcrumbs.submitReturnForDate", displayDateRange(viewModel.returnDetail.start, viewModel.returnDetail.end))
     )
   }
 
   <section>
     <h1 class="heading-xlarge">
       <span class="heading-secondary">@messages("confirm_submission.heading")</span>
-        @displayDateRange(viewModel.obligations.start, viewModel.obligations.end, useShortDayFormat = true)
-      <p class="form-hint heading-small">@messages("confirm_submission.returnDueDate", displayDate(viewModel.obligations.due))</p>
+        @displayDateRange(viewModel.returnDetail.start, viewModel.returnDetail.end, useShortDayFormat = true)
+      <p class="form-hint heading-small">@messages("confirm_submission.returnDueDate", displayDate(viewModel.returnDetail.due))</p>
     </h1>
 
     <h2 class="heading-large">@viewModel.userName</h2>
@@ -89,7 +89,7 @@
       <div class="form-group">
         <div class="grid-row" id="box-six">
           <div class="column-one-quarter form-hint">@messages("confirm_submission.boxSix")</div>
-          @if(viewModel.hasFlatRateScheme){
+          @if(viewModel.returnDetail.flatRateScheme){
           <div class="column-one-half form-hint">@messages("confirm_submission.boxSixFlatRate")</div>
           }else {
             <div class="column-one-half form-hint">@messages("confirm_submission.boxSixNoFlatRate")</div>
@@ -117,8 +117,8 @@
     <section class="form-group divider--bottom">
       <div class="form-group">
         <h3 class="bold-large">@messages("confirm_submission.returnTotal")@displayMoney(viewModel.returnDetail.box5)</h3>
-        <p>@messages("confirm_submission.returnDueDate", displayDate(viewModel.obligations.due))</p>
-        <a href=@controllers.routes.SubmitFormController.show(viewModel.obligations.periodKey)>@messages("confirm_submission.changeDetail")</a>
+        <p>@messages("confirm_submission.returnDueDate", displayDate(viewModel.returnDetail.due))</p>
+        <a href=@controllers.routes.SubmitFormController.show(viewModel.periodKey)>@messages("confirm_submission.changeDetail")</a>
       </div>
     </section>
 
@@ -126,8 +126,12 @@
 
     <p>@messages("confirm_submission.information")</p>
 
-    @helpers.form(action = controllers.routes.ConfirmSubmissionController.submit(viewModel.obligations.periodKey)) {
-      <input id="continue" type="submit" class="button" value="@messages("common.submit")">
+    @helpers.form(action = controllers.routes.ConfirmSubmissionController.submit(viewModel.periodKey)) {
+      <button
+        class="button"
+        type ="submit">
+        @messages("common.submit")
+      </button>
     }
 
   </section>

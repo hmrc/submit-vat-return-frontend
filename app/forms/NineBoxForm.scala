@@ -20,7 +20,7 @@ import javax.inject.{Inject, Singleton}
 import models.NineBoxModel
 import play.api.data.Forms._
 import play.api.data.format.Formatter
-import play.api.data.{Form, FormError, Mapping}
+import play.api.data.{Form, FormError}
 import play.api.i18n.MessagesApi
 
 @Singleton
@@ -154,8 +154,11 @@ class NineBoxForm @Inject()(implicit messagesApi: MessagesApi) {
       "box6" -> of(boxFormat),
       "box7" -> of(boxFormat),
       "box8" -> of(boxFormat),
-      "box9" -> of(boxFormat)
+      "box9" -> of(boxFormat),
+      "flatRateScheme" -> boolean,
+      "start" -> localDate,
+      "end" -> localDate,
+      "due" -> localDate
     )(NineBoxModel.apply)(NineBoxModel.unapply)
   )
-
 }
