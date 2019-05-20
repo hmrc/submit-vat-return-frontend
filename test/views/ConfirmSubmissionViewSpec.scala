@@ -23,6 +23,7 @@ import org.jsoup.Jsoup
 import org.jsoup.nodes.Document
 import assets.messages.{ConfirmSubmissionMessages => viewMessages}
 import models._
+import assets.CustomerDetailsTestAssets._
 
 class ConfirmSubmissionViewSpec extends ViewBaseSpec {
 
@@ -60,14 +61,7 @@ class ConfirmSubmissionViewSpec extends ViewBaseSpec {
     periodKey = "17AA"
   )
 
-  val customerDetails: CustomerDetails = CustomerDetails(
-    None,
-    None,
-    None,
-    organisationName = Some("ABC Trading")
-  )
-
-  val vatReturn: NineBoxModel = NineBoxModel(
+  def vatReturn(hasFlatRateScheme: Boolean): SubmitVatReturnModel = SubmitVatReturnModel(
     box1 = 1000.01,
     box2 = 1000.02,
     box3 = 1000.03,
@@ -77,7 +71,7 @@ class ConfirmSubmissionViewSpec extends ViewBaseSpec {
     box7 = 1000.07,
     box8 = 1000.08,
     box9 = 1000.09,
-    flatRateScheme = true,
+    flatRateScheme = hasFlatRateScheme,
     start = LocalDate.parse("2019-01-12"),
     end = LocalDate.parse("2019-04-12"),
     due = LocalDate.parse("2019-05-12")
@@ -91,9 +85,9 @@ class ConfirmSubmissionViewSpec extends ViewBaseSpec {
       "displays the correct information" should {
 
         val viewModel: ConfirmSubmissionViewModel = ConfirmSubmissionViewModel(
-          vatReturn,
+          vatReturn(true),
           periodKey,
-          userName = customerDetails.clientName
+          userName = customerDetailsWithFRS.clientName
         )
 
         lazy val view = views.html.confirm_submission(viewModel, isAgent = false)
@@ -120,10 +114,10 @@ class ConfirmSubmissionViewSpec extends ViewBaseSpec {
           "and links to the Return deadlines page" in {
             element(Selectors.breadcrumbTwoLink).attr("href") shouldBe mockAppConfig.returnDeadlinesUrl
           }
+        }
 
-          "has the correct current page title" in {
-            elementText(Selectors.breadcrumbCurrentPage) shouldBe "Submit 12 January to 12 April 2019 return"
-          }
+        "has the correct current page title" in {
+          elementText(Selectors.breadcrumbCurrentPage) shouldBe "Submit 12 January to 12 April 2019 return"
         }
 
         s"the smaller ${viewMessages.returnDueDate} heading" in {
@@ -202,7 +196,8 @@ class ConfirmSubmissionViewSpec extends ViewBaseSpec {
         "have the change return details link which" should {
 
           s"the redirect url to URL NEEDED" in {
-            element(Selectors.changeReturnLink).attr("href") shouldBe "/vat-through-software/submit-vat-return/17AA/submit-form"
+            element(Selectors.changeReturnLink).attr("href") shouldBe
+              controllers.routes.SubmitFormController.show(periodKey).url
           }
 
           s"display the correct content as ${viewMessages.changeReturnLink}" in {
@@ -224,9 +219,9 @@ class ConfirmSubmissionViewSpec extends ViewBaseSpec {
       }
     }
 
-    "the user is not the flat rate scheme" should {
+    "the user is not on the flat rate scheme" should {
 
-      val vatReturnNoFRS: NineBoxModel = NineBoxModel(
+      val vatReturnNoFRS: SubmitVatReturnModel = SubmitVatReturnModel(
         box1 = 1000.01,
         box2 = 1000.02,
         box3 = 1000.03,
@@ -243,9 +238,9 @@ class ConfirmSubmissionViewSpec extends ViewBaseSpec {
       )
 
       val viewModel: ConfirmSubmissionViewModel = ConfirmSubmissionViewModel(
-        vatReturnNoFRS,
+        vatReturn(false),
         periodKey,
-        userName = customerDetails.clientName
+        userName = customerDetailsWithFRS.clientName
       )
 
       lazy val view = views.html.confirm_submission(viewModel, isAgent = false)
@@ -260,9 +255,9 @@ class ConfirmSubmissionViewSpec extends ViewBaseSpec {
     "user is an agent" should {
 
       val viewModel: ConfirmSubmissionViewModel = ConfirmSubmissionViewModel(
-        vatReturn,
+        vatReturn(false),
         periodKey,
-        userName = customerDetails.clientName
+        userName = customerDetailsModel.clientName
       )
 
       lazy val view = views.html.confirm_submission(viewModel, isAgent = true)

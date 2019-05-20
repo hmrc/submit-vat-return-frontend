@@ -19,5 +19,6 @@ package common
 object SessionKeys {
 
   val mandationStatus = "mtdVatMandationStatus"
+  val viewModel = "mtdNineBoxViewModel"
 
 }

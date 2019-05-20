@@ -18,15 +18,16 @@ package controllers
 
 import java.time.LocalDate
 
+import forms.SubmitVatReturnForm
+
+import common.SessionKeys
 import config.AppConfig
-import forms.NineBoxForm
 import javax.inject.{Inject, Singleton}
 import play.api.i18n.{I18nSupport, MessagesApi}
 import config.ErrorHandler
 import controllers.predicates.AuthPredicate
 import controllers.predicates.MandationStatusPredicate
 import models.VatObligation
-import play.api.Logger
 import play.api.libs.json.Json
 import play.api.mvc.{Action, AnyContent}
 import services.{VatObligationsService, VatSubscriptionService}
@@ -43,7 +44,7 @@ class SubmitFormController @Inject()(val messagesApi: MessagesApi,
                                      authPredicate: AuthPredicate,
                                      implicit val appConfig: AppConfig) extends FrontendController with I18nSupport {
 
-  val NineBoxForm = new NineBoxForm()(messagesApi)
+  val SubmitVatReturnForm = new SubmitVatReturnForm()(messagesApi)
 
   def show(periodKey: String): Action[AnyContent] = (authPredicate andThen mandationStatusCheck).async { implicit user =>
 
@@ -64,7 +65,7 @@ class SubmitFormController @Inject()(val messagesApi: MessagesApi,
             customerDetails.clientName,
             customerDetails.hasFlatRateScheme,
             obligationToSubmit,
-            NineBoxForm.nineBoxForm,
+            SubmitVatReturnForm.submitVatReturnForm,
             user.isAgent
           ))
         }
@@ -80,7 +81,7 @@ class SubmitFormController @Inject()(val messagesApi: MessagesApi,
              end: String,
              due: String): Action[AnyContent] = (authPredicate andThen mandationStatusCheck).async { implicit user =>
 
-    NineBoxForm.nineBoxForm.bindFromRequest().fold(
+    SubmitVatReturnForm.submitVatReturnForm.bindFromRequest().fold(
       failure => {
         Future.successful(
           Ok(
@@ -94,7 +95,7 @@ class SubmitFormController @Inject()(val messagesApi: MessagesApi,
       },
         success => {
           Future.successful(
-            Redirect(controllers.routes.ConfirmSubmissionController.show(periodKey)).addingToSession("viewModel" -> Json.toJson(success).toString())
+            Redirect(controllers.routes.ConfirmSubmissionController.show(periodKey)).addingToSession(SessionKeys.viewModel -> Json.toJson(success).toString())
           )
         }
       )

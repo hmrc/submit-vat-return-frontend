@@ -21,10 +21,11 @@ import java.time.LocalDate
 import base.BaseSpec
 import common.{MandationStatuses, SessionKeys}
 import connectors.httpParsers.ResponseHttpParsers.HttpGetResult
-import mocks.{MockAuth, MockMandationPredicate}
+import mocks.MockAuth
 import mocks.service.{MockVatObligationsService, MockVatSubscriptionService}
+import mocks.MockMandationPredicate
 import models.errors.UnexpectedJsonFormat
-import models.{CustomerDetails, MandationStatus, VatObligation, VatObligations}
+import models._
 import play.api.http.Status
 import play.api.mvc.AnyContentAsFormUrlEncoded
 import play.api.test.FakeRequest
@@ -100,11 +101,11 @@ class SubmitFormControllerSpec extends BaseSpec with MockVatSubscriptionService 
 
         }
       }
+
     }
 
     authControllerChecks(TestSubmitFormController.show("18AA"), fakeRequest)
   }
-
 
   "SubmitFormController .submit" should {
 
@@ -214,7 +215,7 @@ class SubmitFormControllerSpec extends BaseSpec with MockVatSubscriptionService 
           "end" -> "2019-01-04",
           "due" -> "2019-01-05"
         ).withSession(
-          SessionKeys.mandationStatus ->  MandationStatuses.nonMTDfB
+          SessionKeys.mandationStatus -> MandationStatuses.nonMTDfB
         )
 
         lazy val result = {
@@ -259,7 +260,7 @@ class SubmitFormControllerSpec extends BaseSpec with MockVatSubscriptionService 
           "end" -> "2019-01-04",
           "due" -> "2019-01-05"
         ).withSession(
-          SessionKeys.mandationStatus ->  MandationStatuses.nonMTDfB
+          SessionKeys.mandationStatus -> MandationStatuses.nonMTDfB
         )
 
         lazy val result = {
@@ -302,7 +303,7 @@ class SubmitFormControllerSpec extends BaseSpec with MockVatSubscriptionService 
           "end" -> "2019-01-04",
           "due" -> "2019-01-05"
         ).withSession(
-          SessionKeys.mandationStatus ->  MandationStatuses.nonMTDfB
+          SessionKeys.mandationStatus -> MandationStatuses.nonMTDfB
         )
 
         lazy val result = {
@@ -347,7 +348,7 @@ class SubmitFormControllerSpec extends BaseSpec with MockVatSubscriptionService 
           "end" -> "2019-01-04",
           "due" -> "2019-01-05"
         ).withSession(
-          SessionKeys.mandationStatus ->  MandationStatuses.nonMTDfB
+          SessionKeys.mandationStatus -> MandationStatuses.nonMTDfB
         )
 
         lazy val result = {
@@ -808,5 +809,14 @@ class SubmitFormControllerSpec extends BaseSpec with MockVatSubscriptionService 
         }
       }
     }
+
+    authControllerChecks(TestSubmitFormController.submit(
+      periodKey = "93DH",
+      clientName = Some("Test user"),
+      hasFlatRateScheme = true,
+      start = "2019-01-01",
+      end = "2019-01-01",
+      due = "2019-01-01"),
+      fakeRequest)
   }
 }

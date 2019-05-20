@@ -55,27 +55,27 @@ class NineBoxModelSpec extends BaseSpec {
     "due" -> LocalDate.parse("2018-01-05").toString
   )
 
-  val validModel = NineBoxModel(
-    1000.00,
-    1000.00,
-    1000.00,
-    1000.00,
-    1000.00,
-    1000.00,
-    1000.00,
-    1000.00,
-    1000.00,
+  val validModel = SubmitVatReturnModel(
+    1000,
+    1000,
+    1000,
+    1000,
+    1000,
+    1000,
+    1000,
+    1000,
+    1000,
     flatRateScheme = true,
     LocalDate.parse("2018-01-01"),
     LocalDate.parse("2018-01-04"),
     LocalDate.parse("2018-01-05")
   )
 
-  "NineBoxModel" should {
+  "SubmitVatReturnModel" should {
     "correctly parse" when {
       "provided with valid json" in {
-        validJsonString.as[NineBoxModel] shouldBe validModel
-        validJsonBigInt.as[NineBoxModel] shouldBe validModel
+        validJsonString.as[SubmitVatReturnModel] shouldBe validModel
+        validJsonBigInt.as[SubmitVatReturnModel] shouldBe validModel
       }
     }
     "correctly parse into json" in {

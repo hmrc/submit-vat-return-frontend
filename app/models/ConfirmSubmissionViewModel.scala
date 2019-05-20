@@ -16,6 +16,6 @@
 
 package models
 
-case class ConfirmSubmissionViewModel(returnDetail: NineBoxModel,
+case class ConfirmSubmissionViewModel(returnDetail: SubmitVatReturnModel,
                                       periodKey: String,
                                       userName: Option[String])

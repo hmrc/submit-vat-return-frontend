@@ -55,8 +55,8 @@ class SubmitFormPageSpec extends BaseISpec {
 
           AuthStub.stubResponse(OK, mtdVatAuthResponse)
           VatSubscriptionStub.stubResponse("mandation-status", OK, mandationStatusSuccessJson)
-          VatSubscriptionStub.stubResponse("customer-details", SERVICE_UNAVAILABLE, Json.obj())
           VatObligationsStub.stubResponse(OK, vatObligationsSuccessJson)
+          VatSubscriptionStub.stubResponse("customer-details", SERVICE_UNAVAILABLE, Json.obj())
 
           val response: WSResponse = request
 

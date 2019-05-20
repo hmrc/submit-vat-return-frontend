@@ -19,13 +19,13 @@ package controllers
 import java.time.LocalDate
 
 import base.BaseSpec
-import common.MandationStatuses.nonMTDfB
 import common.{MandationStatuses, SessionKeys}
+import models.SubmitVatReturnModel
 import mocks.{MockAuth, MockMandationPredicate}
-import models.{MandationStatus, NineBoxModel}
 import play.api.http.Status
 import play.api.libs.json.Json
-import play.api.mvc.Result
+import play.api.mvc.{AnyContentAsEmpty, Result}
+import play.api.test.FakeRequest
 import play.api.test.Helpers._
 
 import scala.concurrent.Future
@@ -44,36 +44,64 @@ class ConfirmSubmissionControllerSpec extends BaseSpec with MockAuth with MockMa
 
     "user is authorised" should {
 
-      val nbModel: String = Json.stringify(Json.toJson(
-        NineBoxModel(
-          1000,
-          1000,
-          1000,
-          1000,
-          1000,
-          1000,
-          1000,
-          1000,
-          1000,
-          flatRateScheme = true,
-          LocalDate.parse("2019-01-01"),
-          LocalDate.parse("2019-04-01"),
-          LocalDate.parse("2019-05-01"))
+      "there is session data" should {
+        val nineBoxModel: String = Json.stringify(Json.toJson(
+          SubmitVatReturnModel(
+            1000.00,
+            1000.00,
+            1000.00,
+            1000.00,
+            1000.00,
+            1000.00,
+            1000.00,
+            1000.00,
+            1000.00,
+            flatRateScheme = true,
+            LocalDate.now(),
+            LocalDate.now(),
+            LocalDate.now()
+          )
+        ))
+
+        lazy val requestWithSessionData: FakeRequest[AnyContentAsEmpty.type] = fakeRequest.withSession(
+          SessionKeys.viewModel -> nineBoxModel,
+          SessionKeys.mandationStatus -> MandationStatuses.nonMTDfB
         )
-      )
 
-      lazy val result: Future[Result] = TestConfirmSubmissionController.show("18AA")(fakeRequest.withSession(
-        "viewModel" -> nbModel,
-        SessionKeys.mandationStatus -> MandationStatuses.nonMTDfB)
-      )
+        lazy val result: Future[Result] = {
+          TestConfirmSubmissionController.show("18AA")(requestWithSessionData)
+        }
 
-      "return 200" in {
-        mockAuthorise(mtdVatAuthorisedResponse)
-        status(result) shouldBe Status.OK
+        "return 200" in {
+          mockAuthorise(mtdVatAuthorisedResponse)
+          status(result) shouldBe Status.OK
+        }
+
+        "return HTML" in {
+          contentType(result) shouldBe Some("text/html")
+        }
+
+        "remove the session data" in {
+          session(result).get(SessionKeys.viewModel) shouldBe None
+        }
       }
 
-      "return HTML" in {
-        contentType(result) shouldBe Some("text/html")
+      "there is no session data" should {
+
+        lazy val result: Future[Result] = {
+          TestConfirmSubmissionController.show("18AA")(fakeRequest.withSession(
+            SessionKeys.mandationStatus -> MandationStatuses.nonMTDfB)
+          )
+        }
+
+        "return 303" in {
+          mockAuthorise(mtdVatAuthorisedResponse)
+          status(result) shouldBe Status.SEE_OTHER
+        }
+
+        s"redirect to ${controllers.routes.SubmitFormController.show("18AA").url}" in {
+          redirectLocation(result) shouldBe Some(controllers.routes.SubmitFormController.show("18AA").url)
+        }
       }
     }
   }
@@ -95,4 +123,6 @@ class ConfirmSubmissionControllerSpec extends BaseSpec with MockAuth with MockMa
       }
     }
   }
+
+  authControllerChecks(TestConfirmSubmissionController.show("18AA"), fakeRequest)
 }

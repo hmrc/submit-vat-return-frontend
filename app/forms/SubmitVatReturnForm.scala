@@ -16,15 +16,16 @@
 
 package forms
 
+
 import javax.inject.{Inject, Singleton}
-import models.NineBoxModel
+import models.SubmitVatReturnModel
 import play.api.data.Forms._
 import play.api.data.format.Formatter
 import play.api.data.{Form, FormError}
 import play.api.i18n.MessagesApi
 
 @Singleton
-class NineBoxForm @Inject()(implicit messagesApi: MessagesApi) {
+class SubmitVatReturnForm @Inject()(implicit messagesApi: MessagesApi) {
 
   private def splitAndCheckCharacterAmount(value: String): Boolean = {
     val splitArray = value.split('.')
@@ -144,7 +145,7 @@ class NineBoxForm @Inject()(implicit messagesApi: MessagesApi) {
     }
   }
 
-  val nineBoxForm: Form[NineBoxModel] = Form(
+  val submitVatReturnForm: Form[SubmitVatReturnModel] = Form(
     mapping(
       "box1" -> of(boxFormat),
       "box2" -> of(boxFormat),
@@ -159,6 +160,6 @@ class NineBoxForm @Inject()(implicit messagesApi: MessagesApi) {
       "start" -> localDate,
       "end" -> localDate,
       "due" -> localDate
-    )(NineBoxModel.apply)(NineBoxModel.unapply)
+    )(SubmitVatReturnModel.apply)(SubmitVatReturnModel.unapply)
   )
 }

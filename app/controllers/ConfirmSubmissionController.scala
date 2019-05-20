@@ -16,15 +16,17 @@
 
 package controllers
 
+import common.SessionKeys
 import config.{AppConfig, ErrorHandler}
 import controllers.predicates.{AuthPredicate, MandationStatusPredicate}
-import javax.inject.Inject
-import models._
+import javax.inject.{Inject, Singleton}
+import models.{ConfirmSubmissionViewModel, SubmitVatReturnModel}
 import play.api.i18n.{I18nSupport, MessagesApi}
 import play.api.libs.json.Json
 import play.api.mvc._
 import uk.gov.hmrc.play.bootstrap.controller.FrontendController
 
+@Singleton
 class ConfirmSubmissionController @Inject()(val messagesApi: MessagesApi,
                                             val mandationStatusCheck: MandationStatusPredicate,
                                             val errorHandler: ErrorHandler,
@@ -34,11 +36,11 @@ class ConfirmSubmissionController @Inject()(val messagesApi: MessagesApi,
 
   def show(periodKey: String): Action[AnyContent] = (authPredicate andThen mandationStatusCheck) { implicit user =>
 
-    user.session.get("viewModel") match {
+    user.session.get(SessionKeys.viewModel) match {
       case Some(model) => {
-        val sessionData = Json.parse(model).as[NineBoxModel]
+        val sessionData = Json.parse(model).as[SubmitVatReturnModel]
         val viewModel = ConfirmSubmissionViewModel(sessionData, periodKey, None)
-        Ok(views.html.confirm_submission(viewModel, user.isAgent))
+        Ok(views.html.confirm_submission(viewModel, user.isAgent)).removingFromSession(SessionKeys.viewModel)
       }
       case _ => Redirect(controllers.routes.SubmitFormController.show(periodKey))
     }

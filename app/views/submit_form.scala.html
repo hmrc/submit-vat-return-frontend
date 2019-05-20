@@ -26,8 +26,9 @@
         clientName: Option[String],
         flatRateScheme: Boolean,
         obligation: Seq[VatObligation],
-        form: Form[NineBoxModel],
+        form: Form[SubmitVatReturnModel],
         isAgent: Boolean)(implicit request: Request[_], messages: Messages, appConfig: AppConfig)
+
 
 @handleSingleError(field: Field) = {
     @field.errors.headOption.map { error =>

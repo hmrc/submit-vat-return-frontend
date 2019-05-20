@@ -18,24 +18,23 @@ package views
 
 import java.time.LocalDate
 
-import forms.NineBoxForm
+import forms.SubmitVatReturnForm
 import models.VatObligation
 import org.jsoup.Jsoup
 import org.jsoup.nodes.Document
 import assets.messages.SubmitFormPageMessages._
+import views.html.templates.formatters.dates.{displayDate, displayDateRange}
 
 class SubmitFormViewSpec extends ViewBaseSpec {
 
   "Rendering the submit_form page" should {
 
-    val nbr = new NineBoxForm()(messagesApi)
+    val nbr = new SubmitVatReturnForm()(messagesApi)
 
-    val obligations: Seq[VatObligation] = Seq(
-      VatObligation(LocalDate.parse("2019-01-12"), LocalDate.parse("2019-04-12"), LocalDate.parse("2019-05-12"), "18AA")
-    )
+    val obligations: Seq[VatObligation] =
+      Seq(VatObligation(LocalDate.parse("2019-01-12"), LocalDate.parse("2019-04-12"), LocalDate.parse("2019-05-12"), "18AA"))
 
-    lazy val view = views.html.submit_form("18AA", Some("ABC Studios"), flatRateScheme = true, obligations, nbr.nineBoxForm, isAgent = false)
-
+    lazy val view = views.html.submit_form("18AA", Some("ABC Studios"), flatRateScheme = true, obligations, nbr.submitVatReturnForm, isAgent = false)
     lazy implicit val document: Document = Jsoup.parse(view.body)
 
     "render breadcrumbs" which {
