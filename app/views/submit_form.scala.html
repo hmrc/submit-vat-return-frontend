@@ -25,7 +25,7 @@
 @(periodKey: String,
         clientName: Option[String],
         flatRateScheme: Boolean,
-        obligation: Seq[VatObligation],
+        obligation: VatObligation,
         form: Form[SubmitVatReturnModel],
         isAgent: Boolean)(implicit request: Request[_], messages: Messages, appConfig: AppConfig)
 
@@ -55,7 +55,7 @@
                 appConfig.returnDeadlinesUrl -> messages("breadcrumbs.submitVatReturn")
             ),
             messages("breadcrumbs.submitReturnForDate",
-                displayDateRange(obligation.head.start, obligation.head.end)
+                displayDateRange(obligation.start, obligation.end)
             )
         )
     }
@@ -64,8 +64,8 @@
 
         <h1 class="heading-xlarge">
             <span class="heading-secondary">@messages("submit_form.heading")</span>
-            <span>@{displayDateRange(obligation.head.start, obligation.head.end, useShortDayFormat = true)}</span>
-            <span class="form-hint">@messages("confirm_submission.returnDueDate", displayDate(obligation.head.due))</span>
+            <span>@{displayDateRange(obligation.start, obligation.end, useShortDayFormat = true)}</span>
+            <span class="form-hint">@messages("confirm_submission.returnDueDate", displayDate(obligation.due))</span>
         </h1>
 
         @if(form.errors.nonEmpty) {
@@ -78,9 +78,9 @@
             periodKey,
             clientName,
             flatRateScheme,
-            obligation.head.start.toString,
-            obligation.head.due.toString,
-            obligation.head.end.toString
+            obligation.start.toString,
+            obligation.due.toString,
+            obligation.end.toString
         )){
             <div class="form-group">
                 <div class="grid-row" id="box-one">
@@ -223,9 +223,9 @@
                 <input id="continue" type="submit" class="button" value="@messages("common.continue")">
             </div>
             <input type="hidden" name="flatRateScheme" value=@flatRateScheme>
-            <input type="hidden" name="start" value=@obligation.head.start.toString>
-            <input type="hidden" name="end" value=@obligation.head.end.toString>
-            <input type="hidden" name="due" value=@obligation.head.due.toString>
+            <input type="hidden" name="start" value=@obligation.start.toString>
+            <input type="hidden" name="end" value=@obligation.end.toString>
+            <input type="hidden" name="due" value=@obligation.due.toString>
         }
     </div>
 }

@@ -20,14 +20,19 @@ import java.time.LocalDate
 
 import base.BaseSpec
 import common.{MandationStatuses, SessionKeys}
+import assets.CustomerDetailsTestAssets._
 import connectors.httpParsers.ResponseHttpParsers.HttpGetResult
 import mocks.MockAuth
 import mocks.service.{MockVatObligationsService, MockVatSubscriptionService}
 import mocks.MockMandationPredicate
-import models.errors.UnexpectedJsonFormat
-import models._
-import play.api.http.Status
 import play.api.mvc.AnyContentAsFormUrlEncoded
+import models._
+import models.auth.User
+import models.errors.UnexpectedJsonFormat
+import org.jsoup.Jsoup
+import play.api.http.Status
+import play.api.libs.json.Json
+import play.api.mvc.{AnyContentAsEmpty, Result}
 import play.api.test.FakeRequest
 import play.api.test.Helpers._
 
@@ -51,54 +56,159 @@ class SubmitFormControllerSpec extends BaseSpec with MockVatSubscriptionService 
 
     "user is authorised" when {
 
-      "a successful response is received from the service" should {
+      val vatSubscriptionResponse: Future[HttpGetResult[CustomerDetails]] = Future.successful(Right(customerDetailsWithFRS))
 
-        lazy val customerInformation: CustomerDetails = CustomerDetails(
-          Some("Test"), Some("User"), Some("ABC Solutions"), Some("ABCL"), hasFlatRateScheme = true
-        )
+      "there is a view model in session" when {
 
-        lazy val obligations: VatObligations = VatObligations(Seq(
-          VatObligation(
-            LocalDate.parse("2019-01-12"),
-            LocalDate.parse("2019-04-12"),
-            LocalDate.parse("2019-05-12"),
-            "18AA"
+        val nineBoxModel: String = Json.stringify(Json.toJson(
+          SubmitVatReturnModel(
+            1000.00,
+            1000.00,
+            1000.00,
+            1000.00,
+            1000.00,
+            1000.00,
+            1000.00,
+            1000.00,
+            1000.00,
+            flatRateScheme = true,
+            LocalDate.now(),
+            LocalDate.now(),
+            LocalDate.now()
           )
         ))
 
-        lazy val vatSubscriptionResponse: Future[HttpGetResult[CustomerDetails]] = Future.successful(Right(customerInformation))
-        lazy val vatObligationsResponse: Future[HttpGetResult[VatObligations]] = Future.successful(Right(obligations))
+        "a successful response is received from the service" should {
 
-        lazy val result = {
-          TestSubmitFormController.show("18AA")(fakeRequest.withSession(SessionKeys.mandationStatus -> MandationStatuses.nonMTDfB))
+          lazy val requestWithSessionData = User[AnyContentAsEmpty.type]("123456789")(fakeRequest.withSession(
+            SessionKeys.viewModel -> nineBoxModel,
+            SessionKeys.mandationStatus -> MandationStatuses.nonMTDfB)
+          )
+
+          lazy val result: Future[Result] = {
+            TestSubmitFormController.show("18AA")(requestWithSessionData)
+          }
+
+          "return 200" in {
+            mockAuthorise(mtdVatAuthorisedResponse)
+            setupVatSubscriptionService(vatSubscriptionResponse)
+            status(result) shouldBe Status.OK
+          }
+
+          "return HTML" in {
+            contentType(result) shouldBe Some("text/html")
+          }
+
+          "the user name should be displayed" in {
+            Jsoup.parse(bodyOf(result)).select("#content > article > div > h2").text() shouldBe "ABC Solutions"
+          }
         }
 
-        "return 200" in {
-          mockAuthorise(mtdVatAuthorisedResponse)
-          setupVatSubscriptionService(vatSubscriptionResponse)
-          setupVatObligationsService(vatObligationsResponse)
-          status(result) shouldBe Status.OK
-        }
+        "an unsuccessful response is received from the service" should {
 
-        "return HTML" in {
-          contentType(result) shouldBe Some("text/html")
+          val vatSubscriptionFailureResponse: Future[HttpGetResult[CustomerDetails]] = Future.successful(Left(UnexpectedJsonFormat))
+
+          lazy val requestWithSessionData = User[AnyContentAsEmpty.type]("123456789")(fakeRequest.withSession(
+            SessionKeys.viewModel -> nineBoxModel,
+            SessionKeys.mandationStatus -> MandationStatuses.nonMTDfB)
+          )
+
+          lazy val result: Future[Result] = {
+            TestSubmitFormController.show("18AA")(requestWithSessionData)
+          }
+
+          "return 200" in {
+            mockAuthorise(mtdVatAuthorisedResponse)
+            setupVatSubscriptionService(vatSubscriptionFailureResponse)
+            status(result) shouldBe Status.OK
+          }
+
+          "return HTML" in {
+            contentType(result) shouldBe Some("text/html")
+          }
+
+          "the user name should not be displayed" in {
+            Jsoup.parse(bodyOf(result)).select("#content > article > div > h2").text() shouldBe ""
+          }
         }
       }
 
-      "an error response is returned from the service" should {
+      "there is no view model in session" when {
 
-        "return an internal server status" in {
+        "a successful response is received from the service" should {
 
-          val vatSubscriptionErrorResponse: Future[HttpGetResult[CustomerDetails]] = Future.successful(Left(UnexpectedJsonFormat))
-          val vatObligationsErrorResponse: Future[HttpGetResult[VatObligations]] = Future.successful(Left(UnexpectedJsonFormat))
+          val obligations: VatObligations = VatObligations(Seq(
+            VatObligation(
+              LocalDate.parse("2019-01-12"),
+              LocalDate.parse("2019-04-12"),
+              LocalDate.parse("2019-05-12"),
+              "18AA"
+            )
+          ))
 
-          mockAuthorise(mtdVatAuthorisedResponse)
-          setupVatSubscriptionService(vatSubscriptionErrorResponse)
-          setupVatObligationsService(vatObligationsErrorResponse)
+          val vatObligationsResponse: Future[HttpGetResult[VatObligations]] = Future.successful(Right(obligations))
 
-          lazy val result = TestSubmitFormController.show("18AA")(fakeRequest.withSession(SessionKeys.mandationStatus -> MandationStatuses.nonMTDfB))
-          status(result) shouldBe Status.INTERNAL_SERVER_ERROR
+          lazy val result = {
+            TestSubmitFormController.show("18AA")(fakeRequest.withSession(SessionKeys.mandationStatus -> MandationStatuses.nonMTDfB))
+          }
 
+          "return 200" in {
+            mockAuthorise(mtdVatAuthorisedResponse)
+            setupVatSubscriptionService(vatSubscriptionResponse)
+            setupVatObligationsService(vatObligationsResponse)
+            status(result) shouldBe Status.OK
+          }
+
+          "return HTML" in {
+            contentType(result) shouldBe Some("text/html")
+          }
+        }
+
+        "an obligation doesn't match the provided period key" should {
+
+          val obligations: VatObligations = VatObligations(Seq(
+            VatObligation(
+              LocalDate.parse("2019-01-12"),
+              LocalDate.parse("2019-04-12"),
+              LocalDate.parse("2019-05-12"),
+              "17AA"
+            )
+          ))
+
+          val vatObligationsResponse: Future[HttpGetResult[VatObligations]] = Future.successful(Right(obligations))
+
+          lazy val result = {
+            TestSubmitFormController.show("18AA")(fakeRequest.withSession(SessionKeys.mandationStatus -> MandationStatuses.nonMTDfB))
+          }
+
+          "return a 303" in {
+            mockAuthorise(mtdVatAuthorisedResponse)
+            setupVatSubscriptionService(vatSubscriptionResponse)
+            setupVatObligationsService(vatObligationsResponse)
+            status(result) shouldBe Status.SEE_OTHER
+          }
+
+          s"redirect to ${mockAppConfig.returnDeadlinesUrl}" in {
+            redirectLocation(result) shouldBe Some(mockAppConfig.returnDeadlinesUrl)
+          }
+
+        }
+
+        "an error response is returned from the service" should {
+
+          "return an internal server status" in {
+
+            val vatSubscriptionErrorResponse: Future[HttpGetResult[CustomerDetails]] = Future.successful(Left(UnexpectedJsonFormat))
+            val vatObligationsErrorResponse: Future[HttpGetResult[VatObligations]] = Future.successful(Left(UnexpectedJsonFormat))
+
+            mockAuthorise(mtdVatAuthorisedResponse)
+            setupVatSubscriptionService(vatSubscriptionErrorResponse)
+            setupVatObligationsService(vatObligationsErrorResponse)
+
+            lazy val result = TestSubmitFormController.show("18AA")(fakeRequest.withSession(SessionKeys.mandationStatus -> MandationStatuses.nonMTDfB))
+            status(result) shouldBe Status.INTERNAL_SERVER_ERROR
+
+          }
         }
       }
 

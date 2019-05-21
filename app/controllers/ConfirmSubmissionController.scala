@@ -24,25 +24,37 @@ import models.{ConfirmSubmissionViewModel, SubmitVatReturnModel}
 import play.api.i18n.{I18nSupport, MessagesApi}
 import play.api.libs.json.Json
 import play.api.mvc._
+import services.VatSubscriptionService
 import uk.gov.hmrc.play.bootstrap.controller.FrontendController
+
+import scala.concurrent.Future
 
 @Singleton
 class ConfirmSubmissionController @Inject()(val messagesApi: MessagesApi,
                                             val mandationStatusCheck: MandationStatusPredicate,
                                             val errorHandler: ErrorHandler,
+                                            val vatSubscriptionService: VatSubscriptionService,
                                             authPredicate: AuthPredicate,
                                             implicit val appConfig: AppConfig) extends FrontendController with I18nSupport {
 
-
-  def show(periodKey: String): Action[AnyContent] = (authPredicate andThen mandationStatusCheck) { implicit user =>
+  def show(periodKey: String): Action[AnyContent] = (authPredicate andThen mandationStatusCheck).async { implicit user =>
 
     user.session.get(SessionKeys.viewModel) match {
       case Some(model) => {
         val sessionData = Json.parse(model).as[SubmitVatReturnModel]
-        val viewModel = ConfirmSubmissionViewModel(sessionData, periodKey, None)
-        Ok(views.html.confirm_submission(viewModel, user.isAgent)).removingFromSession(SessionKeys.viewModel)
+
+        vatSubscriptionService.getCustomerDetails(user.vrn) map {
+          case (Right(customerDetails)) => {
+            val viewModel = ConfirmSubmissionViewModel(sessionData, periodKey, customerDetails.clientName)
+            Ok(views.html.confirm_submission(viewModel, user.isAgent))
+          }
+          case _ => {
+            val viewModel = ConfirmSubmissionViewModel(sessionData, periodKey, None)
+            Ok(views.html.confirm_submission(viewModel, user.isAgent))
+          }
+        }
       }
-      case _ => Redirect(controllers.routes.SubmitFormController.show(periodKey))
+      case _ => Future.successful(Redirect(controllers.routes.SubmitFormController.show(periodKey)))
     }
   }
 

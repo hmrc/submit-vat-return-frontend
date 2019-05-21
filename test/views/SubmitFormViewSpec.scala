@@ -31,10 +31,10 @@ class SubmitFormViewSpec extends ViewBaseSpec {
 
     val nbr = new SubmitVatReturnForm()(messagesApi)
 
-    val obligations: Seq[VatObligation] =
-      Seq(VatObligation(LocalDate.parse("2019-01-12"), LocalDate.parse("2019-04-12"), LocalDate.parse("2019-05-12"), "18AA"))
+    val obligation: VatObligation = VatObligation(LocalDate.parse("2019-01-12"), LocalDate.parse("2019-04-12"), LocalDate.parse("2019-05-12"), "18AA")
 
-    lazy val view = views.html.submit_form("18AA", Some("ABC Studios"), flatRateScheme = true, obligations, nbr.submitVatReturnForm, isAgent = false)
+    lazy val view = views.html.submit_form("18AA", Some("ABC Studios"), flatRateScheme = true, obligation, nbr.submitVatReturnForm, isAgent = false)
+
     lazy implicit val document: Document = Jsoup.parse(view.body)
 
     "render breadcrumbs" which {
@@ -65,6 +65,7 @@ class SubmitFormViewSpec extends ViewBaseSpec {
       elementText("h1 > span:nth-of-type(2)") shouldBe "12 Jan to 12 Apr 2019"
       elementText("h1 > span:nth-of-type(3)") shouldBe returnDue("12 May 2019")
     }
+
 
     "display the business name" in {
       elementText("h2") shouldBe "ABC Studios"

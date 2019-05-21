@@ -107,6 +107,7 @@ class ConfirmSubmissionViewSpec extends ViewBaseSpec {
             element(Selectors.breadcrumbOneLink).attr("href") shouldBe mockAppConfig.vatSummaryUrl
           }
 
+
           "has the 'Submit VAT Return' title" in {
             elementText(Selectors.breadcrumbTwo) shouldBe "Submit VAT Return"
           }
@@ -115,6 +116,7 @@ class ConfirmSubmissionViewSpec extends ViewBaseSpec {
             element(Selectors.breadcrumbTwoLink).attr("href") shouldBe mockAppConfig.returnDeadlinesUrl
           }
         }
+
 
         "has the correct current page title" in {
           elementText(Selectors.breadcrumbCurrentPage) shouldBe "Submit 12 January to 12 April 2019 return"
@@ -195,7 +197,7 @@ class ConfirmSubmissionViewSpec extends ViewBaseSpec {
 
         "have the change return details link which" should {
 
-          s"the redirect url to URL NEEDED" in {
+          s"the redirect url to ${controllers.routes.SubmitFormController.show(periodKey).url}" in {
             element(Selectors.changeReturnLink).attr("href") shouldBe
               controllers.routes.SubmitFormController.show(periodKey).url
           }
@@ -220,22 +222,6 @@ class ConfirmSubmissionViewSpec extends ViewBaseSpec {
     }
 
     "the user is not on the flat rate scheme" should {
-
-      val vatReturnNoFRS: SubmitVatReturnModel = SubmitVatReturnModel(
-        box1 = 1000.01,
-        box2 = 1000.02,
-        box3 = 1000.03,
-        box4 = 1000.04,
-        box5 = 1000.05,
-        box6 = 1000.06,
-        box7 = 1000.07,
-        box8 = 1000.08,
-        box9 = 1000.09,
-        flatRateScheme = false,
-        start = LocalDate.parse("2019-01-12"),
-        end = LocalDate.parse("2019-04-12"),
-        due = LocalDate.parse("2019-05-12")
-      )
 
       val viewModel: ConfirmSubmissionViewModel = ConfirmSubmissionViewModel(
         vatReturn(false),
@@ -268,4 +254,5 @@ class ConfirmSubmissionViewSpec extends ViewBaseSpec {
       }
     }
   }
+
 }

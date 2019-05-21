@@ -20,69 +20,115 @@ import java.time.LocalDate
 
 import base.BaseSpec
 import common.{MandationStatuses, SessionKeys}
-import models.SubmitVatReturnModel
+import assets.CustomerDetailsTestAssets._
+import common.MandationStatuses.nonMTDfB
+import connectors.httpParsers.ResponseHttpParsers.HttpGetResult
+import mocks.service.MockVatSubscriptionService
 import mocks.{MockAuth, MockMandationPredicate}
+import models.auth.User
+import models.errors.UnexpectedJsonFormat
+import models.{CustomerDetails, MandationStatus, SubmitVatReturnModel}
+import org.jsoup.Jsoup
 import play.api.http.Status
 import play.api.libs.json.Json
 import play.api.mvc.{AnyContentAsEmpty, Result}
-import play.api.test.FakeRequest
 import play.api.test.Helpers._
 
 import scala.concurrent.Future
 
-class ConfirmSubmissionControllerSpec extends BaseSpec with MockAuth with MockMandationPredicate {
+class ConfirmSubmissionControllerSpec extends BaseSpec with MockAuth with MockMandationPredicate with MockVatSubscriptionService {
 
   object TestConfirmSubmissionController extends ConfirmSubmissionController(
     messagesApi,
     mockMandationStatusPredicate,
     errorHandler,
+    mockVatSubscriptionService,
     mockAuthPredicate,
     mockAppConfig
   )
 
   "ConfirmSubmissionController .show" when {
 
-    "user is authorised" should {
+    "user is authorised" when  {
 
-      "there is session data" should {
-        val nineBoxModel: String = Json.stringify(Json.toJson(
-          SubmitVatReturnModel(
-            1000.00,
-            1000.00,
-            1000.00,
-            1000.00,
-            1000.00,
-            1000.00,
-            1000.00,
-            1000.00,
-            1000.00,
-            flatRateScheme = true,
-            LocalDate.now(),
-            LocalDate.now(),
-            LocalDate.now()
-          )
-        ))
-
-        lazy val requestWithSessionData: FakeRequest[AnyContentAsEmpty.type] = fakeRequest.withSession(
-          SessionKeys.viewModel -> nineBoxModel,
-          SessionKeys.mandationStatus -> MandationStatuses.nonMTDfB
+      val nineBoxModel: String = Json.stringify(Json.toJson(
+        SubmitVatReturnModel(
+          1000.00,
+          1000.00,
+          1000.00,
+          1000.00,
+          1000.00,
+          1000.00,
+          1000.00,
+          1000.00,
+          1000.00,
+          flatRateScheme = true,
+          LocalDate.now(),
+          LocalDate.now(),
+          LocalDate.now()
         )
+      ))
 
-        lazy val result: Future[Result] = {
-          TestConfirmSubmissionController.show("18AA")(requestWithSessionData)
+      "there is session data" when {
+
+        "a successful response is returned from the vat subscription service" should {
+
+          val vatSubscriptionResponse: Future[HttpGetResult[CustomerDetails]] = Future.successful(Right(customerDetailsWithFRS))
+
+          lazy val requestWithSessionData: User[AnyContentAsEmpty.type] =
+            User[AnyContentAsEmpty.type]("123456789")(fakeRequest.withSession(
+              SessionKeys.viewModel -> nineBoxModel,
+              SessionKeys.mandationStatus -> MandationStatuses.nonMTDfB
+              )
+            )
+
+          lazy val result: Future[Result] = {
+            setupVatSubscriptionService(vatSubscriptionResponse)
+            TestConfirmSubmissionController.show("18AA")(requestWithSessionData)
+          }
+
+          "return 200" in {
+            mockAuthorise(mtdVatAuthorisedResponse)
+            status(result) shouldBe Status.OK
+          }
+
+          "return HTML" in {
+            contentType(result) shouldBe Some("text/html")
+          }
+
+          "the user name should be displayed" in {
+            Jsoup.parse(bodyOf(result)).select("#content > article > section > h2").text() shouldBe "ABC Solutions"
+          }
         }
 
-        "return 200" in {
-          mockAuthorise(mtdVatAuthorisedResponse)
-          status(result) shouldBe Status.OK
-        }
+        "an error response is returned from the vat subscription service" should {
 
-        "return HTML" in {
-          contentType(result) shouldBe Some("text/html")
-        }
+          val vatSubscriptionResponse: Future[HttpGetResult[CustomerDetails]] = Future.successful(Left(UnexpectedJsonFormat))
 
-        "remove the session data" in {
-          session(result).get(SessionKeys.viewModel) shouldBe None
+          lazy val requestWithSessionData: User[AnyContentAsEmpty.type] =
+            User[AnyContentAsEmpty.type]("123456789")(fakeRequest.withSession(
+              SessionKeys.viewModel -> nineBoxModel,
+              SessionKeys.mandationStatus -> MandationStatuses.nonMTDfB
+            )
+            )
+
+          lazy val result: Future[Result] = {
+            setupVatSubscriptionService(vatSubscriptionResponse)
+            TestConfirmSubmissionController.show("18AA")(requestWithSessionData)
+          }
+
+          "return 200" in {
+            mockAuthorise(mtdVatAuthorisedResponse)
+            status(result) shouldBe Status.OK
+          }
+
+          "return HTML" in {
+            contentType(result) shouldBe Some("text/html")
+          }
+
+          "the user name should not be displayed" in {
+            Jsoup.parse(bodyOf(result)).select("#content > article > div > h2").text() shouldBe ""
+          }
         }
       }
 
@@ -104,6 +150,7 @@ class ConfirmSubmissionControllerSpec extends BaseSpec with MockAuth with MockMa
         }
       }
     }
+    authControllerChecks(TestConfirmSubmissionController.show("18AA"), fakeRequest)
   }
 
   "ConfirmSubmissionController .submit" when {
@@ -122,7 +169,6 @@ class ConfirmSubmissionControllerSpec extends BaseSpec with MockAuth with MockMa
         redirectLocation(result) shouldBe Some(controllers.routes.ConfirmationController.show().url)
       }
     }
+    authControllerChecks(TestConfirmSubmissionController.submit("18AA"), fakeRequest)
   }
-
-  authControllerChecks(TestConfirmSubmissionController.show("18AA"), fakeRequest)
 }
