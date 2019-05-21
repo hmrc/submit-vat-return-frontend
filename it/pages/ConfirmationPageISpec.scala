@@ -17,7 +17,8 @@
 package pages
 
 import base.BaseISpec
-import play.api.http.Status.{OK, FORBIDDEN}
+import common.MandationStatuses
+import play.api.http.Status.{FORBIDDEN, OK}
 import play.api.libs.ws.WSResponse
 import stubs.AuthStub.{mtdVatAuthResponse, otherEnrolmentAuthResponse}
 import stubs.{AuthStub, VatSubscriptionStub}
@@ -27,7 +28,7 @@ class ConfirmationPageISpec extends BaseISpec {
 
   "Calling /submission-confirmation" when {
 
-    def request: WSResponse = get("/submission-confirmation")
+    def request: WSResponse = get("/submission-confirmation", formatSessionMandationStatus(Some(MandationStatuses.nonMTDfB)))
 
     "user is authorised" when {
 
@@ -58,12 +59,14 @@ class ConfirmationPageISpec extends BaseISpec {
 
     "user is not mandated" should {
 
+      def requestNotMandation: WSResponse = get("/18AA/submit-form", formatSessionMandationStatus(Some("unsupportedMandationStatus")))
+
       "return 403" in {
 
         AuthStub.stubResponse(OK, mtdVatAuthResponse)
         VatSubscriptionStub.stubResponse("mandation-status", OK, unsupportedMandationStatusJson)
 
-        val response: WSResponse = request
+        val response: WSResponse = requestNotMandation
 
         response.status shouldBe FORBIDDEN
 

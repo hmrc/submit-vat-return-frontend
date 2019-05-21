@@ -17,10 +17,9 @@
 package controllers
 
 import base.BaseSpec
-import common.MandationStatuses.nonMTDfB
+import common.{MandationStatuses, SessionKeys}
 import mocks.{MockAuth, MockMandationPredicate}
 import mocks.service.{MockVatObligationsService, MockVatSubscriptionService}
-import models.MandationStatus
 import play.api.http.Status
 import play.api.test.Helpers._
 
@@ -38,9 +37,8 @@ class ConfirmationControllerSpec extends BaseSpec with MockVatSubscriptionServic
     "user is authorised" should {
 
       mockAuthorise(mtdVatAuthorisedResponse)
-      setupMockMandationStatus(Right(MandationStatus(nonMTDfB)))
 
-      lazy val result = TestConfirmationController.show()(fakeRequest)
+      lazy val result = TestConfirmationController.show()(fakeRequest.withSession(SessionKeys.mandationStatus -> MandationStatuses.nonMTDfB))
 
       "return a success response" in {
         status(result) shouldBe Status.OK

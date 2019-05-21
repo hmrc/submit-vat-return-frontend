@@ -19,10 +19,12 @@ package controllers
 import java.time.LocalDate
 
 import base.BaseSpec
-import common.MandationStatuses.nonMTDfB
+import common.{MandationStatuses, SessionKeys}
 import connectors.httpParsers.ResponseHttpParsers.HttpGetResult
 import mocks.{MockAuth, MockMandationPredicate}
 import mocks.service.{MockVatObligationsService, MockVatSubscriptionService}
+import mocks.MockMandationPredicate
+import models.{CustomerDetails, VatObligation, VatObligations}
 import models.errors.UnexpectedJsonFormat
 import models.{CustomerDetails, MandationStatus, VatObligation, VatObligations}
 import play.api.http.Status
@@ -68,8 +70,7 @@ class SubmitFormControllerSpec extends BaseSpec with MockVatSubscriptionService 
         val vatObligationsResponse: Future[HttpGetResult[VatObligations]] = Future.successful(Right(obligations))
 
         lazy val result = {
-          setupMockMandationStatus(Future.successful(Right(MandationStatus(nonMTDfB))))
-          TestSubmitFormController.show("18AA")(fakeRequest)
+          TestSubmitFormController.show("18AA")(fakeRequest.withSession(SessionKeys.mandationStatus -> MandationStatuses.nonMTDfB))
         }
 
         "return 200" in {
@@ -94,9 +95,8 @@ class SubmitFormControllerSpec extends BaseSpec with MockVatSubscriptionService 
           mockAuthorise(mtdVatAuthorisedResponse)
           setupVatSubscriptionService(vatSubscriptionErrorResponse)
           setupVatObligationsService(vatObligationsErrorResponse)
-          setupMockMandationStatus(Future.successful(Right(MandationStatus(nonMTDfB))))
 
-          lazy val result = TestSubmitFormController.show("18AA")(fakeRequest)
+          lazy val result = TestSubmitFormController.show("18AA")(fakeRequest.withSession(SessionKeys.mandationStatus -> MandationStatuses.nonMTDfB))
           status(result) shouldBe Status.INTERNAL_SERVER_ERROR
 
         }
@@ -110,7 +110,6 @@ class SubmitFormControllerSpec extends BaseSpec with MockVatSubscriptionService 
     "redirects to next page" when {
       "successful" in {
         mockAuthorise(mtdVatAuthorisedResponse)
-        setupMockMandationStatus(Future.successful(Right(MandationStatus(nonMTDfB))))
 
         val request = FakeRequest().withFormUrlEncodedBody(
           "box1" -> "1000.11",
@@ -298,7 +297,7 @@ class SubmitFormControllerSpec extends BaseSpec with MockVatSubscriptionService 
           "box7" -> "1000",
           "box8" -> "1000",
           "box9" -> "1000"
-        )
+        ).withSession(SessionKeys.mandationStatus -> MandationStatuses.nonMTDfB)
 
         val obligationInput = Json.stringify(Json.toJson(VatObligations(Seq(VatObligation(
           LocalDate.now(),
@@ -364,7 +363,6 @@ class SubmitFormControllerSpec extends BaseSpec with MockVatSubscriptionService 
       }
       "an error occurs (box3 empty)" when {
         mockAuthorise(mtdVatAuthorisedResponse)
-        setupMockMandationStatus(Future.successful(Right(MandationStatus(nonMTDfB))))
 
         val request = FakeRequest().withFormUrlEncodedBody(
           "box1" -> "1000",
@@ -376,7 +374,7 @@ class SubmitFormControllerSpec extends BaseSpec with MockVatSubscriptionService 
           "box7" -> "1000",
           "box8" -> "1000",
           "box9" -> "1000"
-        )
+        ).withSession(SessionKeys.mandationStatus -> MandationStatuses.nonMTDfB)
 
         val obligationInput = Json.stringify(Json.toJson(VatObligations(Seq(VatObligation(
           LocalDate.now(),

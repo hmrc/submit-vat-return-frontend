@@ -17,6 +17,7 @@
 package pages
 
 import base.BaseISpec
+import common.MandationStatuses
 import play.api.http.Status._
 import play.api.libs.json.Json
 import play.api.libs.ws.WSResponse
@@ -29,7 +30,7 @@ class SubmitFormPageSpec extends BaseISpec {
 
   "Calling /:periodKey/submit-form" when {
 
-    def request: WSResponse = get("/18AA/submit-form")
+    def request: WSResponse = get("/18AA/submit-form", formatSessionMandationStatus(Some(MandationStatuses.nonMTDfB)))
 
     "user is authorised" when {
 
@@ -93,12 +94,14 @@ class SubmitFormPageSpec extends BaseISpec {
 
     "user is not mandated" should {
 
+      def requestNotMandation: WSResponse = get("/18AA/submit-form", formatSessionMandationStatus(Some("unsupportedMandationStatus")))
+
       "return 403" in {
 
         AuthStub.stubResponse(OK, mtdVatAuthResponse)
         VatSubscriptionStub.stubResponse("mandation-status", OK, unsupportedMandationStatusJson)
 
-        val response: WSResponse = request
+        val response: WSResponse = requestNotMandation
 
         response.status shouldBe FORBIDDEN
 

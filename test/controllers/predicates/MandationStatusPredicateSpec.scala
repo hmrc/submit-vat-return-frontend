@@ -16,66 +16,103 @@
 
 package controllers.predicates
 
-import common.MandationStatuses.nonMTDfB
+import common.{MandationStatuses, SessionKeys}
 import mocks.MockMandationPredicate
-import mocks.service.MockMandationStatusService
 import models.MandationStatus
 import models.auth.User
 import models.errors.BadRequestError
 import org.jsoup.Jsoup
-import play.api.http.Status.BAD_REQUEST
+import play.api.http.Status.{BAD_REQUEST, SEE_OTHER}
 import play.api.mvc.AnyContentAsEmpty
 import play.mvc.Http.Status
+import play.api.test.Helpers._
+import base.BaseSpec
+import play.api.test.FakeRequest
 
-class MandationStatusPredicateSpec extends MockMandationPredicate with MockMandationStatusService {
-
-  val userWithSession: User[AnyContentAsEmpty.type] =
-    User[AnyContentAsEmpty.type]("123456789")(fakeRequest)
+class MandationStatusPredicateSpec extends BaseSpec with MockMandationPredicate {
 
   "Mandation status predicate is called" when {
 
-    "a supported mandation status is retrieved (NON MTDfB)" should {
+    "the mandation status is in session" should {
 
-      lazy val result = {
-        setupMockMandationStatus(Right(MandationStatus(nonMTDfB)))
-        await(mockMandationStatusPredicate.refine(userWithSession))
+      "a supported mandation status is retrieved (NON MTDfB)" should {
+
+        lazy val userWithSession: User[AnyContentAsEmpty.type] =
+          User[AnyContentAsEmpty.type]("123456789")(fakeRequest.withSession(SessionKeys.mandationStatus -> MandationStatuses.nonMTDfB))
+
+        lazy val result = {
+          await(mockMandationStatusPredicate.refine(userWithSession))
+        }
+
+        "allow the request to pass through the predicate" in {
+          result shouldBe Right(userWithSession)
+        }
       }
 
-      "allow the request to pass through the predicate" in {
-        result shouldBe Right(userWithSession)
+      "a non supported mandation status is retrieved" should {
+
+        lazy val userWithSession: User[AnyContentAsEmpty.type] =
+          User[AnyContentAsEmpty.type]("123456789")(fakeRequest.withSession(SessionKeys.mandationStatus -> "unsupportedMandationStatus"))
+
+        lazy val result = {
+          await(mockMandationStatusPredicate.refine(userWithSession)).left.get
+        }
+
+        "return a forbidden" in {
+          status(result) shouldBe Status.FORBIDDEN
+        }
+
+        //TODO: Update test once correct page is in play
+        "show unsupported mandation status error view" in {
+          Jsoup.parse(bodyOf(result)).title shouldBe "You can’t use this service yet"
+        }
       }
+
     }
 
-    "a non supported mandation status is retrieved" should {
+    "the mandation status is not in session" should {
 
-      lazy val result = {
-        setupMockMandationStatus(Right(MandationStatus("NON SUPPORTED MANDATION STATUS")))
-        await(mockMandationStatusPredicate.refine(userWithSession)).left.get
+      lazy val fakeRequestWithoutSession: FakeRequest[AnyContentAsEmpty.type] = FakeRequest("", "")
+
+      "a mandation status is successfully retrieved" should {
+
+        lazy val userWithoutSession: User[AnyContentAsEmpty.type] = User[AnyContentAsEmpty.type]("123456789")(fakeRequestWithoutSession)
+
+        lazy val result = {
+          setupMockMandationStatus(Right(MandationStatus(MandationStatuses.nonMTDfB)))
+          await(mockMandationStatusPredicate.refine(userWithoutSession)).left.get
+        }
+
+        "return a 303" in {
+          status(result) shouldBe SEE_OTHER
+        }
+
+        s"redirect to ${userWithoutSession.uri}" in {
+          redirectLocation(result) shouldBe Some(userWithoutSession.uri)
+        }
+
+        "add the mandation status in session" in {
+          result.session.get(SessionKeys.mandationStatus) shouldBe Some(MandationStatuses.nonMTDfB)
+        }
       }
 
-      "return a forbidden" in {
-        status(result) shouldBe Status.FORBIDDEN
-      }
+      "a mandation status is unsuccessfully retrieved" should {
 
-      //TODO: Update test once correct page is in play
-      "show unsupported mandation status error view" in {
-        Jsoup.parse(bodyOf(result)).title shouldBe "You can’t use this service yet"
-      }
-    }
+        lazy val userWithoutSession: User[AnyContentAsEmpty.type] = User[AnyContentAsEmpty.type]("123456789")(fakeRequestWithoutSession)
 
-    "an error is retrieved" should {
+        lazy val result = {
+          setupMockMandationStatus(Left(BadRequestError(BAD_REQUEST.toString, "Error response")))
+          await(mockMandationStatusPredicate.refine(userWithoutSession)).left.get
+        }
 
-      lazy val result = {
-        setupMockMandationStatus(Left(BadRequestError(BAD_REQUEST.toString, "Error response")))
-        await(mockMandationStatusPredicate.refine(userWithSession)).left.get
-      }
+        "return an internal server error" in {
+          status(result) shouldBe Status.INTERNAL_SERVER_ERROR
+        }
 
-      "return an internal server error" in {
-        status(result) shouldBe Status.INTERNAL_SERVER_ERROR
-      }
+        "display the internal sever error page" in {
+          Jsoup.parse(bodyOf(result)).title shouldBe "Sorry, we are experiencing technical difficulties - 500"
+        }
 
-      "display the internal sever error page" in {
-        Jsoup.parse(bodyOf(result)).title shouldBe "Sorry, we are experiencing technical difficulties - 500"
       }
     }
   }

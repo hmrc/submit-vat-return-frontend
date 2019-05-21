@@ -18,15 +18,14 @@ package controllers.predicates
 
 import config.{AppConfig, ErrorHandler}
 import javax.inject.Inject
-import models.MandationStatus
 import play.api.Logger
 import play.api.i18n.{I18nSupport, MessagesApi}
 import play.api.mvc.{ActionRefiner, Result}
-import play.api.mvc.Results.Forbidden
+import play.api.mvc.Results.{Forbidden, Redirect}
 import services.MandationStatusService
 import uk.gov.hmrc.http.HeaderCarrier
 import uk.gov.hmrc.play.HeaderCarrierConverter
-import common.MandationStatuses.nonMTDfB
+import common.{MandationStatuses, SessionKeys}
 import models.auth.User
 
 import scala.concurrent.{ExecutionContext, Future}
@@ -43,14 +42,21 @@ class MandationStatusPredicate @Inject()(mandationStatusService: MandationStatus
     implicit val hc: HeaderCarrier = HeaderCarrierConverter.fromHeadersAndSession(request.headers, Some(request.session))
     implicit val req: User[A] = request
 
-
-    mandationStatusService.getMandationStatus(req.vrn) map {
-      case Right(MandationStatus(`nonMTDfB`)) => Right(request)
-      case Right(unsupportedMandationStatus) =>
+    req.session.get(SessionKeys.mandationStatus) match {
+      case Some(MandationStatuses.nonMTDfB) => Future.successful(Right(request))
+      case Some(unsupportedMandationStatus) =>
         Logger.debug(s"[MandationStatusPredicate][refine] - User has a non 'non MTDfB' status received. Status returned was: $unsupportedMandationStatus")
         //TODO: Update in future story with correct error content
-        Left(Forbidden(views.html.errors.unauthorised_agent()))
-      case error =>
+        Future.successful(Left(Forbidden(views.html.errors.unauthorised_agent())))
+      case None => getMandationStatus
+    }
+  }
+
+  private def getMandationStatus[A](implicit user: User[A], hc: HeaderCarrier): Future[Left[Result, User[A]]] = {
+    mandationStatusService.getMandationStatus(user.vrn) map {
+      case Right(status) =>
+        Left(Redirect(user.uri).addingToSession(SessionKeys.mandationStatus -> status.mandationStatus))
+      case Left(error) =>
         Logger.info(s"[MandationStatusPredicate][refine] - Error has been received $error")
         Logger.warn(s"[MandationStatusPredicate][refine] - Error has been received")
         Left(errorHandler.showInternalServerError)
