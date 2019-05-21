@@ -159,7 +159,7 @@ class SubmitFormControllerSpec extends BaseSpec with MockVatSubscriptionService 
         contentAsString(result) should include("Enter a maximum of 13 decimal places for pounds.\nEnter a maximum of 2 decimal places for pence.\nYou can use a negative amount eg -13.2")
         contentAsString(result) should include("You have one or more errors")
       }
-      "an error occurs (incorrect format)" in {
+      "an error occurs (too many numbers)" in {
         mockAuthorise(mtdVatAuthorisedResponse)
         setupMockMandationStatus(Future.successful(Right(MandationStatus(nonMTDfB))))
 
@@ -184,7 +184,35 @@ class SubmitFormControllerSpec extends BaseSpec with MockVatSubscriptionService 
 
         val result = TestSubmitFormController.submit(hasFlatRateScheme = false, obligationInput, "", Some("Duanne"))(request)
         status(result) shouldBe OK
-        contentAsString(result) should include("Enter a number in the format 0.00")
+        contentAsString(result) should include("Enter a maximum of 13 decimal places for pounds.\nEnter a maximum of 2 decimal places for pence.\nYou can use a negative amount eg -13.2")
+        contentAsString(result) should include("You have one or more errors")
+      }
+      "an error occurs (incorrect format)" in {
+        mockAuthorise(mtdVatAuthorisedResponse)
+        setupMockMandationStatus(Future.successful(Right(MandationStatus(nonMTDfB))))
+
+        val request = FakeRequest().withFormUrlEncodedBody(
+          "box1" -> "1000",
+          "box2" -> "1000",
+          "box3" -> "2000",
+          "box4" -> "1000",
+          "box5" -> "3000",
+          "box6" -> "1000",
+          "box7" -> "12345",
+          "box8" -> "12345",
+          "box9" -> "1234+][567,./;'#890123456"
+        )
+
+        val obligationInput = Json.stringify(Json.toJson(VatObligations(Seq(VatObligation(
+          LocalDate.now(),
+          LocalDate.now(),
+          LocalDate.now(),
+          ""
+        )))))
+
+        val result = TestSubmitFormController.submit(hasFlatRateScheme = false, obligationInput, "", Some("Duanne"))(request)
+        status(result) shouldBe OK
+        contentAsString(result) should include("Enter a number in the correct format")
         contentAsString(result) should include("You have one or more errors")
       }
       "an error occurs (negative number)" in {
@@ -391,7 +419,60 @@ class SubmitFormControllerSpec extends BaseSpec with MockVatSubscriptionService 
           status(result) shouldBe OK
         }
         "error is displayed" in {
-          contentAsString(result) should include("Enter a number in the format 0.00")
+          contentAsString(result) should include("Enter a number in the correct format")
+        }
+      }
+      "an error occurs (box3 incorrect amount of numbers)" when {
+        mockAuthorise(mtdVatAuthorisedResponse)
+        mockAuthorise(mtdVatAuthorisedResponse)
+        setupMockMandationStatus(Future.successful(Right(MandationStatus(nonMTDfB))))
+        setupMockMandationStatus(Future.successful(Right(MandationStatus(nonMTDfB))))
+
+        val request1 = FakeRequest().withFormUrlEncodedBody(
+          "box1" -> "1000",
+          "box2" -> "1000",
+          "box3" -> "1234567890098765",
+          "box4" -> "1000",
+          "box5" -> "1000",
+          "box6" -> "1000",
+          "box7" -> "1000",
+          "box8" -> "1000",
+          "box9" -> "1000"
+        )
+
+        val request2 = FakeRequest().withFormUrlEncodedBody(
+          "box1" -> "1000",
+          "box2" -> "1000",
+          "box3" -> "1234.3456789",
+          "box4" -> "1000",
+          "box5" -> "1000",
+          "box6" -> "1000",
+          "box7" -> "1000",
+          "box8" -> "1000",
+          "box9" -> "1000"
+        )
+
+        val obligationInput = Json.stringify(Json.toJson(VatObligations(Seq(VatObligation(
+          LocalDate.now(),
+          LocalDate.now(),
+          LocalDate.now(),
+          ""
+        )))))
+
+        val result1 = TestSubmitFormController.submit(hasFlatRateScheme = false, obligationInput, "", Some("Duanne"))(request1)
+        val result2 = TestSubmitFormController.submit(hasFlatRateScheme = false, obligationInput, "", Some("Duanne"))(request2)
+
+        "status is OK for too many non decimal digits" in {
+          status(result1) shouldBe OK
+        }
+        "status is OK for too many decimal digits" in {
+          status(result2) shouldBe OK
+        }
+        "error is displayed for too many non decimal digits" in {
+          contentAsString(result1) should include("Enter a maximum of 13 decimal places for pounds.\nEnter a maximum of 2 decimal places for pence.\nYou can use a negative amount eg -13.2")
+        }
+        "error is displayed for too many decimal digits" in {
+          contentAsString(result2) should include("Enter a maximum of 13 decimal places for pounds.\nEnter a maximum of 2 decimal places for pence.\nYou can use a negative amount eg -13.2")
         }
       }
       "an error occurs (box5 empty)" when {
@@ -453,7 +534,60 @@ class SubmitFormControllerSpec extends BaseSpec with MockVatSubscriptionService 
           status(result) shouldBe OK
         }
         "error is displayed" in {
-          contentAsString(result) should include("Enter a number in the format 0.00")
+          contentAsString(result) should include("Enter a number in the correct format")
+        }
+      }
+      "an error occurs (box5 incorrect amount of numbers)" when {
+        mockAuthorise(mtdVatAuthorisedResponse)
+        mockAuthorise(mtdVatAuthorisedResponse)
+        setupMockMandationStatus(Future.successful(Right(MandationStatus(nonMTDfB))))
+        setupMockMandationStatus(Future.successful(Right(MandationStatus(nonMTDfB))))
+
+        val request1 = FakeRequest().withFormUrlEncodedBody(
+          "box1" -> "1000",
+          "box2" -> "1000",
+          "box3" -> "2000",
+          "box4" -> "1000",
+          "box5" -> "1000123456789012345",
+          "box6" -> "1000",
+          "box7" -> "1000",
+          "box8" -> "1000",
+          "box9" -> "1000"
+        )
+
+        val request2 = FakeRequest().withFormUrlEncodedBody(
+          "box1" -> "1000",
+          "box2" -> "1000",
+          "box3" -> "2000",
+          "box4" -> "1000",
+          "box5" -> "1000.1234567",
+          "box6" -> "1000",
+          "box7" -> "1000",
+          "box8" -> "1000",
+          "box9" -> "1000"
+        )
+
+        val obligationInput = Json.stringify(Json.toJson(VatObligations(Seq(VatObligation(
+          LocalDate.now(),
+          LocalDate.now(),
+          LocalDate.now(),
+          ""
+        )))))
+
+        val result1 = TestSubmitFormController.submit(hasFlatRateScheme = false, obligationInput, "", Some("Duanne"))(request1)
+        val result2 = TestSubmitFormController.submit(hasFlatRateScheme = false, obligationInput, "", Some("Duanne"))(request2)
+
+        "status is OK for too many non decimal digits" in {
+          status(result1) shouldBe OK
+        }
+        "status is OK for too many decimal digits" in {
+          status(result2) shouldBe OK
+        }
+        "error is displayed for too many non decimal digits" in {
+          contentAsString(result1) should include("Enter a maximum of 13 decimal places for pounds.\nEnter a maximum of 2 decimal places for pence.\nDo not use a negative amount eg -13.2")
+        }
+        "error is displayed for too many decimal digits" in {
+          contentAsString(result2) should include("Enter a maximum of 13 decimal places for pounds.\nEnter a maximum of 2 decimal places for pence.\nDo not use a negative amount eg -13.2")
         }
       }
     }

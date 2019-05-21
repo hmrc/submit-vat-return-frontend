@@ -43,11 +43,35 @@ class NineBoxForm @Inject()(implicit messagesApi: MessagesApi) {
   }
 
   def validCharacters: Mapping[String] => Mapping[String] = { input =>
-    val regexCheck = "-?[0-9]{1,13}|[0-9]{1,13}\\.[0-9]{1,2}"
+    val regexCheck = "[-.0-9]+"
 
     input.verifying(
       messagesApi("submit_form.error.formatCheckError"),
       value => value.matches(regexCheck)
+    )
+  }
+
+  private def splitAndCheckCharacterAmount(value: String): Boolean = {
+    val splitArray = value.split('.')
+    val headArray = splitArray.head
+    val tailArray = splitArray.last
+    if ((splitArray.length == 1 && splitArray.head.length <= 13) ||
+      (splitArray.length == 2 && headArray.nonEmpty && tailArray.nonEmpty && headArray.length < 13 && tailArray.length < 2)) {
+      true
+    } else {
+      false
+    }
+  }
+
+  def characterAmountCheck: Mapping[String] => Mapping[String] = { input =>
+    input.verifying(
+      messagesApi("submit_form.error.emptyError"),
+      value =>
+        try {
+          splitAndCheckCharacterAmount(value)
+        } catch {
+          case _: Throwable => false
+        }
     )
   }
 
@@ -57,8 +81,7 @@ class NineBoxForm @Inject()(implicit messagesApi: MessagesApi) {
 
   private val box3Format: Formatter[BigDecimal] = new Formatter[BigDecimal] {
     override def bind(key: String, data: Map[String, String]): Either[Seq[FormError], BigDecimal] = {
-
-      val regex: String = "-?([0-9]{1,13}\\.[0-9]{1,2}|[0-9]{1,13})"
+      val regex: String = "[-.0-9]+"
       tryOrError({
         () =>
           val firstValue: BigDecimal = returnOrError(data.get("box1"))
@@ -66,13 +89,14 @@ class NineBoxForm @Inject()(implicit messagesApi: MessagesApi) {
           data.get("box3") match {
             case Some(value) if value.isEmpty => Left(Seq(FormError(key, messagesApi("submit_form.error.emptyError"))))
             case Some(value) if !value.matches(regex) => Left(Seq(FormError(key, messagesApi("submit_form.error.formatCheckError"))))
+            case Some(value) if !splitAndCheckCharacterAmount(value) => Left(Seq(FormError(key, messagesApi("submit_form.error.emptyError"))))
             case Some(value) if firstValue + secondValue == BigDecimal(value) => Right(BigDecimal(value))
             case _ => Left(Seq(FormError(key, messagesApi("submit_form.error.box3Error"))))
           }
       },
-      {
-        () => Left(Seq(FormError(key, messagesApi("submit_form.error.box3Error"))))
-      })
+        {
+          () => Left(Seq(FormError(key, messagesApi("submit_form.error.box3Error"))))
+        })
     }
 
     override def unbind(key: String, value: BigDecimal): Map[String, String] = {
@@ -81,20 +105,37 @@ class NineBoxForm @Inject()(implicit messagesApi: MessagesApi) {
   }
 
   private val box5Format: Formatter[BigDecimal] = new Formatter[BigDecimal] {
-    override def bind(key: String, data: Map[String, String]): Either[Seq[FormError], BigDecimal] = {
+    def checkValueForErrors(valueOption: Option[String], key: String): Seq[FormError] = {
+      val regex: String = "[-.0-9]+"
 
-      val regex: String = "-?([0-9]{1,13}\\.[0-9]{1,2}|[0-9]{1,13})"
+      valueOption match {
+        case Some(value) => Seq(
+          if (value.isEmpty) Some(FormError(key, messagesApi("submit_form.error.negativeError"))) else None,
+          if (!value.matches(regex)) Some(FormError(key, messagesApi("submit_form.error.formatCheckError"))) else None,
+          if (value.contains("-")) Some(FormError(key, messagesApi("submit_form.error.negativeError"))) else None,
+          if (!splitAndCheckCharacterAmount(value)) Some(FormError(key, messagesApi("submit_form.error.negativeError"))) else None
+        ).flatten
+        case _ => Seq(FormError(key, messagesApi("submit_form.error.box5Error")))
+      }
+    }
+
+    override def bind(key: String, data: Map[String, String]): Either[Seq[FormError], BigDecimal] = {
+      val regex: String = "[-.0-9]+"
 
       tryOrError(
         { () =>
           val firstValue: BigDecimal = returnOrError(data.get("box3"))
           val secondValue: BigDecimal = returnOrError(data.get("box4"))
-          data.get("box5") match {
-            case Some(value) if value.isEmpty => Left(Seq(FormError(key, messagesApi("submit_form.error.negativeError"))))
-            case Some(value) if !value.matches(regex) => Left(Seq(FormError(key, messagesApi("submit_form.error.formatCheckError"))))
-            case Some(value) if value.contains("-") => Left(Seq(FormError(key, messagesApi("submit_form.error.negativeError"))))
-            case Some(value) if (firstValue - secondValue).abs == BigDecimal(value) => Right(BigDecimal(value))
-            case _ => Left(Seq(FormError(key, messagesApi("submit_form.error.box5Error"))))
+          val box5Value = data.get("box5")
+          val errors = checkValueForErrors(box5Value, key)
+
+          if (errors.nonEmpty) {
+            Left(errors)
+          } else {
+            box5Value match {
+              case Some(value) if (firstValue - secondValue).abs == BigDecimal(value) => Right(BigDecimal(value))
+              case _ => Left(Seq(FormError(key, messagesApi("submit_form.error.box5Error"))))
+            }
           }
         },
         {
@@ -124,15 +165,15 @@ class NineBoxForm @Inject()(implicit messagesApi: MessagesApi) {
 
   val nineBoxForm = Form(
     mapping(
-      "box1" -> sequentialMappings(Seq(nonEmpty, validCharacters), toBigDecimal)(text),
-      "box2" -> sequentialMappings(Seq(nonEmpty, validCharacters), toBigDecimal)(text),
+      "box1" -> sequentialMappings(Seq(nonEmpty, validCharacters, characterAmountCheck), toBigDecimal)(text),
+      "box2" -> sequentialMappings(Seq(nonEmpty, validCharacters, characterAmountCheck), toBigDecimal)(text),
       "box3" -> of(box3Format),
-      "box4" -> sequentialMappings(Seq(nonEmpty, validCharacters), toBigDecimal)(text),
+      "box4" -> sequentialMappings(Seq(nonEmpty, validCharacters, characterAmountCheck), toBigDecimal)(text),
       "box5" -> of(box5Format),
-      "box6" -> sequentialMappings(Seq(nonEmpty, validCharacters), toBigDecimal)(text),
-      "box7" -> sequentialMappings(Seq(nonEmpty, validCharacters), toBigDecimal)(text),
-      "box8" -> sequentialMappings(Seq(nonEmpty, validCharacters), toBigDecimal)(text),
-      "box9" -> sequentialMappings(Seq(nonEmpty, validCharacters), toBigDecimal)(text)
+      "box6" -> sequentialMappings(Seq(nonEmpty, validCharacters, characterAmountCheck), toBigDecimal)(text),
+      "box7" -> sequentialMappings(Seq(nonEmpty, validCharacters, characterAmountCheck), toBigDecimal)(text),
+      "box8" -> sequentialMappings(Seq(nonEmpty, validCharacters, characterAmountCheck), toBigDecimal)(text),
+      "box9" -> sequentialMappings(Seq(nonEmpty, validCharacters, characterAmountCheck), toBigDecimal)(text)
     )(NineBoxModel.apply)(NineBoxModel.unapply)
   )
 
