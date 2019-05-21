@@ -43,6 +43,7 @@ trait AppConfig extends ServicesConfig {
   val govUkGuidanceMtdVat: String
   val govUkGuidanceAgentServices: String
   val vatSummaryUrl: String
+  val returnDeadlinesUrl: String
 }
 
 @Singleton
@@ -82,6 +83,7 @@ class FrontendAppConfig @Inject()(val runModeConfiguration: Configuration, envir
   override lazy val signInUrl: String = s"$signInBaseUrl?continue=$signInContinueUrl&origin=$signInOrigin"
 
   override lazy val vatSummaryUrl: String = getString(ConfigKeys.vatSummaryHost) + getString(ConfigKeys.vatSummaryUrl)
+  override lazy val returnDeadlinesUrl: String = getString(ConfigKeys.viewVatReturnsHost) + getString(ConfigKeys.returnDeadlinesUrl)
 
   // Agent Client Lookup
   private lazy val platformHost = getString(ConfigKeys.platformHost)

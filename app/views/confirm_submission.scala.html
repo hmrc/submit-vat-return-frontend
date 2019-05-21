@@ -18,14 +18,23 @@
 @import views.html.templates.formatters.dates.{displayDateRange, displayDate}
 @import views.html.templates.formatters.money.displayMoney
 @import uk.gov.hmrc.play.views.html.helpers
+@import templates.formatters.navigationBreadcrumb
 
-@(viewModel: ConfirmSubmissionViewModel)(implicit request: Request[_], messages: Messages, appConfig: AppConfig)
+@(viewModel: ConfirmSubmissionViewModel, isAgent: Boolean)(implicit request: Request[_], messages: Messages, appConfig: AppConfig)
 
 @main_template(messages("confirm_submission.title"), appConfig = appConfig, bodyClasses = None) {
 
-  <a class="link-back" href='@controllers.routes.SubmitFormController.show(viewModel.obligations.periodKey)'>@messages("common.back")</a>
+  @if(!isAgent) {
+    @navigationBreadcrumb(
+      Map(
+        appConfig.vatSummaryUrl -> messages("breadcrumbs.yourVatDetails"),
+        appConfig.returnDeadlinesUrl -> messages("breadcrumbs.submitVatReturn")
+      ),
+      messages("breadcrumbs.submitReturnForDate", displayDateRange(viewModel.obligations.start, viewModel.obligations.end))
+    )
+  }
 
-  <section class="grid-row">
+  <section>
     <h1 class="heading-xlarge">
       <span class="heading-secondary">@messages("confirm_submission.heading")</span>
         @displayDateRange(viewModel.obligations.start, viewModel.obligations.end, useShortDayFormat = true)

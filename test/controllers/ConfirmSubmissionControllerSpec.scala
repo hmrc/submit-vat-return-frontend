@@ -66,6 +66,7 @@ class ConfirmSubmissionControllerSpec extends BaseSpec with MockAuth with MockMa
       lazy val result: Future[Result] = TestConfirmSubmissionController.show(frs = false, obsModel, nbModel, None, "18AA")(fakeRequest)
 
       "return 200" in {
+        mockAuthorise(mtdVatAuthorisedResponse)
         status(result) shouldBe Status.OK
       }
 

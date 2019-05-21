@@ -81,3 +81,7 @@ confirmation_view.title = Your VAT Return
 confirmation_view.heading = VAT Return submission complete
 confirmation_view.subHeading = What happens next
 confirmation_view.paragraph = We have received your VAT Return.
+
+breadcrumbs.yourVatDetails = Your VAT details
+breadcrumbs.submitVatReturn = Submit VAT Return
+breadcrumbs.submitReturnForDate = Submit {0} return

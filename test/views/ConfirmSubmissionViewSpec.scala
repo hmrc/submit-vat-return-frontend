@@ -39,6 +39,12 @@ class ConfirmSubmissionViewSpec extends ViewBaseSpec {
     val submitVatReturnHeading = "#content > article > section > h3.bold-medium"
     val submitReturnInformation = "#content > article > section > p"
     val submitButton = "#content > article > section > form > input"
+
+    val breadcrumbOne = "div.breadcrumbs li:nth-of-type(1)"
+    val breadcrumbOneLink = "div.breadcrumbs li:nth-of-type(1) a"
+    val breadcrumbTwo = "div.breadcrumbs li:nth-of-type(2)"
+    val breadcrumbTwoLink = "div.breadcrumbs li:nth-of-type(2) a"
+    val breadcrumbCurrentPage = "div.breadcrumbs li:nth-of-type(3)"
   }
 
   def boxElement(box: String, column: Int): String = {
@@ -60,21 +66,21 @@ class ConfirmSubmissionViewSpec extends ViewBaseSpec {
   )
 
   val vatReturn: NineBoxModel = NineBoxModel(
-    box1 = 1000.00,
-    box2 = 1000.00,
-    box3 = 1000.00,
-    box4 = 1000.00,
-    box5 = 1000.00,
-    box6 = 1000.00,
-    box7 = 1000.00,
-    box8 = 1000.00,
-    box9 = 1000.00
+    box1 = 1000.01,
+    box2 = 1000.02,
+    box3 = 1000.03,
+    box4 = 1000.04,
+    box5 = 1000.05,
+    box6 = 1000.06,
+    box7 = 1000.07,
+    box8 = 1000.08,
+    box9 = 1000.09
   )
 
 
   "Confirm Submission View" when {
 
-    "the user is on the flat rate scheme" should {
+    "user is non-agent and on the flat rate scheme" should {
 
       "displays the correct information" should {
 
@@ -85,21 +91,33 @@ class ConfirmSubmissionViewSpec extends ViewBaseSpec {
           userName = customerDetails.clientName
         )
 
-        lazy val view = views.html.confirm_submission(viewModel)
+        lazy val view = views.html.confirm_submission(viewModel, isAgent = false)
         lazy implicit val document: Document = Jsoup.parse(view.body)
 
         s"the title is displayed as ${viewMessages.title}" in {
           document.title shouldBe viewMessages.title
         }
 
-        "have a back link which" should {
+        "render breadcrumbs" which {
 
-          s"have the correct content of ${CommonMessages.backLink}" in {
-            elementText(Selectors.backLink) shouldBe CommonMessages.backLink
+          "has the 'Your VAT details' title" in {
+            elementText(Selectors.breadcrumbOne) shouldBe "Your VAT details"
           }
 
-          s"have the redirect url as ${controllers.routes.HelloWorldController.helloWorld()}" in {
-            element(Selectors.backLink).attr("href") shouldBe controllers.routes.SubmitFormController.show(vatObligation.periodKey).url
+          "and links to the VAT Overview page" in {
+            element(Selectors.breadcrumbOneLink).attr("href") shouldBe mockAppConfig.vatSummaryUrl
+          }
+
+          "has the 'Submit VAT Return' title" in {
+            elementText(Selectors.breadcrumbTwo) shouldBe "Submit VAT Return"
+          }
+
+          "and links to the Return deadlines page" in {
+            element(Selectors.breadcrumbTwoLink).attr("href") shouldBe mockAppConfig.returnDeadlinesUrl
+          }
+
+          "has the correct current page title" in {
+            elementText(Selectors.breadcrumbCurrentPage) shouldBe "Submit 12 January to 12 April 2019 return"
           }
         }
 
@@ -155,21 +173,21 @@ class ConfirmSubmissionViewSpec extends ViewBaseSpec {
 
         "have the correct row information in the table" in {
           val expectedInformation = Array(
-            "£1,000",
-            "£1,000",
-            "£1,000",
-            "£1,000",
-            "£1,000",
-            "£1,000",
-            "£1,000",
-            "£1,000",
-            "£1,000"
+            "£1,000.01",
+            "£1,000.02",
+            "£1,000.03",
+            "£1,000.04",
+            "£1,000.05",
+            "£1,000.06",
+            "£1,000.07",
+            "£1,000.08",
+            "£1,000.09"
           )
           expectedInformation.indices.foreach(i => elementText(boxElement(Selectors.boxes(i), 3)) shouldBe expectedInformation(i))
         }
 
         s"the return total heading is shown as ${viewMessages.returnTotal} ${viewModel.returnDetail.box5}" in {
-          elementText(Selectors.returnTotalHeading) shouldBe s"${viewMessages.returnTotal} £1,000"
+          elementText(Selectors.returnTotalHeading) shouldBe s"${viewMessages.returnTotal} £1,000.05"
         }
 
         s"the return due date is shown as ${viewMessages.returnDueDate}" in {
@@ -210,7 +228,7 @@ class ConfirmSubmissionViewSpec extends ViewBaseSpec {
         userName = customerDetails.clientName
       )
 
-      lazy val view = views.html.confirm_submission(viewModel)
+      lazy val view = views.html.confirm_submission(viewModel, isAgent = false)
       lazy implicit val document: Document = Jsoup.parse(view.body)
 
       s"box 6 description displays as ${viewMessages.box6DescriptionNoFRS}" in {
@@ -219,6 +237,21 @@ class ConfirmSubmissionViewSpec extends ViewBaseSpec {
 
     }
 
-  }
+    "user is an agent" should {
 
+      val viewModel: ConfirmSubmissionViewModel = ConfirmSubmissionViewModel(
+        vatObligation,
+        hasFlatRateScheme = false,
+        vatReturn,
+        userName = customerDetails.clientName
+      )
+
+      lazy val view = views.html.confirm_submission(viewModel, isAgent = true)
+      lazy implicit val document: Document = Jsoup.parse(view.body)
+
+      "not render breadcrumbs" in {
+        document.select(Selectors.breadcrumbOne) shouldBe empty
+      }
+    }
+  }
 }

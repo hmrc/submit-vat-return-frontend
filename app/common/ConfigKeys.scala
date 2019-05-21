@@ -45,6 +45,8 @@ object ConfigKeys {
   val platformHost: String = "platform.host"
   val vatSummaryHost: String = "vat-summary-frontend.host"
   val vatSummaryUrl: String = "vat-summary-frontend.url"
+  val viewVatReturnsHost: String = "view-vat-returns-frontend.host"
+  val returnDeadlinesUrl: String = "view-vat-returns-frontend.url"
 
   val govUkGuidanceMtdVat: String = "gov-uk.guidance.mtdVat.url"
   val govUkGuidanceAgentServices: String = "gov-uk.guidance.agentServices.url"

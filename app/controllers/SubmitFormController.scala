@@ -51,7 +51,14 @@ class SubmitFormController @Inject()(val messagesApi: MessagesApi,
     } yield {
       (customerInformation, obligations) match {
         case (Right(customerDetails), Right(obs)) => {
-          Ok(views.html.submit_form(periodKey, customerDetails.clientName, customerDetails.hasFlatRateScheme, obs, NineBoxForm.nineBoxForm))
+          Ok(views.html.submit_form(
+            periodKey,
+            customerDetails.clientName,
+            customerDetails.hasFlatRateScheme,
+            obs,
+            NineBoxForm.nineBoxForm,
+            user.isAgent
+          ))
         }
         case (_, _) => errorHandler.showInternalServerError
       }
@@ -64,7 +71,7 @@ class SubmitFormController @Inject()(val messagesApi: MessagesApi,
         failure =>
           Future.successful(
             Ok(
-              views.html.submit_form(periodKey, name, hasFlatRateScheme, Json.parse(obligation).as[VatObligations], failure)
+              views.html.submit_form(periodKey, name, hasFlatRateScheme, Json.parse(obligation).as[VatObligations], failure, user.isAgent)
             )
           ),
         success => Future.successful(
