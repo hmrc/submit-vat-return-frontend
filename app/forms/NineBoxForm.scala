@@ -55,8 +55,8 @@ class NineBoxForm @Inject()(implicit messagesApi: MessagesApi) {
     val splitArray = value.split('.')
     val headArray = splitArray.head
     val tailArray = splitArray.last
-    if ((splitArray.length == 1 && splitArray.head.length <= 13) ||
-      (splitArray.length == 2 && headArray.nonEmpty && tailArray.nonEmpty && headArray.length < 13 && tailArray.length < 2)) {
+    if ((splitArray.length == 1 && headArray.nonEmpty && headArray.length <= 13) ||
+      (splitArray.length == 2 && headArray.nonEmpty && tailArray.nonEmpty && headArray.length <= 13 && tailArray.length <= 2)) {
       true
     } else {
       false

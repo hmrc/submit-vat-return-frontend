@@ -113,15 +113,15 @@ class SubmitFormControllerSpec extends BaseSpec with MockVatSubscriptionService 
         setupMockMandationStatus(Future.successful(Right(MandationStatus(nonMTDfB))))
 
         val request = FakeRequest().withFormUrlEncodedBody(
-          "box1" -> "1000",
+          "box1" -> "1000.11",
           "box2" -> "1000",
-          "box3" -> "2000",
+          "box3" -> "2000.11",
           "box4" -> "1000",
-          "box5" -> "1000",
+          "box5" -> "1000.11",
           "box6" -> "1000",
-          "box7" -> "1000",
-          "box8" -> "1000",
-          "box9" -> "1000"
+          "box7" -> "1000.3",
+          "box8" -> "1234567890123",
+          "box9" -> "1234567890123.45"
         )
 
         val result = TestSubmitFormController.submit(hasFlatRateScheme = false, "", "93DH", None)(request)
