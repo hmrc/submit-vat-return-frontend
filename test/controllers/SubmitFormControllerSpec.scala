@@ -81,7 +81,7 @@ class SubmitFormControllerSpec extends BaseSpec with MockVatSubscriptionService 
         "a successful response is received from the service" should {
 
           lazy val requestWithSessionData = User[AnyContentAsEmpty.type]("123456789")(fakeRequest.withSession(
-            SessionKeys.viewModel -> nineBoxModel,
+            SessionKeys.returnData -> nineBoxModel,
             SessionKeys.mandationStatus -> MandationStatuses.nonMTDfB)
           )
 
@@ -109,7 +109,7 @@ class SubmitFormControllerSpec extends BaseSpec with MockVatSubscriptionService 
           val vatSubscriptionFailureResponse: Future[HttpGetResult[CustomerDetails]] = Future.successful(Left(UnexpectedJsonFormat))
 
           lazy val requestWithSessionData = User[AnyContentAsEmpty.type]("123456789")(fakeRequest.withSession(
-            SessionKeys.viewModel -> nineBoxModel,
+            SessionKeys.returnData -> nineBoxModel,
             SessionKeys.mandationStatus -> MandationStatuses.nonMTDfB)
           )
 

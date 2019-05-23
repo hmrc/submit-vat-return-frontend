@@ -77,7 +77,7 @@ class ConfirmSubmissionControllerSpec extends BaseSpec with MockAuth with MockMa
 
           lazy val requestWithSessionData: User[AnyContentAsEmpty.type] =
             User[AnyContentAsEmpty.type]("123456789")(fakeRequest.withSession(
-              SessionKeys.viewModel -> nineBoxModel,
+              SessionKeys.returnData -> nineBoxModel,
               SessionKeys.mandationStatus -> MandationStatuses.nonMTDfB
               )
             )
@@ -107,7 +107,7 @@ class ConfirmSubmissionControllerSpec extends BaseSpec with MockAuth with MockMa
 
           lazy val requestWithSessionData: User[AnyContentAsEmpty.type] =
             User[AnyContentAsEmpty.type]("123456789")(fakeRequest.withSession(
-              SessionKeys.viewModel -> nineBoxModel,
+              SessionKeys.returnData -> nineBoxModel,
               SessionKeys.mandationStatus -> MandationStatuses.nonMTDfB
             )
             )

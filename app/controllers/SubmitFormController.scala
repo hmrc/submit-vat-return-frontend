@@ -19,7 +19,6 @@ package controllers
 import java.time.LocalDate
 
 import forms.SubmitVatReturnForm
-
 import common.SessionKeys
 import config.AppConfig
 import javax.inject.{Inject, Singleton}
@@ -29,7 +28,7 @@ import config.ErrorHandler
 import controllers.predicates.AuthPredicate
 import controllers.predicates.MandationStatusPredicate
 import models.auth.User
-import models.{SubmitVatReturnModel, VatObligation}
+import models.{SubmitFormViewModel, SubmitVatReturnModel, VatObligation}
 import play.api.Logger
 import play.api.libs.json.Json
 import play.api.mvc.{Action, AnyContent}
@@ -52,38 +51,41 @@ class SubmitFormController @Inject()(val messagesApi: MessagesApi,
 
   def show(periodKey: String): Action[AnyContent] = (authPredicate andThen mandationStatusCheck).async { implicit user =>
 
-    user.session.get(SessionKeys.viewModel) match {
-      case Some(model) => {
-        val sessionData = Json.parse(model).as[SubmitVatReturnModel]
-
-        vatSubscriptionService.getCustomerDetails(user.vrn) map {
-          case Right(customerDetails) => {
-            Ok(views.html.submit_form(
-              periodKey,
-              customerDetails.clientName,
-              sessionData.flatRateScheme,
-              VatObligation(sessionData.start, sessionData.end, sessionData.due, periodKey),
-              SubmitVatReturnForm.submitVatReturnForm.fill(sessionData),
-              user.isAgent)
-            )
-          }
-          case _ => {
-            Ok(views.html.submit_form(
-              periodKey,
-              None,
-              sessionData.flatRateScheme,
-              VatObligation(sessionData.start, sessionData.end, sessionData.due, periodKey),
-              SubmitVatReturnForm.submitVatReturnForm.fill(sessionData),
-              isAgent = user.isAgent)
-            )
-          }
-        }
-      }
-      case _ => renderViewWithoutSessionDate(periodKey)
+    user.session.get(SessionKeys.returnData) match {
+      case Some(model) => renderViewWithSessionData(periodKey, model)
+      case _ => renderViewWithoutSessionData(periodKey)
     }
   }
 
-  private def renderViewWithoutSessionDate(periodKey: String)(implicit request: Request[_], user: User[_], hc: HeaderCarrier) = {
+  private def renderViewWithSessionData(periodKey: String, model: String)(implicit request: Request[_], user: User[_], hc: HeaderCarrier) = {
+
+    val sessionData = Json.parse(model).as[SubmitVatReturnModel]
+
+    vatSubscriptionService.getCustomerDetails(user.vrn) map {
+      case Right(customerDetails) => {
+        Ok(views.html.submit_form(
+          periodKey,
+          customerDetails.clientName,
+          sessionData.flatRateScheme,
+          VatObligation(sessionData.start, sessionData.end, sessionData.due, periodKey),
+          SubmitVatReturnForm.submitVatReturnForm.fill(sessionData),
+          isAgent = user.isAgent)
+        )
+      }
+      case _ => {
+        Ok(views.html.submit_form(
+          periodKey,
+          None,
+          sessionData.flatRateScheme,
+          VatObligation(sessionData.start, sessionData.end, sessionData.due, periodKey),
+          SubmitVatReturnForm.submitVatReturnForm.fill(sessionData),
+          isAgent = user.isAgent)
+        )
+      }
+    }
+  }
+
+  private def renderViewWithoutSessionData(periodKey: String)(implicit request: Request[_], user: User[_], hc: HeaderCarrier) = {
 
     for {
       customerInformation <- vatSubscriptionService.getCustomerDetails(user.vrn)
@@ -96,6 +98,14 @@ class SubmitFormController @Inject()(val messagesApi: MessagesApi,
 
           obligationToSubmit.length match {
             case 1 => {
+
+              val viewModel = SubmitFormViewModel(
+                customerDetails.hasFlatRateScheme,
+                obligationToSubmit.head.start,
+                obligationToSubmit.head.end,
+                obligationToSubmit.head.due
+              )
+
               Ok(views.html.submit_form(
                 periodKey,
                 customerDetails.clientName,
@@ -103,7 +113,7 @@ class SubmitFormController @Inject()(val messagesApi: MessagesApi,
                 obligationToSubmit.head,
                 SubmitVatReturnForm.submitVatReturnForm,
                 user.isAgent
-              ))
+              )).addingToSession(SessionKeys.viewModel -> Json.toJson(viewModel).toString())
             }
             case _ => {
               Logger.warn("[SubmitFormController][Show]: Length of matched obligations to period key is not equal to 1")
@@ -116,30 +126,39 @@ class SubmitFormController @Inject()(val messagesApi: MessagesApi,
     }
   }
 
-  def submit(periodKey: String,
-             clientName: Option[String],
-             hasFlatRateScheme: Boolean,
-             start: String,
-             end: String,
-             due: String): Action[AnyContent] = (authPredicate andThen mandationStatusCheck).async { implicit user =>
+  def submit(periodKey: String): Action[AnyContent] = (authPredicate andThen mandationStatusCheck).async { implicit user =>
 
     SubmitVatReturnForm.submitVatReturnForm.bindFromRequest().fold(
       failure => {
-        Future.successful(
-          Ok(
-            views.html.submit_form(periodKey,
-              clientName,
-              hasFlatRateScheme,
-              VatObligation(LocalDate.parse(start), LocalDate.parse(end), LocalDate.parse(due), periodKey),
-              failure,
-              user.isAgent))
-        )
-      },
-        success => {
-          Future.successful(
-            Redirect(controllers.routes.ConfirmSubmissionController.show(periodKey)).addingToSession(SessionKeys.viewModel -> Json.toJson(success).toString())
-          )
+
+        user.session.get(SessionKeys.viewModel) match {
+          case Some(model) => {
+
+            val sessionData = Json.parse(model).as[SubmitFormViewModel]
+
+            vatSubscriptionService.getCustomerDetails(user.vrn) map {
+              case (Right(customerDetails)) => {
+                Ok(views.html.submit_form(
+                  periodKey,
+                  customerDetails.clientName,
+                  sessionData.hasFlatRateScheme,
+                  VatObligation(sessionData.start, sessionData.end, sessionData.due, periodKey),
+                  failure,
+                  user.isAgent
+                ))
+              }
+              case (_) => errorHandler.showInternalServerError
+            }
+          }
         }
-      )
-    }
+
+
+      },
+      success => {
+        Future.successful(
+          Redirect(controllers.routes.ConfirmSubmissionController.show(periodKey)).addingToSession(SessionKeys.returnData -> Json.toJson(success).toString())
+        )
+      }
+    )
+  }
 }

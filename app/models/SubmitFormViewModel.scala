@@ -14,12 +14,17 @@
  * limitations under the License.
  */
 
-package common
+package models
 
-object SessionKeys {
+import java.time.LocalDate
 
-  val mandationStatus = "mtdVatMandationStatus"
-  val returnData = "mtdNineBoxReturnData"
-  val viewModel = "mtdReturnInformation"
+import play.api.libs.json.{Json, OFormat}
 
+case class SubmitFormViewModel(hasFlatRateScheme: Boolean,
+                               start: LocalDate,
+                               end: LocalDate,
+                               due: LocalDate)
+
+object SubmitFormViewModel {
+  implicit val format: OFormat[SubmitFormViewModel] = Json.format[SubmitFormViewModel]
 }

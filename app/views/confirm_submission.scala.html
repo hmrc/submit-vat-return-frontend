@@ -22,6 +22,14 @@
 
 @(viewModel: ConfirmSubmissionViewModel, isAgent: Boolean)(implicit request: Request[_], messages: Messages, appConfig: AppConfig)
 
+@boxRow(divID: String, formID: String, boxTitle: String, boxDescription: String, boxAmount: BigDecimal) = {
+  <div class="grid-row" id=@divID>
+    <div class="column-one-quarter form-hint">@messages(boxTitle)</div>
+    <div class="column-one-half form-hint">@messages(boxDescription)</div>
+    <div class="column-one-quarter form-hint text--right">@displayMoney(boxAmount)</div>
+  </div>
+}
+
 @main_template(messages("confirm_submission.title"), appConfig = appConfig, bodyClasses = None) {
 
   @if(!isAgent) {
@@ -45,28 +53,12 @@
     <h3 class="bold-small form-group">@messages("confirm_submission.vatDetails")</h3>
     <section class="form-group divider--bottom">
       <div class="form-group">
-        <div class="grid-row" id="box-one">
-          <div class="column-one-quarter form-hint">@messages("confirm_submission.boxOne")</div>
-          <div class="column-one-half form-hint">@messages("confirm_submission.boxOneDescription")</div>
-          <div class="column-one-quarter form-hint text--right">@displayMoney(viewModel.returnDetail.box1)</div>
-        </div>
-        <div class="grid-row" id="box-two">
-          <div class="column-one-quarter form-hint">@messages("confirm_submission.boxTwo")</div>
-          <div class="column-one-half form-hint">@messages("confirm_submission.boxTwoDescription")</div>
-          <div class="column-one-quarter form-hint text--right">@displayMoney(viewModel.returnDetail.box2)</div>
-        </div>
+        @boxRow("box-one", "box1", "confirm_submission.boxOne", "confirm_submission.boxOneDescription", viewModel.returnDetail.box1)
+        @boxRow("box-two", "box2", "confirm_submission.boxTwo", "confirm_submission.boxTwoDescription", viewModel.returnDetail.box2)
       </div>
       <div class="form-group">
-        <div class="grid-row" id="box-three">
-          <div class="column-one-quarter form-hint">@messages("confirm_submission.boxThree")</div>
-          <div class="column-one-half form-hint">@messages("confirm_submission.boxThreeDescription")</div>
-          <div class="column-one-quarter form-hint text--right">@displayMoney(viewModel.returnDetail.box3)</div>
-        </div>
-        <div class="grid-row" id="box-four">
-          <div class="column-one-quarter form-hint">@messages("confirm_submission.boxFour")</div>
-          <div class="column-one-half form-hint">@messages("confirm_submission.boxFourDescription")</div>
-          <div class="column-one-quarter form-hint text--right">@displayMoney(viewModel.returnDetail.box4)</div>
-        </div>
+        @boxRow("box-three", "box3", "confirm_submission.boxThree", "confirm_submission.boxThreeDescription", viewModel.returnDetail.box3)
+        @boxRow("box-four", "box4", "confirm_submission.boxFour", "confirm_submission.boxFourDescription", viewModel.returnDetail.box4)
       </div>
       <div class="form-group">
         <div class="grid-row" id="box-five">
@@ -87,31 +79,16 @@
       <h3 class="bold-small form-group">@messages("confirm_submission.additionalInfo")</h3>
 
       <div class="form-group">
-        <div class="grid-row" id="box-six">
-          <div class="column-one-quarter form-hint">@messages("confirm_submission.boxSix")</div>
-          @if(viewModel.returnDetail.flatRateScheme){
-          <div class="column-one-half form-hint">@messages("confirm_submission.boxSixFlatRate")</div>
-          }else {
-            <div class="column-one-half form-hint">@messages("confirm_submission.boxSixNoFlatRate")</div>
-          }
-          <div class="column-one-quarter form-hint text--right">@displayMoney(viewModel.returnDetail.box6)</div>
-        </div>
-        <div class="grid-row" id="box-seven">
-          <div class="column-one-quarter form-hint">@messages("confirm_submission.boxSeven")</div>
-          <div class="column-one-half form-hint">@messages("confirm_submission.boxSevenDescription")</div>
-          <div class="column-one-quarter form-hint text--right">@displayMoney(viewModel.returnDetail.box7)</div>
-        </div>
-        <div class="grid-row" id="box-eight">
-          <div class="column-one-quarter form-hint">@messages("confirm_submission.boxEight")</div>
-          <div class="column-one-half form-hint">@messages("confirm_submission.boxEightDescription")</div>
-          <div class="column-one-quarter form-hint text--right">@displayMoney(viewModel.returnDetail.box8)</div>
-        </div>
-        <div class="grid-row" id="box-nine">
-          <div class="column-one-quarter form-hint">@messages("confirm_submission.boxNine")</div>
-          <div class="column-one-half form-hint">@messages("confirm_submission.boxNineDescription")</div>
-          <div class="column-one-quarter form-hint text--right">@displayMoney(viewModel.returnDetail.box9)</div>
-        </div>
+      @if(viewModel.returnDetail.flatRateScheme){
+        @boxRow("box-six", "box6", "confirm_submission.boxSix", "confirm_submission.boxSixFlatRate", viewModel.returnDetail.box6)
+      } else {
+        @boxRow("box-six", "box6", "confirm_submission.boxSix", "confirm_submission.boxSixNoFlatRate", viewModel.returnDetail.box6)
+      }
+        @boxRow("box-seven", "box7", "confirm_submission.boxSeven", "confirm_submission.boxSevenDescription", viewModel.returnDetail.box7)
+        @boxRow("box-eight", "box8", "confirm_submission.boxEight", "confirm_submission.boxEightDescription", viewModel.returnDetail.box8)
+        @boxRow("box-nine", "box9", "confirm_submission.boxNine", "confirm_submission.boxNineDescription", viewModel.returnDetail.box9)
       </div>
+
     </section>
 
     <section class="form-group divider--bottom">

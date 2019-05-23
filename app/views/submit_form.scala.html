@@ -30,12 +30,28 @@
         isAgent: Boolean)(implicit request: Request[_], messages: Messages, appConfig: AppConfig)
 
 
+@boxRow(divID: String, formID: String, boxTitle: String, boxDescription: String, boxAmount: String) = {
+    <div class="grid-row" id=@divID>
+        <div class="column-one-quarter form-hint">@messages(boxTitle)</div>
+        <div class="column-one-half form-hint">@messages(boxDescription)</div>
+        <div class="column-one-quarter r-align form-hint">
+            <div class="form-group">
+            @moneyInput(
+                field = form(formID),
+                label = messages(boxAmount),
+                decimalPlace = true
+            )
+            </div>
+        </div>
+    </div>
+}
+
 @handleSingleError(field: Field) = {
-    @field.errors.headOption.map { error =>
-        <span class="error-message" role="tooltip">
-            @messages(error.message, error.args: _*)
-        </span>
-    }
+  @field.errors.headOption.map { error =>
+      <span class="error-message" role="tooltip">
+          @messages(error.message, error.args: _*)
+      </span>
+  }
 }
 
 @pageTitle = @{
@@ -61,7 +77,6 @@
     }
 
     <div>
-
         <h1 class="heading-xlarge">
             <span class="heading-secondary">@messages("submit_form.heading")</span>
             <span>@{displayDateRange(obligation.start, obligation.end, useShortDayFormat = true)}</span>
@@ -83,138 +98,26 @@
             obligation.end.toString
         )){
             <div class="form-group">
-                <div class="grid-row" id="box-one">
-                    @handleSingleError(form("box1"))
-                    <div class="column-one-quarter form-hint">@messages("confirm_submission.boxOne")</div>
-                    <div class="column-one-half form-hint">@messages("confirm_submission.boxOneDescription")</div>
-                    <div class="column-one-quarter r-align form-hint">
-                        <div class="form-group">
-                            @moneyInput(
-                                field = form("box1"),
-                                label = messages("confirm_submission.boxOneAmt"),
-                                decimalPlace = true
-                            )
-                        </div>
-                    </div>
-                </div>
-                <div class="grid-row" id="box-two">
-                    @handleSingleError(form("box2"))
-                    <div class="column-one-quarter form-hint">@messages("confirm_submission.boxTwo")</div>
-                    <div class="column-one-half form-hint">@messages("confirm_submission.boxTwoDescription")</div>
-                    <div class="column-one-quarter r-align form-hint">
-                        <div class="form-group">
-                        @moneyInput(
-                            field = form("box2"),
-                            label = messages("confirm_submission.boxTwoAmt"),
-                            decimalPlace = true
-                        )
-                        </div>
-                    </div>
-                </div>
+                @boxRow("box-one", "box1", "confirm_submission.boxOne", "confirm_submission.boxOneDescription", "confirm_submission.boxOneAmt")
+                @boxRow("box-two", "box2", "confirm_submission.boxTwo", "confirm_submission.boxTwoDescription", "confirm_submission.boxTwoAmt")
             </div>
-            <div class="grid-row" id="box-three">
-                @handleSingleError(form("box3"))
-                <div class="column-one-quarter form-hint">@messages("confirm_submission.boxThree")</div>
-                <div class="column-one-half form-hint">@messages("confirm_submission.boxThreeDescription")</div>
-                <div class="column-one-quarter r-align form-hint">
-                    <div class="form-group">
-                    @moneyInput(
-                        field = form("box3"),
-                        label = messages("confirm_submission.boxThreeAmt"),
-                        decimalPlace = true
-                    )
-                    </div>
-                </div>
-            </div>
-            <div class="grid-row" id="box-four">
-                @handleSingleError(form("box4"))
-                <div class="column-one-quarter form-hint">@messages("confirm_submission.boxFour")</div>
-                <div class="column-one-half form-hint">@messages("confirm_submission.boxFourDescription")</div>
-                <div class="column-one-quarter r-align form-hint">
-                    <div class="form-group">
-                    @moneyInput(
-                        field = form("box4"),
-                        label = messages("confirm_submission.boxFourAmt"),
-                        decimalPlace = true
-                    )
-                    </div>
-                </div>
-            </div>
-            <div class="grid-row" id="box-five">
-                @handleSingleError(form("box5"))
-                <div class="column-one-quarter form-hint">@messages("confirm_submission.boxFive")</div>
-                <div class="column-one-half form-hint">@messages("confirm_submission.boxFiveDescription")</div>
-                <div class="column-one-quarter r-align form-hint">
-                    <div class="form-group">
-                    @moneyInput(
-                        field = form("box5"),
-                        label = messages("confirm_submission.boxFiveAmt"),
-                        decimalPlace = true
-                    )
-                    </div>
-                </div>
-            </div>
+            @boxRow("box-three", "box3", "confirm_submission.boxThree", "confirm_submission.boxThreeDescription", "confirm_submission.boxThreeAmt")
+            @boxRow("box-four", "box4", "confirm_submission.boxFour", "confirm_submission.boxFourDescription", "confirm_submission.boxFourAmt")
+            @boxRow("box-five", "box5", "confirm_submission.boxFive", "confirm_submission.boxFiveDescription", "confirm_submission.boxFiveAmt")
             <hr>
             <div class="form-group grid-row">
                 <h3 id="additionalInfo" class="column-two-thirds bold-small">@messages("submit_form.additionalInformation")</h3>
             </div>
             <div class="form-group">
-                <div class="grid-row" id="box-six">
-                    @handleSingleError(form("box6"))
-                    <div class="column-one-quarter form-hint">@messages("confirm_submission.boxSix")</div>
-                    <div class="column-one-half form-hint">@messages("confirm_submission.boxSixNoFlatRate")</div>
-                    <div class="column-one-quarter r-align form-hint">
-                        <div class="form-group">
-                        @moneyInput(
-                            field = form("box6"),
-                            label = messages("confirm_submission.boxSixAmt"),
-                            decimalPlace = true
-                        )
-                        </div>
-                    </div>
-                </div>
-                <div class="grid-row" id="box-seven">
-                    @handleSingleError(form("box7"))
-                    <div class="column-one-quarter form-hint">@messages("confirm_submission.boxSeven")</div>
-                    <div class="column-one-half form-hint">@messages("confirm_submission.boxSevenDescription")</div>
-                    <div class="column-one-quarter r-align form-hint">
-                        <div class="form-group">
-                        @moneyInput(
-                            field = form("box7"),
-                            label = messages("confirm_submission.boxSevenAmt"),
-                            decimalPlace = true
-                        )
-                        </div>
-                    </div>
-                </div>
-                <div class="grid-row" id="box-eight">
-                    @handleSingleError(form("box8"))
-                    <div class="column-one-quarter form-hint">@messages("confirm_submission.boxEight")</div>
-                    <div class="column-one-half form-hint">@messages("confirm_submission.boxEightDescription")</div>
-                    <div class="column-one-quarter r-align form-hint">
-                        <div class="form-group">
-                        @moneyInput(
-                            field = form("box8"),
-                            label = messages("confirm_submission.boxEightAmt"),
-                            decimalPlace = true
-                        )
-                        </div>
-                    </div>
-                </div>
-                <div class="grid-row" id="box-nine">
-                    @handleSingleError(form("box9"))
-                    <div class="column-one-quarter form-hint">@messages("confirm_submission.boxNine")</div>
-                    <div class="column-one-half form-hint">@messages("confirm_submission.boxNineDescription")</div>
-                    <div class="column-one-quarter r-align form-hint">
-                        <div class="form-group">
-                        @moneyInput(
-                            field = form("box9"),
-                            label = messages("confirm_submission.boxNineAmt"),
-                            decimalPlace = true
-                        )
-                        </div>
-                    </div>
-                </div>
+              @if(flatRateScheme) {
+                @boxRow("box-six", "box6", "confirm_submission.boxSix", "confirm_submission.boxSixFlatRate", "confirm_submission.boxSixAmt")
+              } else {
+                @boxRow("box-six", "box6", "confirm_submission.boxSix", "confirm_submission.boxSixNoFlatRate", "confirm_submission.boxSixAmt")
+
+              }
+              @boxRow("box-seven", "box7", "confirm_submission.boxSeven", "confirm_submission.boxSevenDescription", "confirm_submission.boxSevenAmt")
+              @boxRow("box-eight", "box8", "confirm_submission.boxEight", "confirm_submission.boxEightDescription", "confirm_submission.boxEightAmt")
+              @boxRow("box-nine", "box9", "confirm_submission.boxNine", "confirm_submission.boxNineDescription", "confirm_submission.boxNineAmt")
             </div>
             <hr>
             <p>@messages("submit_form.submitReturn")</p>

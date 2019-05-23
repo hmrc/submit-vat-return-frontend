@@ -39,7 +39,7 @@ class ConfirmSubmissionController @Inject()(val messagesApi: MessagesApi,
 
   def show(periodKey: String): Action[AnyContent] = (authPredicate andThen mandationStatusCheck).async { implicit user =>
 
-    user.session.get(SessionKeys.viewModel) match {
+    user.session.get(SessionKeys.returnData) match {
       case Some(model) => {
         val sessionData = Json.parse(model).as[SubmitVatReturnModel]
 
