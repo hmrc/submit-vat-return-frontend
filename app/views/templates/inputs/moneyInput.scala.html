@@ -32,12 +32,6 @@
         </span>
     }
 
-    @field.errors.headOption.map { error =>
-        <span class="error-message" role="tooltip">
-            @messages(error.message, error.args: _*)
-        </span>
-    }
-
     <span class="input-currency"></span>
 
     <input type="number"

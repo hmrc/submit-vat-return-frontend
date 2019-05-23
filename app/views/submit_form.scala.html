@@ -15,6 +15,7 @@
  *@
 
 @import uk.gov.hmrc.play.views.html.helpers
+@import uk.gov.hmrc.play.views.html.helpers.{errorSummary => summary}
 @import config.AppConfig
 @import templates.inputs.moneyInput
 @import templates.formatters.dates.displayDate
@@ -23,7 +24,23 @@
 
 @(periodKey: String, clientName: Option[String], flatRateScheme: Boolean, obligations: VatObligations, form: Form[NineBoxModel])(implicit request: Request[_], messages: Messages, appConfig: AppConfig)
 
-@main_template(messages("submit_form.title"), appConfig = appConfig, bodyClasses = None) {
+@handleSingleError(field: Field) = {
+    @field.errors.headOption.map { error =>
+        <span class="error-message" role="tooltip">
+            @messages(error.message, error.args: _*)
+        </span>
+    }
+}
+
+@pageTitle = @{
+    if(form.errors.nonEmpty) {
+        "Error: " + messages("submit_form.title")
+    } else {
+        messages("submit_form.title")
+    }
+}
+
+@main_template(pageTitle, appConfig = appConfig, bodyClasses = None) {
 
     <div class="grid-row">
 
@@ -33,15 +50,19 @@
                 obligation => displayDateRange(obligation.start, obligation.end)
             }
             }</span>
-            @println("IT IS THIS: " + obligations.obligations.head.due)
             <span class="form-hint">@messages("confirm_submission.returnDueDate", displayDate(obligations.obligations.head.due))</span>
         </h1>
+
+        @if(form.errors.nonEmpty) {
+            @summary(messages("common.errorSummary.heading"), form)
+        }
 
         <h2 class="heading-large">@clientName</h2>
         <h3 class="bold-small form-group">@messages("confirm_submission.vatDetails")</h3>
         @helpers.form(action = controllers.routes.SubmitFormController.submit(flatRateScheme, Json.toJson(obligations).toString, periodKey, clientName)){
             <div class="form-group">
                 <div class="grid-row" id="box-one">
+                    @handleSingleError(form("box1"))
                     <div class="column-one-quarter form-hint">@messages("confirm_submission.boxOne")</div>
                     <div class="column-one-half form-hint">@messages("confirm_submission.boxOneDescription")</div>
                     <div class="column-one-quarter r-align form-hint">
@@ -55,6 +76,7 @@
                     </div>
                 </div>
                 <div class="grid-row" id="box-two">
+                    @handleSingleError(form("box2"))
                     <div class="column-one-quarter form-hint">@messages("confirm_submission.boxTwo")</div>
                     <div class="column-one-half form-hint">@messages("confirm_submission.boxTwoDescription")</div>
                     <div class="column-one-quarter r-align form-hint">
@@ -69,6 +91,7 @@
                 </div>
             </div>
             <div class="grid-row" id="box-three">
+                @handleSingleError(form("box3"))
                 <div class="column-one-quarter form-hint">@messages("confirm_submission.boxThree")</div>
                 <div class="column-one-half form-hint">@messages("confirm_submission.boxThreeDescription")</div>
                 <div class="column-one-quarter r-align form-hint">
@@ -82,6 +105,7 @@
                 </div>
             </div>
             <div class="grid-row" id="box-four">
+                @handleSingleError(form("box4"))
                 <div class="column-one-quarter form-hint">@messages("confirm_submission.boxFour")</div>
                 <div class="column-one-half form-hint">@messages("confirm_submission.boxFourDescription")</div>
                 <div class="column-one-quarter r-align form-hint">
@@ -95,6 +119,7 @@
                 </div>
             </div>
             <div class="grid-row" id="box-five">
+                @handleSingleError(form("box5"))
                 <div class="column-one-quarter form-hint">@messages("confirm_submission.boxFive")</div>
                 <div class="column-one-half form-hint">@messages("confirm_submission.boxFiveDescription")</div>
                 <div class="column-one-quarter r-align form-hint">
@@ -113,6 +138,7 @@
             </div>
             <div class="form-group">
                 <div class="grid-row" id="box-six">
+                    @handleSingleError(form("box6"))
                     <div class="column-one-quarter form-hint">@messages("confirm_submission.boxSix")</div>
                     <div class="column-one-half form-hint">@messages("confirm_submission.boxSixNoFlatRate")</div>
                     <div class="column-one-quarter r-align form-hint">
@@ -126,6 +152,7 @@
                     </div>
                 </div>
                 <div class="grid-row" id="box-seven">
+                    @handleSingleError(form("box7"))
                     <div class="column-one-quarter form-hint">@messages("confirm_submission.boxSeven")</div>
                     <div class="column-one-half form-hint">@messages("confirm_submission.boxSevenDescription")</div>
                     <div class="column-one-quarter r-align form-hint">
@@ -139,6 +166,7 @@
                     </div>
                 </div>
                 <div class="grid-row" id="box-eight">
+                    @handleSingleError(form("box8"))
                     <div class="column-one-quarter form-hint">@messages("confirm_submission.boxEight")</div>
                     <div class="column-one-half form-hint">@messages("confirm_submission.boxEightDescription")</div>
                     <div class="column-one-quarter r-align form-hint">
@@ -152,6 +180,7 @@
                     </div>
                 </div>
                 <div class="grid-row" id="box-nine">
+                    @handleSingleError(form("box9"))
                     <div class="column-one-quarter form-hint">@messages("confirm_submission.boxNine")</div>
                     <div class="column-one-half form-hint">@messages("confirm_submission.boxNineDescription")</div>
                     <div class="column-one-quarter r-align form-hint">

@@ -109,7 +109,7 @@
       <div class="form-group">
         <h3 class="bold-large">@messages("confirm_submission.returnTotal")@displayMoney(viewModel.returnDetail.box5)</h3>
         <p>@messages("confirm_submission.returnDueDate", displayDate(viewModel.obligations.due))</p>
-        <a href="/TODO">@messages("confirm_submission.changeDetail")</a>
+        <a href=@controllers.routes.SubmitFormController.show(viewModel.obligations.periodKey)>@messages("confirm_submission.changeDetail")</a>
       </div>
     </section>
 
@@ -118,11 +118,7 @@
     <p>@messages("confirm_submission.information")</p>
 
     @helpers.form(action = controllers.routes.ConfirmSubmissionController.submit(viewModel.obligations.periodKey)) {
-      <button
-        class="button"
-        type ="submit">
-        @messages("common.submit")
-      </button>
+      <input id="continue" type="submit" class="button" value="@messages("common.submit")">
     }
 
   </section>

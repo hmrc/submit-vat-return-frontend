@@ -38,7 +38,7 @@ class ConfirmSubmissionViewSpec extends ViewBaseSpec {
     val changeReturnLink = "#content > article > section > section:nth-child(6) > div > a"
     val submitVatReturnHeading = "#content > article > section > h3.bold-medium"
     val submitReturnInformation = "#content > article > section > p"
-    val submitButton = "#content > article > section > form > button"
+    val submitButton = "#content > article > section > form > input"
   }
 
   def boxElement(box: String, column: Int): String = {
@@ -179,7 +179,7 @@ class ConfirmSubmissionViewSpec extends ViewBaseSpec {
         "have the change return details link which" should {
 
           s"the redirect url to URL NEEDED" in {
-            element(Selectors.changeReturnLink).attr("href") shouldBe "/TODO"
+            element(Selectors.changeReturnLink).attr("href") shouldBe "/vat-through-software/submit-vat-return/17AA/submit-form"
           }
 
           s"display the correct content as ${viewMessages.changeReturnLink}" in {
@@ -196,7 +196,7 @@ class ConfirmSubmissionViewSpec extends ViewBaseSpec {
         }
 
         s"display the ${viewMessages.submitButton} button" in {
-          elementText(Selectors.submitButton) shouldBe viewMessages.submitButton
+          element(Selectors.submitButton).`val`() shouldBe viewMessages.submitButton
         }
       }
     }

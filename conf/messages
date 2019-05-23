@@ -6,6 +6,7 @@ common.submit = Submit
 common.dateRangeSeparator = to
 common.continue = Continue
 common.back = Back
+common.errorSummary.heading = You have one or more errors
 
 error.required = Please enter a value
 error.summary.title = There is a problem
@@ -18,6 +19,13 @@ submit_form.title = Submit return
 submit_form.heading = Submit return
 submit_form.additionalInformation = Additional information
 submit_form.submitReturn = You can submit your return on the next screen.
+
+submit_form.error.emptyError = Enter a number
+submit_form.error.tooManyCharacters = Enter a maximum of 13 digits for pounds.\nEnter a maximum of 2 decimal places for pence.\nYou can use a negative amount eg -13.2
+submit_form.error.formatCheckError = Enter a number in the correct format
+submit_form.error.negativeError = Enter a maximum of 13 digits for pounds.\nEnter a maximum of 2 decimal places for pence.\nDo not use a negative amount eg -13.2
+submit_form.error.box3Error = Add the number from box 1 to the number from box 2 and write it here
+submit_form.error.box5Error = Subtract the number in box 4 away from the number in box 3 and write it here
 
 confirm_submission.title = Your VAT return
 confirm_submission.heading = Submit return

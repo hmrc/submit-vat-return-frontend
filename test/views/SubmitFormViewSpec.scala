@@ -30,14 +30,15 @@ class SubmitFormViewSpec extends ViewBaseSpec {
 
   "Rendering the submit_form page" should {
 
+    val nbr = new NineBoxForm()(messagesApi)
+
     val obligations: VatObligations =
       VatObligations(Seq(VatObligation(LocalDate.parse("2019-01-12"), LocalDate.parse("2019-04-12"), LocalDate.parse("2019-05-12"), "18AA")))
 
-    lazy val view = views.html.submit_form("18AA", Some("ABC Studios"), flatRateScheme = true, obligations, NineBoxForm.nineBoxForm)
+    lazy val view = views.html.submit_form("18AA", Some("ABC Studios"), flatRateScheme = true, obligations, nbr.nineBoxForm)
     lazy implicit val document: Document = Jsoup.parse(view.body)
 
     "have the correct title" in {
-      println("DisplayDate = " + displayDate(obligations.obligations.head.start))
       elementText("h1 > span:nth-of-type(1)") shouldBe submitReturn
       elementText("h1 > span:nth-of-type(2)") shouldBe displayDateRange(obligations.obligations.head.start, obligations.obligations.head.end).toString()
       elementText("h1 > span:nth-of-type(3)") shouldBe returnDue(displayDate(obligations.obligations.head.due).toString())
