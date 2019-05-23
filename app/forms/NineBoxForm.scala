@@ -87,9 +87,9 @@ class NineBoxForm @Inject()(implicit messagesApi: MessagesApi) {
   }
 
   private val box5Format: Formatter[BigDecimal] = new Formatter[BigDecimal] {
+
     def checkValueForErrors(valueOption: Option[String], key: String): Seq[FormError] = {
       val regex: String = "[-.0-9]+"
-
       valueOption match {
         case Some(value) => Seq(
           if (value.isEmpty) Some(FormError(key, messagesApi("submit_form.error.emptyError"))) else None,
@@ -111,7 +111,7 @@ class NineBoxForm @Inject()(implicit messagesApi: MessagesApi) {
           val errors = checkValueForErrors(box5Value, key)
 
           if (errors.nonEmpty) {
-            Left(errors)
+            Left(errors.head)
           } else {
             box5Value match {
               case Some(value) if (firstValue - secondValue).abs == BigDecimal(value) => Right(BigDecimal(value))
