@@ -111,7 +111,7 @@ class NineBoxForm @Inject()(implicit messagesApi: MessagesApi) {
           val errors = checkValueForErrors(box5Value, key)
 
           if (errors.nonEmpty) {
-            Left(errors.head)
+            Left(Seq(errors.head))
           } else {
             box5Value match {
               case Some(value) if (firstValue - secondValue).abs == BigDecimal(value) => Right(BigDecimal(value))
