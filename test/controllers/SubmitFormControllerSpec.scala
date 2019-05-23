@@ -124,10 +124,12 @@ class SubmitFormControllerSpec extends BaseSpec with MockVatSubscriptionService 
           "box9" -> "1234567890123.45"
         )
 
-        val result = TestSubmitFormController.submit(hasFlatRateScheme = false, "", "93DH", None)(request)
+        val ob = Json.stringify(Json.toJson(VatObligations(Seq(VatObligation(LocalDate.now(),LocalDate.now(),LocalDate.now(),"AA")))))
+
+        val result = TestSubmitFormController.submit(hasFlatRateScheme = false, ob, "93DH", None)(request)
         status(result) shouldBe SEE_OTHER
 
-        redirectLocation(result).get.contains(controllers.routes.ConfirmSubmissionController.show(frs = false, "", "", None, "93DH").url) shouldBe true
+        redirectLocation(result).get.contains(controllers.routes.ConfirmSubmissionController.show(frs = false, ob, "", None, "93DH").url) shouldBe true
       }
     }
     "display a validation error" when {
@@ -156,7 +158,7 @@ class SubmitFormControllerSpec extends BaseSpec with MockVatSubscriptionService 
 
         val result = TestSubmitFormController.submit(hasFlatRateScheme = false, obligationInput, "", Some("Duanne"))(request)
         status(result) shouldBe OK
-        contentAsString(result) should include("Enter a maximum of 13 decimal places for pounds.\nEnter a maximum of 2 decimal places for pence.\nYou can use a negative amount eg -13.2")
+        contentAsString(result) should include("Enter a number")
         contentAsString(result) should include("You have one or more errors")
       }
       "an error occurs (too many numbers)" in {
@@ -184,7 +186,7 @@ class SubmitFormControllerSpec extends BaseSpec with MockVatSubscriptionService 
 
         val result = TestSubmitFormController.submit(hasFlatRateScheme = false, obligationInput, "", Some("Duanne"))(request)
         status(result) shouldBe OK
-        contentAsString(result) should include("Enter a maximum of 13 decimal places for pounds.\nEnter a maximum of 2 decimal places for pence.\nYou can use a negative amount eg -13.2")
+        contentAsString(result) should include("Enter a maximum of 13 digits for pounds.\nEnter a maximum of 2 decimal places for pence.\nYou can use a negative amount eg -13.2")
         contentAsString(result) should include("You have one or more errors")
       }
       "an error occurs (incorrect format)" in {
@@ -240,7 +242,7 @@ class SubmitFormControllerSpec extends BaseSpec with MockVatSubscriptionService 
 
         val result = TestSubmitFormController.submit(hasFlatRateScheme = false, obligationInput, "", Some("Duanne"))(request)
         status(result) shouldBe OK
-        contentAsString(result) should include("Enter a maximum of 13 decimal places for pounds.\nEnter a maximum of 2 decimal places for pence.\nDo not use a negative amount eg -13.2")
+        contentAsString(result) should include("Enter a maximum of 13 digits for pounds.\nEnter a maximum of 2 decimal places for pence.\nDo not use a negative amount eg -13.2")
         contentAsString(result) should include("You have one or more errors")
       }
       "an error occurs (incorrect box additions)" when {
@@ -388,7 +390,7 @@ class SubmitFormControllerSpec extends BaseSpec with MockVatSubscriptionService 
           status(result) shouldBe OK
         }
         "error is displayed" in {
-          contentAsString(result) should include("Enter a maximum of 13 decimal places for pounds.\nEnter a maximum of 2 decimal places for pence.\nYou can use a negative amount eg -13.2")
+          contentAsString(result) should include("Enter a number")
         }
       }
       "an error occurs (box3 invalid format)" when {
@@ -469,10 +471,10 @@ class SubmitFormControllerSpec extends BaseSpec with MockVatSubscriptionService 
           status(result2) shouldBe OK
         }
         "error is displayed for too many non decimal digits" in {
-          contentAsString(result1) should include("Enter a maximum of 13 decimal places for pounds.\nEnter a maximum of 2 decimal places for pence.\nYou can use a negative amount eg -13.2")
+          contentAsString(result1) should include("Enter a maximum of 13 digits for pounds.\nEnter a maximum of 2 decimal places for pence.\nYou can use a negative amount eg -13.2")
         }
         "error is displayed for too many decimal digits" in {
-          contentAsString(result2) should include("Enter a maximum of 13 decimal places for pounds.\nEnter a maximum of 2 decimal places for pence.\nYou can use a negative amount eg -13.2")
+          contentAsString(result2) should include("Enter a maximum of 13 digits for pounds.\nEnter a maximum of 2 decimal places for pence.\nYou can use a negative amount eg -13.2")
         }
       }
       "an error occurs (box5 empty)" when {
@@ -503,7 +505,7 @@ class SubmitFormControllerSpec extends BaseSpec with MockVatSubscriptionService 
           status(result) shouldBe OK
         }
         "error is displayed" in {
-          contentAsString(result) should include("Enter a maximum of 13 decimal places for pounds.\nEnter a maximum of 2 decimal places for pence.\nDo not use a negative amount eg -13.2")
+          contentAsString(result) should include("Enter a number")
         }
       }
       "an error occurs (box5 invalid format)" when {
@@ -584,10 +586,10 @@ class SubmitFormControllerSpec extends BaseSpec with MockVatSubscriptionService 
           status(result2) shouldBe OK
         }
         "error is displayed for too many non decimal digits" in {
-          contentAsString(result1) should include("Enter a maximum of 13 decimal places for pounds.\nEnter a maximum of 2 decimal places for pence.\nDo not use a negative amount eg -13.2")
+          contentAsString(result1) should include("Enter a maximum of 13 digits for pounds.\nEnter a maximum of 2 decimal places for pence.\nDo not use a negative amount eg -13.2")
         }
         "error is displayed for too many decimal digits" in {
-          contentAsString(result2) should include("Enter a maximum of 13 decimal places for pounds.\nEnter a maximum of 2 decimal places for pence.\nDo not use a negative amount eg -13.2")
+          contentAsString(result2) should include("Enter a maximum of 13 digits for pounds.\nEnter a maximum of 2 decimal places for pence.\nDo not use a negative amount eg -13.2")
         }
       }
     }
