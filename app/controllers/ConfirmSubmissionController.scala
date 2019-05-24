@@ -16,8 +16,6 @@
 
 package controllers
 
-import java.time.LocalDate
-
 import config.{AppConfig, ErrorHandler}
 import controllers.predicates.{AuthPredicate, MandationStatusPredicate}
 import javax.inject.Inject
@@ -35,11 +33,12 @@ class ConfirmSubmissionController @Inject()(val messagesApi: MessagesApi,
                                             authPredicate: AuthPredicate,
                                             implicit val appConfig: AppConfig) extends FrontendController with I18nSupport {
 
-  def show(frs: Boolean, obs: String, nbm: String, name: Option[String], periodKey: String): Action[AnyContent] = Action.async { implicit request =>
-    val viewModel = ConfirmSubmissionViewModel(
-      Json.parse(obs).as[VatObligations].obligations.head, frs, Json.parse(nbm).as[NineBoxModel], name
-    )
-    Future.successful(Ok(views.html.confirm_submission(viewModel)))
+  def show(frs: Boolean, obs: String, nbm: String, name: Option[String], periodKey: String): Action[AnyContent] = authPredicate.async {
+    implicit user =>
+      val viewModel = ConfirmSubmissionViewModel(
+        Json.parse(obs).as[VatObligations].obligations.head, frs, Json.parse(nbm).as[NineBoxModel], name
+      )
+      Future.successful(Ok(views.html.confirm_submission(viewModel, user.isAgent)))
   }
 
   def submit(periodKey: String): Action[AnyContent] = Action.async { implicit request =>

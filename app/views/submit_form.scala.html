@@ -19,10 +19,16 @@
 @import config.AppConfig
 @import templates.inputs.moneyInput
 @import templates.formatters.dates.displayDate
+@import templates.formatters.navigationBreadcrumb
 @import templates.formatters.dates.displayDateRange
 @import play.api.libs.json.Json
 
-@(periodKey: String, clientName: Option[String], flatRateScheme: Boolean, obligations: VatObligations, form: Form[NineBoxModel])(implicit request: Request[_], messages: Messages, appConfig: AppConfig)
+@(periodKey: String,
+  clientName: Option[String],
+  flatRateScheme: Boolean,
+  obligations: VatObligations,
+  form: Form[NineBoxModel],
+  isAgent: Boolean)(implicit request: Request[_], messages: Messages, appConfig: AppConfig)
 
 @handleSingleError(field: Field) = {
     @field.errors.headOption.map { error =>
@@ -42,12 +48,24 @@
 
 @main_template(pageTitle, appConfig = appConfig, bodyClasses = None) {
 
-    <div class="grid-row">
+    @if(!isAgent) {
+        @navigationBreadcrumb(
+            Map(
+                appConfig.vatSummaryUrl -> messages("breadcrumbs.yourVatDetails"),
+                appConfig.returnDeadlinesUrl -> messages("breadcrumbs.submitVatReturn")
+            ),
+            messages("breadcrumbs.submitReturnForDate",
+                displayDateRange(obligations.obligations.head.start, obligations.obligations.head.end)
+            )
+        )
+    }
+
+    <div>
 
         <h1 class="heading-xlarge">
             <span class="heading-secondary">@messages("submit_form.heading")</span>
             <span>@{obligations.obligations.map {
-                obligation => displayDateRange(obligation.start, obligation.end)
+                obligation => displayDateRange(obligation.start, obligation.end, useShortDayFormat = true)
             }
             }</span>
             <span class="form-hint">@messages("confirm_submission.returnDueDate", displayDate(obligations.obligations.head.due))</span>
