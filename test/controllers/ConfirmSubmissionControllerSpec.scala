@@ -18,16 +18,15 @@ package controllers
 
 import java.time.LocalDate
 
+import assets.CustomerDetailsTestAssets._
 import base.BaseSpec
 import common.{MandationStatuses, SessionKeys}
-import assets.CustomerDetailsTestAssets._
-import common.MandationStatuses.nonMTDfB
 import connectors.httpParsers.ResponseHttpParsers.HttpGetResult
-import mocks.service.MockVatSubscriptionService
+import mocks.service.{MockVatReturnsService, MockVatSubscriptionService}
 import mocks.{MockAuth, MockMandationPredicate}
 import models.auth.User
 import models.errors.UnexpectedJsonFormat
-import models.{CustomerDetails, MandationStatus, SubmitVatReturnModel}
+import models.{CustomerDetails, SubmitVatReturnModel}
 import org.jsoup.Jsoup
 import play.api.http.Status
 import play.api.libs.json.Json
@@ -36,7 +35,7 @@ import play.api.test.Helpers._
 
 import scala.concurrent.Future
 
-class ConfirmSubmissionControllerSpec extends BaseSpec with MockAuth with MockMandationPredicate with MockVatSubscriptionService {
+class ConfirmSubmissionControllerSpec extends BaseSpec with MockAuth with MockMandationPredicate with MockVatSubscriptionService with MockVatReturnsService {
 
   object TestConfirmSubmissionController extends ConfirmSubmissionController(
     messagesApi,
@@ -44,6 +43,8 @@ class ConfirmSubmissionControllerSpec extends BaseSpec with MockAuth with MockMa
     errorHandler,
     mockVatSubscriptionService,
     mockAuthPredicate,
+    mockVatReturnsService,
+    ec,
     mockAppConfig
   )
 
