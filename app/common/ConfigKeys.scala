@@ -51,4 +51,6 @@ object ConfigKeys {
   val govUkGuidanceMtdVat: String = "gov-uk.guidance.mtdVat.url"
   val govUkGuidanceAgentServices: String = "gov-uk.guidance.agentServices.url"
 
+  val vatReturnsBase: String = "vat-returns"
+  val vatReturnsUrl: String = s"microservice.services.$vatReturnsBase.url"
 }

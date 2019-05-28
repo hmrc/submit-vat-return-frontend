@@ -18,8 +18,8 @@ package connectors.httpParsers
 
 import base.BaseSpec
 import connectors.httpParsers.SubmitVatReturnHttpParser.SubmitVatReturnReads
-import models.SubmissionSuccessModel
 import models.errors.{ServerSideError, UnexpectedJsonFormat}
+import models.vatReturnSubmission.SubmissionSuccessModel
 import play.api.http.Status._
 import play.api.libs.json.{JsObject, Json}
 import uk.gov.hmrc.http.HttpResponse
