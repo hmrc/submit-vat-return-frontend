@@ -41,4 +41,5 @@ class MockConfig(implicit val runModeConfiguration: Configuration) extends AppCo
   override val govUkGuidanceAgentServices: String = "agent-services"
   override val vatSummaryUrl: String = "vat-summary-frontend-url"
   override val returnDeadlinesUrl: String = "/return-deadlines"
+  override def vatReturnsUrl(vrn: String): String = s"url/$vrn"
 }
