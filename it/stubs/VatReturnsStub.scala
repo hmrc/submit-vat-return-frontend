@@ -17,6 +17,7 @@
 package stubs
 
 import base.BaseISpec
+import com.github.tomakehurst.wiremock.client.WireMock.equalTo
 import com.github.tomakehurst.wiremock.client.WireMock.{equalToJson, postRequestedFor, urlEqualTo, verify}
 import com.github.tomakehurst.wiremock.stubbing.StubMapping
 import play.api.libs.json.{JsObject, JsValue, Json}
@@ -38,5 +39,9 @@ object VatReturnsStub extends BaseISpec {
   }
 
   def verifySubmission(vrn: String, body: JsValue): Unit =
-    verify(postRequestedFor(urlEqualTo(uri(vrn))).withRequestBody(equalToJson(body.toString())))
+    verify(postRequestedFor(urlEqualTo(uri(vrn)))
+      .withRequestBody(equalToJson(body.toString()))
+      .withHeader("OriginatorID", equalTo("VATUI"))
+    )
+
 }
