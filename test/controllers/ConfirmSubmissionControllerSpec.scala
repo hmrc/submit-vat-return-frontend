@@ -19,6 +19,7 @@ package controllers
 import java.time.LocalDate
 
 import base.BaseSpec
+import common.{MandationStatuses, SessionKeys}
 import mocks.{MockAuth, MockMandationPredicate}
 import models.{NineBoxModel, VatObligation, VatObligations}
 import play.api.http.Status
@@ -63,7 +64,12 @@ class ConfirmSubmissionControllerSpec extends BaseSpec with MockAuth with MockMa
         )
       ))
 
-      lazy val result: Future[Result] = TestConfirmSubmissionController.show(frs = false, obsModel, nbModel, None, "18AA")(fakeRequest)
+      lazy val result: Future[Result] = TestConfirmSubmissionController.show(
+        frs = false,
+        obsModel,
+        nbModel,
+        None,
+        "18AA")(fakeRequest.withSession(SessionKeys.mandationStatus -> MandationStatuses.nonMTDfB))
 
       "return 200" in {
         mockAuthorise(mtdVatAuthorisedResponse)

@@ -16,9 +16,11 @@
 
 package base
 
+import common.SessionKeys
 import config.AppConfig
 import org.scalatest.{BeforeAndAfterEach, Matchers, WordSpec}
 import org.scalatestplus.play.guice.GuiceOneServerPerSuite
+import play.api.http.HeaderNames
 import play.api.inject.guice.GuiceApplicationBuilder
 import play.api.libs.ws.{WSClient, WSRequest, WSResponse}
 import play.api.{Application, Environment, Mode}
@@ -62,11 +64,14 @@ trait BaseISpec extends WordSpec with WireMockHelper with Matchers with
 
   def await[T](awaitable: Awaitable[T]): T = Await.result(awaitable, Duration.Inf)
 
-  def get(path: String): WSResponse = await(
-    buildRequest(path).get()
+  def get(path: String, additionalCookies: Map[String, String] = Map.empty): WSResponse = await(
+    buildRequest(path, additionalCookies).get()
   )
 
-  def buildRequest(path: String): WSRequest =
+  def buildRequest(path: String, additionalCookies: Map[String, String] = Map.empty): WSRequest =
     wsClient.url(s"http://localhost:$port$appRouteContext$path")
+      .withHeaders(HeaderNames.COOKIE -> SessionCookieBaker.bakeSessionCookie(additionalCookies), "Csrf-Token" -> "nocheck")
       .withFollowRedirects(false)
+
+  def formatSessionMandationStatus: Option[String] => Map[String, String] =_.fold(Map.empty[String, String])(x => Map(SessionKeys.mandationStatus -> x))
 }
