@@ -94,8 +94,9 @@ class ConfirmSubmissionController @Inject()(val messagesApi: MessagesApi,
               Future.successful(errorHandler.showInternalServerError)
           }
         case None =>
-          Logger.warn(s"[ConfirmSubmissionController][submit] Required session data not found for key: ${SessionKeys.viewModel}")
-          Future.successful(errorHandler.showInternalServerError)
+          Logger.warn(s"[ConfirmSubmissionController][submit] Required session data not found for key: ${SessionKeys.viewModel}." +
+            s"Redirecting to 9 box entry page.")
+          Future.successful(Redirect(controllers.routes.SubmitFormController.show(periodKey)))
       }
   }
 }
