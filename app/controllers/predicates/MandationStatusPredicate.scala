@@ -55,6 +55,7 @@ class MandationStatusPredicate @Inject()(mandationStatusService: MandationStatus
   private def getMandationStatus[A](implicit user: User[A], hc: HeaderCarrier): Future[Left[Result, User[A]]] = {
     mandationStatusService.getMandationStatus(user.vrn) map {
       case Right(status) =>
+        Logger.info("Fine")
         Left(Redirect(user.uri).addingToSession(SessionKeys.mandationStatus -> status.mandationStatus))
       case Left(error) =>
         Logger.info(s"[MandationStatusPredicate][refine] - Error has been received $error")
