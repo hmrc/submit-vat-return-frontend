@@ -179,7 +179,10 @@ class ConfirmSubmissionControllerSpec extends BaseSpec with MockAuth with MockMa
 
         "submission to backend is successful" should {
 
-          lazy val result: Future[Result] = TestConfirmSubmissionController.submit("18AA")(fakeRequest.withSession("mtdNineBoxReturnData" -> nineBoxData))
+          lazy val result: Future[Result] = TestConfirmSubmissionController.submit("18AA")(fakeRequest.withSession(
+            "mtdNineBoxReturnData" -> nineBoxData,
+            SessionKeys.mandationStatus -> MandationStatuses.nonMTDfB
+          ))
 
           "return 303" in {
             mockAuthorise(mtdVatAuthorisedResponse)
@@ -194,7 +197,10 @@ class ConfirmSubmissionControllerSpec extends BaseSpec with MockAuth with MockMa
 
         "submission to backend is unsuccessful" should {
 
-          lazy val result: Future[Result] = TestConfirmSubmissionController.submit("18AA")(fakeRequest.withSession("mtdNineBoxReturnData" -> nineBoxData))
+          lazy val result: Future[Result] = TestConfirmSubmissionController.submit("18AA")(fakeRequest.withSession(
+            "mtdNineBoxReturnData" -> nineBoxData,
+            SessionKeys.mandationStatus -> MandationStatuses.nonMTDfB
+          ))
 
           "return 500" in {
             mockAuthorise(mtdVatAuthorisedResponse)
@@ -211,7 +217,10 @@ class ConfirmSubmissionControllerSpec extends BaseSpec with MockAuth with MockMa
       "invalid session data exists" should {
 
         val nineBoxData = Json.obj("box10" -> "why").toString()
-        lazy val result: Future[Result] = TestConfirmSubmissionController.submit("18AA")(fakeRequest.withSession("mtdNineBoxReturnData" -> nineBoxData))
+        lazy val result: Future[Result] = TestConfirmSubmissionController.submit("18AA")(fakeRequest.withSession(
+          "mtdNineBoxReturnData" -> nineBoxData,
+          SessionKeys.mandationStatus -> MandationStatuses.nonMTDfB
+        ))
 
         "return 500" in {
           mockAuthorise(mtdVatAuthorisedResponse)
@@ -225,7 +234,9 @@ class ConfirmSubmissionControllerSpec extends BaseSpec with MockAuth with MockMa
 
       "no session data exists for key" should {
 
-        lazy val result: Future[Result] = TestConfirmSubmissionController.submit("18AA")(fakeRequest)
+        lazy val result: Future[Result] = TestConfirmSubmissionController.submit("18AA")(fakeRequest.withSession(
+          SessionKeys.mandationStatus -> MandationStatuses.nonMTDfB
+        ))
 
         "return 303" in {
           mockAuthorise(mtdVatAuthorisedResponse)
