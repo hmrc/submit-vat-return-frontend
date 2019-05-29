@@ -23,7 +23,6 @@ import models.VatObligation
 import org.jsoup.Jsoup
 import org.jsoup.nodes.Document
 import assets.messages.SubmitFormPageMessages._
-import views.html.templates.formatters.dates.{displayDate, displayDateRange}
 
 class SubmitFormViewSpec extends ViewBaseSpec {
 
@@ -48,13 +47,11 @@ class SubmitFormViewSpec extends ViewBaseSpec {
       s"$box > div:nth-child($column)"
     }
 
-    val nbr = new SubmitVatReturnForm()(messagesApi)
-
     val obligation: VatObligation = VatObligation(LocalDate.parse("2019-01-12"), LocalDate.parse("2019-04-12"), LocalDate.parse("2019-05-12"), "18AA")
 
     "the user is on the flat rate scheme" should {
 
-      lazy val view = views.html.submit_form("18AA", Some("ABC Studios"), flatRateScheme = true, obligation, nbr.submitVatReturnForm, isAgent = false)
+      lazy val view = views.html.submit_form("18AA", Some("ABC Studios"), flatRateScheme = true, obligation, SubmitVatReturnForm.submitVatReturnForm, isAgent = false)
       lazy implicit val document: Document = Jsoup.parse(view.body)
 
       "render breadcrumbs" which {
@@ -139,7 +136,7 @@ class SubmitFormViewSpec extends ViewBaseSpec {
     }
 
     "the user is not on the flat rate scheme" should {
-      lazy val view = views.html.submit_form("18AA", Some("ABC Studios"), flatRateScheme = false, obligation, nbr.submitVatReturnForm, isAgent = false)
+      lazy val view = views.html.submit_form("18AA", Some("ABC Studios"), flatRateScheme = false, obligation, SubmitVatReturnForm.submitVatReturnForm, isAgent = false)
       lazy implicit val document: Document = Jsoup.parse(view.body)
 
       "display the non flat rate scheme text ofr box 6" in {

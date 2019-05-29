@@ -89,14 +89,7 @@
 
         <h2 class="heading-large">@clientName</h2>
         <h3 class="bold-small form-group">@messages("confirm_submission.vatDetails")</h3>
-        @helpers.form(action = controllers.routes.SubmitFormController.submit(
-            periodKey,
-            clientName,
-            flatRateScheme,
-            obligation.start.toString,
-            obligation.due.toString,
-            obligation.end.toString
-        )){
+        @helpers.form(action = controllers.routes.SubmitFormController.submit(periodKey)){
             <div class="form-group">
                 @boxRow("box-one", "box1", "confirm_submission.boxOne", "confirm_submission.boxOneDescription", "confirm_submission.boxOneAmt")
                 @boxRow("box-two", "box2", "confirm_submission.boxTwo", "confirm_submission.boxTwoDescription", "confirm_submission.boxTwoAmt")

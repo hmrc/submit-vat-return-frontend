@@ -16,8 +16,6 @@
 
 package controllers
 
-import java.time.LocalDate
-
 import forms.SubmitVatReturnForm
 import common.SessionKeys
 import config.AppConfig
@@ -30,6 +28,7 @@ import controllers.predicates.MandationStatusPredicate
 import models.auth.User
 import models.{SubmitFormViewModel, SubmitVatReturnModel, VatObligation}
 import play.api.Logger
+import play.api.data.Form
 import play.api.libs.json.Json
 import play.api.mvc.{Action, AnyContent}
 import services.{VatObligationsService, VatSubscriptionService}
@@ -47,13 +46,11 @@ class SubmitFormController @Inject()(val messagesApi: MessagesApi,
                                      authPredicate: AuthPredicate,
                                      implicit val appConfig: AppConfig) extends FrontendController with I18nSupport {
 
-  val SubmitVatReturnForm = new SubmitVatReturnForm()(messagesApi)
-
   def show(periodKey: String): Action[AnyContent] = (authPredicate andThen mandationStatusCheck).async { implicit user =>
 
     user.session.get(SessionKeys.returnData) match {
       case Some(model) => renderViewWithSessionData(periodKey, model)
-      case _ => renderViewWithoutSessionData(periodKey)
+      case _ => renderViewWithoutSessionData(periodKey, SubmitVatReturnForm.submitVatReturnForm)
     }
   }
 
@@ -85,7 +82,8 @@ class SubmitFormController @Inject()(val messagesApi: MessagesApi,
     }
   }
 
-  private def renderViewWithoutSessionData(periodKey: String)(implicit request: Request[_], user: User[_], hc: HeaderCarrier) = {
+  private def renderViewWithoutSessionData(periodKey: String,
+                                           form: Form[SubmitVatReturnModel])(implicit request: Request[_], user: User[_], hc: HeaderCarrier) = {
 
     for {
       customerInformation <- vatSubscriptionService.getCustomerDetails(user.vrn)
@@ -111,7 +109,7 @@ class SubmitFormController @Inject()(val messagesApi: MessagesApi,
                 customerDetails.clientName,
                 customerDetails.hasFlatRateScheme,
                 obligationToSubmit.head,
-                SubmitVatReturnForm.submitVatReturnForm,
+                form,
                 user.isAgent
               )).addingToSession(SessionKeys.viewModel -> Json.toJson(viewModel).toString())
             }
@@ -144,19 +142,29 @@ class SubmitFormController @Inject()(val messagesApi: MessagesApi,
                   sessionData.hasFlatRateScheme,
                   VatObligation(sessionData.start, sessionData.end, sessionData.due, periodKey),
                   failure,
-                  user.isAgent
-                ))
+                  user.isAgent)
+                )
               }
-              case (_) => errorHandler.showInternalServerError
+              case (_) => {
+                Ok(views.html.submit_form(
+                  periodKey,
+                  None,
+                  sessionData.hasFlatRateScheme,
+                  VatObligation(sessionData.start, sessionData.end, sessionData.due, periodKey),
+                  failure,
+                  isAgent = user.isAgent)
+                )
+              }
             }
           }
+          case _ => renderViewWithoutSessionData(periodKey, failure)
         }
-
-
       },
       success => {
         Future.successful(
-          Redirect(controllers.routes.ConfirmSubmissionController.show(periodKey)).addingToSession(SessionKeys.returnData -> Json.toJson(success).toString())
+          Redirect(controllers.routes.ConfirmSubmissionController.show(periodKey))
+            .addingToSession(SessionKeys.returnData -> Json.toJson(success).toString())
+            .removingFromSession(SessionKeys.viewModel)
         )
       }
     )
