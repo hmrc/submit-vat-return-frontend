@@ -38,6 +38,8 @@ trait BaseISpec extends WordSpec with WireMockHelper with Matchers with
     "microservice.services.vat-subscription.port" -> WireMockHelper.wireMockPort.toString,
     "microservice.services.vat-obligations.host" -> WireMockHelper.wireMockHost,
     "microservice.services.vat-obligations.port" -> WireMockHelper.wireMockPort.toString,
+    "microservice.services.vat-returns.host" -> WireMockHelper.wireMockHost,
+    "microservice.services.vat-returns.port" -> WireMockHelper.wireMockPort.toString,
     "microservice.services.auth.host" -> WireMockHelper.wireMockHost,
     "microservice.services.auth.port" -> WireMockHelper.wireMockPort.toString
   )

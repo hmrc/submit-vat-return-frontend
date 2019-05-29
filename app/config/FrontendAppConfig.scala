@@ -44,6 +44,7 @@ trait AppConfig extends ServicesConfig {
   val govUkGuidanceAgentServices: String
   val vatSummaryUrl: String
   val returnDeadlinesUrl: String
+  def vatReturnsUrl(vrn: String): String
 }
 
 @Singleton
@@ -97,4 +98,6 @@ class FrontendAppConfig @Inject()(val runModeConfiguration: Configuration, envir
     agentClientLookupHost +
     getString(ConfigKeys.vatAgentClientLookupFrontendUnauthorisedUrl) +
     s"?redirectUrl=${agentClientLookupRedirectUrl(uri)}"
+
+  override def vatReturnsUrl(vrn: String): String = s"${baseUrl(ConfigKeys.vatReturnsBase)}/${getString(ConfigKeys.vatReturnsUrl)}/$vrn"
 }
