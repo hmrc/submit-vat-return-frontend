@@ -23,6 +23,7 @@ import org.scalatestplus.play.guice.GuiceOneServerPerSuite
 import play.api.data.Form
 import play.api.http.HeaderNames
 import play.api.inject.guice.GuiceApplicationBuilder
+import play.api.libs.json.{JsValue, Json}
 import play.api.libs.ws.{WSClient, WSRequest, WSResponse}
 import play.api.{Application, Environment, Mode}
 import uk.gov.hmrc.play.bootstrap.http.HttpClient
@@ -72,7 +73,7 @@ trait BaseISpec extends WordSpec with WireMockHelper with Matchers with
     buildRequest(path, additionalCookies).get()
   )
 
-  def post(path: String, additionalCookies: Map[String, String])(body: Map[String, Seq[String]]): WSResponse = await(
+  def post(path: String, additionalCookies: Map[String, String] = Map.empty, body: JsValue = Json.obj()): WSResponse = await(
     buildRequest(path, additionalCookies).post(body)
   )
 
