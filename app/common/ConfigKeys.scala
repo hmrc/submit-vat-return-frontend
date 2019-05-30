@@ -47,10 +47,12 @@ object ConfigKeys {
   val vatSummaryUrl: String = "vat-summary-frontend.url"
   val viewVatReturnsHost: String = "view-vat-returns-frontend.host"
   val returnDeadlinesUrl: String = "view-vat-returns-frontend.url"
-
+  val feedbackHost: String = "feedback-frontend.host"
+  val feedbackUrl: String = "feedback-frontend.url"
+  val governmentGatewayHost: String = "government-gateway.host"
   val govUkGuidanceMtdVat: String = "gov-uk.guidance.mtdVat.url"
   val govUkGuidanceAgentServices: String = "gov-uk.guidance.agentServices.url"
-
+  val host = "host"
   val vatReturnsBase: String = "vat-returns"
   val vatReturnsUrl: String = s"microservice.services.$vatReturnsBase.url"
 }

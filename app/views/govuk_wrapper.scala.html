@@ -24,6 +24,8 @@
   contentHeader: Option[Html] = None,
   mainContent: Html = HtmlFormat.empty,
   serviceInfoContent: Html = HtmlFormat.empty,
+  feedbackOnSignOut: Boolean = true)(implicit request: Request[_], messages: Messages),
+  showSignOut: Boolean = true,
   scriptElem: Option[Html] = None)(implicit request: Request[_], messages: Messages)
 
 @import layouts.{govuk_template => hmrcGovUkTemplate}
@@ -41,7 +43,15 @@
     <meta name="format-detection" content="telephone=no" />
 }
 
-@headerNavLinks = {}
+@headerNavLinks = {
+    @if(showSignOut) {
+        <li>
+           <a id="sign-out" href="@routes.SignOutController.signOut(feedbackOnSignOut)">
+               data-journey-click="primary-navigation:Click:Signout">@messages("base.signOut")
+           </a>
+        </li>
+    }
+}
 
 @insideHeader = {
     @uiLayouts.header_nav(
