@@ -290,10 +290,10 @@ class SubmitFormControllerSpec extends BaseSpec with MockVatSubscriptionService 
               TestSubmitFormController.submit(periodKey = "93DH")(request)
             }
 
-            "status is OK" in {
+            "status is BAD_REQUEST" in {
               mockAuthorise(mtdVatAuthorisedResponse)
               setupVatSubscriptionService(vatSubscriptionResponse)
-              status(result) shouldBe OK
+              status(result) shouldBe BAD_REQUEST
             }
 
             "contains common header" in {
@@ -330,10 +330,10 @@ class SubmitFormControllerSpec extends BaseSpec with MockVatSubscriptionService 
               TestSubmitFormController.submit(periodKey = "93DH")(request)
             }
 
-            "status is OK" in {
+            "status is BAD_REQUEST" in {
               mockAuthorise(mtdVatAuthorisedResponse)
               setupVatSubscriptionService(vatSubscriptionResponse)
-              status(result) shouldBe OK
+              status(result) shouldBe BAD_REQUEST
             }
 
             "contains common header" in {
@@ -371,10 +371,10 @@ class SubmitFormControllerSpec extends BaseSpec with MockVatSubscriptionService 
               TestSubmitFormController.submit(periodKey = "93DH")(request)
             }
 
-            "status is OK" in {
+            "status is BAD_REQUEST" in {
               mockAuthorise(mtdVatAuthorisedResponse)
               setupVatSubscriptionService(vatSubscriptionResponse)
-              status(result) shouldBe OK
+              status(result) shouldBe BAD_REQUEST
             }
 
             "contains common header" in {
@@ -410,10 +410,10 @@ class SubmitFormControllerSpec extends BaseSpec with MockVatSubscriptionService 
               TestSubmitFormController.submit(periodKey = "93DH")(request)
             }
 
-            "status is OK" in {
+            "status is BAD_REQUEST" in {
               mockAuthorise(mtdVatAuthorisedResponse)
               setupVatSubscriptionService(vatSubscriptionResponse)
-              status(result) shouldBe OK
+              status(result) shouldBe BAD_REQUEST
             }
 
             "contains common header" in {
@@ -451,10 +451,10 @@ class SubmitFormControllerSpec extends BaseSpec with MockVatSubscriptionService 
               TestSubmitFormController.submit(periodKey = "93DH")(request)
             }
 
-            "status is OK" in {
+            "status is BAD_REQUEST" in {
               mockAuthorise(mtdVatAuthorisedResponse)
               setupVatSubscriptionService(vatSubscriptionResponse)
-              status(result) shouldBe OK
+              status(result) shouldBe BAD_REQUEST
             }
 
             "contains common header" in {
@@ -499,16 +499,16 @@ class SubmitFormControllerSpec extends BaseSpec with MockVatSubscriptionService 
               TestSubmitFormController.submit(periodKey = "93DH")(request(false))
             }
 
-            "status is OK for box1Error" in {
+            "status is BAD_REQUEST for box1Error" in {
               mockAuthorise(mtdVatAuthorisedResponse)
               setupVatSubscriptionService(vatSubscriptionResponse)
-              status(resultBox1Error) shouldBe OK
+              status(resultBox1Error) shouldBe BAD_REQUEST
             }
 
-            "status is OK for box2Error" in {
+            "status is BAD_REQUEST for box2Error" in {
               mockAuthorise(mtdVatAuthorisedResponse)
               setupVatSubscriptionService(vatSubscriptionResponse)
-              status(resultBox2Error) shouldBe OK
+              status(resultBox2Error) shouldBe BAD_REQUEST
             }
 
             "error is displayed for box1Error" in {
@@ -547,16 +547,16 @@ class SubmitFormControllerSpec extends BaseSpec with MockVatSubscriptionService 
                 TestSubmitFormController.submit(periodKey = "93DH")(request(false))
               }
 
-              "status is OK for box3Error" in {
+              "status is BAD_REQUEST for box3Error" in {
                 mockAuthorise(mtdVatAuthorisedResponse)
                 setupVatSubscriptionService(vatSubscriptionResponse)
-                status(resultBox3Error) shouldBe OK
+                status(resultBox3Error) shouldBe BAD_REQUEST
               }
 
-              "status is OK for box4Error" in {
+              "status is BAD_REQUEST for box4Error" in {
                 mockAuthorise(mtdVatAuthorisedResponse)
                 setupVatSubscriptionService(vatSubscriptionResponse)
-                status(resultBox4Error) shouldBe OK
+                status(resultBox4Error) shouldBe BAD_REQUEST
               }
 
               "error is displayed for box3Error" in {
@@ -591,10 +591,10 @@ class SubmitFormControllerSpec extends BaseSpec with MockVatSubscriptionService 
                 TestSubmitFormController.submit(periodKey = "93DH")(request)
               }
 
-              "status is OK" in {
+              "status is BAD_REQUEST" in {
                 mockAuthorise(mtdVatAuthorisedResponse)
                 setupVatSubscriptionService(vatSubscriptionResponse)
-                status(result) shouldBe OK
+                status(result) shouldBe BAD_REQUEST
               }
 
               "error is displayed" in {
@@ -626,10 +626,10 @@ class SubmitFormControllerSpec extends BaseSpec with MockVatSubscriptionService 
                 TestSubmitFormController.submit(periodKey = "93DH")(request)
               }
 
-              "status is OK" in {
+              "status is BAD_REQUEST" in {
                 mockAuthorise(mtdVatAuthorisedResponse)
                 setupVatSubscriptionService(vatSubscriptionResponse)
-                status(result) shouldBe OK
+                status(result) shouldBe BAD_REQUEST
               }
 
               "error is displayed" in {
@@ -685,16 +685,16 @@ class SubmitFormControllerSpec extends BaseSpec with MockVatSubscriptionService 
                 TestSubmitFormController.submit(periodKey = "93DH")(request2)
               }
 
-              "status is OK for too many non decimal digits" in {
+              "status is BAD_REQUEST for too many non decimal digits" in {
                 mockAuthorise(mtdVatAuthorisedResponse)
                 setupVatSubscriptionService(vatSubscriptionResponse)
-                status(result1) shouldBe OK
+                status(result1) shouldBe BAD_REQUEST
               }
 
-              "status is OK for too many decimal digits" in {
+              "status is BAD_REQUEST for too many decimal digits" in {
                 mockAuthorise(mtdVatAuthorisedResponse)
                 setupVatSubscriptionService(vatSubscriptionResponse)
-                status(result2) shouldBe OK
+                status(result2) shouldBe BAD_REQUEST
               }
 
               "error is displayed for too many non decimal digits" in {
@@ -732,10 +732,10 @@ class SubmitFormControllerSpec extends BaseSpec with MockVatSubscriptionService 
                 TestSubmitFormController.submit(periodKey = "93DH")(request)
               }
 
-              "status is OK" in {
+              "status is BAD_REQUEST" in {
                 mockAuthorise(mtdVatAuthorisedResponse)
                 setupVatSubscriptionService(vatSubscriptionResponse)
-                status(result) shouldBe OK
+                status(result) shouldBe BAD_REQUEST
               }
 
               "error is displayed" in {
@@ -767,10 +767,10 @@ class SubmitFormControllerSpec extends BaseSpec with MockVatSubscriptionService 
                 TestSubmitFormController.submit(periodKey = "93DH")(request)
               }
 
-              "status is OK" in {
+              "status is BAD_REQUEST" in {
                 mockAuthorise(mtdVatAuthorisedResponse)
                 setupVatSubscriptionService(vatSubscriptionResponse)
-                status(result) shouldBe OK
+                status(result) shouldBe BAD_REQUEST
               }
 
               "error is displayed" in {
@@ -826,16 +826,16 @@ class SubmitFormControllerSpec extends BaseSpec with MockVatSubscriptionService 
                 TestSubmitFormController.submit(periodKey = "93DH")(request2)
               }
 
-              "status is OK for too many non decimal digits" in {
+              "status is BAD_REQUEST for too many non decimal digits" in {
                 mockAuthorise(mtdVatAuthorisedResponse)
                 setupVatSubscriptionService(vatSubscriptionResponse)
-                status(result1) shouldBe OK
+                status(result1) shouldBe BAD_REQUEST
               }
 
-              "status is OK for too many decimal digits" in {
+              "status is BAD_REQUEST for too many decimal digits" in {
                 mockAuthorise(mtdVatAuthorisedResponse)
                 setupVatSubscriptionService(vatSubscriptionResponse)
-                status(result2) shouldBe OK
+                status(result2) shouldBe BAD_REQUEST
               }
 
               "error is displayed for too many non decimal digits" in {
@@ -877,10 +877,10 @@ class SubmitFormControllerSpec extends BaseSpec with MockVatSubscriptionService 
               TestSubmitFormController.submit("18AA")(request)
             }
 
-            "return 200" in {
+            "return BAD_REQUEST" in {
               mockAuthorise(mtdVatAuthorisedResponse)
               setupVatSubscriptionService(vatSubscriptionFailureResponse)
-              status(result) shouldBe Status.OK
+              status(result) shouldBe Status.BAD_REQUEST
             }
 
             "return HTML" in {

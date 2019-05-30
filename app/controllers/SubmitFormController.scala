@@ -136,7 +136,7 @@ class SubmitFormController @Inject()(val messagesApi: MessagesApi,
 
             vatSubscriptionService.getCustomerDetails(user.vrn) map {
               case (Right(customerDetails)) => {
-                Ok(views.html.submit_form(
+                BadRequest(views.html.submit_form(
                   periodKey,
                   customerDetails.clientName,
                   sessionData.hasFlatRateScheme,
@@ -146,7 +146,7 @@ class SubmitFormController @Inject()(val messagesApi: MessagesApi,
                 )
               }
               case (_) => {
-                Ok(views.html.submit_form(
+                BadRequest(views.html.submit_form(
                   periodKey,
                   None,
                   sessionData.hasFlatRateScheme,

@@ -180,7 +180,7 @@ class SubmitFormPageSpec extends BaseISpec {
             def postRequest(data: SubmitVatReturnModel): WSResponse =
               post("/18AA/submit-form",
                 formatSessionMandationStatus(Some(MandationStatuses.nonMTDfB))
-                  ++ formatViewModel(Some(viewModel)))(toFormData(SubmitVatReturnForm.submitVatReturnForm, da
+                  ++ formatViewModel(Some(viewModel)))(toFormData(SubmitVatReturnForm.submitVatReturnForm, data))
 
             "return 200" in {
 
@@ -190,7 +190,7 @@ class SubmitFormPageSpec extends BaseISpec {
 
               val response: WSResponse = postRequest(invalidSubmissionModel)
 
-              response.status shouldBe OK
+              response.status shouldBe BAD_REQUEST
             }
           }
 
