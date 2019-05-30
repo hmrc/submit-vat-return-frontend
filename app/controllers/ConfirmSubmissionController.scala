@@ -87,6 +87,7 @@ class ConfirmSubmissionController @Inject()(val messagesApi: MessagesApi,
                   Redirect(controllers.routes.ConfirmationController.show().url).removingFromSession(SessionKeys.returnData)
                 case Left(error) =>
                   Logger.debug(s"[ConfirmSubmissionController][submit] Error returned from vat-returns service: $error")
+                  errorHandler.showInternalServerError
               }
             case Failure(error) =>
               Logger.warn(s"[ConfirmSubmissionController][submit] Invalid session data found for key: ${SessionKeys.returnData}")

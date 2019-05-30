@@ -37,14 +37,18 @@ class ConfirmSubmissionPageSpec extends BaseISpec with GivenWhenThen {
       "box6" -> "10.06",
       "box7" -> "10.07",
       "box8" -> "10.08",
-      "box9" -> "10.09"
+      "box9" -> "10.09",
+      "flatRateScheme" -> false,
+      "start" -> "2018-01-01",
+      "end" -> "2018-01-31",
+      "due" -> "2018-03-07"
     ).toString()
 
     val mandationStatusSessionValue = Map("mtdVatMandationStatus" -> "Non MTDfB")
     val nineBoxSessionValue = Map("mtdNineBoxReturnData" -> nineBoxSessionData)
     val fullSessionValues = mandationStatusSessionValue ++ nineBoxSessionValue
 
-    def request(sessionValues: Map[String, String] = Map.empty): WSResponse = post("/18AA/confirm-submission", sessionValues)
+    def request(sessionValues: Map[String, String] = Map.empty): WSResponse = postJson("/18AA/confirm-submission", sessionValues)
 
     "user is authorised" when {
 

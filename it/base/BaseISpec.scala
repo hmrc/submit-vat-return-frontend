@@ -74,7 +74,11 @@ trait BaseISpec extends WordSpec with WireMockHelper with Matchers with
     buildRequest(path, additionalCookies).get()
   )
 
-  def post(path: String, additionalCookies: Map[String, String] = Map.empty, body: JsValue = Json.obj()): WSResponse = await(
+  def postJson(path: String, additionalCookies: Map[String, String] = Map.empty, body: JsValue = Json.obj()): WSResponse = await(
+    buildRequest(path, additionalCookies).post(body)
+  )
+
+  def postForm(path: String, additionalCookies: Map[String, String] = Map.empty, body: Map[String, Seq[String]]): WSResponse = await(
     buildRequest(path, additionalCookies).post(body)
   )
 
