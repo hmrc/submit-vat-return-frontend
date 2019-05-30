@@ -152,6 +152,7 @@ class ConfirmSubmissionControllerSpec extends BaseSpec with MockAuth with MockMa
         }
       }
     }
+
     authControllerChecks(TestConfirmSubmissionController.show("18AA"), fakeRequest)
   }
 
@@ -172,8 +173,8 @@ class ConfirmSubmissionControllerSpec extends BaseSpec with MockAuth with MockMa
           "box8" -> "10.08",
           "box9" -> "10.09",
           "flatRateScheme" -> false,
-          "from" -> "2019-01-02",
-          "to" -> "2019-01-02",
+          "start" -> "2019-01-02",
+          "end" -> "2019-01-02",
           "due" -> "2019-01-02"
         ).toString()
 
@@ -192,6 +193,10 @@ class ConfirmSubmissionControllerSpec extends BaseSpec with MockAuth with MockMa
 
           s"redirect to ${controllers.routes.ConfirmationController.show()}" in {
             redirectLocation(result) shouldBe Some(controllers.routes.ConfirmationController.show().url)
+          }
+
+          "remove form data from session" in {
+            result.session.get("mtdNineBoxReturnData") shouldBe None
           }
         }
 
@@ -229,6 +234,10 @@ class ConfirmSubmissionControllerSpec extends BaseSpec with MockAuth with MockMa
 
         "show ISE page" in {
           Jsoup.parse(bodyOf(result)).title() shouldBe "Sorry, we are experiencing technical difficulties - 500"
+        }
+
+        "remove form data from session" in {
+          result.session.get("mtdNineBoxReturnData") shouldBe None
         }
       }
 
