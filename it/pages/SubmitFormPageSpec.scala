@@ -133,8 +133,11 @@ class SubmitFormPageSpec extends BaseISpec {
         due = LocalDate.parse("2019-01-05")
       )
 
-      def postRequest(data: SubmitVatReturnModel): WSResponse =
-        post("/18AA/submit-form", formatSessionMandationStatus(Some(MandationStatuses.nonMTDfB)))(toFormData(SubmitVatReturnForm.submitVatReturnForm, data))
+      def postRequest(data: SubmitVatReturnModel): WSResponse = postForm(
+        "/18AA/submit-form",
+        formatSessionMandationStatus(Some(MandationStatuses.nonMTDfB)),
+        toFormData(SubmitVatReturnForm.submitVatReturnForm, data)
+      )
 
       "user is authorised" when {
 
@@ -178,9 +181,9 @@ class SubmitFormPageSpec extends BaseISpec {
             )).toString
 
             def postRequest(data: SubmitVatReturnModel): WSResponse =
-              post("/18AA/submit-form",
+              postForm("/18AA/submit-form",
                 formatSessionMandationStatus(Some(MandationStatuses.nonMTDfB))
-                  ++ formatViewModel(Some(viewModel)))(toFormData(SubmitVatReturnForm.submitVatReturnForm, data))
+                  ++ formatViewModel(Some(viewModel)), toFormData(SubmitVatReturnForm.submitVatReturnForm, data))
 
             "return 200" in {
 
@@ -196,9 +199,11 @@ class SubmitFormPageSpec extends BaseISpec {
 
           "there is not a view model in session" should {
 
-            def postRequest(data: SubmitVatReturnModel): WSResponse =
-              post("/18AA/submit-form",
-                formatSessionMandationStatus(Some(MandationStatuses.nonMTDfB)))(toFormData(SubmitVatReturnForm.submitVatReturnForm, data))
+            def postRequest(data: SubmitVatReturnModel): WSResponse = postForm(
+              "/18AA/submit-form",
+              formatSessionMandationStatus(Some(MandationStatuses.nonMTDfB)),
+              toFormData(SubmitVatReturnForm.submitVatReturnForm, data)
+            )
 
             "return 200" in {
 
@@ -228,8 +233,11 @@ class SubmitFormPageSpec extends BaseISpec {
 
       "user is not mandated" should {
 
-        def postRequest(data: SubmitVatReturnModel): WSResponse =
-          post("/18AA/submit-form", formatSessionMandationStatus(Some("unsupportedMandationStatus")))(toFormData(SubmitVatReturnForm.submitVatReturnForm, data))
+        def postRequest(data: SubmitVatReturnModel): WSResponse = postForm(
+          "/18AA/submit-form",
+          formatSessionMandationStatus(Some("unsupportedMandationStatus")),
+          toFormData(SubmitVatReturnForm.submitVatReturnForm, data)
+        )
 
         "return 403" in {
 

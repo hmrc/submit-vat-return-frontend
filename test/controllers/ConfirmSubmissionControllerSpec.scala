@@ -18,16 +18,16 @@ package controllers
 
 import java.time.LocalDate
 
+import assets.CustomerDetailsTestAssets._
 import base.BaseSpec
 import common.{MandationStatuses, SessionKeys}
-import assets.CustomerDetailsTestAssets._
-import common.MandationStatuses.nonMTDfB
 import connectors.httpParsers.ResponseHttpParsers.HttpGetResult
-import mocks.service.MockVatSubscriptionService
+import mocks.service.{MockVatReturnsService, MockVatSubscriptionService}
 import mocks.{MockAuth, MockMandationPredicate}
 import models.auth.User
+import models.{CustomerDetails, SubmitVatReturnModel}
 import models.errors.UnexpectedJsonFormat
-import models.{CustomerDetails, MandationStatus, SubmitVatReturnModel}
+import models.vatReturnSubmission.SubmissionSuccessModel
 import org.jsoup.Jsoup
 import play.api.http.Status
 import play.api.libs.json.Json
@@ -36,7 +36,7 @@ import play.api.test.Helpers._
 
 import scala.concurrent.Future
 
-class ConfirmSubmissionControllerSpec extends BaseSpec with MockAuth with MockMandationPredicate with MockVatSubscriptionService {
+class ConfirmSubmissionControllerSpec extends BaseSpec with MockAuth with MockMandationPredicate with MockVatSubscriptionService with MockVatReturnsService {
 
   object TestConfirmSubmissionController extends ConfirmSubmissionController(
     messagesApi,
@@ -44,12 +44,14 @@ class ConfirmSubmissionControllerSpec extends BaseSpec with MockAuth with MockMa
     errorHandler,
     mockVatSubscriptionService,
     mockAuthPredicate,
+    mockVatReturnsService,
+    ec,
     mockAppConfig
   )
 
   "ConfirmSubmissionController .show" when {
 
-    "user is authorised" when  {
+    "user is authorised" when {
 
       val nineBoxModel: String = Json.stringify(Json.toJson(
         SubmitVatReturnModel(
@@ -150,25 +152,104 @@ class ConfirmSubmissionControllerSpec extends BaseSpec with MockAuth with MockMa
         }
       }
     }
+
     authControllerChecks(TestConfirmSubmissionController.show("18AA"), fakeRequest)
   }
 
   "ConfirmSubmissionController .submit" when {
-    "user is authorised" should {
 
-      lazy val result: Future[Result] = TestConfirmSubmissionController.submit("18AA")(fakeRequest.withSession(
-        SessionKeys.mandationStatus -> MandationStatuses.nonMTDfB)
-      )
+    "user is authorised" when {
 
-      "return 303" in {
-        mockAuthorise(mtdVatAuthorisedResponse)
-        status(result) shouldBe Status.SEE_OTHER
+      "valid session data exists" when {
+
+        val nineBoxData = Json.obj(
+          "box1" -> "10.01",
+          "box2" -> "10.02",
+          "box3" -> "10.03",
+          "box4" -> "10.04",
+          "box5" -> "10.05",
+          "box6" -> "10.06",
+          "box7" -> "10.07",
+          "box8" -> "10.08",
+          "box9" -> "10.09",
+          "flatRateScheme" -> false,
+          "start" -> "2019-01-02",
+          "end" -> "2019-01-02",
+          "due" -> "2019-01-02"
+        ).toString()
+
+        "submission to backend is successful" should {
+
+          lazy val result: Future[Result] = TestConfirmSubmissionController.submit("18AA")(fakeRequest.withSession(
+            "mtdNineBoxReturnData" -> nineBoxData,
+            SessionKeys.mandationStatus -> MandationStatuses.nonMTDfB
+          ))
+
+          "return 303" in {
+            mockAuthorise(mtdVatAuthorisedResponse)
+            mockVatReturnsService(Future.successful(Right(SubmissionSuccessModel("12345"))))
+            status(result) shouldBe Status.SEE_OTHER
+          }
+
+          s"redirect to ${controllers.routes.ConfirmationController.show()}" in {
+            redirectLocation(result) shouldBe Some(controllers.routes.ConfirmationController.show().url)
+          }
+        }
+
+        "submission to backend is unsuccessful" should {
+
+          lazy val result: Future[Result] = TestConfirmSubmissionController.submit("18AA")(fakeRequest.withSession(
+            "mtdNineBoxReturnData" -> nineBoxData,
+            SessionKeys.mandationStatus -> MandationStatuses.nonMTDfB
+          ))
+
+          "return 500" in {
+            mockAuthorise(mtdVatAuthorisedResponse)
+            mockVatReturnsService(Future.successful(Left(UnexpectedJsonFormat)))
+            status(result) shouldBe Status.INTERNAL_SERVER_ERROR
+          }
+
+          "show ISE page" in {
+            Jsoup.parse(bodyOf(result)).title() shouldBe "Sorry, we are experiencing technical difficulties - 500"
+          }
+        }
       }
 
-      s"redirect url should be ${controllers.routes.ConfirmationController.show()}" in {
-        redirectLocation(result) shouldBe Some(controllers.routes.ConfirmationController.show().url)
+      "invalid session data exists" should {
+
+        val nineBoxData = Json.obj("box10" -> "why").toString()
+        lazy val result: Future[Result] = TestConfirmSubmissionController.submit("18AA")(fakeRequest.withSession(
+          "mtdNineBoxReturnData" -> nineBoxData,
+          SessionKeys.mandationStatus -> MandationStatuses.nonMTDfB
+        ))
+
+        "return 303" in {
+          mockAuthorise(mtdVatAuthorisedResponse)
+          status(result) shouldBe Status.SEE_OTHER
+        }
+
+        s"redirect to ${controllers.routes.SubmitFormController.show("18AA").url}" in {
+          redirectLocation(result) shouldBe Some(controllers.routes.SubmitFormController.show("18AA").url)
+        }
+      }
+
+      "no session data exists for key" should {
+
+        lazy val result: Future[Result] = TestConfirmSubmissionController.submit("18AA")(fakeRequest.withSession(
+          SessionKeys.mandationStatus -> MandationStatuses.nonMTDfB
+        ))
+
+        "return 303" in {
+          mockAuthorise(mtdVatAuthorisedResponse)
+          status(result) shouldBe Status.SEE_OTHER
+        }
+
+        s"redirect to ${controllers.routes.SubmitFormController.show("18AA").url}" in {
+          redirectLocation(result) shouldBe Some(controllers.routes.SubmitFormController.show("18AA").url)
+        }
       }
     }
+
     authControllerChecks(TestConfirmSubmissionController.submit("18AA"), fakeRequest)
   }
 }

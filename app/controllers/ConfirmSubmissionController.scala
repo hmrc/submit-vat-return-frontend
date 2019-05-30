@@ -20,14 +20,17 @@ import common.SessionKeys
 import config.{AppConfig, ErrorHandler}
 import controllers.predicates.{AuthPredicate, MandationStatusPredicate}
 import javax.inject.{Inject, Singleton}
+import models.vatReturnSubmission.SubmissionModel
 import models.{ConfirmSubmissionViewModel, SubmitVatReturnModel}
+import play.api.Logger
 import play.api.i18n.{I18nSupport, MessagesApi}
 import play.api.libs.json.Json
 import play.api.mvc._
-import services.VatSubscriptionService
+import services.{VatReturnsService, VatSubscriptionService}
 import uk.gov.hmrc.play.bootstrap.controller.FrontendController
 
-import scala.concurrent.Future
+import scala.concurrent.{ExecutionContext, Future}
+import scala.util.{Failure, Success, Try}
 
 @Singleton
 class ConfirmSubmissionController @Inject()(val messagesApi: MessagesApi,
@@ -35,6 +38,8 @@ class ConfirmSubmissionController @Inject()(val messagesApi: MessagesApi,
                                             val errorHandler: ErrorHandler,
                                             val vatSubscriptionService: VatSubscriptionService,
                                             authPredicate: AuthPredicate,
+                                            vatReturnsService: VatReturnsService,
+                                            implicit val executionContext: ExecutionContext,
                                             implicit val appConfig: AppConfig) extends FrontendController with I18nSupport {
 
   def show(periodKey: String): Action[AnyContent] = (authPredicate andThen mandationStatusCheck).async { implicit user =>
@@ -58,7 +63,42 @@ class ConfirmSubmissionController @Inject()(val messagesApi: MessagesApi,
     }
   }
 
-  def submit(periodKey: String): Action[AnyContent] = (authPredicate andThen mandationStatusCheck) { implicit user =>
-    Redirect(controllers.routes.ConfirmationController.show().url)
+  def submit(periodKey: String): Action[AnyContent] = (authPredicate andThen mandationStatusCheck) async {
+    implicit user =>
+      user.session.get(SessionKeys.returnData) match {
+        case Some(data) =>
+          Try(Json.parse(data).as[SubmitVatReturnModel]) match {
+            case Success(model) =>
+              val submissionModel = SubmissionModel(
+                periodKey = periodKey,
+                vatDueSales = model.box1,
+                vatDueAcquisitions = model.box2,
+                vatDueTotal = model.box3,
+                vatReclaimedCurrPeriod = model.box4,
+                vatDueNet = model.box5,
+                totalValueSalesExVAT = model.box6,
+                totalValuePurchasesExVAT = model.box7,
+                totalValueGoodsSuppliedExVAT = model.box8,
+                totalAllAcquisitionsExVAT = model.box9,
+                agentReferenceNumber = user.arn
+              )
+              vatReturnsService.submitVatReturn(user.vrn, submissionModel) map {
+                case Right(_) =>
+                  Redirect(controllers.routes.ConfirmationController.show().url).removingFromSession(SessionKeys.returnData)
+                case Left(error) =>
+                  Logger.warn(s"[ConfirmSubmissionController][submit] Error returned from vat-returns service: $error")
+                  errorHandler.showInternalServerError
+              }
+            case Failure(error) =>
+              Logger.warn(s"[ConfirmSubmissionController][submit] Invalid session data found for key: ${SessionKeys.returnData}")
+              Logger.debug(s"[ConfirmSubmissionController][submit] Invalid session data found for key: ${SessionKeys.returnData}. Error: $error")
+              Future.successful(Redirect(controllers.routes.SubmitFormController.show(periodKey))
+                .removingFromSession(SessionKeys.returnData))
+          }
+        case None =>
+          Logger.warn(s"[ConfirmSubmissionController][submit] Required session data not found for key: ${SessionKeys.returnData}." +
+            "Redirecting to 9 box entry page.")
+          Future.successful(Redirect(controllers.routes.SubmitFormController.show(periodKey)))
+      }
   }
 }
