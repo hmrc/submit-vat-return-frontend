@@ -117,7 +117,7 @@ class ConfirmSubmissionPageSpec extends BaseISpec with GivenWhenThen {
 
       "session data is invalid" should {
 
-        "return ISE" in {
+        "redirect to entry page" in {
 
           When("The user is authenticated and authorised")
           AuthStub.stubResponse(OK, mtdVatAuthResponse)
@@ -127,8 +127,11 @@ class ConfirmSubmissionPageSpec extends BaseISpec with GivenWhenThen {
 
           val response: WSResponse = request(invalidSessionData)
 
-          Then("The response should be 500")
-          response.status shouldBe INTERNAL_SERVER_ERROR
+          Then("The response should be 303")
+          response.status shouldBe SEE_OTHER
+
+          And("The redirect location is correct")
+          response.header("Location") shouldBe Some(controllers.routes.SubmitFormController.show("18AA").url)
         }
       }
 

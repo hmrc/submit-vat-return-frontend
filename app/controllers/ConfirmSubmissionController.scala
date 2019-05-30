@@ -86,17 +86,18 @@ class ConfirmSubmissionController @Inject()(val messagesApi: MessagesApi,
                 case Right(_) =>
                   Redirect(controllers.routes.ConfirmationController.show().url).removingFromSession(SessionKeys.returnData)
                 case Left(error) =>
-                  Logger.debug(s"[ConfirmSubmissionController][submit] Error returned from vat-returns service: $error")
+                  Logger.warn(s"[ConfirmSubmissionController][submit] Error returned from vat-returns service: $error")
                   errorHandler.showInternalServerError
               }
             case Failure(error) =>
               Logger.warn(s"[ConfirmSubmissionController][submit] Invalid session data found for key: ${SessionKeys.returnData}")
               Logger.debug(s"[ConfirmSubmissionController][submit] Invalid session data found for key: ${SessionKeys.returnData}. Error: $error")
-              Future.successful(errorHandler.showInternalServerError.removingFromSession(SessionKeys.returnData))
+              Future.successful(Redirect(controllers.routes.SubmitFormController.show(periodKey))
+                .removingFromSession(SessionKeys.returnData))
           }
         case None =>
           Logger.warn(s"[ConfirmSubmissionController][submit] Required session data not found for key: ${SessionKeys.returnData}." +
-            s"Redirecting to 9 box entry page.")
+            "Redirecting to 9 box entry page.")
           Future.successful(Redirect(controllers.routes.SubmitFormController.show(periodKey)))
       }
   }

@@ -194,10 +194,6 @@ class ConfirmSubmissionControllerSpec extends BaseSpec with MockAuth with MockMa
           s"redirect to ${controllers.routes.ConfirmationController.show()}" in {
             redirectLocation(result) shouldBe Some(controllers.routes.ConfirmationController.show().url)
           }
-
-          "remove form data from session" in {
-            result.session.get("mtdNineBoxReturnData") shouldBe None
-          }
         }
 
         "submission to backend is unsuccessful" should {
@@ -227,17 +223,13 @@ class ConfirmSubmissionControllerSpec extends BaseSpec with MockAuth with MockMa
           SessionKeys.mandationStatus -> MandationStatuses.nonMTDfB
         ))
 
-        "return 500" in {
+        "return 303" in {
           mockAuthorise(mtdVatAuthorisedResponse)
-          status(result) shouldBe Status.INTERNAL_SERVER_ERROR
+          status(result) shouldBe Status.SEE_OTHER
         }
 
-        "show ISE page" in {
-          Jsoup.parse(bodyOf(result)).title() shouldBe "Sorry, we are experiencing technical difficulties - 500"
-        }
-
-        "remove form data from session" in {
-          result.session.get("mtdNineBoxReturnData") shouldBe None
+        s"redirect to ${controllers.routes.SubmitFormController.show("18AA").url}" in {
+          redirectLocation(result) shouldBe Some(controllers.routes.SubmitFormController.show("18AA").url)
         }
       }
 
