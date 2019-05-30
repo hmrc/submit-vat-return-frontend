@@ -1,5 +1,5 @@
 /*
- * Copyright 2018 HM Revenue & Customs
+ * Copyright 2019 HM Revenue & Customs
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,6 +16,8 @@
 
 package pages
 
+import java.time.LocalDate
+
 import base.BaseISpec
 import common.MandationStatuses
 import play.api.http.Status._
@@ -25,87 +27,222 @@ import stubs.AuthStub._
 import stubs.VatObligationsStub._
 import stubs.VatSubscriptionStub._
 import stubs.{AuthStub, VatObligationsStub, VatSubscriptionStub}
+import forms.SubmitVatReturnForm
+import models.{SubmitFormViewModel, SubmitVatReturnModel}
 
 class SubmitFormPageSpec extends BaseISpec {
 
   "Calling /:periodKey/submit-form" when {
 
-    def request: WSResponse = get("/18AA/submit-form", formatSessionMandationStatus(Some(MandationStatuses.nonMTDfB)))
+    "there is a GET request" when {
 
-    "user is authorised" when {
+      def request: WSResponse = get("/18AA/submit-form", formatSessionMandationStatus(Some(MandationStatuses.nonMTDfB)))
 
-      "retrieval of customer details and obligation data is successful" should {
+      "user is authorised" when {
 
-        "return 200" in {
+        "retrieval of customer details and obligation data is successful" should {
 
-          AuthStub.stubResponse(OK, mtdVatAuthResponse)
-          VatSubscriptionStub.stubResponse("customer-details", OK, customerInformationSuccessJson)
-          VatSubscriptionStub.stubResponse("mandation-status", OK, mandationStatusSuccessJson)
-          VatObligationsStub.stubResponse(OK, vatObligationsSuccessJson)
+          "return 200" in {
 
-          val response: WSResponse = request
+            AuthStub.stubResponse(OK, mtdVatAuthResponse)
+            VatSubscriptionStub.stubResponse("customer-details", OK, customerInformationSuccessJson)
+            VatSubscriptionStub.stubResponse("mandation-status", OK, mandationStatusSuccessJson)
+            VatObligationsStub.stubResponse(OK, vatObligationsSuccessJson)
 
-          response.status shouldBe OK
+            val response: WSResponse = request
+
+            response.status shouldBe OK
+          }
+        }
+
+        "retrieval of customer details fails" should {
+
+          "return 500" in {
+
+            AuthStub.stubResponse(OK, mtdVatAuthResponse)
+            VatSubscriptionStub.stubResponse("mandation-status", OK, mandationStatusSuccessJson)
+            VatObligationsStub.stubResponse(OK, vatObligationsSuccessJson)
+            VatSubscriptionStub.stubResponse("customer-details", SERVICE_UNAVAILABLE, Json.obj())
+
+            val response: WSResponse = request
+
+            response.status shouldBe INTERNAL_SERVER_ERROR
+          }
+        }
+
+        "retrieval of obligation data fails" should {
+
+          "return 500" in {
+
+            AuthStub.stubResponse(OK, mtdVatAuthResponse)
+            VatSubscriptionStub.stubResponse("mandation-status", OK, mandationStatusSuccessJson)
+            VatSubscriptionStub.stubResponse("customer-details", OK, customerInformationSuccessJson)
+            VatObligationsStub.stubResponse(SERVICE_UNAVAILABLE, Json.obj())
+
+            val response: WSResponse = request
+
+            response.status shouldBe INTERNAL_SERVER_ERROR
+          }
         }
       }
 
-      "retrieval of customer details fails" should {
+      "user is unauthorised" should {
 
-        "return 500" in {
+        "return 403" in {
 
-          AuthStub.stubResponse(OK, mtdVatAuthResponse)
-          VatSubscriptionStub.stubResponse("mandation-status", OK, mandationStatusSuccessJson)
-          VatSubscriptionStub.stubResponse("customer-details", SERVICE_UNAVAILABLE, Json.obj())
-          VatObligationsStub.stubResponse(OK, vatObligationsSuccessJson)
+          AuthStub.stubResponse(OK, otherEnrolmentAuthResponse)
 
           val response: WSResponse = request
 
-          response.status shouldBe INTERNAL_SERVER_ERROR
+          response.status shouldBe FORBIDDEN
         }
       }
 
-      "retrieval of obligation data fails" should {
+      "user is not mandated" should {
 
-        "return 500" in {
+        def requestNotMandation: WSResponse = get("/18AA/submit-form", formatSessionMandationStatus(Some("unsupportedMandationStatus")))
+
+        "return 403" in {
 
           AuthStub.stubResponse(OK, mtdVatAuthResponse)
-          VatSubscriptionStub.stubResponse("mandation-status", OK, mandationStatusSuccessJson)
-          VatSubscriptionStub.stubResponse("customer-details", OK, customerInformationSuccessJson)
-          VatObligationsStub.stubResponse(SERVICE_UNAVAILABLE, Json.obj())
+          VatSubscriptionStub.stubResponse("mandation-status", OK, unsupportedMandationStatusJson)
 
-          val response: WSResponse = request
+          val response: WSResponse = requestNotMandation
 
-          response.status shouldBe INTERNAL_SERVER_ERROR
+          response.status shouldBe FORBIDDEN
+
         }
       }
     }
 
-    "user is unauthorised" should {
+    "there is a POST request" when {
 
-      "return 403" in {
+      val validSubmissionModel = SubmitVatReturnModel(
+        box1 = 1000.00,
+        box2 = 1000.00,
+        box3 = 2000.00,
+        box4 = 1000.00,
+        box5 = 1000.00,
+        box6 = 1000.00,
+        box7 = 1000.00,
+        box8 = 1000.00,
+        box9 = 1000.00,
+        flatRateScheme = true,
+        start = LocalDate.parse("2019-01-01"),
+        end = LocalDate.parse("2019-01-04"),
+        due = LocalDate.parse("2019-01-05")
+      )
 
-        AuthStub.stubResponse(OK, otherEnrolmentAuthResponse)
+      def postRequest(data: SubmitVatReturnModel): WSResponse =
+        post("/18AA/submit-form", formatSessionMandationStatus(Some(MandationStatuses.nonMTDfB)))(toFormData(SubmitVatReturnForm.submitVatReturnForm, data))
 
-        val response: WSResponse = request
+      "user is authorised" when {
 
-        response.status shouldBe FORBIDDEN
+        "the data posted is valid" should {
+
+          "return 303" in {
+
+            AuthStub.stubResponse(OK, mtdVatAuthResponse)
+
+            val response: WSResponse = postRequest(validSubmissionModel)
+
+            response.status shouldBe SEE_OTHER
+          }
+        }
+
+        "the data posted is invalid" when {
+
+          val invalidSubmissionModel = SubmitVatReturnModel(
+            box1 = 1000.00,
+            box2 = 1000.00,
+            box3 = 1000.00,
+            box4 = 1000.00,
+            box5 = 1000.00,
+            box6 = 1000.00,
+            box7 = 1000.00,
+            box8 = 1000.00,
+            box9 = 1000.00,
+            flatRateScheme = true,
+            start = LocalDate.parse("2019-01-01"),
+            end = LocalDate.parse("2019-01-04"),
+            due = LocalDate.parse("2019-01-05")
+          )
+
+          "there is a view model in session" should {
+
+            val viewModel: String = Json.toJson(SubmitFormViewModel(
+              hasFlatRateScheme = true,
+              start = LocalDate.parse("2019-01-01"),
+              end = LocalDate.parse("2019-01-04"),
+              due = LocalDate.parse("2019-01-05")
+            )).toString
+
+            def postRequest(data: SubmitVatReturnModel): WSResponse =
+              post("/18AA/submit-form",
+                formatSessionMandationStatus(Some(MandationStatuses.nonMTDfB))
+                  ++ formatViewModel(Some(viewModel)))(toFormData(SubmitVatReturnForm.submitVatReturnForm, data))
+
+            "return 200" in {
+
+              AuthStub.stubResponse(OK, mtdVatAuthResponse)
+
+              VatSubscriptionStub.stubResponse("customer-details", OK, customerInformationSuccessJson)
+
+              val response: WSResponse = postRequest(invalidSubmissionModel)
+
+              response.status shouldBe BAD_REQUEST
+            }
+          }
+
+          "there is not a view model in session" should {
+
+            def postRequest(data: SubmitVatReturnModel): WSResponse =
+              post("/18AA/submit-form",
+                formatSessionMandationStatus(Some(MandationStatuses.nonMTDfB)))(toFormData(SubmitVatReturnForm.submitVatReturnForm, data))
+
+            "return 200" in {
+
+              AuthStub.stubResponse(OK, mtdVatAuthResponse)
+              VatSubscriptionStub.stubResponse("customer-details", OK, customerInformationSuccessJson)
+              VatObligationsStub.stubResponse(OK, vatObligationsSuccessJson)
+
+              val response: WSResponse = postRequest(invalidSubmissionModel)
+
+              response.status shouldBe OK
+            }
+          }
+        }
       }
-    }
 
-    "user is not mandated" should {
+      "user is unauthorised" should {
 
-      def requestNotMandation: WSResponse = get("/18AA/submit-form", formatSessionMandationStatus(Some("unsupportedMandationStatus")))
+        "return 403" in {
 
-      "return 403" in {
+          AuthStub.stubResponse(OK, otherEnrolmentAuthResponse)
 
-        AuthStub.stubResponse(OK, mtdVatAuthResponse)
-        VatSubscriptionStub.stubResponse("mandation-status", OK, unsupportedMandationStatusJson)
+          val response: WSResponse = postRequest(validSubmissionModel)
 
-        val response: WSResponse = requestNotMandation
-
-        response.status shouldBe FORBIDDEN
-
+          response.status shouldBe FORBIDDEN
+        }
       }
+
+      "user is not mandated" should {
+
+        def postRequest(data: SubmitVatReturnModel): WSResponse =
+          post("/18AA/submit-form", formatSessionMandationStatus(Some("unsupportedMandationStatus")))(toFormData(SubmitVatReturnForm.submitVatReturnForm, data))
+
+        "return 403" in {
+
+          AuthStub.stubResponse(OK, mtdVatAuthResponse)
+          VatSubscriptionStub.stubResponse("mandation-status", OK, unsupportedMandationStatusJson)
+
+          val response: WSResponse = postRequest(validSubmissionModel)
+
+          response.status shouldBe FORBIDDEN
+
+        }
+      }
+
     }
   }
 }

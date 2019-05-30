@@ -16,7 +16,6 @@
 
 package models
 
-case class ConfirmSubmissionViewModel(obligations: VatObligation,
-                                      hasFlatRateScheme: Boolean,
-                                      returnDetail: NineBoxModel,
+case class ConfirmSubmissionViewModel(returnDetail: SubmitVatReturnModel,
+                                      periodKey: String,
                                       userName: Option[String])

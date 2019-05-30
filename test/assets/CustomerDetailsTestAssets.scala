@@ -24,8 +24,15 @@ object CustomerDetailsTestAssets {
     firstName =  Some("Duanne"),
     lastName =  Some("MilesAndMiles"),
     tradingName =  Some("childcatcherzInc"),
-    organisationName =  Some("BadGuys"),
-    hasFlatRateScheme = false
+    organisationName =  Some("BadGuys")
+  )
+
+  val customerDetailsWithFRS: CustomerDetails = CustomerDetails(
+    firstName = Some("Test"),
+    lastName = Some("User"),
+    tradingName = Some("ABC Solutions"),
+    organisationName = Some("ABCL"),
+    hasFlatRateScheme = true
   )
 
 }

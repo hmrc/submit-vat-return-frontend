@@ -16,15 +16,16 @@
 
 package forms
 
+
 import javax.inject.{Inject, Singleton}
-import models.NineBoxModel
+import models.SubmitVatReturnModel
 import play.api.data.Forms._
 import play.api.data.format.Formatter
-import play.api.data.{Form, FormError, Mapping}
+import play.api.data.{Form, FormError}
 import play.api.i18n.MessagesApi
 
 @Singleton
-class NineBoxForm @Inject()(implicit messagesApi: MessagesApi) {
+object SubmitVatReturnForm {
 
   private def splitAndCheckCharacterAmount(value: String): Boolean = {
     val splitArray = value.split('.')
@@ -44,15 +45,15 @@ class NineBoxForm @Inject()(implicit messagesApi: MessagesApi) {
       tryOrError({
         () =>
           data.get(key) match {
-            case Some(value) if value.isEmpty => Left(Seq(FormError(key, messagesApi("submit_form.error.emptyError"))))
-            case Some(value) if !value.matches(regex) => Left(Seq(FormError(key, messagesApi("submit_form.error.formatCheckError"))))
-            case Some(value) if !splitAndCheckCharacterAmount(value) => Left(Seq(FormError(key, messagesApi("submit_form.error.tooManyCharacters"))))
+            case Some(value) if value.isEmpty => Left(Seq(FormError(key, "submit_form.error.emptyError")))
+            case Some(value) if !value.matches(regex) => Left(Seq(FormError(key, "submit_form.error.formatCheckError")))
+            case Some(value) if !splitAndCheckCharacterAmount(value) => Left(Seq(FormError(key, "submit_form.error.tooManyCharacters")))
             case Some(value) => Right(BigDecimal(value))
-            case _ => Left(Seq(FormError(key, messagesApi("submit_form.error.emptyError"))))
+            case _ => Left(Seq(FormError(key, "submit_form.error.emptyError")))
           }
       },
         {
-          () => Left(Seq(FormError(key, messagesApi("submit_form.error.emptyError"))))
+          () => Left(Seq(FormError(key, "submit_form.error.emptyError")))
         })
     }
 
@@ -69,15 +70,15 @@ class NineBoxForm @Inject()(implicit messagesApi: MessagesApi) {
           val firstValue: BigDecimal = returnOrError(data.get("box1"))
           val secondValue: BigDecimal = returnOrError(data.get("box2"))
           data.get("box3") match {
-            case Some(value) if value.isEmpty => Left(Seq(FormError(key, messagesApi("submit_form.error.emptyError"))))
-            case Some(value) if !value.matches(regex) => Left(Seq(FormError(key, messagesApi("submit_form.error.formatCheckError"))))
-            case Some(value) if !splitAndCheckCharacterAmount(value) => Left(Seq(FormError(key, messagesApi("submit_form.error.tooManyCharacters"))))
+            case Some(value) if value.isEmpty => Left(Seq(FormError(key, "submit_form.error.emptyError")))
+            case Some(value) if !value.matches(regex) => Left(Seq(FormError(key, "submit_form.error.formatCheckError")))
+            case Some(value) if !splitAndCheckCharacterAmount(value) => Left(Seq(FormError(key, "submit_form.error.tooManyCharacters")))
             case Some(value) if firstValue + secondValue == BigDecimal(value) => Right(BigDecimal(value))
-            case _ => Left(Seq(FormError(key, messagesApi("submit_form.error.box3Error"))))
+            case _ => Left(Seq(FormError(key, "submit_form.error.box3Error")))
           }
       },
         {
-          () => Left(Seq(FormError(key, messagesApi("submit_form.error.box3Error"))))
+          () => Left(Seq(FormError(key, "submit_form.error.box3Error")))
         })
     }
 
@@ -92,10 +93,10 @@ class NineBoxForm @Inject()(implicit messagesApi: MessagesApi) {
       val regex: String = "[-.0-9]+"
       valueOption match {
         case Some(value) => Seq(
-          if (value.isEmpty) Some(FormError(key, messagesApi("submit_form.error.emptyError"))) else None,
-          if (!value.matches(regex)) Some(FormError(key, messagesApi("submit_form.error.formatCheckError"))) else None,
-          if (value.contains("-")) Some(FormError(key, messagesApi("submit_form.error.negativeError"))) else None,
-          if (!splitAndCheckCharacterAmount(value)) Some(FormError(key, messagesApi("submit_form.error.negativeError"))) else None
+          if (value.isEmpty) Some(FormError(key, "submit_form.error.emptyError")) else None,
+          if (!value.matches(regex)) Some(FormError(key, "submit_form.error.formatCheckError")) else None,
+          if (value.contains("-")) Some(FormError(key, "submit_form.error.negativeError")) else None,
+          if (!splitAndCheckCharacterAmount(value)) Some(FormError(key, "submit_form.error.negativeError")) else None
         ).flatten
       }
     }
@@ -115,12 +116,12 @@ class NineBoxForm @Inject()(implicit messagesApi: MessagesApi) {
           } else {
             box5Value match {
               case Some(value) if (firstValue - secondValue).abs == BigDecimal(value) => Right(BigDecimal(value))
-              case _ => Left(Seq(FormError(key, messagesApi("submit_form.error.box5Error"))))
+              case _ => Left(Seq(FormError(key, "submit_form.error.box5Error")))
             }
           }
         },
         {
-          () => Left(Seq(FormError(key, messagesApi("submit_form.error.box5Error"))))
+          () => Left(Seq(FormError(key, "submit_form.error.box5Error")))
         }
       )
     }
@@ -144,7 +145,7 @@ class NineBoxForm @Inject()(implicit messagesApi: MessagesApi) {
     }
   }
 
-  val nineBoxForm: Form[NineBoxModel] = Form(
+  val submitVatReturnForm: Form[SubmitVatReturnModel] = Form(
     mapping(
       "box1" -> of(boxFormat),
       "box2" -> of(boxFormat),
@@ -154,8 +155,11 @@ class NineBoxForm @Inject()(implicit messagesApi: MessagesApi) {
       "box6" -> of(boxFormat),
       "box7" -> of(boxFormat),
       "box8" -> of(boxFormat),
-      "box9" -> of(boxFormat)
-    )(NineBoxModel.apply)(NineBoxModel.unapply)
+      "box9" -> of(boxFormat),
+      "flatRateScheme" -> boolean,
+      "start" -> localDate,
+      "end" -> localDate,
+      "due" -> localDate
+    )(SubmitVatReturnModel.apply)(SubmitVatReturnModel.unapply)
   )
-
 }

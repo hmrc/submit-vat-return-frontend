@@ -1,16 +1,16 @@
 # microservice specific routes
 
 # Assets
-GET         /assets/*file           controllers.Assets.at(path="/public", file)
+GET         /assets/*file                 controllers.Assets.at(path="/public", file)
 
 # Pages
 
-GET        /hello-world             controllers.HelloWorldController.helloWorld
+GET        /hello-world                   controllers.HelloWorldController.helloWorld
 
-GET        /:periodKey/submit-form  controllers.SubmitFormController.show(periodKey: String)
-POST       /:periodKey/submit-form  controllers.SubmitFormController.submit(frs: Boolean, obs: String, periodKey: String, name: Option[String])
+GET        /:periodKey/submit-form        controllers.SubmitFormController.show(periodKey: String)
+POST       /:periodKey/submit-form        controllers.SubmitFormController.submit(periodKey: String)
 
 GET        /submission-confirmation       controllers.ConfirmationController.show
 
-GET        /:periodKey/confirm-submission controllers.ConfirmSubmissionController.show(frs:Boolean, obs: String, nbm: String, name: Option[String], periodKey: String)
+GET        /:periodKey/confirm-submission controllers.ConfirmSubmissionController.show(periodKey: String)
 POST       /:periodKey/confirm-submission controllers.ConfirmSubmissionController.submit(periodKey: String)

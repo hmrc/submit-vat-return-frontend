@@ -16,6 +16,8 @@
 
 package models
 
+import java.time.LocalDate
+
 import base.BaseSpec
 import play.api.libs.json.{JsValue, Json}
 
@@ -30,7 +32,11 @@ class NineBoxModelSpec extends BaseSpec {
     "box6" -> "1000",
     "box7" -> "1000",
     "box8" -> "1000",
-    "box9" -> "1000"
+    "box9" -> "1000",
+    "flatRateScheme" -> true,
+    "start" -> LocalDate.parse("2018-01-01").toString,
+    "end" -> LocalDate.parse("2018-01-04").toString,
+    "due" -> LocalDate.parse("2018-01-05").toString
   )
 
   val validJsonBigInt: JsValue = Json.obj(
@@ -42,16 +48,34 @@ class NineBoxModelSpec extends BaseSpec {
     "box6" -> 1000,
     "box7" -> 1000,
     "box8" -> 1000,
-    "box9" -> 1000
+    "box9" -> 1000,
+    "flatRateScheme" -> true,
+    "start" -> LocalDate.parse("2018-01-01").toString,
+    "end" -> LocalDate.parse("2018-01-04").toString,
+    "due" -> LocalDate.parse("2018-01-05").toString
   )
 
-  val validModel = NineBoxModel(1000, 1000, 1000, 1000, 1000, 1000, 1000, 1000, 1000)
+  val validModel = SubmitVatReturnModel(
+    1000,
+    1000,
+    1000,
+    1000,
+    1000,
+    1000,
+    1000,
+    1000,
+    1000,
+    flatRateScheme = true,
+    LocalDate.parse("2018-01-01"),
+    LocalDate.parse("2018-01-04"),
+    LocalDate.parse("2018-01-05")
+  )
 
-  "NineBoxModel" should {
+  "SubmitVatReturnModel" should {
     "correctly parse" when {
       "provided with valid json" in {
-        validJsonString.as[NineBoxModel] shouldBe validModel
-        validJsonBigInt.as[NineBoxModel] shouldBe validModel
+        validJsonString.as[SubmitVatReturnModel] shouldBe validModel
+        validJsonBigInt.as[SubmitVatReturnModel] shouldBe validModel
       }
     }
     "correctly parse into json" in {

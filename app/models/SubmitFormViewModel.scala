@@ -16,19 +16,15 @@
 
 package models
 
-import play.api.libs.json.{Format, Json}
+import java.time.LocalDate
 
-case class NineBoxModel(box1: BigDecimal,
-                        box2: BigDecimal,
-                        box3: BigDecimal,
-                        box4: BigDecimal,
-                        box5: BigDecimal,
-                        box6: BigDecimal,
-                        box7: BigDecimal,
-                        box8: BigDecimal,
-                        box9: BigDecimal
-                       )
+import play.api.libs.json.{Json, OFormat}
 
-object NineBoxModel {
-  implicit val format: Format[NineBoxModel] = Json.format[NineBoxModel]
+case class SubmitFormViewModel(hasFlatRateScheme: Boolean,
+                               start: LocalDate,
+                               end: LocalDate,
+                               due: LocalDate)
+
+object SubmitFormViewModel {
+  implicit val format: OFormat[SubmitFormViewModel] = Json.format[SubmitFormViewModel]
 }

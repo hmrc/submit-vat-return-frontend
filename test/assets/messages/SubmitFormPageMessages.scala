@@ -40,7 +40,8 @@ object SubmitFormPageMessages {
   val additionalInformation = "Additional information"
 
   val box6 = "Box 6"
-  val box6Text = "Total value of sales and other supplies, excluding VAT"
+  val box6FlatRateSchemeText = "Total value of sales and other supplies, including VAT"
+  val box6NonFlatRateSchemeText = "Total value of sales and other supplies, excluding VAT"
 
   val box7 = "Box 7"
   val box7Text = "Total value of purchases and other expenses, excluding VAT"
