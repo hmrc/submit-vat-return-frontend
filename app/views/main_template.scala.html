@@ -23,8 +23,8 @@
         bodyClasses: Option[String] = None,
         mainClass: Option[String] = None,
         showSignOut: Boolean = true,
-        feedbackOnSignOut: Boolean = true)(mainContent: Html)(implicit request : Request[_], messages: Messages)
-        scriptElem: Option[Html] = None)(mainContent: Html)(implicit request: Request[_], messages: Messages)
+        feedbackOnSignOut: Boolean = true,
+        scriptElem: Option[Html] = None)(mainContent: Html)(implicit request : Request[_], messages: Messages)
 
 @import uk.gov.hmrc.play.views.html.layouts
 
@@ -47,6 +47,6 @@
   mainContent = layouts.article(mainContent),
   serviceInfoContent = serviceInfoContent,
   showSignOut = showSignOut,
-  feedbackOnSignOut = feedbackOnSignOut
+  feedbackOnSignOut = feedbackOnSignOut,
   scriptElem = scriptElem
 )

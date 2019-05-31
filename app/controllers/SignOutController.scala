@@ -26,7 +26,7 @@ class SignOutController @Inject()(val messagesApi: MessagesApi,
                                   implicit val appConfig: AppConfig
                                  ) extends FrontendController with I18nSupport {
 
-  def signOut : Action[AnyContent] = Action { implicit request =>
+  def signOut(feedbackOnSignOut: Boolean) : Action[AnyContent] = Action { implicit request =>
     val redirectUrl: String =  appConfig.signOutUrl
     Redirect(redirectUrl)
   }

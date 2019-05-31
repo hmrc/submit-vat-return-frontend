@@ -24,7 +24,7 @@
   contentHeader: Option[Html] = None,
   mainContent: Html = HtmlFormat.empty,
   serviceInfoContent: Html = HtmlFormat.empty,
-  feedbackOnSignOut: Boolean = true)(implicit request: Request[_], messages: Messages),
+  feedbackOnSignOut: Boolean = true,
   showSignOut: Boolean = true,
   scriptElem: Option[Html] = None)(implicit request: Request[_], messages: Messages)
 
@@ -35,6 +35,8 @@
 @linkElement = {
     <link rel="stylesheet" type="text/css" href='@routes.Assets.at("css/submitVat.css")'>
 }
+
+@scriptElement = {}
 
 @head = {
     @uiLayouts.head(
@@ -47,7 +49,7 @@
     @if(showSignOut) {
         <li>
            <a id="sign-out" href="@routes.SignOutController.signOut(feedbackOnSignOut)">
-               data-journey-click="primary-navigation:Click:Signout">@messages("base.signOut")
+               @messages("base.sign-out")
            </a>
         </li>
     }

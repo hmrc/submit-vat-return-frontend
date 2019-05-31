@@ -45,8 +45,7 @@ trait AppConfig extends ServicesConfig {
   val vatSummaryUrl: String
   val returnDeadlinesUrl: String
   val signOutUrl: String
-  val feedbackUrl: String
-  def feedbackUrl(redirect: String): String
+  val feedbackSurveyUrl: String
 
   def vatReturnsUrl(vrn: String): String
 }
@@ -88,13 +87,14 @@ class FrontendAppConfig @Inject()(val runModeConfiguration: Configuration, envir
   override lazy val signInUrl: String = s"$signInBaseUrl?continue=$signInContinueUrl&origin=$signInOrigin"
 
   //Sign-out
-  private lazy val feedbackBaseUrl = getString(ConfigKeys.feedbackHost) + getString(ConfigKeys.feedbackUrl)
+  private lazy val feedbackSurveyBaseUrl = getString(ConfigKeys.feedbackDSurveyHost) + getString(ConfigKeys.feedbackSurveyUrl)
 
-  override lazy val feedbackUrl = s"$feedbackBaseUrl/$contactFormServiceIdentifier"
+  override lazy val feedbackSurveyUrl = s"$feedbackSurveyBaseUrl/?origin=$contactFormServiceIdentifier"
+
 
   private lazy val governmentGatewayHost: String = getString(ConfigKeys.governmentGatewayHost)
 
-  override lazy val signOutUrl = s"$governmentGatewayHost/gg/sign-out?continue=$feedbackUrl"
+  override lazy val signOutUrl = s"$governmentGatewayHost/gg/sign-out?continue=$feedbackSurveyUrl"
 
   override lazy val vatSummaryUrl: String = getString(ConfigKeys.vatSummaryHost) + getString(ConfigKeys.vatSummaryUrl)
   override lazy val returnDeadlinesUrl: String = getString(ConfigKeys.viewVatReturnsHost) + getString(ConfigKeys.returnDeadlinesUrl)

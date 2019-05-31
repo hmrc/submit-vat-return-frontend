@@ -35,6 +35,8 @@ class MockConfig(implicit val runModeConfiguration: Configuration) extends AppCo
   override val whitelistExcludedPaths: Seq[Call] = Nil
   override val shutterPage: String = "https://www.tax.service.gov.uk/shutter/vat-through-software"
   override val signInUrl: String = "sign-in-url"
+  override val signOutUrl: String = "/some-gg-signout-url"
+  override val feedbackSurveyUrl: String = "/some-survey-url"
   override val agentClientLookupStartUrl: String => String = uri => s"agent-client-lookup-start-url/$uri"
   override val agentClientUnauthorisedUrl: String => String = uri => s"agent-client-unauthorised-url/$uri"
   override val govUkGuidanceMtdVat: String = "mtd-vat"
