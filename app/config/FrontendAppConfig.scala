@@ -87,7 +87,7 @@ class FrontendAppConfig @Inject()(val runModeConfiguration: Configuration, envir
   override lazy val signInUrl: String = s"$signInBaseUrl?continue=$signInContinueUrl&origin=$signInOrigin"
 
   //Sign-out
-  private lazy val feedbackSurveyBaseUrl = getString(ConfigKeys.feedbackDSurveyHost) + getString(ConfigKeys.feedbackSurveyUrl)
+  private lazy val feedbackSurveyBaseUrl = getString(ConfigKeys.feedbackSurveyHost) + getString(ConfigKeys.feedbackSurveyUrl)
 
   override lazy val feedbackSurveyUrl = s"$feedbackSurveyBaseUrl/$contactFormServiceIdentifier"
 
