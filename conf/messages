@@ -1,3 +1,4 @@
+base.sign-out = Sign out
 common.service-name = Business tax account
 common.fullStop = .
 common.signOut = Sign out
@@ -10,6 +11,7 @@ common.errorSummary.heading = You have one or more errors
 
 error.required = Please enter a value
 error.summary.title = There is a problem
+
 
 session_expired.title = For your security, this service has been reset
 session_expired.heading = For your security, this service has been reset
