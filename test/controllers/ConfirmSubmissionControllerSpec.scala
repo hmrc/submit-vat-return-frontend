@@ -22,7 +22,7 @@ import assets.CustomerDetailsTestAssets._
 import base.BaseSpec
 import common.{MandationStatuses, SessionKeys}
 import connectors.httpParsers.ResponseHttpParsers.HttpGetResult
-import mocks.service.{MockVatReturnsService, MockVatSubscriptionService}
+import mocks.service.{MockDateService, MockVatReturnsService, MockVatSubscriptionService}
 import mocks.{MockAuth, MockMandationPredicate}
 import models.auth.User
 import models.{CustomerDetails, SubmitVatReturnModel}
@@ -36,7 +36,12 @@ import play.api.test.Helpers._
 
 import scala.concurrent.Future
 
-class ConfirmSubmissionControllerSpec extends BaseSpec with MockAuth with MockMandationPredicate with MockVatSubscriptionService with MockVatReturnsService {
+class ConfirmSubmissionControllerSpec extends BaseSpec
+  with MockAuth
+  with MockMandationPredicate
+  with MockVatSubscriptionService
+  with MockVatReturnsService
+  with MockDateService {
 
   object TestConfirmSubmissionController extends ConfirmSubmissionController(
     messagesApi,
@@ -46,7 +51,8 @@ class ConfirmSubmissionControllerSpec extends BaseSpec with MockAuth with MockMa
     mockAuthPredicate,
     mockVatReturnsService,
     ec,
-    mockAppConfig
+    mockAppConfig,
+    mockDateService
   )
 
   "ConfirmSubmissionController .show" when {
@@ -178,39 +184,62 @@ class ConfirmSubmissionControllerSpec extends BaseSpec with MockAuth with MockMa
           "due" -> "2019-01-02"
         ).toString()
 
-        "submission to backend is successful" should {
+        "obligation end date is in the past" when {
 
-          lazy val result: Future[Result] = TestConfirmSubmissionController.submit("18AA")(fakeRequest.withSession(
-            "mtdNineBoxReturnData" -> nineBoxData,
-            SessionKeys.mandationStatus -> MandationStatuses.nonMTDfB
-          ))
+          "submission to backend is successful" should {
 
-          "return 303" in {
-            mockAuthorise(mtdVatAuthorisedResponse)
-            mockVatReturnsService(Future.successful(Right(SubmissionSuccessModel("12345"))))
-            status(result) shouldBe Status.SEE_OTHER
+            lazy val result: Future[Result] = TestConfirmSubmissionController.submit("18AA")(fakeRequest.withSession(
+              "mtdNineBoxReturnData" -> nineBoxData,
+              SessionKeys.mandationStatus -> MandationStatuses.nonMTDfB
+            ))
+
+            "return 303" in {
+              mockAuthorise(mtdVatAuthorisedResponse)
+              mockDateHasPassed(response = true)
+              mockVatReturnsService(Future.successful(Right(SubmissionSuccessModel("12345"))))
+              status(result) shouldBe Status.SEE_OTHER
+            }
+
+            s"redirect to ${controllers.routes.ConfirmationController.show()}" in {
+              redirectLocation(result) shouldBe Some(controllers.routes.ConfirmationController.show().url)
+            }
           }
 
-          s"redirect to ${controllers.routes.ConfirmationController.show()}" in {
-            redirectLocation(result) shouldBe Some(controllers.routes.ConfirmationController.show().url)
+          "submission to backend is unsuccessful" should {
+
+            lazy val result: Future[Result] = TestConfirmSubmissionController.submit("18AA")(fakeRequest.withSession(
+              "mtdNineBoxReturnData" -> nineBoxData,
+              SessionKeys.mandationStatus -> MandationStatuses.nonMTDfB
+            ))
+
+            "return 500" in {
+              mockAuthorise(mtdVatAuthorisedResponse)
+              mockDateHasPassed(response = true)
+              mockVatReturnsService(Future.successful(Left(UnexpectedJsonFormat)))
+              status(result) shouldBe Status.INTERNAL_SERVER_ERROR
+            }
+
+            "show ISE page" in {
+              Jsoup.parse(bodyOf(result)).title() shouldBe "Sorry, we are experiencing technical difficulties - 500"
+            }
           }
         }
 
-        "submission to backend is unsuccessful" should {
+        "obligation end date is in the future" should {
 
           lazy val result: Future[Result] = TestConfirmSubmissionController.submit("18AA")(fakeRequest.withSession(
             "mtdNineBoxReturnData" -> nineBoxData,
             SessionKeys.mandationStatus -> MandationStatuses.nonMTDfB
           ))
 
-          "return 500" in {
+          "return 400" in {
             mockAuthorise(mtdVatAuthorisedResponse)
-            mockVatReturnsService(Future.successful(Left(UnexpectedJsonFormat)))
-            status(result) shouldBe Status.INTERNAL_SERVER_ERROR
+            mockDateHasPassed(response = false)
+            status(result) shouldBe Status.BAD_REQUEST
           }
 
-          "show ISE page" in {
-            Jsoup.parse(bodyOf(result)).title() shouldBe "Sorry, we are experiencing technical difficulties - 500"
+          "render generic Bad Request page" in {
+            Jsoup.parse(bodyOf(result)).title() shouldBe "Bad request - 400"
           }
         }
       }

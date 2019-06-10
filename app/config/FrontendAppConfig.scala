@@ -17,12 +17,12 @@
 package config
 
 import java.util.Base64
-
 import javax.inject.{Inject, Singleton}
 import play.api.{Configuration, Environment}
 import play.api.Mode.Mode
 import uk.gov.hmrc.play.config.ServicesConfig
 import common.ConfigKeys
+import config.features.Features
 import play.api.mvc.Call
 import uk.gov.hmrc.play.binders.ContinueUrl
 
@@ -46,6 +46,8 @@ trait AppConfig extends ServicesConfig {
   val returnDeadlinesUrl: String
   val signOutUrl: String
   val feedbackSurveyUrl: String
+  val features: Features
+  val staticDateValue: String
 
   def vatReturnsUrl(vrn: String): String
 }
@@ -113,4 +115,8 @@ class FrontendAppConfig @Inject()(val runModeConfiguration: Configuration, envir
     s"?redirectUrl=${agentClientLookupRedirectUrl(uri)}"
 
   override def vatReturnsUrl(vrn: String): String = s"${baseUrl(ConfigKeys.vatReturnsBase)}/${getString(ConfigKeys.vatReturnsUrl)}/$vrn"
+
+  override val features = new Features(runModeConfiguration)
+  override lazy val staticDateValue: String = getString(ConfigKeys.staticDateValue)
+
 }

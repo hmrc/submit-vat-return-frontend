@@ -17,6 +17,7 @@
 package mocks
 
 import config.AppConfig
+import config.features.Features
 import play.api.Mode.Mode
 import play.api.mvc.Call
 import play.api.{Configuration, Mode}
@@ -44,4 +45,6 @@ class MockConfig(implicit val runModeConfiguration: Configuration) extends AppCo
   override val vatSummaryUrl: String = "vat-summary-frontend-url"
   override val returnDeadlinesUrl: String = "/return-deadlines"
   override def vatReturnsUrl(vrn: String): String = s"url/$vrn"
+  override val features: Features = new Features(runModeConfiguration)
+  override val staticDateValue: String = "2018-05-01"
 }

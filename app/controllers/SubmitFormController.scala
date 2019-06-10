@@ -31,7 +31,7 @@ import play.api.Logger
 import play.api.data.Form
 import play.api.libs.json.Json
 import play.api.mvc.{Action, AnyContent}
-import services.{VatObligationsService, VatSubscriptionService}
+import services.{DateService, VatObligationsService, VatSubscriptionService}
 import uk.gov.hmrc.http.HeaderCarrier
 import uk.gov.hmrc.play.bootstrap.controller.FrontendController
 
@@ -44,7 +44,8 @@ class SubmitFormController @Inject()(val messagesApi: MessagesApi,
                                      val mandationStatusCheck: MandationStatusPredicate,
                                      val errorHandler: ErrorHandler,
                                      authPredicate: AuthPredicate,
-                                     implicit val appConfig: AppConfig) extends FrontendController with I18nSupport {
+                                     implicit val appConfig: AppConfig,
+                                     val dateService: DateService) extends FrontendController with I18nSupport {
 
   def show(periodKey: String): Action[AnyContent] = (authPredicate andThen mandationStatusCheck).async { implicit user =>
 
@@ -59,7 +60,7 @@ class SubmitFormController @Inject()(val messagesApi: MessagesApi,
     val sessionData = Json.parse(model).as[SubmitVatReturnModel]
 
     vatSubscriptionService.getCustomerDetails(user.vrn) map {
-      case Right(customerDetails) => {
+      case Right(customerDetails) =>
         Ok(views.html.submit_form(
           periodKey,
           customerDetails.clientName,
@@ -68,8 +69,7 @@ class SubmitFormController @Inject()(val messagesApi: MessagesApi,
           SubmitVatReturnForm.submitVatReturnForm.fill(sessionData),
           isAgent = user.isAgent)
         )
-      }
-      case _ => {
+      case _ =>
         Ok(views.html.submit_form(
           periodKey,
           None,
@@ -78,7 +78,6 @@ class SubmitFormController @Inject()(val messagesApi: MessagesApi,
           SubmitVatReturnForm.submitVatReturnForm.fill(sessionData),
           isAgent = user.isAgent)
         )
-      }
     }
   }
 
@@ -95,28 +94,31 @@ class SubmitFormController @Inject()(val messagesApi: MessagesApi,
           val obligationToSubmit: Seq[VatObligation] = obs.obligations.filter(_.periodKey == periodKey)
 
           obligationToSubmit.length match {
-            case 1 => {
+            case 1 =>
+              if(dateService.dateHasPassed(obligationToSubmit.head.end)) {
+                val viewModel = SubmitFormViewModel(
+                  customerDetails.hasFlatRateScheme,
+                  obligationToSubmit.head.start,
+                  obligationToSubmit.head.end,
+                  obligationToSubmit.head.due
+                )
 
-              val viewModel = SubmitFormViewModel(
-                customerDetails.hasFlatRateScheme,
-                obligationToSubmit.head.start,
-                obligationToSubmit.head.end,
-                obligationToSubmit.head.due
-              )
+                Ok(views.html.submit_form(
+                  periodKey,
+                  customerDetails.clientName,
+                  customerDetails.hasFlatRateScheme,
+                  obligationToSubmit.head,
+                  form,
+                  user.isAgent
+                )).addingToSession(SessionKeys.viewModel -> Json.toJson(viewModel).toString())
 
-              Ok(views.html.submit_form(
-                periodKey,
-                customerDetails.clientName,
-                customerDetails.hasFlatRateScheme,
-                obligationToSubmit.head,
-                form,
-                user.isAgent
-              )).addingToSession(SessionKeys.viewModel -> Json.toJson(viewModel).toString())
-            }
-            case _ => {
+              } else {
+                Logger.debug(s"[SubmitFormController][renderViewWithoutSessionData] Obligation end date for period $periodKey has not yet passed.")
+                errorHandler.showBadRequestError
+              }
+            case _ =>
               Logger.warn("[SubmitFormController][Show]: Length of matched obligations to period key is not equal to 1")
               Redirect(appConfig.returnDeadlinesUrl)
-            }
           }
         }
         case (_, _) => errorHandler.showInternalServerError
@@ -130,7 +132,7 @@ class SubmitFormController @Inject()(val messagesApi: MessagesApi,
       failure => {
 
         user.session.get(SessionKeys.viewModel) match {
-          case Some(model) => {
+          case Some(model) =>
 
             val sessionData = Json.parse(model).as[SubmitFormViewModel]
 
@@ -156,16 +158,20 @@ class SubmitFormController @Inject()(val messagesApi: MessagesApi,
                 )
               }
             }
-          }
           case _ => renderViewWithoutSessionData(periodKey, failure)
         }
       },
       success => {
-        Future.successful(
-          Redirect(controllers.routes.ConfirmSubmissionController.show(periodKey))
-            .addingToSession(SessionKeys.returnData -> Json.toJson(success).toString())
-            .removingFromSession(SessionKeys.viewModel)
-        )
+        if(dateService.dateHasPassed(success.end)) {
+          Future.successful(
+            Redirect(controllers.routes.ConfirmSubmissionController.show(periodKey))
+              .addingToSession(SessionKeys.returnData -> Json.toJson(success).toString())
+              .removingFromSession(SessionKeys.viewModel)
+          )
+        } else {
+          Logger.debug(s"[SubmitFormController][submit] Obligation end date for period $periodKey has not yet passed.")
+          Future.successful(errorHandler.showBadRequestError)
+        }
       }
     )
   }
