@@ -46,7 +46,7 @@ val compile = Seq(
 )
 
 val test = Seq(
-  "uk.gov.hmrc" %% "hmrctest" % "3.8.0-play-25",
+  "uk.gov.hmrc" %% "hmrctest" % "3.9.0-play-25",
   "org.scalatest" %% "scalatest" % "3.0.5",
   "org.scalatestplus.play" %% "scalatestplus-play" % "2.0.1",
   "org.pegdown" % "pegdown" % "1.6.0",
