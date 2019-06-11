@@ -40,18 +40,36 @@ class SubmitFormPageSpec extends BaseISpec {
 
       "user is authorised" when {
 
-        "retrieval of customer details and obligation data is successful" should {
+        "retrieval of customer details and obligation data is successful" when {
 
-          "return 200" in {
+          "matching obligation end date is in the past" should {
 
-            AuthStub.stubResponse(OK, mtdVatAuthResponse)
-            VatSubscriptionStub.stubResponse("customer-details", OK, customerInformationSuccessJson)
-            VatSubscriptionStub.stubResponse("mandation-status", OK, mandationStatusSuccessJson)
-            VatObligationsStub.stubResponse(OK, vatObligationsSuccessJson)
+            "return 200" in {
 
-            val response: WSResponse = request
+              AuthStub.stubResponse(OK, mtdVatAuthResponse)
+              VatSubscriptionStub.stubResponse("customer-details", OK, customerInformationSuccessJson)
+              VatSubscriptionStub.stubResponse("mandation-status", OK, mandationStatusSuccessJson)
+              VatObligationsStub.stubResponse(OK, vatObligationsSuccessJson(endDate = LocalDate.now().minusDays(1)))
 
-            response.status shouldBe OK
+              val response: WSResponse = request
+
+              response.status shouldBe OK
+            }
+          }
+
+          "matching obligation end date is in the future" should {
+
+            "return 400" in {
+
+              AuthStub.stubResponse(OK, mtdVatAuthResponse)
+              VatSubscriptionStub.stubResponse("customer-details", OK, customerInformationSuccessJson)
+              VatSubscriptionStub.stubResponse("mandation-status", OK, mandationStatusSuccessJson)
+              VatObligationsStub.stubResponse(OK, vatObligationsSuccessJson(endDate = LocalDate.now().plusDays(1)))
+
+              val response: WSResponse = request
+
+              response.status shouldBe BAD_REQUEST
+            }
           }
         }
 
@@ -61,7 +79,7 @@ class SubmitFormPageSpec extends BaseISpec {
 
             AuthStub.stubResponse(OK, mtdVatAuthResponse)
             VatSubscriptionStub.stubResponse("mandation-status", OK, mandationStatusSuccessJson)
-            VatObligationsStub.stubResponse(OK, vatObligationsSuccessJson)
+            VatObligationsStub.stubResponse(OK, vatObligationsSuccessJson())
             VatSubscriptionStub.stubResponse("customer-details", SERVICE_UNAVAILABLE, Json.obj())
 
             val response: WSResponse = request
@@ -209,7 +227,7 @@ class SubmitFormPageSpec extends BaseISpec {
 
               AuthStub.stubResponse(OK, mtdVatAuthResponse)
               VatSubscriptionStub.stubResponse("customer-details", OK, customerInformationSuccessJson)
-              VatObligationsStub.stubResponse(OK, vatObligationsSuccessJson)
+              VatObligationsStub.stubResponse(OK, vatObligationsSuccessJson())
 
               val response: WSResponse = postRequest(invalidSubmissionModel)
 

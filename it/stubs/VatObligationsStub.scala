@@ -25,13 +25,19 @@ import stubs.VatSubscriptionStub.stubGet
 
 object VatObligationsStub {
 
-  val vatObligationsSuccessJson: JsObject = Json.obj(
+  def vatObligationsSuccessJson(endDate: LocalDate = LocalDate.now().minusDays(1)): JsObject = Json.obj(
     "obligations" -> Json.arr(
+      Json.obj(
+        "start" -> LocalDate.now(),
+        "end" -> endDate,
+        "due" -> LocalDate.now(),
+        "periodKey" -> "18AA"
+      ),
       Json.obj(
         "start" -> LocalDate.now(),
         "end" -> LocalDate.now(),
         "due" -> LocalDate.now(),
-        "periodKey" -> "18AA"
+        "periodKey" -> "17AA"
       )
     )
   )

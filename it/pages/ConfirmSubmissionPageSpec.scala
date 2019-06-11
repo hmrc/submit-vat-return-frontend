@@ -16,6 +16,8 @@
 
 package pages
 
+import java.time.LocalDate
+
 import base.BaseISpec
 import org.scalatest.GivenWhenThen
 import play.api.http.Status._
@@ -28,7 +30,7 @@ class ConfirmSubmissionPageSpec extends BaseISpec with GivenWhenThen {
 
   "Calling /:periodKey/confirm-submission" when {
 
-    val nineBoxSessionData = Json.obj(
+    def nineBoxSessionData(endDate: String): String = Json.obj(
       "box1" -> "10.01",
       "box2" -> "10.02",
       "box3" -> "10.03",
@@ -40,12 +42,12 @@ class ConfirmSubmissionPageSpec extends BaseISpec with GivenWhenThen {
       "box9" -> "10.09",
       "flatRateScheme" -> false,
       "start" -> "2018-01-01",
-      "end" -> "2018-01-31",
+      "end" -> endDate,
       "due" -> "2018-03-07"
     ).toString()
 
     val mandationStatusSessionValue = Map("mtdVatMandationStatus" -> "Non MTDfB")
-    val nineBoxSessionValue = Map("mtdNineBoxReturnData" -> nineBoxSessionData)
+    val nineBoxSessionValue = Map("mtdNineBoxReturnData" -> nineBoxSessionData(LocalDate.now().minusDays(1).toString))
     val fullSessionValues = mandationStatusSessionValue ++ nineBoxSessionValue
 
     def request(sessionValues: Map[String, String] = Map.empty): WSResponse = postJson("/18AA/confirm-submission", sessionValues)
@@ -71,46 +73,66 @@ class ConfirmSubmissionPageSpec extends BaseISpec with GivenWhenThen {
           """.stripMargin
         )
 
-        "backend submission returns 200" should {
+        "matching obligation end date is in the past" when {
 
-          "redirect to confirmation page" in {
+          "backend submission returns 200" should {
 
-            When("The user is authenticated and authorised")
-            AuthStub.stubResponse(OK, mtdVatAuthResponse)
+            "redirect to confirmation page" in {
 
-            And("The POST to vat-returns is successful")
-            VatReturnsStub.stubResponse("999999999")(OK, Json.obj("formBundleNumber" -> "12345"))
+              When("The user is authenticated and authorised")
+              AuthStub.stubResponse(OK, mtdVatAuthResponse)
 
-            val response: WSResponse = request(fullSessionValues)
+              And("The POST to vat-returns is successful")
+              VatReturnsStub.stubResponse("999999999")(OK, Json.obj("formBundleNumber" -> "12345"))
 
-            And("The backend submission was made with the correct nine box value mappings and headers")
-            VatReturnsStub.verifySubmission("999999999", postRequestJsonBody)
+              val response: WSResponse = request(fullSessionValues)
 
-            Then("The response should be 303")
-            response.status shouldBe SEE_OTHER
+              And("The backend submission was made with the correct nine box value mappings and headers")
+              VatReturnsStub.verifySubmission("999999999", postRequestJsonBody)
 
-            And("The redirect location is correct")
-            response.header("Location") shouldBe Some(controllers.routes.ConfirmationController.show().url)
+              Then("The response should be 303")
+              response.status shouldBe SEE_OTHER
+
+              And("The redirect location is correct")
+              response.header("Location") shouldBe Some(controllers.routes.ConfirmationController.show().url)
+            }
+          }
+
+          "backend submission returns an error" should {
+
+            "return ISE" in {
+
+              When("The user is authenticated and authorised")
+              AuthStub.stubResponse(OK, mtdVatAuthResponse)
+
+              And("The POST to vat-returns is unsuccessful")
+              VatReturnsStub.stubResponse("999999999")(SERVICE_UNAVAILABLE, Json.obj("oh no" -> "oh yes"))
+
+              val response: WSResponse = request(fullSessionValues)
+
+              And("The backend submission was made with the correct nine box values")
+              VatReturnsStub.verifySubmission("999999999", postRequestJsonBody)
+
+              Then("The response should be 500")
+              response.status shouldBe INTERNAL_SERVER_ERROR
+            }
           }
         }
 
-        "backend submission returns an error" should {
+        "matching obligation end date is in the future" should {
 
-          "return ISE" in {
+          "return 400" in {
 
             When("The user is authenticated and authorised")
             AuthStub.stubResponse(OK, mtdVatAuthResponse)
 
-            And("The POST to vat-returns is unsuccessful")
-            VatReturnsStub.stubResponse("999999999")(SERVICE_UNAVAILABLE, Json.obj("oh no" -> "oh yes"))
+            val response: WSResponse = request(
+              Map("mtdNineBoxReturnData" -> nineBoxSessionData(LocalDate.now().plusDays(1).toString)) ++
+              mandationStatusSessionValue
+            )
 
-            val response: WSResponse = request(fullSessionValues)
-
-            And("The backend submission was made with the correct nine box values")
-            VatReturnsStub.verifySubmission("999999999", postRequestJsonBody)
-
-            Then("The response should be 500")
-            response.status shouldBe INTERNAL_SERVER_ERROR
+            Then("The response should be 400")
+            response.status shouldBe BAD_REQUEST
           }
         }
       }
