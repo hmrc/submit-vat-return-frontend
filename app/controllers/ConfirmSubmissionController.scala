@@ -26,7 +26,7 @@ import play.api.Logger
 import play.api.i18n.{I18nSupport, MessagesApi}
 import play.api.libs.json.Json
 import play.api.mvc._
-import services.{VatReturnsService, VatSubscriptionService}
+import services.{DateService, VatReturnsService, VatSubscriptionService}
 import uk.gov.hmrc.play.bootstrap.controller.FrontendController
 
 import scala.concurrent.{ExecutionContext, Future}
@@ -40,7 +40,8 @@ class ConfirmSubmissionController @Inject()(val messagesApi: MessagesApi,
                                             authPredicate: AuthPredicate,
                                             vatReturnsService: VatReturnsService,
                                             implicit val executionContext: ExecutionContext,
-                                            implicit val appConfig: AppConfig) extends FrontendController with I18nSupport {
+                                            implicit val appConfig: AppConfig,
+                                            val dateService: DateService) extends FrontendController with I18nSupport {
 
   def show(periodKey: String): Action[AnyContent] = (authPredicate andThen mandationStatusCheck).async { implicit user =>
 
@@ -69,25 +70,30 @@ class ConfirmSubmissionController @Inject()(val messagesApi: MessagesApi,
         case Some(data) =>
           Try(Json.parse(data).as[SubmitVatReturnModel]) match {
             case Success(model) =>
-              val submissionModel = SubmissionModel(
-                periodKey = periodKey,
-                vatDueSales = model.box1,
-                vatDueAcquisitions = model.box2,
-                vatDueTotal = model.box3,
-                vatReclaimedCurrPeriod = model.box4,
-                vatDueNet = model.box5,
-                totalValueSalesExVAT = model.box6,
-                totalValuePurchasesExVAT = model.box7,
-                totalValueGoodsSuppliedExVAT = model.box8,
-                totalAllAcquisitionsExVAT = model.box9,
-                agentReferenceNumber = user.arn
-              )
-              vatReturnsService.submitVatReturn(user.vrn, submissionModel) map {
-                case Right(_) =>
-                  Redirect(controllers.routes.ConfirmationController.show().url).removingFromSession(SessionKeys.returnData)
-                case Left(error) =>
-                  Logger.warn(s"[ConfirmSubmissionController][submit] Error returned from vat-returns service: $error")
-                  errorHandler.showInternalServerError
+              if(dateService.dateHasPassed(model.end)) {
+                val submissionModel = SubmissionModel(
+                  periodKey = periodKey,
+                  vatDueSales = model.box1,
+                  vatDueAcquisitions = model.box2,
+                  vatDueTotal = model.box3,
+                  vatReclaimedCurrPeriod = model.box4,
+                  vatDueNet = model.box5,
+                  totalValueSalesExVAT = model.box6,
+                  totalValuePurchasesExVAT = model.box7,
+                  totalValueGoodsSuppliedExVAT = model.box8,
+                  totalAllAcquisitionsExVAT = model.box9,
+                  agentReferenceNumber = user.arn
+                )
+                vatReturnsService.submitVatReturn(user.vrn, submissionModel) map {
+                  case Right(_) =>
+                    Redirect(controllers.routes.ConfirmationController.show().url).removingFromSession(SessionKeys.returnData)
+                  case Left(error) =>
+                    Logger.warn(s"[ConfirmSubmissionController][submit] Error returned from vat-returns service: $error")
+                    errorHandler.showInternalServerError
+                }
+              } else {
+                Logger.debug(s"[ConfirmSubmissionController][submit] Obligation end date for period $periodKey has not yet passed.")
+                Future.successful(errorHandler.showBadRequestError)
               }
             case Failure(error) =>
               Logger.warn(s"[ConfirmSubmissionController][submit] Invalid session data found for key: ${SessionKeys.returnData}")
