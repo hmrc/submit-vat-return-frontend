@@ -14,7 +14,9 @@
  * limitations under the License.
  *@
 
-@()(implicit request: Request[_], messages: Messages, appConfig: config.AppConfig)
+@import models.auth.User
+
+@()(implicit request: Request[_], messages: Messages, appConfig: config.AppConfig, user: Option[User[_]] = None)
 
 @views.html.main_template(title = messages("unauthorised_non_agent.title"), bodyClasses = None, appConfig = appConfig) {
 

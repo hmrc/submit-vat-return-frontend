@@ -16,6 +16,7 @@
 
 package views.errors
 
+import models.auth.User
 import org.jsoup.Jsoup
 import org.jsoup.nodes.Document
 import views.ViewBaseSpec
@@ -32,7 +33,7 @@ class UnauthorisedAgentViewSpec extends ViewBaseSpec {
       val button = "#content .button"
     }
 
-    lazy val view = views.html.errors.unauthorised_agent()(fakeRequest, messages, mockAppConfig)
+    lazy val view = views.html.errors.unauthorised_agent()(fakeRequest, messages, mockAppConfig, user = Some(User("999999999")))
     lazy implicit val document: Document = Jsoup.parse(view.body)
 
     "have the correct document title" in {

@@ -24,7 +24,7 @@ trait ViewBaseSpec extends BaseSpec {
   def element(cssSelector: String)(implicit document: Document): Element = {
     val elements = document.select(cssSelector)
 
-    if(elements.size == 0) {
+    if (elements.size == 0) {
       fail(s"No element exists with the selector '$cssSelector'")
     }
 

@@ -18,4 +18,5 @@ package assets.messages
 
 object CommonMessages {
   val backLink = "Back"
+
 }

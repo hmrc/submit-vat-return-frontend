@@ -1,5 +1,6 @@
 base.sign-out = Sign out
-common.service-name = Business tax account
+navTitle.nonAgent = Business tax account
+navTitle.agent = Client’s VAT details
 common.fullStop = .
 common.signOut = Sign out
 common.finish = Finish
