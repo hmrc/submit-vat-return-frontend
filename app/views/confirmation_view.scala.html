@@ -15,12 +15,13 @@
  *@
 
 @import config.AppConfig
+@import models.auth.User
 @import views.html.templates.heading
 
 
-@()(implicit request: Request[_], messages: Messages, appConfig: AppConfig)
+@()(implicit request: Request[_], messages: Messages, appConfig: AppConfig, user: User[_])
 
-@main_template(messages("confirmation_view.title"), appConfig = appConfig, bodyClasses = None) {
+@main_template(messages("confirmation_view.title"), appConfig = appConfig, bodyClasses = None, user = Some(user)) {
 
   <div class="govuk-box-highlight">
     <h1 class="heading-xlarge">@messages("confirmation_view.heading")</h1>

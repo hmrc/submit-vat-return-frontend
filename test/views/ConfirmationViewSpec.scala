@@ -19,13 +19,17 @@ package views
 import org.jsoup.Jsoup
 import org.jsoup.nodes.Document
 import assets.messages.{ConfirmationPageMessages => viewMessages}
+import models.auth.User
+import play.api.mvc.AnyContentAsEmpty
 
 
 class ConfirmationViewSpec extends ViewBaseSpec {
 
+  val user = User[AnyContentAsEmpty.type]("999999999")(fakeRequest)
+
   "The confirmation view" should {
 
-    lazy val view = views.html.confirmation_view()
+    lazy val view = views.html.confirmation_view() (fakeRequest, messages, mockAppConfig, user)
     lazy implicit val document: Document = Jsoup.parse(view.body)
 
     s"display the title as ${viewMessages.title}" in {

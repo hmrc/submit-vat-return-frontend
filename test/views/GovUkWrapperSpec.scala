@@ -19,6 +19,7 @@ package views
 import models.auth.User
 import org.jsoup.Jsoup
 import org.jsoup.nodes.Document
+import play.api.mvc.AnyContentAsEmpty
 
 class GovUkWrapperSpec extends ViewBaseSpec {
 
@@ -28,7 +29,7 @@ class GovUkWrapperSpec extends ViewBaseSpec {
 
     "user is not known" should {
 
-      lazy val view = views.html.govuk_wrapper(mockAppConfig, "title", user = None)
+      lazy val view = views.html.govuk_wrapper(mockAppConfig, "title", user = None)(fakeRequest, messages)
       lazy implicit val document: Document = Jsoup.parse(view.body)
 
       "have no nav title" in {
@@ -40,7 +41,7 @@ class GovUkWrapperSpec extends ViewBaseSpec {
 
       "user is an agent" should {
 
-        lazy val view = views.html.govuk_wrapper(mockAppConfig, "title", user = Some(User("968501689", arn = Some("XARN1234567"))))
+        lazy val view = views.html.govuk_wrapper(mockAppConfig, "title", user = Some(User[AnyContentAsEmpty.type]("999999999", arn = Some("XARN1234567")))) (fakeRequest, messages)
         lazy implicit val document: Document = Jsoup.parse(view.body)
 
         "have a nav title of 'Client’s VAT details'" in {
@@ -50,7 +51,7 @@ class GovUkWrapperSpec extends ViewBaseSpec {
 
       "user is not an agent" should {
 
-        lazy val view = views.html.govuk_wrapper(mockAppConfig, "title", user = Some(User("968501689", arn = None)))
+        lazy val view = views.html.govuk_wrapper(mockAppConfig, "title", user = Some(User[AnyContentAsEmpty.type]("999999999", arn = None))) (fakeRequest, messages)
         lazy implicit val document: Document = Jsoup.parse(view.body)
 
         "have a nav title of 'Business tax account'" in {
