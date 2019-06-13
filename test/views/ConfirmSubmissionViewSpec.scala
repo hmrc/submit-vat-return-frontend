@@ -24,6 +24,8 @@ import org.jsoup.nodes.Document
 import assets.messages.{ConfirmSubmissionMessages => viewMessages}
 import models._
 import assets.CustomerDetailsTestAssets._
+import models.auth.User
+import play.api.mvc.AnyContentAsEmpty
 
 class ConfirmSubmissionViewSpec extends ViewBaseSpec {
 
@@ -76,7 +78,7 @@ class ConfirmSubmissionViewSpec extends ViewBaseSpec {
     end = LocalDate.parse("2019-04-12"),
     due = LocalDate.parse("2019-05-12")
   )
-
+  val user = User[AnyContentAsEmpty.type]("999999999")(fakeRequest)
 
   "Confirm Submission View" when {
 
@@ -90,7 +92,7 @@ class ConfirmSubmissionViewSpec extends ViewBaseSpec {
           userName = customerDetailsWithFRS.clientName
         )
 
-        lazy val view = views.html.confirm_submission(viewModel, isAgent = false)
+        lazy val view = views.html.confirm_submission(viewModel, isAgent = false) (fakeRequest, messages, mockAppConfig, user)
         lazy implicit val document: Document = Jsoup.parse(view.body)
 
         s"the title is displayed as ${viewMessages.title}" in {
@@ -229,7 +231,7 @@ class ConfirmSubmissionViewSpec extends ViewBaseSpec {
         userName = customerDetailsWithFRS.clientName
       )
 
-      lazy val view = views.html.confirm_submission(viewModel, isAgent = false)
+      lazy val view = views.html.confirm_submission(viewModel, isAgent = false)(fakeRequest, messages, mockAppConfig, user)
       lazy implicit val document: Document = Jsoup.parse(view.body)
 
       s"box 6 description displays as ${viewMessages.box6DescriptionNoFRS}" in {
@@ -246,7 +248,7 @@ class ConfirmSubmissionViewSpec extends ViewBaseSpec {
         userName = customerDetailsModel.clientName
       )
 
-      lazy val view = views.html.confirm_submission(viewModel, isAgent = true)
+      lazy val view = views.html.confirm_submission(viewModel, isAgent = true)(fakeRequest, messages, mockAppConfig, user)
       lazy implicit val document: Document = Jsoup.parse(view.body)
 
       "not render breadcrumbs" in {

@@ -15,6 +15,7 @@
  *@
 
 @import config.AppConfig
+@import models.auth.User
 
 @(title: String,
         appConfig: AppConfig,
@@ -24,7 +25,8 @@
         mainClass: Option[String] = None,
         showSignOut: Boolean = true,
         feedbackOnSignOut: Boolean = true,
-        scriptElem: Option[Html] = None)(mainContent: Html)(implicit request : Request[_], messages: Messages)
+        scriptElem: Option[Html] = None,
+user: Option[User[_]] = None)(mainContent: Html)(implicit request : Request[_], messages: Messages)
 
 @import uk.gov.hmrc.play.views.html.layouts
 
@@ -48,5 +50,6 @@
   serviceInfoContent = serviceInfoContent,
   showSignOut = showSignOut,
   feedbackOnSignOut = feedbackOnSignOut,
-  scriptElem = scriptElem
+  scriptElem = scriptElem,
+user = user
 )
