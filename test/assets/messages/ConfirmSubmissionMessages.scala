@@ -32,8 +32,7 @@ object ConfirmSubmissionMessages {
   val box5Heading = "Box 5"
   val box5Description = "Return total"
   val box6Heading = "Box 6"
-  val box6DescriptionHasFRS = "" +
-    "Total value of sales and other supplies, including VAT"
+  val box6DescriptionHasFRS = "Total value of sales and other supplies, including VAT"
   val box6DescriptionNoFRS = "Total value of sales and other supplies, excluding VAT"
   val box7Heading = "Box 7"
   val box7Description = "Total value of purchases and other expenses, excluding VAT"
@@ -44,9 +43,11 @@ object ConfirmSubmissionMessages {
   val returnTotal = "Return total:"
   val returnDueDate = "Return due date:"
   val changeReturnLink = "Change return details"
-  val nowSubmitReturnHeading = "Now submit your return"
-  val submitReturnInformation: String = "When you submit the above information, you are making a legal declaration that the information is correct and" +
-    " complete to the best of your knowledge and belief. A false declaration can result in prosecution."
-  val submitButton = "Submit"
-
+  val submitButton = "Accept and send"
+  val declarationHeading = "Declaration"
+  val agentDeclarationText: String = "I confirm that my client has received a copy of the information contained in this return and approved the" +
+    " information as being correct and complete to the best of their knowledge and belief."
+  val nonAgentDeclarationText: String = "I confirm that my client has received a copy of the information contained in this return and approved the" +
+    " information as being correct and complete to the best of their knowledge and belief."
+  val warning = "Warning"
 }

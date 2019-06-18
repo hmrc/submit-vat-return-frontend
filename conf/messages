@@ -9,6 +9,7 @@ common.dateRangeSeparator = to
 common.continue = Continue
 common.back = Back
 common.errorSummary.heading = You have one or more errors
+common.warning = Warning
 
 error.required = Please enter a value
 error.summary.title = There is a problem
@@ -67,9 +68,10 @@ confirm_submission.boxNine = Box 9
 confirm_submission.boxNineDescription = Total value of goods purchased from EC countries and brought into the UK, as well as any related costs (excluding VAT)
 confirm_submission.boxNineAmt = Box 9 amount
 confirm_submission.changeDetail = Change return details
-confirm_submission.information = When you submit the above information, you are making a legal declaration that the information is correct and complete to the best of your knowledge and belief. A false declaration can result in prosecution.
-confirm_submission.submitReturn = Now submit your return
-
+confirm_submission.acceptAndSend = Accept and send
+confirm_submission.declarationHeading = Declaration
+confirm_submission.agentDeclaration = I confirm that my client has received a copy of the information contained in this return and approved the information as being correct and complete to the best of their knowledge and belief.
+confirm_submission.nonAgentDeclaration = I confirm that my client has received a copy of the information contained in this return and approved the information as being correct and complete to the best of their knowledge and belief.
 
 unauthorised_agent.title = You can’t use this service yet
 unauthorised_agent.useThisService = To use this service, you need to
