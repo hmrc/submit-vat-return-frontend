@@ -31,6 +31,26 @@
   </div>
 }
 
+@declaration(isAgent: Boolean) = {
+
+  <div class="form-group">
+    <h3 class="bold-medium">@messages("confirm_submission.declarationHeading")</h3>
+  </div>
+
+  @if(isAgent) {
+    <p>@messages("confirm_submission.agentDeclaration")</p>
+  } else {
+
+    <div class="notice form-group">
+      <i class="icon icon-important">
+        <span class="visually-hidden">@messages("common.warning")</span>
+      </i>
+
+      <strong class="bold-small">@messages("confirm_submission.nonAgentDeclaration")</strong>
+    </div>
+  }
+}
+
 @main_template(messages("confirm_submission.title"), appConfig = appConfig, bodyClasses = None, user = Some(user)) {
 
   @if(!isAgent) {
@@ -100,15 +120,13 @@
       </div>
     </section>
 
-    <h3 class="bold-medium">@messages("confirm_submission.submitReturn")</h3>
-
-    <p>@messages("confirm_submission.information")</p>
+    @declaration(isAgent: Boolean)
 
     @helpers.form(action = controllers.routes.ConfirmSubmissionController.submit(viewModel.periodKey)) {
       <button
         class="button"
         type ="submit">
-        @messages("common.submit")
+        @messages("confirm_submission.acceptAndSend")
       </button>
     }
 

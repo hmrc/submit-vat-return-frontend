@@ -48,6 +48,11 @@ class ConfirmSubmissionViewSpec extends ViewBaseSpec {
     val breadcrumbTwo = "div.breadcrumbs li:nth-of-type(2)"
     val breadcrumbTwoLink = "div.breadcrumbs li:nth-of-type(2) a"
     val breadcrumbCurrentPage = "div.breadcrumbs li:nth-of-type(3)"
+    val declarationHeader = "#content > article > section > div:nth-child(7) > h3"
+    val nonAgentDeclarationText = "#content > article > section > div.notice.form-group > strong"
+    val agentDeclarationText = "#content > article > section > p"
+    val noticeImage = "#content > article > section > div.notice.form-group > i"
+    val noticeText = "#content > article > section > div.notice.form-group > i > span"
   }
 
   def boxElement(box: String, column: Int): String = {
@@ -78,7 +83,8 @@ class ConfirmSubmissionViewSpec extends ViewBaseSpec {
     end = LocalDate.parse("2019-04-12"),
     due = LocalDate.parse("2019-05-12")
   )
-  val user = User[AnyContentAsEmpty.type]("999999999")(fakeRequest)
+
+  val user: User[AnyContentAsEmpty.type] = User[AnyContentAsEmpty.type]("999999999")(fakeRequest)
 
   "Confirm Submission View" when {
 
@@ -92,7 +98,7 @@ class ConfirmSubmissionViewSpec extends ViewBaseSpec {
           userName = customerDetailsWithFRS.clientName
         )
 
-        lazy val view = views.html.confirm_submission(viewModel, isAgent = false) (fakeRequest, messages, mockAppConfig, user)
+        lazy val view = views.html.confirm_submission(viewModel, isAgent = false)(fakeRequest, messages, mockAppConfig, user)
         lazy implicit val document: Document = Jsoup.parse(view.body)
 
         s"the title is displayed as ${viewMessages.title}" in {
@@ -209,12 +215,30 @@ class ConfirmSubmissionViewSpec extends ViewBaseSpec {
           }
         }
 
-        s"displays the ${viewMessages.nowSubmitReturnHeading} heading" in {
-          elementText(Selectors.submitVatReturnHeading) shouldBe viewMessages.nowSubmitReturnHeading
+        "display the declaration header" in {
+          elementText(Selectors.declarationHeader) shouldBe viewMessages.declarationHeading
         }
 
-        "display the legal declaration paragraph" in {
-          elementText(Selectors.submitReturnInformation) shouldBe viewMessages.submitReturnInformation
+        "display the correct declaration which" should {
+
+          "display the warning notice which" should {
+
+            "display the image" in {
+              element(Selectors.noticeImage).hasClass("icon icon-important") shouldBe true
+            }
+
+            "display the hidden text" in {
+              elementText(Selectors.noticeText) shouldBe viewMessages.warning
+            }
+          }
+
+          "display the correct text" in {
+            elementText(Selectors.nonAgentDeclarationText) shouldBe viewMessages.nonAgentDeclarationText
+          }
+
+          "display the text in bold" in {
+            element(Selectors.nonAgentDeclarationText).hasClass("bold-small") shouldBe true
+          }
         }
 
         s"display the ${viewMessages.submitButton} button" in {
@@ -254,7 +278,17 @@ class ConfirmSubmissionViewSpec extends ViewBaseSpec {
       "not render breadcrumbs" in {
         document.select(Selectors.breadcrumbOne) shouldBe empty
       }
+
+      "display the correct declaration which" should {
+
+        "display the correct text" in {
+          elementText(Selectors.agentDeclarationText) shouldBe viewMessages.agentDeclarationText
+        }
+
+        "not display the text in bold" in {
+          element(Selectors.agentDeclarationText).hasClass("bold-small") shouldBe false
+        }
+      }
     }
   }
-
 }
