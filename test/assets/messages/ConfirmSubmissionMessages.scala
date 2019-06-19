@@ -47,7 +47,7 @@ object ConfirmSubmissionMessages {
   val declarationHeading = "Declaration"
   val agentDeclarationText: String = "I confirm that my client has received a copy of the information contained in this return and approved the" +
     " information as being correct and complete to the best of their knowledge and belief."
-  val nonAgentDeclarationText: String = "I confirm that my client has received a copy of the information contained in this return and approved the" +
-    " information as being correct and complete to the best of their knowledge and belief."
+  val nonAgentDeclarationText: String = "By submitting this return, you are making a legal declaration that the information is correct and" +
+    " complete to the best of your knowledge and belief. A false declaration can result in prosecution."
   val warning = "Warning"
 }
