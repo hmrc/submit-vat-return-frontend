@@ -45,8 +45,8 @@ class MandationStatusPredicate @Inject()(mandationStatusService: MandationStatus
     req.session.get(SessionKeys.mandationStatus) match {
       case Some(MandationStatuses.nonMTDfB) => Future.successful(Right(request))
       case Some(unsupportedMandationStatus) =>
-        Logger.debug(s"[MandationStatusPredicate][refine] - User has a non 'non MTDfB' status received. Status returned was: $unsupportedMandationStatus")
-        Future.successful(Left(Forbidden(views.html.errors.incorrect_mandation_user())))
+          Logger.debug(s"[MandationStatusPredicate][refine] - User has a non 'non MTDfB' status received. Status returned was: $unsupportedMandationStatus")
+          Future.successful(Left(Forbidden(views.html.errors.incorrect_mandation_user())))
       case None => getMandationStatus
     }
   }

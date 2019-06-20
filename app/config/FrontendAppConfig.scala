@@ -48,7 +48,6 @@ trait AppConfig extends ServicesConfig {
   val feedbackSurveyUrl: String
   val features: Features
   val staticDateValue: String
-
   def vatReturnsUrl(vrn: String): String
 }
 
@@ -118,5 +117,4 @@ class FrontendAppConfig @Inject()(val runModeConfiguration: Configuration, envir
 
   override val features = new Features(runModeConfiguration)
   override lazy val staticDateValue: String = getString(ConfigKeys.staticDateValue)
-
 }

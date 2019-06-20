@@ -26,6 +26,10 @@
 
   <p>@messages("incorrect_mandation_user.paragraph")</p>
 
-  <a class="button" href=@appConfig.returnDeadlinesUrl>@messages("incorrect_mandation_user.link")</a>
-
+ @user.map { u => @if(u.isAgent) {
+   <a href="@appConfig.returnDeadlinesUrl">@messages("incorrect_mandation_user.link")</a>
+  } else {
+   <a href="@appConfig.agentClientLookupStartUrl(request.uri)">@messages("incorrect_mandation_agent_client.link")</a>
+  }
+ }
 }

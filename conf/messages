@@ -91,7 +91,8 @@ breadcrumbs.yourVatDetails = Your VAT details
 breadcrumbs.submitVatReturn = Submit VAT Return
 breadcrumbs.submitReturnForDate = Submit {0} return
 
-incorrect_mandation_user.title = Submit VAT Return
-incorrect_mandation_user.heading = The business submits VAT Returns using Making Tax Digital
-incorrect_mandation_user.paragraph = The business has signed up to the Making Tax Digital service. You must submit your VAT Returns to HMRC using compatible accounting software.
+incorrect_mandation.title = Submit VAT Return
+incorrect_mandation.heading = The business submits VAT Returns using Making Tax Digital
+incorrect_mandation.paragraph = The business has signed up to the Making Tax Digital service. You must submit your VAT Returns to HMRC using compatible accounting software.
 incorrect_mandation_user.link = View your VAT Return deadlines
+incorrect_mandation_agent_client.link = View your client options
