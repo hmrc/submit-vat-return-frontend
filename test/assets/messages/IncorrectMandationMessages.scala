@@ -22,5 +22,6 @@ object IncorrectMandationMessages {
   val heading = "The business submits VAT Returns using Making Tax Digital"
   val paragraph: String = "The business has signed up to the Making Tax Digital service." +
     " You must submit your VAT Returns to HMRC using compatible accounting software."
-  val linkText = "View your VAT Return deadlines"
+  val nonAgentLinkText = "View your VAT Return deadlines"
+  val agentLinkText = "View your client options"
 }

@@ -22,10 +22,12 @@ import org.jsoup.nodes.Document
 import play.api.mvc.AnyContentAsEmpty
 import views.ViewBaseSpec
 import assets.messages.IncorrectMandationMessages
+import auth.AuthKeys
+import play.api.test.FakeRequest
 
 class IncorrectMandationUserViewSpec extends ViewBaseSpec {
 
-  "Rendering the incorrect mandation user view" should {
+  "Rendering the incorrect mandation view" when {
 
     object Selectors {
       val serviceName = ".header__menu__proposition-name"
@@ -34,28 +36,49 @@ class IncorrectMandationUserViewSpec extends ViewBaseSpec {
       val instructionsLink = "#content a"
     }
 
-    val user = User[AnyContentAsEmpty.type]("999999999")(fakeRequest)
-    lazy val view = views.html.errors.incorrect_mandation_user()(fakeRequest, mockAppConfig, messages, user = Some(user))
-    lazy implicit val document: Document = Jsoup.parse(view.body)
+    "the user is a non agent" should {
 
-    "have the correct document title" in {
-      document.title shouldBe IncorrectMandationMessages.title
+      val user = User[AnyContentAsEmpty.type]("999999999")(fakeRequest)
+      lazy val view = views.html.errors.incorrect_mandation_user()(fakeRequest, mockAppConfig, messages, user = Some(user))
+      lazy implicit val document: Document = Jsoup.parse(view.body)
+
+      "have the correct document title" in {
+        document.title shouldBe IncorrectMandationMessages.title
+      }
+
+      "have a the correct page heading" in {
+        elementText(Selectors.pageHeading) shouldBe IncorrectMandationMessages.heading
+      }
+
+      "have the correct instructions on the page" in {
+        elementText(Selectors.instructions) shouldBe IncorrectMandationMessages.paragraph
+      }
+
+      s"have the correct link text of ${IncorrectMandationMessages.nonAgentLinkText}" in {
+        elementText(Selectors.instructionsLink) shouldBe IncorrectMandationMessages.nonAgentLinkText
+      }
+
+      "have a link to the return deadlines page" in {
+        element(Selectors.instructionsLink).attr("href") shouldBe "/return-deadlines"
+      }
     }
 
-    "have a the correct page heading" in {
-      elementText(Selectors.pageHeading) shouldBe IncorrectMandationMessages.heading
-    }
+    "the user is an agent" should {
 
-    "have the correct instructions on the page" in {
-      elementText(Selectors.instructions) shouldBe IncorrectMandationMessages.paragraph
-    }
+      lazy val fakeRequestWithClientsVRN: FakeRequest[AnyContentAsEmpty.type] =
+        FakeRequest().withSession(AuthKeys.agentSessionVrn -> "999999999")
 
-    s"have the correct link text of ${IncorrectMandationMessages.linkText}" in {
-      elementText(Selectors.instructionsLink) shouldBe IncorrectMandationMessages.linkText
-    }
+      val agentUser: User[AnyContentAsEmpty.type] = User[AnyContentAsEmpty.type]("999999999", Some("XAIT012345678"))(fakeRequestWithClientsVRN)
+      lazy val view = views.html.errors.incorrect_mandation_user()(fakeRequestWithClientsVRN, mockAppConfig, messages, user = Some(agentUser))
+      lazy implicit val document: Document = Jsoup.parse(view.body)
 
-    "have a link to the return deadlines page" in {
-      element(Selectors.instructionsLink).attr("href") shouldBe "/return-deadlines"
+      s"have the correct link text of ${IncorrectMandationMessages.agentLinkText}" in {
+        elementText(Selectors.instructionsLink) shouldBe IncorrectMandationMessages.agentLinkText
+      }
+
+      "have a link to the agent action page" in {
+        element(Selectors.instructionsLink).attr("href") shouldBe "/return-deadlines"
+      }
     }
   }
 }

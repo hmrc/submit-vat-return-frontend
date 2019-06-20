@@ -50,7 +50,6 @@ trait AppConfig extends ServicesConfig {
   val feedbackSurveyUrl: String
   val features: Features
   val staticDateValue: String
-
   def vatReturnsUrl(vrn: String): String
 }
 
