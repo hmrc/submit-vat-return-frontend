@@ -21,7 +21,6 @@ import java.time.LocalDate
 import base.BaseSpec
 import forms.SubmitVatReturnForm.submitVatReturnForm
 import models.SubmitVatReturnModel
-import play.api.data.validation.{Invalid, Valid}
 
 class SubmitVatReturnFormSpec extends BaseSpec {
 
@@ -419,28 +418,6 @@ class SubmitVatReturnFormSpec extends BaseSpec {
             messages(messageKey) shouldBe MessageLookup.tooManyCharacters
           }
         }
-
-        "is not the total of box 1 and 2" should {
-
-          val form = submitVatReturnForm.bind(
-            Map(
-              "box1" -> "2",
-              "box2" -> "3",
-              "box3" -> "2",
-              "box4" -> "1",
-              "box5" -> "1",
-              "box6" -> "1",
-              "box7" -> "1",
-              "box8" -> "1",
-              "box9" -> "1"
-            ) ++ defaultFieldValues
-          )
-
-          s"return a form field error with message ${MessageLookup.box3Sum}" in {
-            val messageKey = form.error("box3").get.message
-            messages(messageKey) shouldBe MessageLookup.box3Sum
-          }
-        }
       }
 
       "box 4" when {
@@ -665,28 +642,6 @@ class SubmitVatReturnFormSpec extends BaseSpec {
           s"return a form field error with message ${MessageLookup.tooManyCharactersNonNegative}" in {
             val messageKey = form.error("box5").get.message
             messages(messageKey) shouldBe MessageLookup.tooManyCharactersNonNegative
-          }
-        }
-
-        "is not sum of box 3 minus box 4" should {
-
-          val form = submitVatReturnForm.bind(
-            Map(
-              "box1" -> "2",
-              "box2" -> "3",
-              "box3" -> "5",
-              "box4" -> "7",
-              "box5" -> "1",
-              "box6" -> "1",
-              "box7" -> "1",
-              "box8" -> "1",
-              "box9" -> "1"
-            ) ++ defaultFieldValues
-          )
-
-          s"return a form field error with message ${MessageLookup.box5Sum}" in {
-            val messageKey = form.error("box5").get.message
-            messages(messageKey) shouldBe MessageLookup.box5Sum
           }
         }
       }
@@ -1140,6 +1095,123 @@ class SubmitVatReturnFormSpec extends BaseSpec {
             val messageKey = form.error("box9").get.message
             messages(messageKey) shouldBe MessageLookup.tooManyCharactersNonDecimal
           }
+        }
+      }
+    }
+  }
+
+  "SubmitVatReturnForm .validateBoxCalculations" when {
+
+    "form already has errors" should {
+
+      val form = submitVatReturnForm.bind(
+        Map(
+          "box1" -> "x!",
+          "box2" -> "1",
+          "box3" -> "1",
+          "box4" -> "1",
+          "box5" -> "1",
+          "box6" -> "1",
+          "box7" -> "1",
+          "box8" -> "1",
+          "box9" -> "1"
+        ) ++ defaultFieldValues
+      )
+
+      "return the form with errors" in {
+        form.hasErrors shouldBe true
+        SubmitVatReturnForm.validateBoxCalculations(form) shouldBe form
+      }
+    }
+
+    "all form fields are valid numbers in valid ranges" when {
+
+      "box 3 and 5 are valid calculations" should {
+
+        val form = submitVatReturnForm.bind(
+          Map(
+            "box1" -> "1",
+            "box2" -> "2",
+            "box3" -> "3",
+            "box4" -> "4",
+            "box5" -> "1",
+            "box6" -> "1",
+            "box7" -> "1",
+            "box8" -> "1",
+            "box9" -> "1"
+          ) ++ defaultFieldValues
+        )
+
+        "return the form with no errors" in {
+          SubmitVatReturnForm.validateBoxCalculations(form).hasErrors shouldBe false
+        }
+      }
+
+      "box 3 is not the sum of box 1 and 2" should {
+
+        val form = submitVatReturnForm.bind(
+          Map(
+            "box1" -> "1",
+            "box2" -> "2",
+            "box3" -> "2",
+            "box4" -> "1",
+            "box5" -> "1",
+            "box6" -> "1",
+            "box7" -> "1",
+            "box8" -> "1",
+            "box9" -> "1"
+          ) ++ defaultFieldValues
+        )
+
+        "return the form with a field error for box 3" in {
+          val messageKey = SubmitVatReturnForm.validateBoxCalculations(form).error("box3").get.message
+          messages(messageKey) shouldBe MessageLookup.box3Sum
+        }
+      }
+
+      "box 5 is not box 4 minus box 3" should {
+
+        val form = submitVatReturnForm.bind(
+          Map(
+            "box1" -> "1",
+            "box2" -> "2",
+            "box3" -> "3",
+            "box4" -> "4",
+            "box5" -> "5",
+            "box6" -> "1",
+            "box7" -> "1",
+            "box8" -> "1",
+            "box9" -> "1"
+          ) ++ defaultFieldValues
+        )
+
+        "return the form with a field error for box 5" in {
+          val messageKey = SubmitVatReturnForm.validateBoxCalculations(form).error("box5").get.message
+          messages(messageKey) shouldBe MessageLookup.box5Sum
+        }
+      }
+
+      "multiple calculations are invalid" should {
+
+        val form = submitVatReturnForm.bind(
+          Map(
+            "box1" -> "1",
+            "box2" -> "1",
+            "box3" -> "1",
+            "box4" -> "1",
+            "box5" -> "1",
+            "box6" -> "1",
+            "box7" -> "1",
+            "box8" -> "1",
+            "box9" -> "1"
+          ) ++ defaultFieldValues
+        )
+
+        val validatedForm = SubmitVatReturnForm.validateBoxCalculations(form)
+
+        "return both field errors" in {
+          messages(validatedForm.error("box5").get.message) shouldBe MessageLookup.box5Sum
+          messages(validatedForm.error("box3").get.message) shouldBe MessageLookup.box3Sum
         }
       }
     }
