@@ -72,7 +72,7 @@ object SubmitVatReturnForm {
   }
 
   private def validateBox5Calculation(box3: BigDecimal, box4: BigDecimal, box5: BigDecimal): Option[FormError] = {
-    if(box4 - box3 == box5) None else Some(FormError("box5", "submit_form.error.box5Error"))
+    if((box3 - box4).abs == box5) None else Some(FormError("box5", "submit_form.error.box5Error"))
   }
 
   val submitVatReturnForm: Form[SubmitVatReturnModel] = Form(
@@ -104,7 +104,7 @@ object SubmitVatReturnForm {
             validateBox5Calculation(model.box3, model.box4, model.box5)
           ).flatten
 
-          form.copy(data = form.data, errors = form.errors ++ formErrors, value = None)
+          form.copy(mapping = form.mapping, data = form.data, errors = form.errors ++ formErrors, value = form.value)
         case None => form
       }
     }

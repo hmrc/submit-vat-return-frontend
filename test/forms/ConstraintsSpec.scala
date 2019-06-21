@@ -24,27 +24,27 @@ class ConstraintsSpec extends BaseSpec {
 
   ".twoDecimalPlaces" when {
 
-    "value is 0.01" should {
+    "value is 1000.01" should {
 
-      val value = BigDecimal(0.01)
+      val value = BigDecimal(1000.01)
 
       "return Valid" in {
         twoDecimalPlaces("error")(value) shouldBe Valid
       }
     }
 
-    "value is 0.001" should {
+    "value is 1000.001" should {
 
-      val value = BigDecimal(0.001)
+      val value = BigDecimal(1000.001)
 
       "return Invalid" in {
         twoDecimalPlaces("error")(value) shouldBe Invalid("error")
       }
     }
 
-    "value is 1" should {
+    "value is 1000" should {
 
-      val value = BigDecimal(1)
+      val value = BigDecimal(1000)
 
       "return Valid" in {
         twoDecimalPlaces("error")(value) shouldBe Valid
@@ -54,27 +54,27 @@ class ConstraintsSpec extends BaseSpec {
 
   ".noDecimalPlaces" when {
 
-    "value is 1.00" should {
+    "value is 1000.00" should {
 
-      val value = BigDecimal(1.00)
+      val value = BigDecimal(1000.00)
 
       "return Valid" in {
         noDecimalPlaces("error")(value) shouldBe Valid
       }
     }
 
-    "value is 1.01" should {
+    "value is 1000.01" should {
 
-      val value = BigDecimal(1.01)
+      val value = BigDecimal(1000.01)
 
       "return Invalid" in {
         noDecimalPlaces("error")(value) shouldBe Invalid("error")
       }
     }
 
-    "value is 1" should {
+    "value is 1000" should {
 
-      val value = BigDecimal(1)
+      val value = BigDecimal(1000)
 
       "return Valid" in {
         noDecimalPlaces("error")(value) shouldBe Valid

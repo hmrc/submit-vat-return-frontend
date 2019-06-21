@@ -644,6 +644,28 @@ class SubmitVatReturnFormSpec extends BaseSpec {
             messages(messageKey) shouldBe MessageLookup.tooManyCharactersNonNegative
           }
         }
+
+        "is negative" should {
+
+          val form = submitVatReturnForm.bind(
+            Map(
+              "box1" -> "1",
+              "box2" -> "1",
+              "box3" -> "2",
+              "box4" -> "1",
+              "box5" -> "-5",
+              "box6" -> "1",
+              "box7" -> "1",
+              "box8" -> "1",
+              "box9" -> "1"
+            ) ++ defaultFieldValues
+          )
+
+          s"return a form field error with message ${MessageLookup.tooManyCharactersNonNegative}" in {
+            val messageKey = form.error("box5").get.message
+            messages(messageKey) shouldBe MessageLookup.tooManyCharactersNonNegative
+          }
+        }
       }
 
       "box 6" when {
@@ -1169,7 +1191,7 @@ class SubmitVatReturnFormSpec extends BaseSpec {
         }
       }
 
-      "box 5 is not box 4 minus box 3" should {
+      "box 5 is not box 3 minus box 4" should {
 
         val form = submitVatReturnForm.bind(
           Map(
@@ -1177,7 +1199,7 @@ class SubmitVatReturnFormSpec extends BaseSpec {
             "box2" -> "2",
             "box3" -> "3",
             "box4" -> "4",
-            "box5" -> "5",
+            "box5" -> "2",
             "box6" -> "1",
             "box7" -> "1",
             "box8" -> "1",

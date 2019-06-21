@@ -27,7 +27,7 @@ object Constraints {
   }
 
   def noDecimalPlaces(message: String): Constraint[BigDecimal] = Constraint[BigDecimal]("noDecimalPlaces") {
-    case i if i.bigDecimal.stripTrailingZeros().scale == 0 => Valid
+    case i if i.bigDecimal.stripTrailingZeros().scale <= 0 => Valid
     case _ => Invalid(message)
   }
 

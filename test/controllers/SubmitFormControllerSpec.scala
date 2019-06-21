@@ -268,9 +268,9 @@ class SubmitFormControllerSpec extends BaseSpec
           "box4" -> "1000",
           "box5" -> "1000.11",
           "box6" -> "1000",
-          "box7" -> "1000.3",
+          "box7" -> "1000",
           "box8" -> "1234567890123",
-          "box9" -> "1234567890123.45",
+          "box9" -> "1234567890123",
           "flatRateScheme" -> "true",
           "start" -> "2019-01-01",
           "end" -> "2019-01-04",
@@ -304,9 +304,9 @@ class SubmitFormControllerSpec extends BaseSpec
         "box4" -> "1000",
         "box5" -> "1000.11",
         "box6" -> "1000",
-        "box7" -> "1000.3",
+        "box7" -> "1000",
         "box8" -> "1234567890123",
-        "box9" -> "1234567890123.45",
+        "box9" -> "1234567890123",
         "flatRateScheme" -> "true",
         "start" -> "2019-01-01",
         "end" -> "2019-01-04",
@@ -388,11 +388,11 @@ class SubmitFormControllerSpec extends BaseSpec
             "box1" -> "1000",
             "box2" -> "1000",
             "box3" -> "2000",
-            "box4" -> "1000",
+            "box4" -> "12345.000",
             "box5" -> "3000",
             "box6" -> "1000",
-            "box7" -> "12345.000",
-            "box8" -> "12345.",
+            "box7" -> "1000",
+            "box8" -> "12345",
             "box9" -> "1234567890123456",
             "flatRateScheme" -> "true",
             "start" -> "2019-01-01",
@@ -498,7 +498,7 @@ class SubmitFormControllerSpec extends BaseSpec
           }
 
           "contains negative number error" in {
-            contentAsString(result) should include("Enter a maximum of 13 digits for pounds." +
+            contentAsString(result) should include("Enter a maximum of 11 digits for pounds." +
               "\nEnter a maximum of 2 decimal places for pence.\nDo not use a negative amount eg -13.2")
           }
         }
@@ -547,386 +547,6 @@ class SubmitFormControllerSpec extends BaseSpec
           }
         }
 
-        "display box 3 error if box 1 or box 2 are not numbers" when {
-
-          def request(input: Boolean): FakeRequest[AnyContentAsFormUrlEncoded] = FakeRequest().withFormUrlEncodedBody(
-            "box1" -> (if (input) "e" else "1000"),
-            "box2" -> (if (!input) "e" else "1000"),
-            "box3" -> "1000",
-            "box4" -> "1000",
-            "box5" -> "1000",
-            "box6" -> "1000",
-            "box7" -> "1000",
-            "box8" -> "1000",
-            "box9" -> "1000",
-            "flatRateScheme" -> "true",
-            "start" -> "2019-01-01",
-            "end" -> "2019-01-04",
-            "due" -> "2019-01-05"
-          ).withSession(
-            SessionKeys.mandationStatus -> MandationStatuses.nonMTDfB,
-            SessionKeys.viewModel -> sessionModel
-          )
-
-          lazy val resultBox1Error = {
-            TestSubmitFormController.submit(periodKey = "93DH")(request(true))
-          }
-
-          lazy val resultBox2Error = {
-            TestSubmitFormController.submit(periodKey = "93DH")(request(false))
-          }
-
-          "status is BAD_REQUEST for box1Error" in {
-            mockAuthorise(mtdVatAuthorisedResponse)
-            setupVatSubscriptionService(vatSubscriptionResponse)
-            status(resultBox1Error) shouldBe BAD_REQUEST
-          }
-
-          "status is BAD_REQUEST for box2Error" in {
-            mockAuthorise(mtdVatAuthorisedResponse)
-            setupVatSubscriptionService(vatSubscriptionResponse)
-            status(resultBox2Error) shouldBe BAD_REQUEST
-          }
-
-          "error is displayed for box1Error" in {
-            contentAsString(resultBox1Error) should include("Add the number from box 1 to the number from box 2 and write it here")
-          }
-
-          "error is displayed for box2Error" in {
-            contentAsString(resultBox1Error) should include("Add the number from box 1 to the number from box 2 and write it here")
-          }
-
-          "display box 5 error if box 3 or box 4 are not numbers" when {
-
-            def request(input: Boolean): FakeRequest[AnyContentAsFormUrlEncoded] = FakeRequest().withFormUrlEncodedBody(
-              "box1" -> "1000",
-              "box2" -> "1000",
-              "box3" -> (if (input) "e" else "1000"),
-              "box4" -> (if (!input) "e" else "1000"),
-              "box5" -> "1000",
-              "box6" -> "1000",
-              "box7" -> "1000",
-              "box8" -> "1000",
-              "box9" -> "1000",
-              "flatRateScheme" -> "true",
-              "start" -> "2019-01-01",
-              "end" -> "2019-01-04",
-              "due" -> "2019-01-05"
-            ).withSession(
-              SessionKeys.mandationStatus -> MandationStatuses.nonMTDfB,
-              SessionKeys.viewModel -> sessionModel
-            )
-
-            lazy val resultBox3Error = {
-              TestSubmitFormController.submit(periodKey = "93DH")(request(true))
-            }
-            lazy val resultBox4Error = {
-              TestSubmitFormController.submit(periodKey = "93DH")(request(false))
-            }
-
-            "status is BAD_REQUEST for box3Error" in {
-              mockAuthorise(mtdVatAuthorisedResponse)
-              setupVatSubscriptionService(vatSubscriptionResponse)
-              status(resultBox3Error) shouldBe BAD_REQUEST
-            }
-
-            "status is BAD_REQUEST for box4Error" in {
-              mockAuthorise(mtdVatAuthorisedResponse)
-              setupVatSubscriptionService(vatSubscriptionResponse)
-              status(resultBox4Error) shouldBe BAD_REQUEST
-            }
-
-            "error is displayed for box3Error" in {
-              contentAsString(resultBox3Error) should include("Subtract the number in box 4 away from the number in box 3 and write it here")
-            }
-
-            "error is displayed for box4Error" in {
-              contentAsString(resultBox4Error) should include("Subtract the number in box 4 away from the number in box 3 and write it here")
-            }
-          }
-
-          "an error occurs (box3 empty)" when {
-            lazy val request = FakeRequest().withFormUrlEncodedBody(
-              "box1" -> "1000",
-              "box2" -> "1000",
-              "box3" -> "",
-              "box4" -> "1000",
-              "box5" -> "1000",
-              "box6" -> "1000",
-              "box7" -> "1000",
-              "box8" -> "1000",
-              "box9" -> "1000",
-              "flatRateScheme" -> "true",
-              "start" -> "2019-01-01",
-              "end" -> "2019-01-04",
-              "due" -> "2019-01-05").withSession(
-              SessionKeys.mandationStatus -> MandationStatuses.nonMTDfB,
-              SessionKeys.viewModel -> sessionModel
-            )
-
-            lazy val result = {
-              TestSubmitFormController.submit(periodKey = "93DH")(request)
-            }
-
-            "status is BAD_REQUEST" in {
-              mockAuthorise(mtdVatAuthorisedResponse)
-              setupVatSubscriptionService(vatSubscriptionResponse)
-              status(result) shouldBe BAD_REQUEST
-            }
-
-            "error is displayed" in {
-              contentAsString(result) should include("Enter a number")
-            }
-          }
-
-          "an error occurs (box3 invalid format)" when {
-            lazy val request = FakeRequest().withFormUrlEncodedBody(
-              "box1" -> "1000",
-              "box2" -> "1000",
-              "box3" -> "e",
-              "box4" -> "1000",
-              "box5" -> "1000",
-              "box6" -> "1000",
-              "box7" -> "1000",
-              "box8" -> "1000",
-              "box9" -> "1000",
-              "flatRateScheme" -> "true",
-              "start" -> "2019-01-01",
-              "end" -> "2019-01-04",
-              "due" -> "2019-01-05"
-            ).withSession(
-              SessionKeys.mandationStatus -> MandationStatuses.nonMTDfB,
-              SessionKeys.viewModel -> sessionModel
-            )
-
-            lazy val result = {
-              TestSubmitFormController.submit(periodKey = "93DH")(request)
-            }
-
-            "status is BAD_REQUEST" in {
-              mockAuthorise(mtdVatAuthorisedResponse)
-              setupVatSubscriptionService(vatSubscriptionResponse)
-              status(result) shouldBe BAD_REQUEST
-            }
-
-            "error is displayed" in {
-              contentAsString(result) should include("Enter a number in the correct format")
-            }
-          }
-
-          "an error occurs (box3 incorrect amount of numbers)" when {
-
-            lazy val request1 = FakeRequest().withFormUrlEncodedBody(
-              "box1" -> "1000",
-              "box2" -> "1000",
-              "box3" -> "1234567890098765",
-              "box4" -> "1000",
-              "box5" -> "1000",
-              "box6" -> "1000",
-              "box7" -> "1000",
-              "box8" -> "1000",
-              "box9" -> "1000",
-              "flatRateScheme" -> "true",
-              "start" -> "2019-01-01",
-              "end" -> "2019-01-04",
-              "due" -> "2019-01-05"
-            ).withSession(
-              SessionKeys.mandationStatus -> MandationStatuses.nonMTDfB,
-              SessionKeys.viewModel -> sessionModel
-            )
-
-            lazy val request2 = FakeRequest().withFormUrlEncodedBody(
-              "box1" -> "1000",
-              "box2" -> "1000",
-              "box3" -> "1234.3456789",
-              "box4" -> "1000",
-              "box5" -> "1000",
-              "box6" -> "1000",
-              "box7" -> "1000",
-              "box8" -> "1000",
-              "box9" -> "1000",
-              "flatRateScheme" -> "true",
-              "start" -> "2019-01-01",
-              "end" -> "2019-01-04",
-              "due" -> "2019-01-05"
-            ).withSession(
-              SessionKeys.mandationStatus -> MandationStatuses.nonMTDfB,
-              SessionKeys.viewModel -> sessionModel
-            )
-
-            lazy val result1 = {
-              TestSubmitFormController.submit(periodKey = "93DH")(request1)
-            }
-
-            lazy val result2 = {
-              TestSubmitFormController.submit(periodKey = "93DH")(request2)
-            }
-
-            "status is BAD_REQUEST for too many non decimal digits" in {
-              mockAuthorise(mtdVatAuthorisedResponse)
-              setupVatSubscriptionService(vatSubscriptionResponse)
-              status(result1) shouldBe BAD_REQUEST
-            }
-
-            "status is BAD_REQUEST for too many decimal digits" in {
-              mockAuthorise(mtdVatAuthorisedResponse)
-              setupVatSubscriptionService(vatSubscriptionResponse)
-              status(result2) shouldBe BAD_REQUEST
-            }
-
-            "error is displayed for too many non decimal digits" in {
-              contentAsString(result1) should include("Enter a maximum of 13 digits for pounds." +
-                "\nEnter a maximum of 2 decimal places for pence.\nYou can use a negative amount eg -13.2")
-            }
-
-            "error is displayed for too many decimal digits" in {
-              contentAsString(result2) should include("Enter a maximum of 13 digits for pounds." +
-                "\nEnter a maximum of 2 decimal places for pence.\nYou can use a negative amount eg -13.2")
-            }
-          }
-
-          "an error occurs (box5 empty)" when {
-            lazy val request = FakeRequest().withFormUrlEncodedBody(
-              "box1" -> "1000",
-              "box2" -> "1000",
-              "box3" -> "12000",
-              "box4" -> "1000",
-              "box5" -> "",
-              "box6" -> "1000",
-              "box7" -> "1000",
-              "box8" -> "1000",
-              "box9" -> "1000",
-              "flatRateScheme" -> "true",
-              "start" -> "2019-01-01",
-              "end" -> "2019-01-04",
-              "due" -> "2019-01-05"
-            ).withSession(
-              SessionKeys.mandationStatus -> MandationStatuses.nonMTDfB,
-              SessionKeys.viewModel -> sessionModel
-            )
-
-            lazy val result = {
-              TestSubmitFormController.submit(periodKey = "93DH")(request)
-            }
-
-            "status is BAD_REQUEST" in {
-              mockAuthorise(mtdVatAuthorisedResponse)
-              setupVatSubscriptionService(vatSubscriptionResponse)
-              status(result) shouldBe BAD_REQUEST
-            }
-
-            "error is displayed" in {
-              contentAsString(result) should include("Enter a number")
-            }
-          }
-
-          "an error occurs (box5 invalid format)" when {
-
-            lazy val request = FakeRequest().withFormUrlEncodedBody(
-              "box1" -> "1000",
-              "box2" -> "1000",
-              "box3" -> "12000",
-              "box4" -> "1000",
-              "box5" -> "e",
-              "box6" -> "1000",
-              "box7" -> "1000",
-              "box8" -> "1000",
-              "box9" -> "1000",
-              "flatRateScheme" -> "true",
-              "start" -> "2019-01-01",
-              "end" -> "2019-01-04",
-              "due" -> "2019-01-05").withSession(
-              SessionKeys.mandationStatus -> MandationStatuses.nonMTDfB,
-              SessionKeys.viewModel -> sessionModel
-            )
-
-            lazy val result = {
-              TestSubmitFormController.submit(periodKey = "93DH")(request)
-            }
-
-            "status is BAD_REQUEST" in {
-              mockAuthorise(mtdVatAuthorisedResponse)
-              setupVatSubscriptionService(vatSubscriptionResponse)
-              status(result) shouldBe BAD_REQUEST
-            }
-
-            "error is displayed" in {
-              contentAsString(result) should include("Enter a number in the correct format")
-            }
-          }
-
-          "an error occurs (box5 incorrect amount of numbers)" when {
-
-            lazy val request1 = FakeRequest().withFormUrlEncodedBody(
-              "box1" -> "1000",
-              "box2" -> "1000",
-              "box3" -> "2000",
-              "box4" -> "1000",
-              "box5" -> "1000123456789012345",
-              "box6" -> "1000",
-              "box7" -> "1000",
-              "box8" -> "1000",
-              "box9" -> "1000",
-              "flatRateScheme" -> "true",
-              "start" -> "2019-01-01",
-              "end" -> "2019-01-04",
-              "due" -> "2019-01-05"
-            ).withSession(
-              SessionKeys.mandationStatus -> MandationStatuses.nonMTDfB,
-              SessionKeys.viewModel -> sessionModel
-            )
-
-            lazy val request2 = FakeRequest().withFormUrlEncodedBody(
-              "box1" -> "1000",
-              "box2" -> "1000",
-              "box3" -> "2000",
-              "box4" -> "1000",
-              "box5" -> "1000.1234567",
-              "box6" -> "1000",
-              "box7" -> "1000",
-              "box8" -> "1000",
-              "box9" -> "1000",
-              "flatRateScheme" -> "true",
-              "start" -> "2019-01-01",
-              "end" -> "2019-01-04",
-              "due" -> "2019-01-05"
-            ).withSession(
-              SessionKeys.mandationStatus -> MandationStatuses.nonMTDfB,
-              SessionKeys.viewModel -> sessionModel
-            )
-
-            lazy val result1 = {
-              TestSubmitFormController.submit(periodKey = "93DH")(request1)
-            }
-
-            lazy val result2 = {
-              TestSubmitFormController.submit(periodKey = "93DH")(request2)
-            }
-
-            "status is BAD_REQUEST for too many non decimal digits" in {
-              mockAuthorise(mtdVatAuthorisedResponse)
-              setupVatSubscriptionService(vatSubscriptionResponse)
-              status(result1) shouldBe BAD_REQUEST
-            }
-
-            "status is BAD_REQUEST for too many decimal digits" in {
-              mockAuthorise(mtdVatAuthorisedResponse)
-              setupVatSubscriptionService(vatSubscriptionResponse)
-              status(result2) shouldBe BAD_REQUEST
-            }
-
-            "error is displayed for too many non decimal digits" in {
-              contentAsString(result1) should include("Enter a maximum of 13 digits for pounds." +
-                "\nEnter a maximum of 2 decimal places for pence.\nDo not use a negative amount eg -13.2")
-            }
-
-            "error is displayed for too many decimal digits" in {
-              contentAsString(result2) should include("Enter a maximum of 13 digits for pounds." +
-                "\nEnter a maximum of 2 decimal places for pence.\nDo not use a negative amount eg -13.2")
-            }
-          }
-        }
-
         "an unsuccessful response is received from the service" should {
 
           val vatSubscriptionFailureResponse: Future[HttpGetResult[CustomerDetails]] = Future.successful(Left(UnexpectedJsonFormat))
@@ -968,7 +588,6 @@ class SubmitFormControllerSpec extends BaseSpec
             Jsoup.parse(bodyOf(result)).select("#content > article > div > h2").text() shouldBe ""
           }
         }
-
       }
 
       "there is no model in session" should {
@@ -1068,7 +687,6 @@ class SubmitFormControllerSpec extends BaseSpec
           }
         }
       }
-
     }
 
     authControllerChecks(TestSubmitFormController.submit(periodKey = "93DH"), fakeRequest)
