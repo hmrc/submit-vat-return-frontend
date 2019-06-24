@@ -16,11 +16,10 @@
 
 package views
 
+import assets.messages.{ConfirmationPageMessages => viewMessages}
+import models.auth.User
 import org.jsoup.Jsoup
 import org.jsoup.nodes.Document
-import assets.messages.{ConfirmationPageMessages => viewMessages}
-import mocks.MockConfig
-import models.auth.User
 import play.api.mvc.AnyContentAsEmpty
 
 
@@ -56,21 +55,20 @@ class ConfirmationViewSpec extends ViewBaseSpec {
       }
 
       "have the correct redirect link" in {
-        element("#content a").attr("href") shouldBe "vat-summary-frontend-url"
+        element("#content a").attr("href") shouldBe "/what-to-do"
       }
     }
 
     "display the change client link" when {
       lazy val agent: User[AnyContentAsEmpty.type] = User[AnyContentAsEmpty.type]("999999999", Some("123456789"))
       lazy val feature_view = {
-        mockAppConfig.features.changeClientEnabled(true)
         views.html.confirmation_view() (fakeRequest, messages, mockAppConfig, agent)
       }
       lazy implicit val feature_document: Document = Jsoup.parse(feature_view.body)
 
       val changeClientLink = "#content > article > p:nth-child(4) > a"
 
-      "the feature switch is on" in {
+      "the user is an agent" in {
         val changeClientLinkElem = element(changeClientLink)(feature_document)
 
         changeClientLinkElem.text() shouldBe "Change client"
@@ -79,42 +77,18 @@ class ConfirmationViewSpec extends ViewBaseSpec {
     }
 
     "not display the change client link" when {
-      lazy val agent: User[AnyContentAsEmpty.type] = User[AnyContentAsEmpty.type]("999999999", Some("123456789"))
+      lazy val agent: User[AnyContentAsEmpty.type] = User[AnyContentAsEmpty.type]("999999999", None)
       lazy val feature_view = {
-        mockAppConfig.features.changeClientEnabled(false)
         views.html.confirmation_view() (fakeRequest, messages, mockAppConfig, agent)
       }
       lazy implicit val feature_document: Document = Jsoup.parse(feature_view.body)
 
       val changeClientLink = "#content > article > p:nth-child(4) > a"
 
-      "the feature switch is off" in {
+      "the user is not an agent" in {
         val changeClientLinkElem = element(changeClientLink)(feature_document)
 
         changeClientLinkElem.text() shouldNot be("Change client")
-      }
-    }
-
-    "use the correct link for the Finish button" when {
-      lazy val agent: User[AnyContentAsEmpty.type] = User[AnyContentAsEmpty.type]("999999999", Some("123456789"))
-
-      "the feature switch is on" in {
-        lazy val feature_view = {
-          mockAppConfig.features.changeClientEnabled(true)
-          views.html.confirmation_view() (fakeRequest, messages, mockAppConfig, agent)
-        }
-        lazy implicit val feature_document: Document = Jsoup.parse(feature_view.body)
-
-        element("#content > article > p:nth-child(5) > a")(feature_document).attributes().get("href") shouldBe "/what-to-do"
-      }
-      "the feature switch is off" in {
-        lazy val feature_view = {
-          mockAppConfig.features.changeClientEnabled(false)
-          views.html.confirmation_view() (fakeRequest, messages, mockAppConfig, agent)
-        }
-        lazy implicit val feature_document: Document = Jsoup.parse(feature_view.body)
-
-        element("#content > article > p:nth-child(4) > a")(feature_document).attributes().get("href") shouldBe "vat-summary-frontend-url"
       }
     }
   }

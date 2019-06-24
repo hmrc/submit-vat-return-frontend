@@ -17,6 +17,5 @@
 package testOnly.models
 
 case class FeatureSwitchModel(
-                               staticDateEnabled: Boolean,
-                               changeClientEnabled: Boolean
+                               staticDateEnabled: Boolean
                              )
