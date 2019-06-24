@@ -39,7 +39,7 @@ class IncorrectMandationUserViewSpec extends ViewBaseSpec {
     "the user is a non agent" should {
 
       val user = User[AnyContentAsEmpty.type]("999999999")(fakeRequest)
-      lazy val view = views.html.errors.incorrect_mandation_user()(fakeRequest, mockAppConfig, messages, user = Some(user))
+      lazy val view = views.html.errors.incorrect_mandation_user()(fakeRequest, mockAppConfig, messages, user)
       lazy implicit val document: Document = Jsoup.parse(view.body)
 
       "have the correct document title" in {
@@ -51,7 +51,7 @@ class IncorrectMandationUserViewSpec extends ViewBaseSpec {
       }
 
       "have the correct instructions on the page" in {
-        elementText(Selectors.instructions) shouldBe IncorrectMandationMessages.paragraph
+        elementText(Selectors.instructions) shouldBe IncorrectMandationMessages.nonAgentParagraph
       }
 
       s"have the correct link text of ${IncorrectMandationMessages.nonAgentLinkText}" in {
@@ -68,16 +68,20 @@ class IncorrectMandationUserViewSpec extends ViewBaseSpec {
       lazy val fakeRequestWithClientsVRN: FakeRequest[AnyContentAsEmpty.type] =
         FakeRequest().withSession(AuthKeys.agentSessionVrn -> "999999999")
 
-      val agentUser: User[AnyContentAsEmpty.type] = User[AnyContentAsEmpty.type]("999999999", Some("XAIT012345678"))(fakeRequestWithClientsVRN)
-      lazy val view = views.html.errors.incorrect_mandation_user()(fakeRequestWithClientsVRN, mockAppConfig, messages, user = Some(agentUser))
+      lazy val agentUser: User[AnyContentAsEmpty.type] = User[AnyContentAsEmpty.type]("999999999", Some("XAIT012345678"))(fakeRequestWithClientsVRN)
+      lazy val view = views.html.errors.incorrect_mandation_user()(fakeRequestWithClientsVRN, mockAppConfig, messages, user = agentUser)
       lazy implicit val document: Document = Jsoup.parse(view.body)
+
+      "have the correct instructions on the page" in {
+        elementText(Selectors.instructions) shouldBe IncorrectMandationMessages.agentParagraph
+      }
 
       s"have the correct link text of ${IncorrectMandationMessages.agentLinkText}" in {
         elementText(Selectors.instructionsLink) shouldBe IncorrectMandationMessages.agentLinkText
       }
 
       "have a link to the agent action page" in {
-        element(Selectors.instructionsLink).attr("href") shouldBe "/return-deadlines"
+        element(Selectors.instructionsLink).attr("href") shouldBe "/agent-action"
       }
     }
   }

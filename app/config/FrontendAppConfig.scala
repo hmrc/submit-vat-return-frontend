@@ -51,6 +51,7 @@ trait AppConfig extends ServicesConfig {
   val features: Features
   val staticDateValue: String
   def vatReturnsUrl(vrn: String): String
+  val agentActionUrl: String
 }
 
 @Singleton
@@ -119,6 +120,8 @@ class FrontendAppConfig @Inject()(val runModeConfiguration: Configuration, envir
     getString(ConfigKeys.vatAgentClientLookupFrontendHost) + getString(ConfigKeys.manageClientUrl)
   override lazy val changeClientUrl: String =
     getString(ConfigKeys.vatAgentClientLookupFrontendHost) + getString(ConfigKeys.changeClientUrl)
+
+  override lazy val agentActionUrl: String = agentClientLookupHost + getString(ConfigKeys.vatAgentClientLookupFrontendAgentActionUrl)
 
   override def vatReturnsUrl(vrn: String): String = s"${baseUrl(ConfigKeys.vatReturnsBase)}/${getString(ConfigKeys.vatReturnsUrl)}/$vrn"
 

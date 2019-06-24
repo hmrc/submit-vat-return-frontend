@@ -20,8 +20,10 @@ object IncorrectMandationMessages {
 
   val title = "Submit VAT Return"
   val heading = "The business submits VAT Returns using Making Tax Digital"
-  val paragraph: String = "The business has signed up to the Making Tax Digital service." +
+  val nonAgentParagraph: String = "The business has signed up to the Making Tax Digital service." +
     " You must submit your VAT Returns to HMRC using compatible accounting software."
+  val agentParagraph: String = "The business has signed up to the Making Tax Digital service." +
+    " You must submit your client’s VAT Returns to HMRC using compatible accounting software."
   val nonAgentLinkText = "View your VAT Return deadlines"
   val agentLinkText = "View your client options"
 }

@@ -47,7 +47,7 @@ trait BaseSpec extends WordSpec with Matchers with GuiceOneAppPerSuite with Mock
 
   lazy val errorHandler: ErrorHandler = injector.instanceOf[ErrorHandler]
 
-  lazy val fakeRequest: FakeRequest[AnyContentAsEmpty.type] = FakeRequest("", "")
+  implicit lazy val fakeRequest: FakeRequest[AnyContentAsEmpty.type] = FakeRequest("", "")
 
   implicit lazy val messages: Messages = messagesApi.preferred(fakeRequest)
 
