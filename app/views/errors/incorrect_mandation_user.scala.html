@@ -20,16 +20,16 @@
 
 @()(implicit request: Request[_], appConfig: AppConfig, messages: Messages, user: Option[User[_]] = None)
 
-@views.html.main_template(title = messages("incorrect_mandation_user.title"), bodyClasses = None, appConfig = appConfig) {
+@views.html.main_template(title = messages("incorrect_mandation.title"), bodyClasses = None, appConfig = appConfig) {
 
-  @heading(messages("incorrect_mandation_user.heading"))
+  @heading(messages("incorrect_mandation.heading"))
 
-  <p>@messages("incorrect_mandation_user.paragraph")</p>
+  <p>@messages("incorrect_mandation.paragraph")</p>
 
  @user.map { u => @if(u.isAgent) {
-   <a href="@appConfig.returnDeadlinesUrl">@messages("incorrect_mandation_user.link")</a>
+   <a href="@appConfig.agentActionUrl">@messages("incorrect_mandation_agent_client.link")</a>
   } else {
-   <a href="@appConfig.agentClientLookupStartUrl(request.uri)">@messages("incorrect_mandation_agent_client.link")</a>
+   <a href="@appConfig.returnDeadlinesUrl">@messages("incorrect_mandation_user.link")</a>
   }
  }
 }

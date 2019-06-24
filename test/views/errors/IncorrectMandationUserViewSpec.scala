@@ -68,7 +68,7 @@ class IncorrectMandationUserViewSpec extends ViewBaseSpec {
       lazy val fakeRequestWithClientsVRN: FakeRequest[AnyContentAsEmpty.type] =
         FakeRequest().withSession(AuthKeys.agentSessionVrn -> "999999999")
 
-      val agentUser: User[AnyContentAsEmpty.type] = User[AnyContentAsEmpty.type]("999999999", Some("XAIT012345678"))(fakeRequestWithClientsVRN)
+      lazy val agentUser: User[AnyContentAsEmpty.type] = User[AnyContentAsEmpty.type]("999999999", Some("XAIT012345678"))(fakeRequestWithClientsVRN)
       lazy val view = views.html.errors.incorrect_mandation_user()(fakeRequestWithClientsVRN, mockAppConfig, messages, user = Some(agentUser))
       lazy implicit val document: Document = Jsoup.parse(view.body)
 
@@ -77,7 +77,7 @@ class IncorrectMandationUserViewSpec extends ViewBaseSpec {
       }
 
       "have a link to the agent action page" in {
-        element(Selectors.instructionsLink).attr("href") shouldBe "/return-deadlines"
+        element(Selectors.instructionsLink).attr("href") shouldBe "/agent-action"
       }
     }
   }
