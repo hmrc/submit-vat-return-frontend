@@ -58,4 +58,6 @@ object ConfigKeys {
   val staticDateEnabledFeature: String = "features.staticDate.enabled"
   val staticDateValue: String = "date-service.staticDate.value"
 
+  val changeClientUrl: String = "vat-agent-client-lookup-frontend.changeClientUrl"
+  val manageClientUrl: String = "vat-agent-client-lookup-frontend.whatToDoUrl"
 }
