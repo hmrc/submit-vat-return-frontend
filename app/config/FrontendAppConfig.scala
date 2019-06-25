@@ -49,6 +49,9 @@ trait AppConfig extends ServicesConfig {
   val features: Features
   val staticDateValue: String
 
+  val manageClientUrl: String
+  val changeClientUrl: String
+
   def vatReturnsUrl(vrn: String): String
 }
 
