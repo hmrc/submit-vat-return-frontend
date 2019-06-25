@@ -31,5 +31,13 @@
 
   <p>@messages("confirmation_view.paragraph")</p>
 
-  <a class="button" href=@appConfig.vatSummaryUrl>@messages("common.finish")</a>
+    @if(user.isAgent) {
+        <p>
+            <a href="@{appConfig.changeClientUrl}">@messages("confirmation_view.changeClient")</a>
+        </p>
+    }
+
+    <p>
+      <a class="button" id="submit-confirmation-finish-button" href="@appConfig.manageClientUrl">@messages("common.finish")</a>
+    </p>
 }
