@@ -18,7 +18,7 @@
 @import testOnly.models.StubAgentClientLookupModel
 @import uk.gov.hmrc.play.views.html.helpers
 
-@(form: Form[StubAgentClientLookupModel], redirectUrl: String)(implicit request: Request[_], messages: Messages, appConfig: config.AppConfig)
+@(form: Form[StubAgentClientLookupModel], redirectUrl: Option[String])(implicit request: Request[_], messages: Messages, appConfig: config.AppConfig)
 
 @views.html.main_template(title = "Stub Agent Client Lookup Frontend", bodyClasses = None, appConfig = appConfig) {
 
@@ -45,7 +45,7 @@
         </div>
 
         <label><h4>RedirectUrl:</h4></label>
-        <input type="text" name="redirectUrl" id="redirectUrl" value="@redirectUrl" style="width:100%;border:none;" readonly>
+        <input type="text" name="redirectUrl" id="redirectUrl" value="@redirectUrl.getOrElse("/")" style="width:100%;border:none;" readonly>
 
     }
 }

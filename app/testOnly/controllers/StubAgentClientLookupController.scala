@@ -28,7 +28,7 @@ class StubAgentClientLookupController @Inject()(val messagesApi: MessagesApi,
                                                 implicit val appConfig: AppConfig)
   extends FrontendController with I18nSupport {
 
-  def show(redirectUrl: String): Action[AnyContent] = Action { implicit request =>
+  def show(redirectUrl: Option[String]): Action[AnyContent] = Action { implicit request =>
     Ok(testOnly.views.html.stubAgentClientLookup(StubAgentClientLookupForm.form, redirectUrl))
   }
 
