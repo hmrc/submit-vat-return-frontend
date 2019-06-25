@@ -49,6 +49,9 @@ trait AppConfig extends ServicesConfig {
   val features: Features
   val staticDateValue: String
 
+  val manageClientUrl: String
+  val changeClientUrl: String
+
   def vatReturnsUrl(vrn: String): String
 }
 
@@ -113,6 +116,11 @@ class FrontendAppConfig @Inject()(val runModeConfiguration: Configuration, envir
     agentClientLookupHost +
     getString(ConfigKeys.vatAgentClientLookupFrontendUnauthorisedUrl) +
     s"?redirectUrl=${agentClientLookupRedirectUrl(uri)}"
+
+  override lazy val manageClientUrl: String =
+    getString(ConfigKeys.vatAgentClientLookupFrontendNonStubHost) + getString(ConfigKeys.manageClientUrl)
+  override lazy val changeClientUrl: String =
+    getString(ConfigKeys.vatAgentClientLookupFrontendHost) + getString(ConfigKeys.changeClientUrl)
 
   override def vatReturnsUrl(vrn: String): String = s"${baseUrl(ConfigKeys.vatReturnsBase)}/${getString(ConfigKeys.vatReturnsUrl)}/$vrn"
 

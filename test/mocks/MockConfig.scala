@@ -47,4 +47,6 @@ class MockConfig(implicit val runModeConfiguration: Configuration) extends AppCo
   override def vatReturnsUrl(vrn: String): String = s"url/$vrn"
   override val features: Features = new Features(runModeConfiguration)
   override val staticDateValue: String = "2018-05-01"
+  override val manageClientUrl: String = "/agent-action"
+  override val changeClientUrl: String = "/change-client"
 }

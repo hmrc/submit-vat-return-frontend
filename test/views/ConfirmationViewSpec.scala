@@ -58,5 +58,38 @@ class ConfirmationViewSpec extends ViewBaseSpec {
         element("#content a").attr("href") shouldBe "vat-summary-frontend-url"
       }
     }
+
+    "display the change client link" when {
+      lazy val agent: User[AnyContentAsEmpty.type] = User[AnyContentAsEmpty.type]("999999999", Some("123456789"))
+      lazy val feature_view = {
+        views.html.confirmation_view() (fakeRequest, messages, mockAppConfig, agent)
+      }
+      lazy implicit val feature_document: Document = Jsoup.parse(feature_view.body)
+
+      val changeClientLink = "#content > article > p:nth-child(4) > a"
+
+      "the user is an agent" in {
+        val changeClientLinkElem = element(changeClientLink)(feature_document)
+
+        changeClientLinkElem.text() shouldBe "Change client"
+        changeClientLinkElem.attributes().get("href") shouldBe "/change-client"
+      }
+    }
+
+    "not display the change client link" when {
+      lazy val agent: User[AnyContentAsEmpty.type] = User[AnyContentAsEmpty.type]("999999999", None)
+      lazy val feature_view = {
+        views.html.confirmation_view() (fakeRequest, messages, mockAppConfig, agent)
+      }
+      lazy implicit val feature_document: Document = Jsoup.parse(feature_view.body)
+
+      val changeClientLink = "#content > article > p:nth-child(4) > a"
+
+      "the user is not an agent" in {
+        val changeClientLinkElem = element(changeClientLink)(feature_document)
+
+        changeClientLinkElem.text() shouldNot be("Change client")
+      }
+    }
   }
 }
