@@ -43,16 +43,22 @@ trait AppConfig extends ServicesConfig {
   val govUkGuidanceMtdVat: String
   val govUkGuidanceAgentServices: String
   val vatSummaryUrl: String
+  val manageClientUrl: String
+  val changeClientUrl: String
   val returnDeadlinesUrl: String
   val signOutUrl: String
   val feedbackSurveyUrl: String
   val features: Features
   val staticDateValue: String
+<<<<<<< HEAD
 
   val manageClientUrl: String
   val changeClientUrl: String
 
+=======
+>>>>>>> Revert "Revert "BTAT-6157 Added graceful error handling for user with incorrect mandation status""
   def vatReturnsUrl(vrn: String): String
+  val agentActionUrl: String
 }
 
 @Singleton
@@ -126,5 +132,4 @@ class FrontendAppConfig @Inject()(val runModeConfiguration: Configuration, envir
 
   override val features = new Features(runModeConfiguration)
   override lazy val staticDateValue: String = getString(ConfigKeys.staticDateValue)
-
 }

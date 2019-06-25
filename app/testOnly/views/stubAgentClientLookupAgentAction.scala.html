@@ -1,4 +1,4 @@
-/*
+@*
  * Copyright 2019 HM Revenue & Customs
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -12,10 +12,15 @@
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License.
- */
+ *@
 
-package testOnly.models
+@()(implicit request: Request[_], messages: Messages, appConfig: config.AppConfig)
 
-case class FeatureSwitchModel(
-                               staticDateEnabled: Boolean
-                             )
+@views.html.main_template(title = "Stub Agent Client Lookup Frontend", bodyClasses = None, appConfig = appConfig) {
+
+  <h1 class="heading-large">Stubbed agent action page</h1>
+
+  <p>This button will redirect you to the start of the submit vat returns journey (returns deadline page)</p>
+
+  <a class="button" href="@appConfig.returnDeadlinesUrl">Finish</a>
+}
