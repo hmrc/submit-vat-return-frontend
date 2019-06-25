@@ -23,7 +23,7 @@ object CustomerDetailsTestAssets {
   val customerDetailsModel: CustomerDetails = CustomerDetails(
     firstName =  Some("Duanne"),
     lastName =  Some("MilesAndMiles"),
-    tradingName =  Some("duannetherepairman"),
+    tradingName =  Some("childcatcherzInc"),
     organisationName =  Some("BadGuys")
   )
 

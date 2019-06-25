@@ -28,7 +28,6 @@ import play.mvc.Http.Status
 import play.api.test.Helpers._
 import base.BaseSpec
 import play.api.test.FakeRequest
-import assets.messages.IncorrectMandationMessages
 
 class MandationStatusPredicateSpec extends BaseSpec with MockMandationPredicate {
 
@@ -63,8 +62,9 @@ class MandationStatusPredicateSpec extends BaseSpec with MockMandationPredicate 
           status(result) shouldBe Status.FORBIDDEN
         }
 
+        //TODO: Update test once correct page is in play
         "show unsupported mandation status error view" in {
-          Jsoup.parse(bodyOf(result)).title shouldBe IncorrectMandationMessages.title
+          Jsoup.parse(bodyOf(result)).title shouldBe "You can’t use this service yet"
         }
       }
 
