@@ -23,21 +23,13 @@
 
 @main_template(messages("confirmation_view.title"), appConfig = appConfig, bodyClasses = None, user = Some(user)) {
 
-    <div class="govuk-box-highlight">
+  <div class="govuk-box-highlight">
     <h1 class="heading-xlarge">@messages("confirmation_view.heading")</h1>
-    </div>
+  </div>
 
-    <h2>@messages("confirmation_view.subHeading")</h2>
+  <h2>@messages("confirmation_view.subHeading")</h2>
 
-    <p>@messages("confirmation_view.paragraph")</p>
+  <p>@messages("confirmation_view.paragraph")</p>
 
-    @if(user.isAgent) {
-        <p>
-            <a href="@{appConfig.changeClientUrl}">@messages("confirmation_view.changeClient")</a>
-        </p>
-    }
-
-    <p>
-      <a class="button" href="@appConfig.manageClientUrl">@messages("common.finish")</a>
-    </p>
+  <a class="button" href=@appConfig.vatSummaryUrl>@messages("common.finish")</a>
 }
