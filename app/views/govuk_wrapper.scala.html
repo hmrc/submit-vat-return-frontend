@@ -35,6 +35,17 @@
 
 @linkElement = {
     <link rel="stylesheet" type="text/css" href='@routes.Assets.at("css/submitVat.css")'>
+
+  <script>
+    @if(showSignOut) {
+      $.timeoutDialog({
+        timeout: @appConfig.timeoutPeriod,
+        countdown: @appConfig.timeoutCountdown,
+        keep_alive_url: @request.uri,
+        logout_url: '@{controllers.routes.SignOutController.signOut(true).url}'
+      })
+    }
+  </script>
 }
 
 @head = {

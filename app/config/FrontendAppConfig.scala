@@ -38,6 +38,8 @@ trait AppConfig extends ServicesConfig {
   val whitelistExcludedPaths: Seq[Call]
   val shutterPage: String
   val signInUrl: String
+  val timeoutPeriod: Int
+  val timeoutCountdown: Int
   val agentClientLookupStartUrl: String => String
   val agentClientUnauthorisedUrl: String => String
   val govUkGuidanceMtdVat: String
@@ -95,6 +97,9 @@ class FrontendAppConfig @Inject()(val runModeConfiguration: Configuration, envir
 
   override lazy val feedbackSurveyUrl = s"$feedbackSurveyBaseUrl/$contactFormServiceIdentifier"
 
+  //Session timeout countdown
+  override lazy val timeoutCountdown: Int = getInt(ConfigKeys.timemoutCountdown)
+  override val timeoutPeriod: Int = getInt(ConfigKeys.timeoutPeriod)
 
   private lazy val governmentGatewayHost: String = getString(ConfigKeys.governmentGatewayHost)
 

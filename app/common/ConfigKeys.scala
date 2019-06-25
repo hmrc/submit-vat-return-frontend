@@ -38,6 +38,8 @@ object ConfigKeys {
   val signInBaseUrl: String = "signIn.url"
   val signInContinueBaseUrl: String = "signIn.continueBaseUrl"
   val signInContinueUrl: String = "signIn.continueUrl"
+  val timeoutPeriod: String = "timeout.period"
+  val timeoutCountdown: String = "timeout.countDown"
   val appName: String = "appName"
   val vatAgentClientLookupFrontendHost: String = "vat-agent-client-lookup-frontend.host"
   val vatAgentClientLookupFrontendNonStubHost: String = "vat-agent-client-lookup-frontend.nonStubHost"
