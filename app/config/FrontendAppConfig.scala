@@ -50,13 +50,8 @@ trait AppConfig extends ServicesConfig {
   val feedbackSurveyUrl: String
   val features: Features
   val staticDateValue: String
-<<<<<<< HEAD
-
   val manageClientUrl: String
   val changeClientUrl: String
-
-=======
->>>>>>> Revert "Revert "BTAT-6157 Added graceful error handling for user with incorrect mandation status""
   def vatReturnsUrl(vrn: String): String
   val agentActionUrl: String
 }
