@@ -98,8 +98,8 @@ class FrontendAppConfig @Inject()(val runModeConfiguration: Configuration, envir
   override lazy val feedbackSurveyUrl = s"$feedbackSurveyBaseUrl/$contactFormServiceIdentifier"
 
   //Session timeout countdown
-  override lazy val timeoutCountdown: Int = getInt(ConfigKeys.timemoutCountdown)
-  override val timeoutPeriod: Int = getInt(ConfigKeys.timeoutPeriod)
+  override lazy val timeoutCountdown: Int = getInt(ConfigKeys.timeoutCountdown)
+  override lazy val timeoutPeriod: Int = getInt(ConfigKeys.timeoutPeriod)
 
   private lazy val governmentGatewayHost: String = getString(ConfigKeys.governmentGatewayHost)
 

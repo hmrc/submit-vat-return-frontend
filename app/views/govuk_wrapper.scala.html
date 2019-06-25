@@ -35,17 +35,21 @@
 
 @linkElement = {
     <link rel="stylesheet" type="text/css" href='@routes.Assets.at("css/submitVat.css")'>
+}
 
-  <script>
-    @if(showSignOut) {
-      $.timeoutDialog({
-        timeout: @appConfig.timeoutPeriod,
-        countdown: @appConfig.timeoutCountdown,
-        keep_alive_url: @request.uri,
-        logout_url: '@{controllers.routes.SignOutController.signOut(true).url}'
-      })
-    }
-  </script>
+@scriptElement = {
+    <script>
+      @if(showSignOut) {
+        window.GOVUK.timeoutDialog({
+          timeout: @appConfig.timeoutPeriod,
+          countdown: @appConfig.timeoutCountdown,
+          keepAliveUrl: '@{controllers.routes.HelloWorldController.helloWorld()}',
+          signOutUrl: '@{controllers.routes.SignOutController.signOut(true).url}'
+        });
+        var dialogOpen;
+      }
+    </script>
+    @scriptElem.map(x => x)
 }
 
 @head = {
@@ -80,7 +84,7 @@
       analyticsToken = Some(appConfig.analyticsToken),
       analyticsHost = appConfig.analyticsHost,
       ssoUrl = None,
-      scriptElem = scriptElem,
+      scriptElem = Some(scriptElement),
       gaCalls = None)
 }
 
