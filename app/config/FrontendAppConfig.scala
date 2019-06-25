@@ -43,13 +43,15 @@ trait AppConfig extends ServicesConfig {
   val govUkGuidanceMtdVat: String
   val govUkGuidanceAgentServices: String
   val vatSummaryUrl: String
+  val manageClientUrl: String
+  val changeClientUrl: String
   val returnDeadlinesUrl: String
   val signOutUrl: String
   val feedbackSurveyUrl: String
   val features: Features
   val staticDateValue: String
-
   def vatReturnsUrl(vrn: String): String
+  val agentActionUrl: String
 }
 
 @Singleton
@@ -114,9 +116,15 @@ class FrontendAppConfig @Inject()(val runModeConfiguration: Configuration, envir
     getString(ConfigKeys.vatAgentClientLookupFrontendUnauthorisedUrl) +
     s"?redirectUrl=${agentClientLookupRedirectUrl(uri)}"
 
+  override lazy val manageClientUrl: String =
+    getString(ConfigKeys.vatAgentClientLookupFrontendHost) + getString(ConfigKeys.manageClientUrl)
+  override lazy val changeClientUrl: String =
+    getString(ConfigKeys.vatAgentClientLookupFrontendHost) + getString(ConfigKeys.changeClientUrl)
+
+  override lazy val agentActionUrl: String = agentClientLookupHost + getString(ConfigKeys.vatAgentClientLookupFrontendAgentActionUrl)
+
   override def vatReturnsUrl(vrn: String): String = s"${baseUrl(ConfigKeys.vatReturnsBase)}/${getString(ConfigKeys.vatReturnsUrl)}/$vrn"
 
   override val features = new Features(runModeConfiguration)
   override lazy val staticDateValue: String = getString(ConfigKeys.staticDateValue)
-
 }

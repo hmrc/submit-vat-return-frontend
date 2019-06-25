@@ -18,26 +18,23 @@
 @import models.auth.User
 @import views.html.templates.heading
 
+@()(implicit request: Request[_], appConfig: AppConfig, messages: Messages, user: User[_])
 
-@()(implicit request: Request[_], messages: Messages, appConfig: AppConfig, user: User[_])
+@views.html.main_template(title = messages("incorrect_mandation.title"), bodyClasses = None, appConfig = appConfig, user = Some(user)) {
 
-@main_template(messages("confirmation_view.title"), appConfig = appConfig, bodyClasses = None, user = Some(user)) {
+  @heading(messages("incorrect_mandation.heading"))
 
-    <div class="govuk-box-highlight">
-    <h1 class="heading-xlarge">@messages("confirmation_view.heading")</h1>
-    </div>
-
-    <h2>@messages("confirmation_view.subHeading")</h2>
-
-    <p>@messages("confirmation_view.paragraph")</p>
-
+  <p>@messages("incorrect_mandation.paragraph")
     @if(user.isAgent) {
-        <p>
-            <a href="@{appConfig.changeClientUrl}">@messages("confirmation_view.changeClient")</a>
-        </p>
+      @messages("incorrect_mandation.agent.text")
+    } else {
+      @messages("incorrect_mandation.nonAgent.text")
     }
+  </p>
 
-    <p>
-      <a class="button" href="@appConfig.manageClientUrl">@messages("common.finish")</a>
-    </p>
+  @if(user.isAgent) {
+   <a href="@appConfig.agentActionUrl">@messages("incorrect_mandation_agent_client.link")</a>
+  } else {
+   <a href="@appConfig.returnDeadlinesUrl">@messages("incorrect_mandation_nonAgent.link")</a>
+  }
 }

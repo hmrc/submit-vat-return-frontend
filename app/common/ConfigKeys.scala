@@ -42,6 +42,7 @@ object ConfigKeys {
   val vatAgentClientLookupFrontendHost: String = "vat-agent-client-lookup-frontend.host"
   val vatAgentClientLookupFrontendStartUrl: String = "vat-agent-client-lookup-frontend.startUrl"
   val vatAgentClientLookupFrontendUnauthorisedUrl: String = "vat-agent-client-lookup-frontend.unauthorisedUrl"
+  val vatAgentClientLookupFrontendAgentActionUrl: String = "vat-agent-client-lookup-frontend.agentActionUrl"
   val platformHost: String = "platform.host"
   val vatSummaryHost: String = "vat-summary-frontend.host"
   val vatSummaryUrl: String = "vat-summary-frontend.url"
@@ -58,4 +59,6 @@ object ConfigKeys {
   val staticDateEnabledFeature: String = "features.staticDate.enabled"
   val staticDateValue: String = "date-service.staticDate.value"
 
+  val changeClientUrl: String = "vat-agent-client-lookup-frontend.changeClientUrl"
+  val manageClientUrl: String = "vat-agent-client-lookup-frontend.whatToDoUrl"
 }
