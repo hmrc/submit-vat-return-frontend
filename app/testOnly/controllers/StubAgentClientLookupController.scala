@@ -32,6 +32,10 @@ class StubAgentClientLookupController @Inject()(val messagesApi: MessagesApi,
     Ok(testOnly.views.html.stubAgentClientLookup(StubAgentClientLookupForm.form, redirectUrl))
   }
 
+  def showAgentAction(): Action[AnyContent] = Action { implicit request =>
+    Ok(testOnly.views.html.stubAgentClientLookupAgentAction())
+  }
+
   def unauthorised(redirectUrl: String): Action[AnyContent] = Action { implicit request =>
     Ok(testOnly.views.html.stubAgentClientUnauth(redirectUrl))
       .removingFromSession(AuthKeys.agentSessionVrn)

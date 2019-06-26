@@ -16,10 +16,10 @@
 
 package views
 
-import org.jsoup.Jsoup
-import org.jsoup.nodes.Document
 import assets.messages.{ConfirmationPageMessages => viewMessages}
 import models.auth.User
+import org.jsoup.Jsoup
+import org.jsoup.nodes.Document
 import play.api.mvc.AnyContentAsEmpty
 
 
@@ -55,7 +55,7 @@ class ConfirmationViewSpec extends ViewBaseSpec {
       }
 
       "have the correct redirect link" in {
-        element("#content a").attr("href") shouldBe "vat-summary-frontend-url"
+        element("#content a").attr("href") shouldBe mockAppConfig.vatSummaryUrl
       }
     }
 
