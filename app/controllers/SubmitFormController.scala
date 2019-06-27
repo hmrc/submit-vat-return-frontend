@@ -34,7 +34,7 @@ import play.api.mvc.{Action, AnyContent}
 import services.{DateService, VatObligationsService, VatSubscriptionService}
 import uk.gov.hmrc.http.HeaderCarrier
 import uk.gov.hmrc.play.bootstrap.controller.FrontendController
-
+import forms.SubmitVatReturnForm._
 import scala.concurrent.Future
 
 @Singleton
@@ -128,7 +128,7 @@ class SubmitFormController @Inject()(val messagesApi: MessagesApi,
 
   def submit(periodKey: String): Action[AnyContent] = (authPredicate andThen mandationStatusCheck).async { implicit user =>
 
-    SubmitVatReturnForm.submitVatReturnForm.bindFromRequest().fold(
+    validateBoxCalculations(SubmitVatReturnForm.submitVatReturnForm.bindFromRequest()).fold(
       failure => {
 
         user.session.get(SessionKeys.viewModel) match {

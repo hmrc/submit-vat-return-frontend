@@ -16,14 +16,14 @@
 
 package controllers
 
+import base.BaseSpec
 import play.api.http.Status
 import play.api.mvc.{AnyContentAsEmpty, Result}
 import play.api.test.FakeRequest
 import play.api.test.Helpers._
-
 import scala.concurrent.Future
 
-class SignOutControllerSpec extends SubmitFormControllerSpec {
+class SignOutControllerSpec extends BaseSpec {
 
   private trait SignOutControllerTest {
     def target: SignOutController = {
