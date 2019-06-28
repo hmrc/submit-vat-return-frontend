@@ -26,9 +26,17 @@ class SignOutController @Inject()(val messagesApi: MessagesApi,
                                   implicit val appConfig: AppConfig
                                  ) extends FrontendController with I18nSupport {
 
-  def signOut(feedbackOnSignOut: Boolean) : Action[AnyContent] = Action { implicit request =>
-    val redirectUrl: String =  appConfig.signOutUrl
+  def signOut(feedbackOnSignOut: Boolean, timeout: Boolean = false) : Action[AnyContent] = Action { implicit request =>
+    val redirectUrl: String = (timeout, feedbackOnSignOut) match {
+      case (true, _) => appConfig.timeoutSignOutUrl
+      case (_, true) => appConfig.signOutUrl
+      case (_, false) => appConfig.signInUrl
+    }
+
     Redirect(redirectUrl)
   }
 
+  val timeout: Action[AnyContent] = Action { implicit request =>
+    Unauthorized(views.html.errors.session_expired())
+  }
 }

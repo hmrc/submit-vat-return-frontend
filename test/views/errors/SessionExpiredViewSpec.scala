@@ -29,7 +29,7 @@ class SessionExpiredViewSpec extends ViewBaseSpec {
       val instructions = "#content article p"
     }
 
-    lazy val view = views.html.errors.session_expired(mockAppConfig)(fakeRequest, messages)
+    lazy val view = views.html.errors.session_expired()(fakeRequest, messages, mockAppConfig)
     lazy implicit val document: Document = Jsoup.parse(view.body)
 
     "have the correct document title" in {

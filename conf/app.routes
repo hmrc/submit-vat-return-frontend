@@ -14,5 +14,5 @@ GET        /submission-confirmation       controllers.ConfirmationController.sho
 
 GET        /:periodKey/confirm-submission controllers.ConfirmSubmissionController.show(periodKey: String)
 POST       /:periodKey/confirm-submission controllers.ConfirmSubmissionController.submit(periodKey: String)
-GET        /sign-out                      controllers.SignOutController.signOut(feedbackOnSignOut: Boolean)
-
+GET        /sign-out                      controllers.SignOutController.signOut(feedbackOnSignOut: Boolean, timeout: Boolean ?= false)
+GET        /time-out                      controllers.SignOutController.timeout

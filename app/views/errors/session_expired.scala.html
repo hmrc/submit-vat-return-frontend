@@ -18,9 +18,9 @@
 @import models.auth.User
 @import templates.heading
 
-@(appConfig: AppConfig)(implicit request: Request[_], messages: Messages, user: Option[User[_]] = None)
+@()(implicit request: Request[_], messages: Messages, appConfig: AppConfig, user: Option[User[_]] = None)
 
-@main_template(title = messages("session_expired.title"), appConfig = appConfig) {
+@main_template(title = messages("session_expired.title"), appConfig = appConfig, showSignOut = false) {
 
   @heading(messages("session_expired.heading"))
 

@@ -40,6 +40,7 @@ class MockConfig(implicit val runModeConfiguration: Configuration) extends AppCo
   override val feedbackSurveyUrl: String = "/some-survey-url"
   override val timeoutCountdown: Int = 20
   override val timeoutPeriod: Int = 1800
+  override val timeoutSignOutUrl: String = "/timeout-url"
   override val agentClientLookupStartUrl: String => String = uri => s"agent-client-lookup-start-url/$uri"
   override val agentClientUnauthorisedUrl: String => String = uri => s"agent-client-unauthorised-url/$uri"
   override val govUkGuidanceMtdVat: String = "mtd-vat"

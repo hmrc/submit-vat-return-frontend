@@ -43,8 +43,8 @@
         window.GOVUK.timeoutDialog({
           timeout: @appConfig.timeoutPeriod,
           countdown: @appConfig.timeoutCountdown,
-          keepAliveUrl: '@{controllers.routes.HelloWorldController.helloWorld()}',
-          signOutUrl: '@{controllers.routes.SignOutController.signOut(true).url}'
+          keepAliveUrl: '@{controllers.routes.ConfirmationController.show()}',
+          signOutUrl: '@{controllers.routes.SignOutController.signOut(false, true).url}'
         });
         var dialogOpen;
       }
