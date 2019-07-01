@@ -18,7 +18,7 @@ package base
 
 import common.SessionKeys
 import config.AppConfig
-import org.scalatest.{BeforeAndAfterEach, Matchers, WordSpec}
+import org.scalatest.{BeforeAndAfterAll, Matchers, WordSpec}
 import org.scalatestplus.play.guice.GuiceOneServerPerSuite
 import play.api.data.Form
 import play.api.http.HeaderNames
@@ -33,7 +33,7 @@ import scala.concurrent.duration.Duration
 import scala.concurrent.{Await, Awaitable}
 
 trait BaseISpec extends WordSpec with WireMockHelper with Matchers with
-  BeforeAndAfterEach with GuiceOneServerPerSuite {
+  BeforeAndAfterAll with GuiceOneServerPerSuite {
 
   def servicesConfig: Map[String, String] = Map(
     "play.filters.csrf.header.bypassHeaders.Csrf-Token" -> "nocheck",
@@ -58,14 +58,14 @@ trait BaseISpec extends WordSpec with WireMockHelper with Matchers with
   lazy val appConfig: AppConfig = app.injector.instanceOf[AppConfig]
   val appRouteContext: String = "/vat-through-software/submit-vat-return"
 
-  override def beforeEach(): Unit = {
-    super.beforeEach()
+  override def beforeAll(): Unit = {
+    super.beforeAll()
     startServer()
   }
 
-  override def afterEach(): Unit = {
+  override def afterAll(): Unit = {
     stopServer()
-    super.afterEach()
+    super.afterAll()
   }
 
   def await[T](awaitable: Awaitable[T]): T = Await.result(awaitable, Duration.Inf)
