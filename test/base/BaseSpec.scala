@@ -18,8 +18,6 @@ package base
 
 import akka.actor.ActorSystem
 import akka.stream.{ActorMaterializer, Materializer}
-import auth.AuthKeys
-import common.SessionKeys
 import config.{AppConfig, ErrorHandler}
 import mocks.MockConfig
 import org.scalamock.scalatest.MockFactory
