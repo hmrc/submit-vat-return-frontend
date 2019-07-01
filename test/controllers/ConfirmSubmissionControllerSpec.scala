@@ -19,6 +19,7 @@ package controllers
 import java.time.LocalDate
 
 import assets.CustomerDetailsTestAssets._
+import assets.messages.SubmissionErrorMessages
 import base.BaseSpec
 import common.{MandationStatuses, SessionKeys}
 import connectors.httpParsers.ResponseHttpParsers.HttpGetResult
@@ -219,8 +220,8 @@ class ConfirmSubmissionControllerSpec extends BaseSpec
               status(result) shouldBe Status.INTERNAL_SERVER_ERROR
             }
 
-            "show ISE page" in {
-              Jsoup.parse(bodyOf(result)).title() shouldBe "Sorry, we are experiencing technical difficulties - 500"
+            "show the Submission error page" in {
+              Jsoup.parse(bodyOf(result)).title() shouldBe SubmissionErrorMessages.title
             }
           }
         }

@@ -89,7 +89,7 @@ class ConfirmSubmissionController @Inject()(val messagesApi: MessagesApi,
                     Redirect(controllers.routes.ConfirmationController.show().url).removingFromSession(SessionKeys.returnData)
                   case Left(error) =>
                     Logger.warn(s"[ConfirmSubmissionController][submit] Error returned from vat-returns service: $error")
-                    errorHandler.showInternalServerError
+                    InternalServerError(views.html.errors.submission_error())
                 }
               } else {
                 Logger.debug(s"[ConfirmSubmissionController][submit] Obligation end date for period $periodKey has not yet passed.")
