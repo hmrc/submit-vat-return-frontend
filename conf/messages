@@ -17,7 +17,7 @@ error.summary.title = There is a problem
 
 session_expired.title = Your session has timed out
 session_expired.heading = Your session has timed out
-session_expired.helpOne = To manage your VAT account, you''ll have to
+session_expired.helpOne = You''ll have to
 session_expired.helpTwo = sign in
 session_expired.helpThree = using your Government Gateway ID.
 
