@@ -64,7 +64,7 @@
   }
 
   <section>
-    <h1 class="heading-xlarge">
+    <h1 class="heading-xlarge" data-metrics="submit-vat:view:nine-box-confirm;@user.isAgent">
       <span class="heading-secondary">@messages("confirm_submission.heading")</span>
         @displayDateRange(viewModel.returnDetail.start, viewModel.returnDetail.end, useShortDayFormat = true)
       <p class="form-hint heading-small">@messages("confirm_submission.returnDueDate", displayDate(viewModel.returnDetail.due))</p>
@@ -124,6 +124,7 @@
 
     @helpers.form(action = controllers.routes.ConfirmSubmissionController.submit(viewModel.periodKey)) {
       <button
+        onClick="sendGAEvent('submit-vat', 'confirm', 'nine-box-confirm', @user.isAgent)"
         class="button"
         type ="submit">
         @messages("confirm_submission.acceptAndSend")
