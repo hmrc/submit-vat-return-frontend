@@ -38,6 +38,8 @@ trait AppConfig extends ServicesConfig {
   val whitelistExcludedPaths: Seq[Call]
   val shutterPage: String
   val signInUrl: String
+  val timeoutPeriod: Int
+  val timeoutCountdown: Int
   val agentClientLookupStartUrl: String => String
   val agentClientUnauthorisedUrl: String => String
   val govUkGuidanceMtdVat: String
@@ -47,11 +49,13 @@ trait AppConfig extends ServicesConfig {
   val changeClientUrl: String
   val returnDeadlinesUrl: String
   val signOutUrl: String
+  val timeoutSignOutUrl: String
   val feedbackSurveyUrl: String
   val features: Features
   val staticDateValue: String
   def vatReturnsUrl(vrn: String): String
   val agentActionUrl: String
+  def feedbackUrl(redirectUrl: String): String
 }
 
 @Singleton
@@ -92,12 +96,16 @@ class FrontendAppConfig @Inject()(val runModeConfiguration: Configuration, envir
 
   //Sign-out
   private lazy val feedbackSurveyBaseUrl = getString(ConfigKeys.feedbackSurveyHost) + getString(ConfigKeys.feedbackSurveyUrl)
-
   override lazy val feedbackSurveyUrl = s"$feedbackSurveyBaseUrl/$contactFormServiceIdentifier"
 
+  //Session timeout countdown
+  override lazy val timeoutCountdown: Int = getInt(ConfigKeys.timeoutCountdown)
+  override lazy val timeoutPeriod: Int = getInt(ConfigKeys.timeoutPeriod)
 
   private lazy val governmentGatewayHost: String = getString(ConfigKeys.governmentGatewayHost)
 
+  private lazy val timeoutUrl = platformHost + controllers.routes.SignOutController.timeout().url
+  override lazy val timeoutSignOutUrl: String = s"$governmentGatewayHost/gg/sign-out?continue=$timeoutUrl"
   override lazy val signOutUrl = s"$governmentGatewayHost/gg/sign-out?continue=$feedbackSurveyUrl"
 
   override lazy val vatSummaryUrl: String = getString(ConfigKeys.vatSummaryHost) + getString(ConfigKeys.vatSummaryUrl)
@@ -126,4 +134,8 @@ class FrontendAppConfig @Inject()(val runModeConfiguration: Configuration, envir
 
   override val features = new Features(runModeConfiguration)
   override lazy val staticDateValue: String = getString(ConfigKeys.staticDateValue)
+
+  override def feedbackUrl(redirectUrl: String): String = {s"$contactHost/contact/beta-feedback?service=$contactFormServiceIdentifier" +
+    s"&backUrl=${ContinueUrl(platformHost + redirectUrl).encodedUrl}"}
+
 }

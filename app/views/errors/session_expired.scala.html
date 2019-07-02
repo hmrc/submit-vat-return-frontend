@@ -16,14 +16,16 @@
 
 @import config.AppConfig
 @import models.auth.User
+@import templates.heading
 
-@(appConfig: AppConfig)(implicit request: Request[_], messages: Messages, user: Option[User[_]] = None)
+@()(implicit request: Request[_], messages: Messages, appConfig: AppConfig, user: Option[User[_]] = None)
 
-@main_template(
-    title = messages("session_expired.title"),
-    appConfig = appConfig) {
+@main_template(title = messages("session_expired.title"), appConfig = appConfig, showSignOut = false) {
 
-    @templates.heading(messages("session_expired.heading"))
+  @heading(messages("session_expired.heading"))
 
-    <p>@messages("session_expired.guidance")</p>
+  <p>@messages("session_expired.helpOne")
+    <a href=@appConfig.signInUrl>@messages("session_expired.helpTwo")</a>
+    @messages("session_expired.helpThree")
+  </p>
 }

@@ -37,6 +37,21 @@
     <link rel="stylesheet" type="text/css" href='@routes.Assets.at("css/submitVat.css")'>
 }
 
+@scriptElement = {
+    <script>
+      @if(showSignOut) {
+        window.GOVUK.timeoutDialog({
+          timeout: @appConfig.timeoutPeriod,
+          countdown: @appConfig.timeoutCountdown,
+          keepAliveUrl: '@{controllers.routes.ConfirmationController.show()}',
+          signOutUrl: '@{controllers.routes.SignOutController.signOut(feedbackOnSignOut = false, timeout = true).url}'
+        });
+        var dialogOpen;
+      }
+    </script>
+    @scriptElem.map(x => x)
+}
+
 @head = {
     @uiLayouts.head(
       linkElem = Some(linkElement),
@@ -69,16 +84,25 @@
       analyticsToken = Some(appConfig.analyticsToken),
       analyticsHost = appConfig.analyticsHost,
       ssoUrl = None,
-      scriptElem = scriptElem,
+      scriptElem = Some(scriptElement),
       gaCalls = None)
 }
 
 @footerTop = {}
 @footerLinks = {}
 
+@phaseBanner = {
+  <div class="beta-banner">
+    <p>
+      <strong id="phase" class="phase-tag">@messages("banner.phaseName")</strong>
+      <span>@messages("banner.newService") <a id="beta-banner-feedback" href="@appConfig.feedbackUrl(request.uri)">@messages("banner.feedback")</a> @messages("banner.feedbackImprove")</span>
+    </p>
+  </div>
+}
+
 @serviceInfo = {
     @uiLayouts.serviceInfo(
-      betaBanner = HtmlFormat.empty,
+      betaBanner = phaseBanner,
       includeGridWrapper = false,
       serviceInfoContent = Some(serviceInfoContent))
 }

@@ -17,9 +17,7 @@
 package controllers
 
 import base.BaseSpec
-import play.api.http.Status
-import play.api.mvc.{AnyContentAsEmpty, Result}
-import play.api.test.FakeRequest
+import play.api.mvc.Result
 import play.api.test.Helpers._
 import scala.concurrent.Future
 
@@ -31,16 +29,42 @@ class SignOutControllerSpec extends BaseSpec {
     }
   }
 
-  "navigating to signout page" when {
+  "navigating to sign-out page" when {
 
-    "authorised" should {
-      "return 303 and navigate to the feedback survey url" in new SignOutControllerTest {
-        lazy val request: FakeRequest[AnyContentAsEmpty.type] = fakeRequest
-        lazy val result: Future[Result] = target.signOut(feedbackOnSignOut = true)(request)
+    "show Exit Survey is true" should {
+      "return 303 and navigate to the survey url" in new SignOutControllerTest {
+        lazy val result: Future[Result] = target.signOut(feedbackOnSignOut = true)(fakeRequest)
 
-        status(result) shouldBe Status.SEE_OTHER
+        status(result) shouldBe SEE_OTHER
         redirectLocation(result) shouldBe Some(mockAppConfig.signOutUrl)
       }
+    }
+
+    "show Exit Survey is false" should {
+      "return 303 and navigate to sign out url" in new SignOutControllerTest {
+        lazy val result: Future[Result] = target.signOut(feedbackOnSignOut = false)(fakeRequest)
+
+        status(result) shouldBe SEE_OTHER
+        redirectLocation(result) shouldBe Some(mockAppConfig.signInUrl)
+      }
+    }
+
+    "timeout is true" should {
+      "return 303 and navigate to timeout url" in new SignOutControllerTest {
+        lazy val result: Future[Result] = target.signOut(feedbackOnSignOut = true, timeout = true)(fakeRequest)
+
+        status(result) shouldBe SEE_OTHER
+        redirectLocation(result) shouldBe Some(mockAppConfig.timeoutSignOutUrl)
+      }
+    }
+  }
+
+  "navigating to time-out" should {
+
+    "return 401 unauthorised and render session timeout view" in new SignOutControllerTest {
+      lazy val result: Future[Result] = target.timeout(fakeRequest)
+
+      status(result) shouldBe UNAUTHORIZED
     }
   }
 }

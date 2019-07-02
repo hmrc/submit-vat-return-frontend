@@ -14,10 +14,16 @@ common.warning = Warning
 error.required = Please enter a value
 error.summary.title = There is a problem
 
+banner.newService = This is a new service – your
+banner.feedback = feedback
+banner.feedbackImprove = will help us to improve it.
+banner.phaseName = BETA
 
-session_expired.title = For your security, this service has been reset
-session_expired.heading = For your security, this service has been reset
-session_expired.guidance = The details you have given have been deleted because you did not continue the service for 15 minutes.
+session_expired.title = Your session has timed out
+session_expired.heading = Your session has timed out
+session_expired.helpOne = You''ll have to
+session_expired.helpTwo = sign in
+session_expired.helpThree = using your Government Gateway ID.
 
 submit_form.title = Submit return
 submit_form.heading = Submit return
