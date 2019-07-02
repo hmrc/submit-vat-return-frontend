@@ -59,33 +59,17 @@ class SubmissionErrorViewSpec extends ViewBaseSpec {
       }
 
       "have a link to the vat-summary page" in {
+        elementText(Selectors.userLink) shouldBe SubmissionErrorMessages.userLink
         element(Selectors.userLink).attr("href") shouldBe mockAppConfig.vatSummaryUrl
       }
     }
 
     "the user is an agent" should {
 
-      lazy val fakeRequestWithClientsVRN: FakeRequest[AnyContentAsEmpty.type] =
-        FakeRequest().withSession(AuthKeys.agentSessionVrn -> "999999999")
+      lazy val fakeRequestWithClientsVRN: FakeRequest[AnyContentAsEmpty.type] = FakeRequest().withSession(AuthKeys.agentSessionVrn -> "999999999")
       lazy val agentUser: User[AnyContentAsEmpty.type] = User[AnyContentAsEmpty.type]("999999999", Some("XAIT012345678"))(fakeRequestWithClientsVRN)
       lazy val view = views.html.errors.submission_error()(fakeRequestWithClientsVRN, mockAppConfig, messages, user = agentUser)
       lazy implicit val document: Document = Jsoup.parse(view.body)
-
-      "have the correct document title" in {
-        document.title shouldBe SubmissionErrorMessages.title
-      }
-
-      "have a the correct page heading" in {
-        elementText(Selectors.pageHeading) shouldBe SubmissionErrorMessages.heading
-      }
-
-      "have the correct first paragraph on the page" in {
-        elementText(Selectors.p1) shouldBe SubmissionErrorMessages.p1
-      }
-
-      "have the correct second paragraph on the page" in {
-        elementText(Selectors.p2) shouldBe SubmissionErrorMessages.p2
-      }
 
       "have a link to the agent-action page" in {
         elementText(Selectors.userLink) shouldBe SubmissionErrorMessages.agentLink
