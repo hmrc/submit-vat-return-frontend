@@ -14,6 +14,10 @@ common.warning = Warning
 error.required = Please enter a value
 error.summary.title = There is a problem
 
+banner.newService = This is a new service – your
+banner.feedback = feedback
+banner.feedbackImprove = will help us to improve it.
+banner.phaseName = BETA
 
 session_expired.title = Your session has timed out
 session_expired.heading = Your session has timed out

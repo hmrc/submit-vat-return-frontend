@@ -55,6 +55,7 @@ trait AppConfig extends ServicesConfig {
   val staticDateValue: String
   def vatReturnsUrl(vrn: String): String
   val agentActionUrl: String
+  def feedbackUrl(redirectUrl: String): String
 }
 
 @Singleton
@@ -133,4 +134,8 @@ class FrontendAppConfig @Inject()(val runModeConfiguration: Configuration, envir
 
   override val features = new Features(runModeConfiguration)
   override lazy val staticDateValue: String = getString(ConfigKeys.staticDateValue)
+
+  override def feedbackUrl(redirectUrl: String): String = {s"$contactHost/contact/beta-feedback?service=$contactFormServiceIdentifier" +
+    s"&backUrl=${ContinueUrl(platformHost + redirectUrl).encodedUrl}"}
+
 }
