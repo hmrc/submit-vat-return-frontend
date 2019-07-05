@@ -38,7 +38,6 @@ class IncorrectMandationUserViewSpec extends ViewBaseSpec {
 
     "the user is a non agent" should {
 
-      val user = User[AnyContentAsEmpty.type]("999999999")(fakeRequest)
       lazy val view = views.html.errors.incorrect_mandation_user()(fakeRequest, mockAppConfig, messages, user)
       lazy implicit val document: Document = Jsoup.parse(view.body)
 

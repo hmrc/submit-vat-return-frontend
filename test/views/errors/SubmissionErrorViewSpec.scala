@@ -38,7 +38,6 @@ class SubmissionErrorViewSpec extends ViewBaseSpec {
 
     "the user is a non agent" should {
 
-      val user = User[AnyContentAsEmpty.type]("999999999")(fakeRequest)
       lazy val view = views.html.errors.submission_error()(fakeRequest, mockAppConfig, messages, user)
       lazy implicit val document: Document = Jsoup.parse(view.body)
 

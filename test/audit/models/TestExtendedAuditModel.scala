@@ -14,10 +14,16 @@
  * limitations under the License.
  */
 
-package assets
+package audit.models
 
-object TestConstants {
+import play.api.libs.json.{Format, JsValue, Json}
 
-  val vrn: String = "999999999"
+case class TestExtendedAuditModel(testDataItem: String, testDataItem2: String) extends ExtendedAuditModel {
+  override val transactionName: String = "TestTransactionName"
+  override val detail: JsValue = Json.toJson(this)
+  override val auditType: String = "TestAuditType"
+}
 
+object TestExtendedAuditModel {
+  implicit val format: Format[TestExtendedAuditModel] = Json.format[TestExtendedAuditModel]
 }

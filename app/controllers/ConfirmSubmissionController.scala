@@ -16,6 +16,8 @@
 
 package controllers
 
+import audit.AuditService
+import audit.models.SubmitVatReturnAuditModel
 import common.SessionKeys
 import config.{AppConfig, ErrorHandler}
 import controllers.predicates.{AuthPredicate, MandationStatusPredicate}
@@ -39,6 +41,7 @@ class ConfirmSubmissionController @Inject()(val messagesApi: MessagesApi,
                                             val vatSubscriptionService: VatSubscriptionService,
                                             authPredicate: AuthPredicate,
                                             vatReturnsService: VatReturnsService,
+                                            val auditService: AuditService,
                                             implicit val executionContext: ExecutionContext,
                                             implicit val appConfig: AppConfig,
                                             val dateService: DateService) extends FrontendController with I18nSupport {
@@ -86,6 +89,10 @@ class ConfirmSubmissionController @Inject()(val messagesApi: MessagesApi,
                 )
                 vatReturnsService.submitVatReturn(user.vrn, submissionModel) map {
                   case Right(_) =>
+                    auditService.extendedAudit(
+                      SubmitVatReturnAuditModel(user, model, periodKey),
+                      Some(controllers.routes.ConfirmSubmissionController.submit(periodKey).url)
+                    )
                     Redirect(controllers.routes.ConfirmationController.show().url).removingFromSession(SessionKeys.returnData)
                   case Left(error) =>
                     Logger.warn(s"[ConfirmSubmissionController][submit] Error returned from vat-returns service: $error")

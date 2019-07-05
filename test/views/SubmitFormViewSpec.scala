@@ -49,8 +49,6 @@ class SubmitFormViewSpec extends ViewBaseSpec {
       s"$box > div:nth-child($column)"
     }
 
-    val user = User[AnyContentAsEmpty.type]("999999999")(fakeRequest)
-
     val obligation: VatObligation = VatObligation(LocalDate.parse("2019-01-12"), LocalDate.parse("2019-04-12"), LocalDate.parse("2019-05-12"), "18AA")
 
     "the user is on the flat rate scheme" should {
