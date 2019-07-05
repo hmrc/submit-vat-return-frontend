@@ -116,7 +116,11 @@
       <div class="form-group">
         <h3 class="bold-large">@messages("confirm_submission.returnTotal")@displayMoney(viewModel.returnDetail.box5)</h3>
         <p>@messages("confirm_submission.returnDueDate", displayDate(viewModel.returnDetail.due))</p>
-        <a href=@controllers.routes.SubmitFormController.show(viewModel.periodKey)>@messages("confirm_submission.changeDetail")</a>
+        <a
+          onClick="sendGAEvent('submit-vat', 'change', 'nine-box-change' @user.isAgent)"
+          href=@controllers.routes.SubmitFormController.show(viewModel.periodKey)>
+          @messages("confirm_submission.changeDetail")
+        </a>
       </div>
     </section>
 
