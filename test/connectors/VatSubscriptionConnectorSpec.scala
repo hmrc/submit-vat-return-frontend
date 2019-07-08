@@ -18,7 +18,6 @@ package connectors
 
 import base.BaseSpec
 import mocks.MockHttp
-import assets.TestConstants.vrn
 import assets.CustomerDetailsTestAssets._
 import connectors.httpParsers.ResponseHttpParsers.HttpGetResult
 import models.{CustomerDetails, MandationStatus}

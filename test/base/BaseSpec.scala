@@ -18,8 +18,10 @@ package base
 
 import akka.actor.ActorSystem
 import akka.stream.{ActorMaterializer, Materializer}
+import auth.AuthKeys
 import config.{AppConfig, ErrorHandler}
 import mocks.MockConfig
+import models.auth.User
 import org.scalamock.scalatest.MockFactory
 import org.scalatest.{Matchers, WordSpec}
 import org.scalatestplus.play.guice._
@@ -46,6 +48,14 @@ trait BaseSpec extends WordSpec with Matchers with GuiceOneAppPerSuite with Mock
   lazy val errorHandler: ErrorHandler = injector.instanceOf[ErrorHandler]
 
   implicit lazy val fakeRequest: FakeRequest[AnyContentAsEmpty.type] = FakeRequest("", "")
+  lazy val fakeRequestWithClientsVRN: FakeRequest[AnyContentAsEmpty.type] =
+    FakeRequest().withSession(AuthKeys.agentSessionVrn -> vrn)
+
+  val vrn: String = "999999999"
+  val arn = "ABCD12345678901"
+
+  lazy val user: User[AnyContentAsEmpty.type] = User[AnyContentAsEmpty.type](vrn)(fakeRequest)
+  lazy val agentUser: User[AnyContentAsEmpty.type] = User[AnyContentAsEmpty.type](vrn, Some(arn))(fakeRequestWithClientsVRN)
 
   implicit lazy val messages: Messages = messagesApi.preferred(fakeRequest)
 

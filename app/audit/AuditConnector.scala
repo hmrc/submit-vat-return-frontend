@@ -14,10 +14,18 @@
  * limitations under the License.
  */
 
-package assets
+package audit
 
-object TestConstants {
+import javax.inject.{Inject, Singleton}
+import play.api.{Configuration, Environment}
+import play.api.Mode.Mode
+import uk.gov.hmrc.play.audit.http.connector.{AuditConnector => Auditing}
+import uk.gov.hmrc.play.bootstrap.config.LoadAuditingConfig
+import uk.gov.hmrc.play.config.AppName
 
-  val vrn: String = "999999999"
-
+@Singleton
+class AuditConnector @Inject()(val environment: Environment,
+                               val conf: Configuration) extends Auditing {
+  protected val mode: Mode = environment.mode
+  override lazy val auditingConfig = LoadAuditingConfig(conf, mode, "auditing")
 }

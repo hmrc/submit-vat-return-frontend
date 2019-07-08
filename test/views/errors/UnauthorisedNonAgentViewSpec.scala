@@ -34,7 +34,6 @@ class UnauthorisedNonAgentViewSpec extends ViewBaseSpec {
       val button = "#content .button"
     }
 
-    val user = User[AnyContentAsEmpty.type]("999999999")(fakeRequest)
     lazy val view = views.html.errors.unauthorised_non_agent()(fakeRequest, messages, mockAppConfig, user = Some(user))
     lazy implicit val document: Document = Jsoup.parse(view.body)
 

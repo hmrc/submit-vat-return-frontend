@@ -84,8 +84,6 @@ class ConfirmSubmissionViewSpec extends ViewBaseSpec {
     due = LocalDate.parse("2019-05-12")
   )
 
-  val user: User[AnyContentAsEmpty.type] = User[AnyContentAsEmpty.type]("999999999")(fakeRequest)
-
   "Confirm Submission View" when {
 
     "user is non-agent and on the flat rate scheme" should {

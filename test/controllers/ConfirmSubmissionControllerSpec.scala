@@ -20,6 +20,7 @@ import java.time.LocalDate
 
 import assets.CustomerDetailsTestAssets._
 import assets.messages.SubmissionErrorMessages
+import audit.mocks.MockAuditingService
 import base.BaseSpec
 import common.{MandationStatuses, SessionKeys}
 import connectors.httpParsers.ResponseHttpParsers.HttpGetResult
@@ -42,15 +43,17 @@ class ConfirmSubmissionControllerSpec extends BaseSpec
   with MockMandationPredicate
   with MockVatSubscriptionService
   with MockVatReturnsService
-  with MockDateService {
+  with MockDateService
+  with MockAuditingService {
 
-  object TestConfirmSubmissionController extends ConfirmSubmissionController(
+  object TestConfirmSubmissionController extends ConfirmSubmissionController (
     messagesApi,
     mockMandationStatusPredicate,
     errorHandler,
     mockVatSubscriptionService,
     mockAuthPredicate,
     mockVatReturnsService,
+    mockAuditService,
     ec,
     mockAppConfig,
     mockDateService
@@ -198,6 +201,7 @@ class ConfirmSubmissionControllerSpec extends BaseSpec
               mockAuthorise(mtdVatAuthorisedResponse)
               mockDateHasPassed(response = true)
               mockVatReturnsService(Future.successful(Right(SubmissionSuccessModel("12345"))))
+              setupAuditExtendedEvent
               status(result) shouldBe Status.SEE_OTHER
             }
 

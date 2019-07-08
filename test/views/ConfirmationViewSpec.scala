@@ -25,8 +25,6 @@ import play.api.mvc.AnyContentAsEmpty
 
 class ConfirmationViewSpec extends ViewBaseSpec {
 
-  val user = User[AnyContentAsEmpty.type]("999999999")(fakeRequest)
-
   "The confirmation view" should {
 
     lazy val view = views.html.confirmation_view() (fakeRequest, messages, mockAppConfig, user)
