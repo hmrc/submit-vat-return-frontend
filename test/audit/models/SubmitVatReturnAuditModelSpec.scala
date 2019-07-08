@@ -24,7 +24,7 @@ import play.api.libs.json.Json
 
 class SubmitVatReturnAuditModelSpec extends BaseSpec {
 
-  val transactionName = "submit-vat-return-frontend"
+  val transactionName = "submit-vat-return"
   val auditEvent = "SubmitVATReturn"
 
   "The SubmitVatReturnAuditModelSpec" should {
