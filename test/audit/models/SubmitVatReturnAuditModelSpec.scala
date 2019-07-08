@@ -27,7 +27,7 @@ class SubmitVatReturnAuditModelSpec extends BaseSpec {
   val transactionName = "submit-vat-return-frontend"
   val auditEvent = "SubmitVATReturn"
 
-  "The AuthenticationAgentAuditModelSpec" should {
+  "The SubmitVatReturnAuditModelSpec" should {
 
     val model: SubmitVatReturnModel = SubmitVatReturnModel(
       BigDecimal(1),

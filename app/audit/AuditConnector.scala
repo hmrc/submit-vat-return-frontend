@@ -25,8 +25,7 @@ import uk.gov.hmrc.play.config.AppName
 
 @Singleton
 class AuditConnector @Inject()(val environment: Environment,
-                               val conf: Configuration) extends Auditing with AppName {
-  override protected def appNameConfiguration: Configuration = conf
+                               val conf: Configuration) extends Auditing {
   protected val mode: Mode = environment.mode
-  override lazy val auditingConfig = LoadAuditingConfig(appNameConfiguration, mode, "auditing")
+  override lazy val auditingConfig = LoadAuditingConfig(conf, mode, "auditing")
 }

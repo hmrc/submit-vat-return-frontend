@@ -23,7 +23,7 @@ import utils.JsonObjectSugar
 
 case class SubmitVatReturnAuditModel(user: User[_], submissionDetails: SubmitVatReturnModel, periodKey: String) extends ExtendedAuditModel {
 
-  override val transactionName: String = "submit-vat-return-frontend"
+  override val transactionName: String = "submit-vat-return"
   override val auditType: String = "SubmitVATReturn"
   override val detail: JsValue = Json.toJson(this)
 

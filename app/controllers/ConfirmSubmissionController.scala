@@ -89,7 +89,7 @@ class ConfirmSubmissionController @Inject()(val messagesApi: MessagesApi,
                 )
                 vatReturnsService.submitVatReturn(user.vrn, submissionModel) map {
                   case Right(_) =>
-                    auditService.extendedAudit(
+                    auditService.audit(
                       SubmitVatReturnAuditModel(user, model, periodKey),
                       Some(controllers.routes.ConfirmSubmissionController.submit(periodKey).url)
                     )
