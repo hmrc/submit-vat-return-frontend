@@ -79,7 +79,7 @@ user: User[_])
     }
 
     <div>
-        <h1 class="heading-xlarge">
+        <h1 class="heading-xlarge" data-metrics="submit-vat:view:nine-box;@user.isAgent">
             <span class="heading-secondary">@messages("submit_form.heading")</span>
             <span>@{displayDateRange(obligation.start, obligation.end, useShortDayFormat = true)}</span>
             <span class="form-hint">@messages("confirm_submission.returnDueDate", displayDate(obligation.due))</span>
@@ -118,7 +118,12 @@ user: User[_])
             <p>@messages("submit_form.submitReturn")</p>
 
             <div class="form-group">
-                <input id="continue" type="submit" class="button" value="@messages("common.continue")" >
+                <input
+                    onClick="sendGAEvent('submit-vat', 'continue', 'nine-box', @user.isAgent)"
+                    id="continue"
+                    type="submit"
+                    class="button"
+                    value="@messages("common.continue")" >
             </div>
             <input type="hidden" name="flatRateScheme" value=@flatRateScheme>
             <input type="hidden" name="start" value=@obligation.start.toString>
