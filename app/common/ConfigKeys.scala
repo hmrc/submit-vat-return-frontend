@@ -60,6 +60,7 @@ object ConfigKeys {
   val vatReturnsUrl: String = s"microservice.services.$vatReturnsBase.url"
   val manageClientUrl: String = "vat-agent-client-lookup-frontend.whatToDoUrl"
 
+  val languageToggleFeature: String = "features.languageToggle.enabled"
   val staticDateEnabledFeature: String = "features.staticDate.enabled"
   val staticDateValue: String = "date-service.staticDate.value"
 }

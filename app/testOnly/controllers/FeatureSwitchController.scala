@@ -31,7 +31,8 @@ class FeatureSwitchController @Inject()(val messagesApi: MessagesApi,
   def featureSwitch: Action[AnyContent] = Action { implicit request =>
     Ok(testOnly.views.html.featureSwitch(FeatureSwitchForm.form.fill(
       FeatureSwitchModel(
-        staticDateEnabled = appConfig.features.staticDateEnabled()
+        staticDateEnabled = appConfig.features.staticDateEnabled(),
+        languageToggle = appConfig.features.languageToggleEnabled()
       )
     )))
   }
@@ -45,6 +46,7 @@ class FeatureSwitchController @Inject()(val messagesApi: MessagesApi,
 
   def handleSuccess(model: FeatureSwitchModel): Result = {
     appConfig.features.staticDateEnabled(model.staticDateEnabled)
+    appConfig.features.languageToggleEnabled(model.languageToggle)
     Redirect(routes.FeatureSwitchController.featureSwitch())
   }
 }
