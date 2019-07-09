@@ -31,9 +31,9 @@ class SubmissionErrorViewSpec extends ViewBaseSpec {
 
     object Selectors {
       val pageHeading = "#content h1"
-      val p1 = "#content p:nth-of-type(1)"
-      val p2 = "#content p:nth-of-type(2)"
-      val userLink = "#content a"
+      val p1 = "#content article p:nth-of-type(1)"
+      val p2 = "#content article p:nth-of-type(2)"
+      val userLink = "#content article a"
     }
 
     "the user is a non agent" should {

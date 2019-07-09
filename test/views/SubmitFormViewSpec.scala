@@ -129,7 +129,7 @@ class SubmitFormViewSpec extends ViewBaseSpec {
       }
 
       "state that you can submit your return on the next screen" in {
-        elementText("#content p") shouldBe nextScreen
+        elementText("#content article p") shouldBe nextScreen
       }
 
       "have the continue button" in {

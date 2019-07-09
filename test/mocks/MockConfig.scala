@@ -19,6 +19,7 @@ package mocks
 import config.AppConfig
 import config.features.Features
 import play.api.Mode.Mode
+import play.api.i18n.Lang
 import play.api.mvc.Call
 import play.api.{Configuration, Mode}
 
@@ -54,4 +55,9 @@ class MockConfig(implicit val runModeConfiguration: Configuration) extends AppCo
   override val changeClientUrl: String = "/change-client"
   override val agentActionUrl: String = "/agent-action"
   override def feedbackUrl(redirectUrl: String): String = s"feedback-url/$redirectUrl"
+  override def routeToSwitchLanguage: String => Call = (lang: String) => controllers.routes.LanguageController.switchToLanguage(lang)
+  override def languageMap: Map[String, Lang] = Map(
+    "english" -> Lang("en"),
+    "cymraeg" -> Lang("cy")
+  )
 }

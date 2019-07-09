@@ -1,0 +1,115 @@
+base.sign-out = Sign out
+navTitle.nonAgent = Business tax account
+navTitle.agent = Client’s VAT details
+common.fullStop = .
+common.signOut = Sign out
+common.finish = Finish
+common.submit = Submit
+common.dateRangeSeparator = to
+common.continue = Continue
+common.back = Back
+common.errorSummary.heading = You have one or more errors
+common.warning = Warning
+
+error.required = Please enter a value
+error.summary.title = There is a problem
+
+banner.newService = This is a new service – your
+banner.feedback = feedback
+banner.feedbackImprove = will help us to improve it.
+banner.phaseName = Welsh
+
+session_expired.title = Your session has timed out
+session_expired.heading = Your session has timed out
+session_expired.helpOne = You''ll have to
+session_expired.helpTwo = sign in
+session_expired.helpThree = using your Government Gateway ID.
+
+submit_form.title = Submit return
+submit_form.heading = Submit return
+submit_form.additionalInformation = Additional information
+submit_form.submitReturn = You can submit your return on the next screen.
+
+submit_form.error.emptyError = Enter a number
+submit_form.error.tooManyCharacters = Enter a maximum of 13 digits for pounds.\nEnter a maximum of 2 decimal places for pence.\nYou can use a negative amount eg -13.2
+submit_form.error.tooManyCharactersNoDecimal = Enter a maximum of 13 digits for pounds.\nYou can use a negative amount eg -13
+submit_form.error.formatCheckError = Enter a number in the correct format
+submit_form.error.negativeError = Enter a maximum of 11 digits for pounds.\nEnter a maximum of 2 decimal places for pence.\nDo not use a negative amount eg -13.2
+submit_form.error.box3Error = Add the number from box 1 to the number from box 2 and write it here
+submit_form.error.box5Error = Subtract the number in box 4 away from the number in box 3 and write it here
+
+confirm_submission.title = Your VAT return
+confirm_submission.heading = Submit return
+confirm_submission.returnDueDate = Return due date: {0}
+confirm_submission.vatDetails = VAT details
+confirm_submission.returnTotal = Return total:
+
+confirm_submission.additionalInfo = Additional information
+confirm_submission.boxOne = Box 1
+confirm_submission.boxOneDescription = VAT you charged on sales and other supplies
+confirm_submission.boxOneAmt = Box 1 amount
+confirm_submission.boxTwo = Box 2
+confirm_submission.boxTwoDescription = VAT you owe on goods purchased from EC countries and brought into the UK
+confirm_submission.boxTwoAmt = Box 2 amount
+confirm_submission.boxThree = Box 3
+confirm_submission.boxThreeDescription = VAT you owe before deductions (this is the total of box 1 and 2)
+confirm_submission.boxThreeAmt = Box 3 amount
+confirm_submission.boxFour = Box 4
+confirm_submission.boxFourDescription = VAT you have claimed back
+confirm_submission.boxFourAmt = Box 4 amount
+confirm_submission.boxFive = Box 5
+confirm_submission.boxFiveDescription = Return total
+confirm_submission.boxFiveAmt = Box 5 amount
+confirm_submission.boxFiveContext = This is box 3 {0} take away box 4 {1}
+confirm_submission.boxSix = Box 6
+confirm_submission.boxSixNoFlatRate = Total value of sales and other supplies, excluding VAT
+confirm_submission.boxSixFlatRate = Total value of sales and other supplies, including VAT
+confirm_submission.boxSixAmt = Box 6 amount
+confirm_submission.boxSeven = Box 7
+confirm_submission.boxSevenDescription = Total value of purchases and other expenses, excluding VAT
+confirm_submission.boxSevenAmt = Box 7 amount
+confirm_submission.boxEight = Box 8
+confirm_submission.boxEightDescription = Total value of supplied goods to EC countries and related costs (excluding VAT)
+confirm_submission.boxEightAmt = Box 8 amount
+confirm_submission.boxNine = Box 9
+confirm_submission.boxNineDescription = Total value of goods purchased from EC countries and brought into the UK, as well as any related costs (excluding VAT)
+confirm_submission.boxNineAmt = Box 9 amount
+confirm_submission.changeDetail = Change return details
+confirm_submission.acceptAndSend = Accept and send
+confirm_submission.declarationHeading = Declaration
+confirm_submission.agentDeclaration = I confirm that my client has received a copy of the information contained in this return and approved the information as being correct and complete to the best of their knowledge and belief.
+confirm_submission.nonAgentDeclaration = By submitting this return, you are making a legal declaration that the information is correct and complete to the best of your knowledge and belief. A false declaration can result in prosecution.
+
+unauthorised_agent.title = You can’t use this service yet
+unauthorised_agent.useThisService = To use this service, you need to
+unauthorised_agent.setUpAccount = set up an agent services account
+
+unauthorised_non_agent.title = You can’t use this service yet
+unauthorised_non_agent.heading = You can’t use this service yet
+unauthorised_non_agent.text = You need to
+unauthorised_non_agent.link = sign up to use software to submit your VAT returns
+
+confirmation_view.title = Your VAT Return
+confirmation_view.heading = VAT Return submission complete
+confirmation_view.subHeading = What happens next
+confirmation_view.paragraph = We have received your VAT Return.
+confirmation_view.changeClient = Change client
+
+breadcrumbs.yourVatDetails = Your VAT details
+breadcrumbs.submitVatReturn = Submit VAT Return
+breadcrumbs.submitReturnForDate = Submit {0} return
+
+incorrect_mandation.title = Submit VAT Return
+incorrect_mandation.heading = The business submits VAT Returns using Making Tax Digital
+incorrect_mandation.paragraph = The business has signed up to the Making Tax Digital service.
+incorrect_mandation.agent.text = You must submit your client’s VAT Returns to HMRC using compatible accounting software.
+incorrect_mandation.nonAgent.text = You must submit your VAT Returns to HMRC using compatible accounting software.
+incorrect_mandation_nonAgent.link = View your VAT Return deadlines
+incorrect_mandation_agent_client.link = View your client options
+
+submissionError.title = Submit return error
+submissionError.heading = Sorry, there is a problem with the service
+submissionError.p1 = We have been unable to submit the VAT Return.
+submissionError.p2 = We have not saved your answers. When the service is available, you will have to start again.
+submissionError.agentLink = View your client options
+submissionError.userLink = View your VAT Account

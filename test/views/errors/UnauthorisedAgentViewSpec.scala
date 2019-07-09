@@ -29,8 +29,8 @@ class UnauthorisedAgentViewSpec extends ViewBaseSpec {
     object Selectors {
       val serviceName = ".header__menu__proposition-name"
       val pageHeading = "#content h1"
-      val instructions = "#content p"
-      val instructionsLink = "#content p > a"
+      val instructions = "#content article p"
+      val instructionsLink = "#content article p > a"
       val button = "#content .button"
     }
 

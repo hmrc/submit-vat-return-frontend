@@ -17,12 +17,14 @@
 package config
 
 import java.util.Base64
+
 import javax.inject.{Inject, Singleton}
 import play.api.{Configuration, Environment}
 import play.api.Mode.Mode
 import uk.gov.hmrc.play.config.ServicesConfig
 import common.ConfigKeys
 import config.features.Features
+import play.api.i18n.Lang
 import play.api.mvc.Call
 import uk.gov.hmrc.play.binders.ContinueUrl
 
@@ -56,6 +58,8 @@ trait AppConfig extends ServicesConfig {
   def vatReturnsUrl(vrn: String): String
   val agentActionUrl: String
   def feedbackUrl(redirectUrl: String): String
+  def routeToSwitchLanguage: String => Call
+  def languageMap: Map[String, Lang]
 }
 
 @Singleton
@@ -77,6 +81,13 @@ class FrontendAppConfig @Inject()(val runModeConfiguration: Configuration, envir
   // Gov.uk guidance
   override lazy val govUkGuidanceMtdVat: String = getString(ConfigKeys.govUkGuidanceMtdVat)
   override lazy val govUkGuidanceAgentServices: String = getString(ConfigKeys.govUkGuidanceAgentServices)
+
+  //Language config
+  override def routeToSwitchLanguage: String => Call = (lang: String) => controllers.routes.LanguageController.switchToLanguage(lang)
+  override def languageMap: Map[String, Lang] = Map(
+    "english" -> Lang("en"),
+    "cymraeg" -> Lang("cy")
+  )
 
   // Whitelist config
   private def whitelistConfig(key: String): Seq[String] = Some(new String(Base64.getDecoder

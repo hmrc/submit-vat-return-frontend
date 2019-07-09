@@ -43,17 +43,17 @@ class ConfirmationViewSpec extends ViewBaseSpec {
     }
 
     s"display the paragraph text as ${viewMessages.paragraph}" in {
-      elementText("#content p") shouldBe viewMessages.paragraph
+      elementText("#content article p") shouldBe viewMessages.paragraph
     }
 
     "display a button" should {
 
       s"have the button text as ${viewMessages.button}" in {
-        elementText("#content a") shouldBe viewMessages.button
+        elementText("#content article a") shouldBe viewMessages.button
       }
 
       "have the correct redirect link" in {
-        element("#content a").attr("href") shouldBe mockAppConfig.vatSummaryUrl
+        element("#content article a").attr("href") shouldBe mockAppConfig.vatSummaryUrl
       }
     }
 
