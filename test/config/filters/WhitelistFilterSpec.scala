@@ -38,7 +38,7 @@ class WhitelistFilterSpec extends PlaySpec with GuiceOneServerPerSuite {
         "whitelist.enabled" -> true
       ))
       .routes({
-        case ("GET", "/hello-world") => Action(Ok("success"))
+        case ("GET", "/submission-confirmation") => Action(Ok("success"))
         case _ => Action(Ok("failure"))
       })
       .build()
@@ -48,7 +48,7 @@ class WhitelistFilterSpec extends PlaySpec with GuiceOneServerPerSuite {
 
     "supplied with a non whitelisted IP" should {
 
-      lazy val fakeRequest = FakeRequest("GET", "/hello-world").withHeaders(
+      lazy val fakeRequest = FakeRequest("GET", "/submission-confirmation").withHeaders(
         "True-Client-IP" -> "127.0.0.2"
       )
 
@@ -67,7 +67,7 @@ class WhitelistFilterSpec extends PlaySpec with GuiceOneServerPerSuite {
 
     "supplied with a whitelisted IP" should {
 
-      lazy val fakeRequest = FakeRequest("GET", "/hello-world").withHeaders(
+      lazy val fakeRequest = FakeRequest("GET", "/submission-confirmation").withHeaders(
         "True-Client-IP" -> "127.0.0.1"
       )
 

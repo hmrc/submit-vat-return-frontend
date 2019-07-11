@@ -5,8 +5,6 @@ GET         /assets/*file                 controllers.Assets.at(path="/public", 
 
 # Pages
 
-GET        /hello-world                   controllers.HelloWorldController.helloWorld
-
 GET        /:periodKey/submit-form        controllers.SubmitFormController.show(periodKey: String)
 POST       /:periodKey/submit-form        controllers.SubmitFormController.submit(periodKey: String)
 
