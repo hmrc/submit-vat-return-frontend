@@ -36,6 +36,7 @@ import uk.gov.hmrc.http.HeaderCarrier
 import uk.gov.hmrc.play.bootstrap.controller.FrontendController
 import forms.SubmitVatReturnForm._
 import scala.concurrent.Future
+import java.net.URLDecoder
 
 @Singleton
 class SubmitFormController @Inject()(val messagesApi: MessagesApi,
@@ -91,7 +92,8 @@ class SubmitFormController @Inject()(val messagesApi: MessagesApi,
       (customerInformation, obligations) match {
         case (Right(customerDetails), Right(obs)) => {
 
-          val obligationToSubmit: Seq[VatObligation] = obs.obligations.filter(_.periodKey == periodKey)
+          val decodedPeriodKey: String = URLDecoder.decode(periodKey, "utf-8")
+          val obligationToSubmit: Seq[VatObligation] = obs.obligations.filter(_.periodKey == decodedPeriodKey)
 
           obligationToSubmit.length match {
             case 1 =>

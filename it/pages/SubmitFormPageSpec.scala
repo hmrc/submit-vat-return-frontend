@@ -29,6 +29,7 @@ import stubs.VatSubscriptionStub._
 import stubs.{AuthStub, VatObligationsStub, VatSubscriptionStub}
 import forms.SubmitVatReturnForm
 import models.{SubmitFormViewModel, SubmitVatReturnModel}
+import org.jsoup.Jsoup
 
 class SubmitFormPageSpec extends BaseISpec {
 
@@ -69,6 +70,36 @@ class SubmitFormPageSpec extends BaseISpec {
               val response: WSResponse = request
 
               response.status shouldBe BAD_REQUEST
+            }
+          }
+
+          "period key in URL has an encoded character" should {
+
+            "successfully match with a non-encoded obligation period key" in {
+
+              val encodedPeriodKey = "%23005"
+              val decodedPeriodKey = "#005"
+
+              val obligation = Json.obj(
+                "obligations" -> Json.arr(
+                  Json.obj(
+                    "start" -> "2018-01-01",
+                    "end" -> "2018-03-31",
+                    "due" -> "2018-04-07",
+                    "periodKey" -> decodedPeriodKey
+                  )
+                )
+              )
+
+              AuthStub.stubResponse(OK, mtdVatAuthResponse)
+              VatSubscriptionStub.stubResponse("customer-details", OK, customerInformationSuccessJson)
+              VatSubscriptionStub.stubResponse("mandation-status", OK, mandationStatusSuccessJson)
+              VatObligationsStub.stubResponse(OK, obligation)
+
+              val response: WSResponse = get(s"/$encodedPeriodKey/submit-form", formatSessionMandationStatus(Some(MandationStatuses.nonMTDfB)))
+
+              response.status shouldBe OK
+              Jsoup.parse(response.body).select("h1 > span:nth-of-type(2)").text() should include("1 Jan to 31 Mar 2018")
             }
           }
         }

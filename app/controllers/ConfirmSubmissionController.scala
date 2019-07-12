@@ -16,6 +16,8 @@
 
 package controllers
 
+import java.net.URLDecoder
+
 import audit.AuditService
 import audit.models.SubmitVatReturnAuditModel
 import common.SessionKeys
@@ -75,7 +77,7 @@ class ConfirmSubmissionController @Inject()(val messagesApi: MessagesApi,
             case Success(model) =>
               if(dateService.dateHasPassed(model.end)) {
                 val submissionModel = SubmissionModel(
-                  periodKey = periodKey,
+                  periodKey = URLDecoder.decode(periodKey, "utf-8"),
                   vatDueSales = model.box1,
                   vatDueAcquisitions = model.box2,
                   vatDueTotal = model.box3,

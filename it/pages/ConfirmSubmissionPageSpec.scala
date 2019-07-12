@@ -56,24 +56,24 @@ class ConfirmSubmissionPageSpec extends BaseISpec with GivenWhenThen {
 
       "valid nine box session data exists" when {
 
-        val postRequestJsonBody: JsValue = Json.parse(
-          """
-            |{
-            |  "periodKey" : "18AA",
-            |  "vatDueSales" : 10.01,
-            |  "vatDueAcquisitions" : 10.02,
-            |  "vatDueTotal" : 10.03,
-            |  "vatReclaimedCurrPeriod" : 10.04,
-            |  "vatDueNet" : 10.05,
-            |  "totalValueSalesExVAT" : 10.06,
-            |  "totalValuePurchasesExVAT" : 10.07,
-            |  "totalValueGoodsSuppliedExVAT" : 10.08,
-            |  "totalAllAcquisitionsExVAT" : 10.09
-            |}
-          """.stripMargin
-        )
-
         "matching obligation end date is in the past" when {
+
+          val postRequestJsonBody: JsValue = Json.parse(
+            """
+              |{
+              |  "periodKey" : "18AA",
+              |  "vatDueSales" : 10.01,
+              |  "vatDueAcquisitions" : 10.02,
+              |  "vatDueTotal" : 10.03,
+              |  "vatReclaimedCurrPeriod" : 10.04,
+              |  "vatDueNet" : 10.05,
+              |  "totalValueSalesExVAT" : 10.06,
+              |  "totalValuePurchasesExVAT" : 10.07,
+              |  "totalValueGoodsSuppliedExVAT" : 10.08,
+              |  "totalAllAcquisitionsExVAT" : 10.09
+              |}
+            """.stripMargin
+          )
 
           "backend submission returns 200" should {
 
@@ -133,6 +133,49 @@ class ConfirmSubmissionPageSpec extends BaseISpec with GivenWhenThen {
 
             Then("The response should be 400")
             response.status shouldBe BAD_REQUEST
+          }
+        }
+
+        "period key in URL has an encoded character" should {
+
+          "make the backend submission with the decoded period key" in {
+
+            val encodedPeriodKey = "%23005"
+            val decodedPeriodKey = "#005"
+
+            val postRequestJsonBody: JsValue = Json.parse(
+              s"""
+                |{
+                |  "periodKey" : "$decodedPeriodKey",
+                |  "vatDueSales" : 10.01,
+                |  "vatDueAcquisitions" : 10.02,
+                |  "vatDueTotal" : 10.03,
+                |  "vatReclaimedCurrPeriod" : 10.04,
+                |  "vatDueNet" : 10.05,
+                |  "totalValueSalesExVAT" : 10.06,
+                |  "totalValuePurchasesExVAT" : 10.07,
+                |  "totalValueGoodsSuppliedExVAT" : 10.08,
+                |  "totalAllAcquisitionsExVAT" : 10.09
+                |}
+              """.stripMargin
+            )
+
+            When("The user is authenticated and authorised")
+            AuthStub.stubResponse(OK, mtdVatAuthResponse)
+
+            And("The POST to vat-returns is successful")
+            VatReturnsStub.stubResponse("999999999")(OK, Json.obj("formBundleNumber" -> "12345"))
+
+            val response: WSResponse = postJson(s"/$encodedPeriodKey/confirm-submission", fullSessionValues)
+
+            And("The backend submission contained the decoded period key")
+            VatReturnsStub.verifySubmission("999999999", postRequestJsonBody)
+
+            Then("The response should be 303")
+            response.status shouldBe SEE_OTHER
+
+            And("The redirect location is correct")
+            response.header("Location") shouldBe Some(controllers.routes.ConfirmationController.show().url)
           }
         }
       }
