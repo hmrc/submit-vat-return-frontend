@@ -19,17 +19,10 @@ package forms
 import java.time.LocalDate
 
 import base.BaseSpec
-import forms.SubmitVatReturnForm.submitVatReturnForm
-import models.SubmitVatReturnModel
+import forms.NineBoxForm.nineBoxForm
+import models.{NineBoxModel, SubmitVatReturnModel}
 
-class SubmitVatReturnFormSpec extends BaseSpec {
-
-  val defaultFieldValues = Map(
-    "flatRateScheme" -> "false",
-    "start" -> "2019-01-01",
-    "end" -> "2019-01-01",
-    "due" -> "2019-01-01"
-  )
+class NineBoxFormSpec extends BaseSpec {
 
   object MessageLookup {
     val tooManyCharacters: String = "Enter a maximum of 13 digits for pounds.\nEnter a maximum of 2 decimal places for pence.\nYou can use a negative amount eg -13.2"
@@ -42,11 +35,11 @@ class SubmitVatReturnFormSpec extends BaseSpec {
     val box5Sum: String = "Subtract the number in box 4 away from the number in box 3 and write it here"
   }
 
-  "Binding a SubmitVatReturnForm" when {
+  "Binding a NineBoxForm" when {
 
     "values are valid" should {
 
-      val form = submitVatReturnForm.bind(
+      val form = nineBoxForm.bind(
         Map(
           "box1" -> "1.01",
           "box2" -> "2.02",
@@ -57,11 +50,11 @@ class SubmitVatReturnFormSpec extends BaseSpec {
           "box7" -> "7",
           "box8" -> "8",
           "box9" -> "9"
-        ) ++ defaultFieldValues
+        )
       )
 
-      "produce a SubmitVatReturnModel" in {
-        form.value shouldBe Some(SubmitVatReturnModel(
+      "produce a NineBoxModel" in {
+        form.value shouldBe Some(NineBoxModel(
           box1 = 1.01,
           box2 = 2.02,
           box3 = 3.03,
@@ -70,11 +63,7 @@ class SubmitVatReturnFormSpec extends BaseSpec {
           box6 = 6,
           box7 = 7,
           box8 = 8,
-          box9 = 9,
-          flatRateScheme = false,
-          start = LocalDate.parse("2019-01-01"),
-          end = LocalDate.parse("2019-01-01"),
-          due = LocalDate.parse("2019-01-01")
+          box9 = 9
         ))
       }
     }
@@ -85,7 +74,7 @@ class SubmitVatReturnFormSpec extends BaseSpec {
 
         "is not a number" should {
 
-          val form = submitVatReturnForm.bind(
+          val form = nineBoxForm.bind(
             Map(
               "box1" -> "x!",
               "box2" -> "1",
@@ -96,7 +85,7 @@ class SubmitVatReturnFormSpec extends BaseSpec {
               "box7" -> "1",
               "box8" -> "1",
               "box9" -> "1"
-            ) ++ defaultFieldValues
+            )
           )
 
           s"return a form field error with message ${MessageLookup.invalidNumber}" in {
@@ -107,7 +96,7 @@ class SubmitVatReturnFormSpec extends BaseSpec {
 
         "has more than 2 decimals" should {
 
-          val form = submitVatReturnForm.bind(
+          val form = nineBoxForm.bind(
             Map(
               "box1" -> "1.001",
               "box2" -> "1",
@@ -118,7 +107,7 @@ class SubmitVatReturnFormSpec extends BaseSpec {
               "box7" -> "1",
               "box8" -> "1",
               "box9" -> "1"
-            ) ++ defaultFieldValues
+            )
           )
 
           s"return a form field error with message ${MessageLookup.tooManyCharacters}" in {
@@ -129,7 +118,7 @@ class SubmitVatReturnFormSpec extends BaseSpec {
 
         "is empty" should {
 
-          val form = submitVatReturnForm.bind(
+          val form = nineBoxForm.bind(
             Map(
               "box1" -> "",
               "box2" -> "1",
@@ -140,7 +129,7 @@ class SubmitVatReturnFormSpec extends BaseSpec {
               "box7" -> "1",
               "box8" -> "1",
               "box9" -> "1"
-            ) ++ defaultFieldValues
+            )
           )
 
           s"return a form field error with message ${MessageLookup.enterANumber}" in {
@@ -151,7 +140,7 @@ class SubmitVatReturnFormSpec extends BaseSpec {
 
         "is less than -9999999999999.99" should {
 
-          val form = submitVatReturnForm.bind(
+          val form = nineBoxForm.bind(
             Map(
               "box1" -> "-10000000000000",
               "box2" -> "1",
@@ -162,7 +151,7 @@ class SubmitVatReturnFormSpec extends BaseSpec {
               "box7" -> "1",
               "box8" -> "1",
               "box9" -> "1"
-            ) ++ defaultFieldValues
+            )
           )
 
           s"return a form field error with message ${MessageLookup.tooManyCharacters}" in {
@@ -173,7 +162,7 @@ class SubmitVatReturnFormSpec extends BaseSpec {
 
         "is more than 9999999999999.99" should {
 
-          val form = submitVatReturnForm.bind(
+          val form = nineBoxForm.bind(
             Map(
               "box1" -> "10000000000000",
               "box2" -> "1",
@@ -184,7 +173,7 @@ class SubmitVatReturnFormSpec extends BaseSpec {
               "box7" -> "1",
               "box8" -> "1",
               "box9" -> "1"
-            ) ++ defaultFieldValues
+            )
           )
 
           s"return a form field error with message ${MessageLookup.tooManyCharacters}" in {
@@ -198,7 +187,7 @@ class SubmitVatReturnFormSpec extends BaseSpec {
 
         "is not a number" should {
 
-          val form = submitVatReturnForm.bind(
+          val form = nineBoxForm.bind(
             Map(
               "box1" -> "1",
               "box2" -> "x!",
@@ -209,7 +198,7 @@ class SubmitVatReturnFormSpec extends BaseSpec {
               "box7" -> "1",
               "box8" -> "1",
               "box9" -> "1"
-            ) ++ defaultFieldValues
+            )
           )
 
           s"return a form field error with message ${MessageLookup.invalidNumber}" in {
@@ -220,7 +209,7 @@ class SubmitVatReturnFormSpec extends BaseSpec {
 
         "has more than 2 decimals" should {
 
-          val form = submitVatReturnForm.bind(
+          val form = nineBoxForm.bind(
             Map(
               "box1" -> "1",
               "box2" -> "1.001",
@@ -231,7 +220,7 @@ class SubmitVatReturnFormSpec extends BaseSpec {
               "box7" -> "1",
               "box8" -> "1",
               "box9" -> "1"
-            ) ++ defaultFieldValues
+            )
           )
 
           s"return a form field error with message ${MessageLookup.tooManyCharacters}" in {
@@ -242,7 +231,7 @@ class SubmitVatReturnFormSpec extends BaseSpec {
 
         "is empty" should {
 
-          val form = submitVatReturnForm.bind(
+          val form = nineBoxForm.bind(
             Map(
               "box1" -> "1",
               "box2" -> "",
@@ -253,7 +242,7 @@ class SubmitVatReturnFormSpec extends BaseSpec {
               "box7" -> "1",
               "box8" -> "1",
               "box9" -> "1"
-            ) ++ defaultFieldValues
+            )
           )
 
           s"return a form field error with message ${MessageLookup.enterANumber}" in {
@@ -264,7 +253,7 @@ class SubmitVatReturnFormSpec extends BaseSpec {
 
         "is less than -9999999999999.99" should {
 
-          val form = submitVatReturnForm.bind(
+          val form = nineBoxForm.bind(
             Map(
               "box1" -> "1",
               "box2" -> "-10000000000000",
@@ -275,7 +264,7 @@ class SubmitVatReturnFormSpec extends BaseSpec {
               "box7" -> "1",
               "box8" -> "1",
               "box9" -> "1"
-            ) ++ defaultFieldValues
+            )
           )
 
           s"return a form field error with message ${MessageLookup.tooManyCharacters}" in {
@@ -286,7 +275,7 @@ class SubmitVatReturnFormSpec extends BaseSpec {
 
         "is more than 9999999999999.99" should {
 
-          val form = submitVatReturnForm.bind(
+          val form = nineBoxForm.bind(
             Map(
               "box1" -> "1",
               "box2" -> "10000000000000",
@@ -297,7 +286,7 @@ class SubmitVatReturnFormSpec extends BaseSpec {
               "box7" -> "1",
               "box8" -> "1",
               "box9" -> "1"
-            ) ++ defaultFieldValues
+            )
           )
 
           s"return a form field error with message ${MessageLookup.tooManyCharacters}" in {
@@ -311,7 +300,7 @@ class SubmitVatReturnFormSpec extends BaseSpec {
 
         "is not a number" should {
 
-          val form = submitVatReturnForm.bind(
+          val form = nineBoxForm.bind(
             Map(
               "box1" -> "1",
               "box2" -> "1",
@@ -322,7 +311,7 @@ class SubmitVatReturnFormSpec extends BaseSpec {
               "box7" -> "1",
               "box8" -> "1",
               "box9" -> "1"
-            ) ++ defaultFieldValues
+            )
           )
 
           s"return a form field error with message ${MessageLookup.invalidNumber}" in {
@@ -333,7 +322,7 @@ class SubmitVatReturnFormSpec extends BaseSpec {
 
         "has more than 2 decimals" should {
 
-          val form = submitVatReturnForm.bind(
+          val form = nineBoxForm.bind(
             Map(
               "box1" -> "1",
               "box2" -> "1",
@@ -344,7 +333,7 @@ class SubmitVatReturnFormSpec extends BaseSpec {
               "box7" -> "1",
               "box8" -> "1",
               "box9" -> "1"
-            ) ++ defaultFieldValues
+            )
           )
 
           s"return a form field error with message ${MessageLookup.tooManyCharacters}" in {
@@ -355,7 +344,7 @@ class SubmitVatReturnFormSpec extends BaseSpec {
 
         "is empty" should {
 
-          val form = submitVatReturnForm.bind(
+          val form = nineBoxForm.bind(
             Map(
               "box1" -> "1",
               "box2" -> "1",
@@ -366,7 +355,7 @@ class SubmitVatReturnFormSpec extends BaseSpec {
               "box7" -> "1",
               "box8" -> "1",
               "box9" -> "1"
-            ) ++ defaultFieldValues
+            )
           )
 
           s"return a form field error with message ${MessageLookup.enterANumber}" in {
@@ -377,7 +366,7 @@ class SubmitVatReturnFormSpec extends BaseSpec {
 
         "is less than -9999999999999.99" should {
 
-          val form = submitVatReturnForm.bind(
+          val form = nineBoxForm.bind(
             Map(
               "box1" -> "1",
               "box2" -> "1",
@@ -388,7 +377,7 @@ class SubmitVatReturnFormSpec extends BaseSpec {
               "box7" -> "1",
               "box8" -> "1",
               "box9" -> "1"
-            ) ++ defaultFieldValues
+            )
           )
 
           s"return a form field error with message ${MessageLookup.tooManyCharacters}" in {
@@ -399,7 +388,7 @@ class SubmitVatReturnFormSpec extends BaseSpec {
 
         "is more than 9999999999999.99" should {
 
-          val form = submitVatReturnForm.bind(
+          val form = nineBoxForm.bind(
             Map(
               "box1" -> "1",
               "box2" -> "1",
@@ -410,7 +399,7 @@ class SubmitVatReturnFormSpec extends BaseSpec {
               "box7" -> "1",
               "box8" -> "1",
               "box9" -> "1"
-            ) ++ defaultFieldValues
+            )
           )
 
           s"return a form field error with message ${MessageLookup.tooManyCharacters}" in {
@@ -424,7 +413,7 @@ class SubmitVatReturnFormSpec extends BaseSpec {
 
         "is not a number" should {
 
-          val form = submitVatReturnForm.bind(
+          val form = nineBoxForm.bind(
             Map(
               "box1" -> "1",
               "box2" -> "1",
@@ -435,7 +424,7 @@ class SubmitVatReturnFormSpec extends BaseSpec {
               "box7" -> "1",
               "box8" -> "1",
               "box9" -> "1"
-            ) ++ defaultFieldValues
+            )
           )
 
           s"return a form field error with message ${MessageLookup.invalidNumber}" in {
@@ -446,7 +435,7 @@ class SubmitVatReturnFormSpec extends BaseSpec {
 
         "has more than 2 decimals" should {
 
-          val form = submitVatReturnForm.bind(
+          val form = nineBoxForm.bind(
             Map(
               "box1" -> "1",
               "box2" -> "1",
@@ -457,7 +446,7 @@ class SubmitVatReturnFormSpec extends BaseSpec {
               "box7" -> "1",
               "box8" -> "1",
               "box9" -> "1"
-            ) ++ defaultFieldValues
+            )
           )
 
           s"return a form field error with message ${MessageLookup.tooManyCharacters}" in {
@@ -468,7 +457,7 @@ class SubmitVatReturnFormSpec extends BaseSpec {
 
         "is empty" should {
 
-          val form = submitVatReturnForm.bind(
+          val form = nineBoxForm.bind(
             Map(
               "box1" -> "1",
               "box2" -> "1",
@@ -479,7 +468,7 @@ class SubmitVatReturnFormSpec extends BaseSpec {
               "box7" -> "1",
               "box8" -> "1",
               "box9" -> "1"
-            ) ++ defaultFieldValues
+            )
           )
 
           s"return a form field error with message ${MessageLookup.enterANumber}" in {
@@ -490,7 +479,7 @@ class SubmitVatReturnFormSpec extends BaseSpec {
 
         "is less than -9999999999999.99" should {
 
-          val form = submitVatReturnForm.bind(
+          val form = nineBoxForm.bind(
             Map(
               "box1" -> "1",
               "box2" -> "1",
@@ -501,7 +490,7 @@ class SubmitVatReturnFormSpec extends BaseSpec {
               "box7" -> "1",
               "box8" -> "1",
               "box9" -> "1"
-            ) ++ defaultFieldValues
+            )
           )
 
           s"return a form field error with message ${MessageLookup.tooManyCharacters}" in {
@@ -512,7 +501,7 @@ class SubmitVatReturnFormSpec extends BaseSpec {
 
         "is more than 9999999999999.99" should {
 
-          val form = submitVatReturnForm.bind(
+          val form = nineBoxForm.bind(
             Map(
               "box1" -> "1",
               "box2" -> "1",
@@ -523,7 +512,7 @@ class SubmitVatReturnFormSpec extends BaseSpec {
               "box7" -> "1",
               "box8" -> "1",
               "box9" -> "1"
-            ) ++ defaultFieldValues
+            )
           )
 
           s"return a form field error with message ${MessageLookup.tooManyCharacters}" in {
@@ -537,7 +526,7 @@ class SubmitVatReturnFormSpec extends BaseSpec {
 
         "is not a number" should {
 
-          val form = submitVatReturnForm.bind(
+          val form = nineBoxForm.bind(
             Map(
               "box1" -> "1",
               "box2" -> "1",
@@ -548,7 +537,7 @@ class SubmitVatReturnFormSpec extends BaseSpec {
               "box7" -> "1",
               "box8" -> "1",
               "box9" -> "1"
-            ) ++ defaultFieldValues
+            )
           )
 
           s"return a form field error with message ${MessageLookup.invalidNumber}" in {
@@ -559,7 +548,7 @@ class SubmitVatReturnFormSpec extends BaseSpec {
 
         "has more than 2 decimals" should {
 
-          val form = submitVatReturnForm.bind(
+          val form = nineBoxForm.bind(
             Map(
               "box1" -> "1",
               "box2" -> "1",
@@ -570,7 +559,7 @@ class SubmitVatReturnFormSpec extends BaseSpec {
               "box7" -> "1",
               "box8" -> "1",
               "box9" -> "1"
-            ) ++ defaultFieldValues
+            )
           )
 
           s"return a form field error with message ${MessageLookup.tooManyCharactersNonNegative}" in {
@@ -581,7 +570,7 @@ class SubmitVatReturnFormSpec extends BaseSpec {
 
         "is empty" should {
 
-          val form = submitVatReturnForm.bind(
+          val form = nineBoxForm.bind(
             Map(
               "box1" -> "1",
               "box2" -> "1",
@@ -592,7 +581,7 @@ class SubmitVatReturnFormSpec extends BaseSpec {
               "box7" -> "1",
               "box8" -> "1",
               "box9" -> "1"
-            ) ++ defaultFieldValues
+            )
           )
 
           s"return a form field error with message ${MessageLookup.enterANumber}" in {
@@ -603,7 +592,7 @@ class SubmitVatReturnFormSpec extends BaseSpec {
 
         "is less than 0.00" should {
 
-          val form = submitVatReturnForm.bind(
+          val form = nineBoxForm.bind(
             Map(
               "box1" -> "1",
               "box2" -> "1",
@@ -614,7 +603,7 @@ class SubmitVatReturnFormSpec extends BaseSpec {
               "box7" -> "1",
               "box8" -> "1",
               "box9" -> "1"
-            ) ++ defaultFieldValues
+            )
           )
 
           s"return a form field error with message ${MessageLookup.tooManyCharactersNonNegative}" in {
@@ -625,7 +614,7 @@ class SubmitVatReturnFormSpec extends BaseSpec {
 
         "is more than 99999999999.99" should {
 
-          val form = submitVatReturnForm.bind(
+          val form = nineBoxForm.bind(
             Map(
               "box1" -> "1",
               "box2" -> "1",
@@ -636,7 +625,7 @@ class SubmitVatReturnFormSpec extends BaseSpec {
               "box7" -> "1",
               "box8" -> "1",
               "box9" -> "1"
-            ) ++ defaultFieldValues
+            )
           )
 
           s"return a form field error with message ${MessageLookup.tooManyCharactersNonNegative}" in {
@@ -647,7 +636,7 @@ class SubmitVatReturnFormSpec extends BaseSpec {
 
         "is negative" should {
 
-          val form = submitVatReturnForm.bind(
+          val form = nineBoxForm.bind(
             Map(
               "box1" -> "1",
               "box2" -> "1",
@@ -658,7 +647,7 @@ class SubmitVatReturnFormSpec extends BaseSpec {
               "box7" -> "1",
               "box8" -> "1",
               "box9" -> "1"
-            ) ++ defaultFieldValues
+            )
           )
 
           s"return a form field error with message ${MessageLookup.tooManyCharactersNonNegative}" in {
@@ -672,7 +661,7 @@ class SubmitVatReturnFormSpec extends BaseSpec {
 
         "is not a number" should {
 
-          val form = submitVatReturnForm.bind(
+          val form = nineBoxForm.bind(
             Map(
               "box1" -> "1",
               "box2" -> "1",
@@ -683,7 +672,7 @@ class SubmitVatReturnFormSpec extends BaseSpec {
               "box7" -> "1",
               "box8" -> "1",
               "box9" -> "1"
-            ) ++ defaultFieldValues
+            )
           )
 
           s"return a form field error with message ${MessageLookup.invalidNumber}" in {
@@ -694,7 +683,7 @@ class SubmitVatReturnFormSpec extends BaseSpec {
 
         "has decimals other than 0.00" should {
 
-          val form = submitVatReturnForm.bind(
+          val form = nineBoxForm.bind(
             Map(
               "box1" -> "1",
               "box2" -> "1",
@@ -705,7 +694,7 @@ class SubmitVatReturnFormSpec extends BaseSpec {
               "box7" -> "1",
               "box8" -> "1",
               "box9" -> "1"
-            ) ++ defaultFieldValues
+            )
           )
 
           s"return a form field error with message ${MessageLookup.tooManyCharactersNonDecimal}" in {
@@ -716,7 +705,7 @@ class SubmitVatReturnFormSpec extends BaseSpec {
 
         "is empty" should {
 
-          val form = submitVatReturnForm.bind(
+          val form = nineBoxForm.bind(
             Map(
               "box1" -> "1",
               "box2" -> "1",
@@ -727,7 +716,7 @@ class SubmitVatReturnFormSpec extends BaseSpec {
               "box7" -> "1",
               "box8" -> "1",
               "box9" -> "1"
-            ) ++ defaultFieldValues
+            )
           )
 
           s"return a form field error with message ${MessageLookup.enterANumber}" in {
@@ -738,7 +727,7 @@ class SubmitVatReturnFormSpec extends BaseSpec {
 
         "is less than -9999999999999" should {
 
-          val form = submitVatReturnForm.bind(
+          val form = nineBoxForm.bind(
             Map(
               "box1" -> "1",
               "box2" -> "1",
@@ -749,7 +738,7 @@ class SubmitVatReturnFormSpec extends BaseSpec {
               "box7" -> "1",
               "box8" -> "1",
               "box9" -> "1"
-            ) ++ defaultFieldValues
+            )
           )
 
           s"return a form field error with message ${MessageLookup.tooManyCharactersNonDecimal}" in {
@@ -760,7 +749,7 @@ class SubmitVatReturnFormSpec extends BaseSpec {
 
         "is more than 9999999999999" should {
 
-          val form = submitVatReturnForm.bind(
+          val form = nineBoxForm.bind(
             Map(
               "box1" -> "1",
               "box2" -> "1",
@@ -771,7 +760,7 @@ class SubmitVatReturnFormSpec extends BaseSpec {
               "box7" -> "1",
               "box8" -> "1",
               "box9" -> "1"
-            ) ++ defaultFieldValues
+            )
           )
 
           s"return a form field error with message ${MessageLookup.tooManyCharactersNonDecimal}" in {
@@ -785,7 +774,7 @@ class SubmitVatReturnFormSpec extends BaseSpec {
 
         "is not a number" should {
 
-          val form = submitVatReturnForm.bind(
+          val form = nineBoxForm.bind(
             Map(
               "box1" -> "1",
               "box2" -> "1",
@@ -796,7 +785,7 @@ class SubmitVatReturnFormSpec extends BaseSpec {
               "box7" -> "x!",
               "box8" -> "1",
               "box9" -> "1"
-            ) ++ defaultFieldValues
+            )
           )
 
           s"return a form field error with message ${MessageLookup.invalidNumber}" in {
@@ -807,7 +796,7 @@ class SubmitVatReturnFormSpec extends BaseSpec {
 
         "has decimals other than 0.00" should {
 
-          val form = submitVatReturnForm.bind(
+          val form = nineBoxForm.bind(
             Map(
               "box1" -> "1",
               "box2" -> "1",
@@ -818,7 +807,7 @@ class SubmitVatReturnFormSpec extends BaseSpec {
               "box7" -> "1.01",
               "box8" -> "1",
               "box9" -> "1"
-            ) ++ defaultFieldValues
+            )
           )
 
           s"return a form field error with message ${MessageLookup.tooManyCharactersNonDecimal}" in {
@@ -829,7 +818,7 @@ class SubmitVatReturnFormSpec extends BaseSpec {
 
         "is empty" should {
 
-          val form = submitVatReturnForm.bind(
+          val form = nineBoxForm.bind(
             Map(
               "box1" -> "1",
               "box2" -> "1",
@@ -840,7 +829,7 @@ class SubmitVatReturnFormSpec extends BaseSpec {
               "box7" -> "",
               "box8" -> "1",
               "box9" -> "1"
-            ) ++ defaultFieldValues
+            )
           )
 
           s"return a form field error with message ${MessageLookup.enterANumber}" in {
@@ -851,7 +840,7 @@ class SubmitVatReturnFormSpec extends BaseSpec {
 
         "is less than -9999999999999" should {
 
-          val form = submitVatReturnForm.bind(
+          val form = nineBoxForm.bind(
             Map(
               "box1" -> "1",
               "box2" -> "1",
@@ -862,7 +851,7 @@ class SubmitVatReturnFormSpec extends BaseSpec {
               "box7" -> "-10000000000000",
               "box8" -> "1",
               "box9" -> "1"
-            ) ++ defaultFieldValues
+            )
           )
 
           s"return a form field error with message ${MessageLookup.tooManyCharactersNonDecimal}" in {
@@ -873,7 +862,7 @@ class SubmitVatReturnFormSpec extends BaseSpec {
 
         "is more than 9999999999999" should {
 
-          val form = submitVatReturnForm.bind(
+          val form = nineBoxForm.bind(
             Map(
               "box1" -> "1",
               "box2" -> "1",
@@ -884,7 +873,7 @@ class SubmitVatReturnFormSpec extends BaseSpec {
               "box7" -> "10000000000000",
               "box8" -> "1",
               "box9" -> "1"
-            ) ++ defaultFieldValues
+            )
           )
 
           s"return a form field error with message ${MessageLookup.tooManyCharactersNonDecimal}" in {
@@ -898,7 +887,7 @@ class SubmitVatReturnFormSpec extends BaseSpec {
 
         "is not a number" should {
 
-          val form = submitVatReturnForm.bind(
+          val form = nineBoxForm.bind(
             Map(
               "box1" -> "1",
               "box2" -> "1",
@@ -909,7 +898,7 @@ class SubmitVatReturnFormSpec extends BaseSpec {
               "box7" -> "1",
               "box8" -> "x!",
               "box9" -> "1"
-            ) ++ defaultFieldValues
+            )
           )
 
           s"return a form field error with message ${MessageLookup.invalidNumber}" in {
@@ -920,7 +909,7 @@ class SubmitVatReturnFormSpec extends BaseSpec {
 
         "has decimals other than 0.00" should {
 
-          val form = submitVatReturnForm.bind(
+          val form = nineBoxForm.bind(
             Map(
               "box1" -> "1",
               "box2" -> "1",
@@ -931,7 +920,7 @@ class SubmitVatReturnFormSpec extends BaseSpec {
               "box7" -> "1",
               "box8" -> "1.01",
               "box9" -> "1"
-            ) ++ defaultFieldValues
+            )
           )
 
           s"return a form field error with message ${MessageLookup.tooManyCharactersNonDecimal}" in {
@@ -942,7 +931,7 @@ class SubmitVatReturnFormSpec extends BaseSpec {
 
         "is empty" should {
 
-          val form = submitVatReturnForm.bind(
+          val form = nineBoxForm.bind(
             Map(
               "box1" -> "1",
               "box2" -> "1",
@@ -953,7 +942,7 @@ class SubmitVatReturnFormSpec extends BaseSpec {
               "box7" -> "1",
               "box8" -> "",
               "box9" -> "1"
-            ) ++ defaultFieldValues
+            )
           )
 
           s"return a form field error with message ${MessageLookup.enterANumber}" in {
@@ -964,7 +953,7 @@ class SubmitVatReturnFormSpec extends BaseSpec {
 
         "is less than -9999999999999" should {
 
-          val form = submitVatReturnForm.bind(
+          val form = nineBoxForm.bind(
             Map(
               "box1" -> "1",
               "box2" -> "1",
@@ -975,7 +964,7 @@ class SubmitVatReturnFormSpec extends BaseSpec {
               "box7" -> "1",
               "box8" -> "-10000000000000",
               "box9" -> "1"
-            ) ++ defaultFieldValues
+            )
           )
 
           s"return a form field error with message ${MessageLookup.tooManyCharactersNonDecimal}" in {
@@ -986,7 +975,7 @@ class SubmitVatReturnFormSpec extends BaseSpec {
 
         "is more than 9999999999999" should {
 
-          val form = submitVatReturnForm.bind(
+          val form = nineBoxForm.bind(
             Map(
               "box1" -> "1",
               "box2" -> "1",
@@ -997,7 +986,7 @@ class SubmitVatReturnFormSpec extends BaseSpec {
               "box7" -> "1",
               "box8" -> "10000000000000",
               "box9" -> "1"
-            ) ++ defaultFieldValues
+            )
           )
 
           s"return a form field error with message ${MessageLookup.tooManyCharactersNonDecimal}" in {
@@ -1011,7 +1000,7 @@ class SubmitVatReturnFormSpec extends BaseSpec {
 
         "is not a number" should {
 
-          val form = submitVatReturnForm.bind(
+          val form = nineBoxForm.bind(
             Map(
               "box1" -> "1",
               "box2" -> "1",
@@ -1022,7 +1011,7 @@ class SubmitVatReturnFormSpec extends BaseSpec {
               "box7" -> "1",
               "box8" -> "1",
               "box9" -> "x!"
-            ) ++ defaultFieldValues
+            )
           )
 
           s"return a form field error with message ${MessageLookup.invalidNumber}" in {
@@ -1033,7 +1022,7 @@ class SubmitVatReturnFormSpec extends BaseSpec {
 
         "has decimals other than 0.00" should {
 
-          val form = submitVatReturnForm.bind(
+          val form = nineBoxForm.bind(
             Map(
               "box1" -> "1",
               "box2" -> "1",
@@ -1044,7 +1033,7 @@ class SubmitVatReturnFormSpec extends BaseSpec {
               "box7" -> "1",
               "box8" -> "1",
               "box9" -> "1.01"
-            ) ++ defaultFieldValues
+            )
           )
 
           s"return a form field error with message ${MessageLookup.tooManyCharactersNonDecimal}" in {
@@ -1055,7 +1044,7 @@ class SubmitVatReturnFormSpec extends BaseSpec {
 
         "is empty" should {
 
-          val form = submitVatReturnForm.bind(
+          val form = nineBoxForm.bind(
             Map(
               "box1" -> "1",
               "box2" -> "1",
@@ -1066,7 +1055,7 @@ class SubmitVatReturnFormSpec extends BaseSpec {
               "box7" -> "1",
               "box8" -> "1",
               "box9" -> ""
-            ) ++ defaultFieldValues
+            )
           )
 
           s"return a form field error with message ${MessageLookup.enterANumber}" in {
@@ -1077,7 +1066,7 @@ class SubmitVatReturnFormSpec extends BaseSpec {
 
         "is less than -9999999999999" should {
 
-          val form = submitVatReturnForm.bind(
+          val form = nineBoxForm.bind(
             Map(
               "box1" -> "1",
               "box2" -> "1",
@@ -1088,7 +1077,7 @@ class SubmitVatReturnFormSpec extends BaseSpec {
               "box7" -> "1",
               "box8" -> "1",
               "box9" -> "-10000000000000"
-            ) ++ defaultFieldValues
+            )
           )
 
           s"return a form field error with message ${MessageLookup.tooManyCharactersNonDecimal}" in {
@@ -1099,7 +1088,7 @@ class SubmitVatReturnFormSpec extends BaseSpec {
 
         "is more than 9999999999999" should {
 
-          val form = submitVatReturnForm.bind(
+          val form = nineBoxForm.bind(
             Map(
               "box1" -> "1",
               "box2" -> "1",
@@ -1110,7 +1099,7 @@ class SubmitVatReturnFormSpec extends BaseSpec {
               "box7" -> "1",
               "box8" -> "1",
               "box9" -> "10000000000000"
-            ) ++ defaultFieldValues
+            )
           )
 
           s"return a form field error with message ${MessageLookup.tooManyCharactersNonDecimal}" in {
@@ -1126,7 +1115,7 @@ class SubmitVatReturnFormSpec extends BaseSpec {
 
     "form already has errors" should {
 
-      val form = submitVatReturnForm.bind(
+      val form = nineBoxForm.bind(
         Map(
           "box1" -> "x!",
           "box2" -> "1",
@@ -1137,12 +1126,12 @@ class SubmitVatReturnFormSpec extends BaseSpec {
           "box7" -> "1",
           "box8" -> "1",
           "box9" -> "1"
-        ) ++ defaultFieldValues
+        )
       )
 
       "return the form with errors" in {
         form.hasErrors shouldBe true
-        SubmitVatReturnForm.validateBoxCalculations(form) shouldBe form
+        NineBoxForm.validateBoxCalculations(form) shouldBe form
       }
     }
 
@@ -1150,7 +1139,7 @@ class SubmitVatReturnFormSpec extends BaseSpec {
 
       "box 3 and 5 are valid calculations" should {
 
-        val form = submitVatReturnForm.bind(
+        val form = nineBoxForm.bind(
           Map(
             "box1" -> "1",
             "box2" -> "2",
@@ -1161,17 +1150,17 @@ class SubmitVatReturnFormSpec extends BaseSpec {
             "box7" -> "1",
             "box8" -> "1",
             "box9" -> "1"
-          ) ++ defaultFieldValues
+          )
         )
 
         "return the form with no errors" in {
-          SubmitVatReturnForm.validateBoxCalculations(form).hasErrors shouldBe false
+          NineBoxForm.validateBoxCalculations(form).hasErrors shouldBe false
         }
       }
 
       "box 3 is not the sum of box 1 and 2" should {
 
-        val form = submitVatReturnForm.bind(
+        val form = nineBoxForm.bind(
           Map(
             "box1" -> "1",
             "box2" -> "2",
@@ -1182,18 +1171,18 @@ class SubmitVatReturnFormSpec extends BaseSpec {
             "box7" -> "1",
             "box8" -> "1",
             "box9" -> "1"
-          ) ++ defaultFieldValues
+          )
         )
 
         "return the form with a field error for box 3" in {
-          val messageKey = SubmitVatReturnForm.validateBoxCalculations(form).error("box3").get.message
+          val messageKey = NineBoxForm.validateBoxCalculations(form).error("box3").get.message
           messages(messageKey) shouldBe MessageLookup.box3Sum
         }
       }
 
       "box 5 is not box 3 minus box 4" should {
 
-        val form = submitVatReturnForm.bind(
+        val form = nineBoxForm.bind(
           Map(
             "box1" -> "1",
             "box2" -> "2",
@@ -1204,18 +1193,18 @@ class SubmitVatReturnFormSpec extends BaseSpec {
             "box7" -> "1",
             "box8" -> "1",
             "box9" -> "1"
-          ) ++ defaultFieldValues
+          )
         )
 
         "return the form with a field error for box 5" in {
-          val messageKey = SubmitVatReturnForm.validateBoxCalculations(form).error("box5").get.message
+          val messageKey = NineBoxForm.validateBoxCalculations(form).error("box5").get.message
           messages(messageKey) shouldBe MessageLookup.box5Sum
         }
       }
 
       "multiple calculations are invalid" should {
 
-        val form = submitVatReturnForm.bind(
+        val form = nineBoxForm.bind(
           Map(
             "box1" -> "1",
             "box2" -> "1",
@@ -1226,10 +1215,10 @@ class SubmitVatReturnFormSpec extends BaseSpec {
             "box7" -> "1",
             "box8" -> "1",
             "box9" -> "1"
-          ) ++ defaultFieldValues
+          )
         )
 
-        val validatedForm = SubmitVatReturnForm.validateBoxCalculations(form)
+        val validatedForm = NineBoxForm.validateBoxCalculations(form)
 
         "return both field errors" in {
           messages(validatedForm.error("box5").get.message) shouldBe MessageLookup.box5Sum

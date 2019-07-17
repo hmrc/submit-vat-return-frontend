@@ -47,6 +47,17 @@ class SubmitFormControllerSpec extends BaseSpec
 
   val vatSubscriptionResponse: Future[HttpGetResult[CustomerDetails]] = Future.successful(Right(customerDetailsWithFRS))
 
+  val obligations: VatObligations = VatObligations(Seq(
+    VatObligation(
+      LocalDate.parse("2019-01-12"),
+      LocalDate.parse("2019-04-12"),
+      LocalDate.parse("2019-05-12"),
+      "18AA"
+    )
+  ))
+
+  val vatObligationsResponse: Future[HttpGetResult[VatObligations]] = Future.successful(Right(obligations))
+
   object TestSubmitFormController extends SubmitFormController(
     messagesApi,
     mockVatSubscriptionService,
@@ -173,17 +184,6 @@ class SubmitFormControllerSpec extends BaseSpec
 
           "obligation end date is in the future" should {
 
-            val obligations: VatObligations = VatObligations(Seq(
-              VatObligation(
-                LocalDate.parse("2019-01-12"),
-                LocalDate.parse("2019-04-12"),
-                LocalDate.parse("2019-05-12"),
-                "18AA"
-              )
-            ))
-
-            val vatObligationsResponse: Future[HttpGetResult[VatObligations]] = Future.successful(Right(obligations))
-
             lazy val result = {
               TestSubmitFormController.show("18AA")(fakeRequest.withSession(SessionKeys.mandationStatus -> MandationStatuses.nonMTDfB))
             }
@@ -204,7 +204,11 @@ class SubmitFormControllerSpec extends BaseSpec
 
         "an obligation doesn't match the provided period key" should {
 
-          val obligations: VatObligations = VatObligations(Seq(
+          lazy val result = {
+            TestSubmitFormController.show("18AA")(fakeRequest.withSession(SessionKeys.mandationStatus -> MandationStatuses.nonMTDfB))
+          }
+
+          val badPeriodKeyObs: VatObligations = VatObligations(Seq(
             VatObligation(
               LocalDate.parse("2019-01-12"),
               LocalDate.parse("2019-04-12"),
@@ -213,16 +217,12 @@ class SubmitFormControllerSpec extends BaseSpec
             )
           ))
 
-          val vatObligationsResponse: Future[HttpGetResult[VatObligations]] = Future.successful(Right(obligations))
-
-          lazy val result = {
-            TestSubmitFormController.show("18AA")(fakeRequest.withSession(SessionKeys.mandationStatus -> MandationStatuses.nonMTDfB))
-          }
+          val badPeriodKeyObsResponse: Future[HttpGetResult[VatObligations]] = Future.successful(Right(badPeriodKeyObs))
 
           "return a 303" in {
             mockAuthorise(mtdVatAuthorisedResponse)
             setupVatSubscriptionService(vatSubscriptionResponse)
-            setupVatObligationsService(vatObligationsResponse)
+            setupVatObligationsService(badPeriodKeyObsResponse)
             status(result) shouldBe Status.SEE_OTHER
           }
 
@@ -286,6 +286,8 @@ class SubmitFormControllerSpec extends BaseSpec
         "status is SEE_OTHER" in {
           mockAuthorise(mtdVatAuthorisedResponse)
           mockDateHasPassed(response = true)
+          setupVatSubscriptionService(vatSubscriptionResponse)
+          setupVatObligationsService(vatObligationsResponse)
           status(result) shouldBe SEE_OTHER
         }
 
@@ -322,6 +324,8 @@ class SubmitFormControllerSpec extends BaseSpec
       "return 400" in {
         mockAuthorise(mtdVatAuthorisedResponse)
         mockDateHasPassed(response = false)
+        setupVatSubscriptionService(vatSubscriptionResponse)
+        setupVatObligationsService(vatObligationsResponse)
         status(result) shouldBe BAD_REQUEST
       }
 

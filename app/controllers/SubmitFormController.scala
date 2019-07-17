@@ -16,7 +16,7 @@
 
 package controllers
 
-import forms.SubmitVatReturnForm
+import forms.NineBoxForm
 import common.SessionKeys
 import config.AppConfig
 import javax.inject.{Inject, Singleton}
@@ -26,7 +26,7 @@ import config.ErrorHandler
 import controllers.predicates.AuthPredicate
 import controllers.predicates.MandationStatusPredicate
 import models.auth.User
-import models.{SubmitFormViewModel, SubmitVatReturnModel, VatObligation}
+import models.{NineBoxModel, SubmitFormViewModel, SubmitVatReturnModel, VatObligation}
 import play.api.Logger
 import play.api.data.Form
 import play.api.libs.json.Json
@@ -34,8 +34,7 @@ import play.api.mvc.{Action, AnyContent}
 import services.{DateService, VatObligationsService, VatSubscriptionService}
 import uk.gov.hmrc.http.HeaderCarrier
 import uk.gov.hmrc.play.bootstrap.controller.FrontendController
-import forms.SubmitVatReturnForm._
-import scala.concurrent.Future
+import forms.NineBoxForm._
 import java.net.URLDecoder
 
 @Singleton
@@ -52,13 +51,25 @@ class SubmitFormController @Inject()(val messagesApi: MessagesApi,
 
     user.session.get(SessionKeys.returnData) match {
       case Some(model) => renderViewWithSessionData(periodKey, model)
-      case _ => renderViewWithoutSessionData(periodKey, SubmitVatReturnForm.submitVatReturnForm)
+      case _ => renderViewWithoutSessionData(periodKey, NineBoxForm.nineBoxForm)
     }
   }
 
   private def renderViewWithSessionData(periodKey: String, model: String)(implicit request: Request[_], user: User[_], hc: HeaderCarrier) = {
 
     val sessionData = Json.parse(model).as[SubmitVatReturnModel]
+
+    val nbox = NineBoxModel(
+      sessionData.box1,
+      sessionData.box2,
+      sessionData.box3,
+      sessionData.box4,
+      sessionData.box5,
+      sessionData.box6,
+      sessionData.box7,
+      sessionData.box8,
+      sessionData.box9
+    )
 
     vatSubscriptionService.getCustomerDetails(user.vrn) map {
       case Right(customerDetails) =>
@@ -67,7 +78,7 @@ class SubmitFormController @Inject()(val messagesApi: MessagesApi,
           customerDetails.clientName,
           sessionData.flatRateScheme,
           VatObligation(sessionData.start, sessionData.end, sessionData.due, periodKey),
-          SubmitVatReturnForm.submitVatReturnForm.fill(sessionData),
+          NineBoxForm.nineBoxForm.fill(nbox),
           isAgent = user.isAgent)
         )
       case _ =>
@@ -76,14 +87,13 @@ class SubmitFormController @Inject()(val messagesApi: MessagesApi,
           None,
           sessionData.flatRateScheme,
           VatObligation(sessionData.start, sessionData.end, sessionData.due, periodKey),
-          SubmitVatReturnForm.submitVatReturnForm.fill(sessionData),
+          NineBoxForm.nineBoxForm.fill(nbox),
           isAgent = user.isAgent)
         )
     }
   }
 
-  private def renderViewWithoutSessionData(periodKey: String,
-                                           form: Form[SubmitVatReturnModel])(implicit request: Request[_], user: User[_], hc: HeaderCarrier) = {
+  private def renderViewWithoutSessionData(periodKey: String, form: Form[NineBoxModel])(implicit request: Request[_], user: User[_], hc: HeaderCarrier) = {
 
     for {
       customerInformation <- vatSubscriptionService.getCustomerDetails(user.vrn)
@@ -130,7 +140,7 @@ class SubmitFormController @Inject()(val messagesApi: MessagesApi,
 
   def submit(periodKey: String): Action[AnyContent] = (authPredicate andThen mandationStatusCheck).async { implicit user =>
 
-    validateBoxCalculations(SubmitVatReturnForm.submitVatReturnForm.bindFromRequest()).fold(
+    validateBoxCalculations(NineBoxForm.nineBoxForm.bindFromRequest()).fold(
       failure => {
 
         user.session.get(SessionKeys.viewModel) match {
@@ -164,17 +174,41 @@ class SubmitFormController @Inject()(val messagesApi: MessagesApi,
         }
       },
       success => {
-        if(dateService.dateHasPassed(success.end)) {
-          Future.successful(
-            Redirect(controllers.routes.ConfirmSubmissionController.show(periodKey))
-              .addingToSession(SessionKeys.returnData -> Json.toJson(success).toString())
-              .removingFromSession(SessionKeys.viewModel)
-          )
-        } else {
-          Logger.debug(s"[SubmitFormController][submit] Obligation end date for period $periodKey has not yet passed.")
-          Future.successful(errorHandler.showBadRequestError)
-        }
+        submitSuccess(success, periodKey)
       }
     )
+  }
+
+  private def submitSuccess(model: NineBoxModel, periodKey: String)(implicit request: Request[_], user: User[_], hc: HeaderCarrier) = {
+    for {
+      customerInformation <- vatSubscriptionService.getCustomerDetails(user.vrn)
+      obligations <- vatObligationsService.getObligations(user.vrn)
+    } yield {
+      (customerInformation, obligations) match {
+        case (Right(customerDetails), Right(obs)) =>
+          if(dateService.dateHasPassed(obs.obligations.head.end)){
+            val sessionModel = SubmitVatReturnModel(
+              model.box1,
+              model.box2,
+              model.box3,
+              model.box4,
+              model.box5,
+              model.box6,
+              model.box7,
+              model.box8,
+              model.box9,
+              customerDetails.hasFlatRateScheme,
+              obs.obligations.head.start,
+              obs.obligations.head.end,
+              obs.obligations.head.due)
+            Redirect(controllers.routes.ConfirmSubmissionController.show(periodKey))
+              .addingToSession(SessionKeys.returnData -> Json.toJson(sessionModel).toString())
+              .removingFromSession(SessionKeys.viewModel)
+          } else {
+            Logger.debug(s"[SubmitFormController][submitSuccess] Obligation end date for period $periodKey has not yet passed.")
+            errorHandler.showBadRequestError
+          }
+      }
+    }
   }
 }

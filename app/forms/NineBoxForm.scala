@@ -18,13 +18,13 @@ package forms
 
 import forms.Constraints._
 import javax.inject.Singleton
-import models.SubmitVatReturnModel
+import models.NineBoxModel
 import play.api.data.Forms._
 import play.api.data.validation.Constraint
 import play.api.data.{Form, FormError, Mapping}
 
 @Singleton
-object SubmitVatReturnForm {
+object NineBoxForm {
 
   val minDecimalValue: BigDecimal   = -9999999999999.99
   val minNoDecimalValue: BigDecimal = -9999999999999.00
@@ -75,7 +75,7 @@ object SubmitVatReturnForm {
     if((box3 - box4).abs == box5) None else Some(FormError("box5", "submit_form.error.box5Error"))
   }
 
-  val submitVatReturnForm: Form[SubmitVatReturnModel] = Form(
+  val nineBoxForm: Form[NineBoxModel] = Form(
     mapping(
       "box1" -> box1To4Validation,
       "box2" -> box1To4Validation,
@@ -85,15 +85,11 @@ object SubmitVatReturnForm {
       "box6" -> box6To9Validation,
       "box7" -> box6To9Validation,
       "box8" -> box6To9Validation,
-      "box9" -> box6To9Validation,
-      "flatRateScheme" -> boolean,
-      "start" -> localDate,
-      "end" -> localDate,
-      "due" -> localDate
-    )(SubmitVatReturnModel.apply)(SubmitVatReturnModel.unapply)
+      "box9" -> box6To9Validation
+    )(NineBoxModel.apply)(NineBoxModel.unapply)
   )
 
-  def validateBoxCalculations(form: Form[SubmitVatReturnModel]): Form[SubmitVatReturnModel] = {
+  def validateBoxCalculations(form: Form[NineBoxModel]): Form[NineBoxModel] = {
     if(form.hasErrors) {
       form
     } else {
