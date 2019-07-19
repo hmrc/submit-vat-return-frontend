@@ -43,7 +43,7 @@
         <p>
             <a
               onClick="sendGAEvent('submit-vat', 'change-client', 'nine-box-confirmation', @user.isAgent)"
-              href="@{appConfig.changeClientUrl}">@messages("confirmation_view.changeClient")</a>
+              href="@{appConfig.changeClientUrl}?redirectUrl=@{appConfig.agentActionUrl}">@messages("confirmation_view.changeClient")</a>
         </p>
     }
 

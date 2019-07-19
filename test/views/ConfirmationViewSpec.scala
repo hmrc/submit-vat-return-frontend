@@ -70,7 +70,7 @@ class ConfirmationViewSpec extends ViewBaseSpec {
         val changeClientLinkElem = element(changeClientLink)(feature_document)
 
         changeClientLinkElem.text() shouldBe "Change client"
-        changeClientLinkElem.attributes().get("href") shouldBe "/change-client"
+        changeClientLinkElem.attributes().get("href") shouldBe "/change-client?redirectUrl=/agent-action"
       }
     }
 
