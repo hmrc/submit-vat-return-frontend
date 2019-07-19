@@ -19,10 +19,10 @@ package forms
 import java.time.LocalDate
 
 import base.BaseSpec
-import forms.NineBoxForm.nineBoxForm
+import forms.SubmitVatReturnForm.nineBoxForm
 import models.{NineBoxModel, SubmitVatReturnModel}
 
-class NineBoxFormSpec extends BaseSpec {
+class SubmitVatReturnFormSpec extends BaseSpec {
 
   object MessageLookup {
     val tooManyCharacters: String = "Enter a maximum of 13 digits for pounds.\nEnter a maximum of 2 decimal places for pence.\nYou can use a negative amount eg -13.2"
@@ -1131,7 +1131,7 @@ class NineBoxFormSpec extends BaseSpec {
 
       "return the form with errors" in {
         form.hasErrors shouldBe true
-        NineBoxForm.validateBoxCalculations(form) shouldBe form
+        SubmitVatReturnForm.validateBoxCalculations(form) shouldBe form
       }
     }
 
@@ -1154,7 +1154,7 @@ class NineBoxFormSpec extends BaseSpec {
         )
 
         "return the form with no errors" in {
-          NineBoxForm.validateBoxCalculations(form).hasErrors shouldBe false
+          SubmitVatReturnForm.validateBoxCalculations(form).hasErrors shouldBe false
         }
       }
 
@@ -1175,7 +1175,7 @@ class NineBoxFormSpec extends BaseSpec {
         )
 
         "return the form with a field error for box 3" in {
-          val messageKey = NineBoxForm.validateBoxCalculations(form).error("box3").get.message
+          val messageKey = SubmitVatReturnForm.validateBoxCalculations(form).error("box3").get.message
           messages(messageKey) shouldBe MessageLookup.box3Sum
         }
       }
@@ -1197,7 +1197,7 @@ class NineBoxFormSpec extends BaseSpec {
         )
 
         "return the form with a field error for box 5" in {
-          val messageKey = NineBoxForm.validateBoxCalculations(form).error("box5").get.message
+          val messageKey = SubmitVatReturnForm.validateBoxCalculations(form).error("box5").get.message
           messages(messageKey) shouldBe MessageLookup.box5Sum
         }
       }
@@ -1218,7 +1218,7 @@ class NineBoxFormSpec extends BaseSpec {
           )
         )
 
-        val validatedForm = NineBoxForm.validateBoxCalculations(form)
+        val validatedForm = SubmitVatReturnForm.validateBoxCalculations(form)
 
         "return both field errors" in {
           messages(validatedForm.error("box5").get.message) shouldBe MessageLookup.box5Sum

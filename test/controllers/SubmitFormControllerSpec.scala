@@ -25,7 +25,6 @@ import connectors.httpParsers.ResponseHttpParsers.HttpGetResult
 import mocks.MockAuth
 import mocks.service.{MockDateService, MockVatObligationsService, MockVatSubscriptionService}
 import mocks.MockMandationPredicate
-import play.api.mvc.AnyContentAsFormUrlEncoded
 import models._
 import models.auth.User
 import models.errors.UnexpectedJsonFormat
@@ -46,6 +45,7 @@ class SubmitFormControllerSpec extends BaseSpec
   with MockDateService {
 
   val vatSubscriptionResponse: Future[HttpGetResult[CustomerDetails]] = Future.successful(Right(customerDetailsWithFRS))
+  val vatSubscriptionFailureResponse: Future[HttpGetResult[CustomerDetails]] = Future.successful(Left(UnexpectedJsonFormat))
 
   val obligations: VatObligations = VatObligations(Seq(
     VatObligation(
@@ -57,6 +57,7 @@ class SubmitFormControllerSpec extends BaseSpec
   ))
 
   val vatObligationsResponse: Future[HttpGetResult[VatObligations]] = Future.successful(Right(obligations))
+  val vatObligationsErrorResponse: Future[HttpGetResult[VatObligations]] = Future.successful(Left(UnexpectedJsonFormat))
 
   object TestSubmitFormController extends SubmitFormController(
     messagesApi,
@@ -120,8 +121,6 @@ class SubmitFormControllerSpec extends BaseSpec
         }
 
         "an unsuccessful response is received from the service" should {
-
-          val vatSubscriptionFailureResponse: Future[HttpGetResult[CustomerDetails]] = Future.successful(Left(UnexpectedJsonFormat))
 
           lazy val requestWithSessionData = User[AnyContentAsEmpty.type]("123456789")(fakeRequest.withSession(
             SessionKeys.returnData -> nineBoxModel,
@@ -257,9 +256,9 @@ class SubmitFormControllerSpec extends BaseSpec
 
   "SubmitFormController .submit" when {
 
-    "redirect to next page" should {
+    "successful" should {
 
-      "successful" should {
+      "redirect to next page" should {
 
         lazy val request = FakeRequest().withFormUrlEncodedBody(
           "box1" -> "1000.11",
@@ -270,11 +269,7 @@ class SubmitFormControllerSpec extends BaseSpec
           "box6" -> "1000",
           "box7" -> "1000",
           "box8" -> "1234567890123",
-          "box9" -> "1234567890123",
-          "flatRateScheme" -> "true",
-          "start" -> "2019-01-01",
-          "end" -> "2019-01-04",
-          "due" -> "2019-01-05"
+          "box9" -> "1234567890123"
         ).withSession(
           SessionKeys.mandationStatus -> MandationStatuses.nonMTDfB
         )
@@ -293,6 +288,61 @@ class SubmitFormControllerSpec extends BaseSpec
 
         s"redirect to ${controllers.routes.ConfirmationController.show()}" in {
           redirectLocation(result).get.contains(controllers.routes.ConfirmSubmissionController.show("93DH").url) shouldBe true
+        }
+      }
+
+      "when the call to retrieve obligations fails" should {
+
+        lazy val request = FakeRequest().withFormUrlEncodedBody(
+          "box1" -> "1000.11",
+          "box2" -> "1000",
+          "box3" -> "2000.11",
+          "box4" -> "1000",
+          "box5" -> "1000.11",
+          "box6" -> "1000",
+          "box7" -> "1000",
+          "box8" -> "1234567890123",
+          "box9" -> "1234567890123"
+        ).withSession(
+          SessionKeys.mandationStatus -> MandationStatuses.nonMTDfB
+        )
+
+        lazy val result = {
+          TestSubmitFormController.submit(periodKey = "93DH")(request)
+        }
+
+        "status is INTERNAL_SERVER_ERROR" in {
+          mockAuthorise(mtdVatAuthorisedResponse)
+          setupVatSubscriptionService(vatSubscriptionResponse)
+          setupVatObligationsService(vatObligationsErrorResponse)
+          status(result) shouldBe INTERNAL_SERVER_ERROR
+        }
+      }
+
+      "when the call to retrieve customer information fails" should {
+        lazy val request = FakeRequest().withFormUrlEncodedBody(
+          "box1" -> "1000.11",
+          "box2" -> "1000",
+          "box3" -> "2000.11",
+          "box4" -> "1000",
+          "box5" -> "1000.11",
+          "box6" -> "1000",
+          "box7" -> "1000",
+          "box8" -> "1234567890123",
+          "box9" -> "1234567890123"
+        ).withSession(
+          SessionKeys.mandationStatus -> MandationStatuses.nonMTDfB
+        )
+
+        lazy val result = {
+          TestSubmitFormController.submit(periodKey = "93DH")(request)
+        }
+
+        "status is INTERNAL_SERVER_ERROR" in {
+          mockAuthorise(mtdVatAuthorisedResponse)
+          setupVatSubscriptionService(vatSubscriptionFailureResponse)
+          setupVatObligationsService(vatObligationsResponse)
+          status(result) shouldBe INTERNAL_SERVER_ERROR
         }
       }
     }

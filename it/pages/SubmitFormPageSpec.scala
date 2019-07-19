@@ -27,7 +27,7 @@ import stubs.AuthStub._
 import stubs.VatObligationsStub._
 import stubs.VatSubscriptionStub._
 import stubs.{AuthStub, VatObligationsStub, VatSubscriptionStub}
-import forms.NineBoxForm
+import forms.SubmitVatReturnForm
 import models.{NineBoxModel, SubmitFormViewModel, SubmitVatReturnModel}
 import org.jsoup.Jsoup
 
@@ -181,7 +181,7 @@ class SubmitFormPageSpec extends BaseISpec {
       def postRequest(data: NineBoxModel): WSResponse = postForm(
         "/18AA/submit-form",
         formatSessionMandationStatus(Some(MandationStatuses.nonMTDfB)),
-        toFormData(NineBoxForm.nineBoxForm, data)
+        toFormData(SubmitVatReturnForm.nineBoxForm, data)
       )
 
       "user is authorised" when {
@@ -225,7 +225,7 @@ class SubmitFormPageSpec extends BaseISpec {
             def postRequest(data: NineBoxModel): WSResponse =
               postForm("/18AA/submit-form",
                 formatSessionMandationStatus(Some(MandationStatuses.nonMTDfB))
-                  ++ formatViewModel(Some(viewModel)), toFormData(NineBoxForm.nineBoxForm, data))
+                  ++ formatViewModel(Some(viewModel)), toFormData(SubmitVatReturnForm.nineBoxForm, data))
 
             "return 200" in {
 
@@ -244,7 +244,7 @@ class SubmitFormPageSpec extends BaseISpec {
             def postRequest(data: NineBoxModel): WSResponse = postForm(
               "/18AA/submit-form",
               formatSessionMandationStatus(Some(MandationStatuses.nonMTDfB)),
-              toFormData(NineBoxForm.nineBoxForm, data)
+              toFormData(SubmitVatReturnForm.nineBoxForm, data)
             )
 
             "return 200" in {
@@ -278,7 +278,7 @@ class SubmitFormPageSpec extends BaseISpec {
         def postRequest(data: NineBoxModel): WSResponse = postForm(
           "/18AA/submit-form",
           formatSessionMandationStatus(Some("unsupportedMandationStatus")),
-          toFormData(NineBoxForm.nineBoxForm, data)
+          toFormData(SubmitVatReturnForm.nineBoxForm, data)
         )
 
         "return 403" in {

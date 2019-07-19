@@ -19,7 +19,7 @@ package views
 import java.time.LocalDate
 
 import assets.messages.SubmitFormPageMessages._
-import forms.NineBoxForm
+import forms.SubmitVatReturnForm
 import models.VatObligation
 import models.auth.User
 import org.jsoup.Jsoup
@@ -53,7 +53,7 @@ class SubmitFormViewSpec extends ViewBaseSpec {
 
     "the user is on the flat rate scheme" should {
 
-      lazy val view = views.html.submit_form("18AA", Some("ABC Studios"), flatRateScheme = true, obligation, NineBoxForm.nineBoxForm, isAgent = false) (fakeRequest, messages, mockAppConfig, user)
+      lazy val view = views.html.submit_form("18AA", Some("ABC Studios"), flatRateScheme = true, obligation, SubmitVatReturnForm.nineBoxForm, isAgent = false) (fakeRequest, messages, mockAppConfig, user)
       lazy implicit val document: Document = Jsoup.parse(view.body)
 
       "render breadcrumbs" which {
@@ -138,7 +138,7 @@ class SubmitFormViewSpec extends ViewBaseSpec {
     }
 
     "the user is not on the flat rate scheme" should {
-      lazy val view = views.html.submit_form("18AA", Some("ABC Studios"), flatRateScheme = false, obligation, NineBoxForm.nineBoxForm, isAgent = false) (fakeRequest, messages, mockAppConfig, user)
+      lazy val view = views.html.submit_form("18AA", Some("ABC Studios"), flatRateScheme = false, obligation, SubmitVatReturnForm.nineBoxForm, isAgent = false) (fakeRequest, messages, mockAppConfig, user)
       lazy implicit val document: Document = Jsoup.parse(view.body)
 
       "display the non flat rate scheme text ofr box 6" in {

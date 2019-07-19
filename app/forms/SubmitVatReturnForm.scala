@@ -24,7 +24,7 @@ import play.api.data.validation.Constraint
 import play.api.data.{Form, FormError, Mapping}
 
 @Singleton
-object NineBoxForm {
+object SubmitVatReturnForm {
 
   val minDecimalValue: BigDecimal   = -9999999999999.99
   val minNoDecimalValue: BigDecimal = -9999999999999.00

@@ -16,7 +16,7 @@
 
 package controllers
 
-import forms.NineBoxForm
+import forms.SubmitVatReturnForm
 import common.SessionKeys
 import config.AppConfig
 import javax.inject.{Inject, Singleton}
@@ -34,7 +34,7 @@ import play.api.mvc.{Action, AnyContent}
 import services.{DateService, VatObligationsService, VatSubscriptionService}
 import uk.gov.hmrc.http.HeaderCarrier
 import uk.gov.hmrc.play.bootstrap.controller.FrontendController
-import forms.NineBoxForm._
+import forms.SubmitVatReturnForm._
 import java.net.URLDecoder
 
 @Singleton
@@ -51,7 +51,7 @@ class SubmitFormController @Inject()(val messagesApi: MessagesApi,
 
     user.session.get(SessionKeys.returnData) match {
       case Some(model) => renderViewWithSessionData(periodKey, model)
-      case _ => renderViewWithoutSessionData(periodKey, NineBoxForm.nineBoxForm)
+      case _ => renderViewWithoutSessionData(periodKey, SubmitVatReturnForm.nineBoxForm)
     }
   }
 
@@ -59,7 +59,7 @@ class SubmitFormController @Inject()(val messagesApi: MessagesApi,
 
     val sessionData = Json.parse(model).as[SubmitVatReturnModel]
 
-    val nbox = NineBoxModel(
+    val nineBoxModel = NineBoxModel(
       sessionData.box1,
       sessionData.box2,
       sessionData.box3,
@@ -78,7 +78,7 @@ class SubmitFormController @Inject()(val messagesApi: MessagesApi,
           customerDetails.clientName,
           sessionData.flatRateScheme,
           VatObligation(sessionData.start, sessionData.end, sessionData.due, periodKey),
-          NineBoxForm.nineBoxForm.fill(nbox),
+          SubmitVatReturnForm.nineBoxForm.fill(nineBoxModel),
           isAgent = user.isAgent)
         )
       case _ =>
@@ -87,7 +87,7 @@ class SubmitFormController @Inject()(val messagesApi: MessagesApi,
           None,
           sessionData.flatRateScheme,
           VatObligation(sessionData.start, sessionData.end, sessionData.due, periodKey),
-          NineBoxForm.nineBoxForm.fill(nbox),
+          SubmitVatReturnForm.nineBoxForm.fill(nineBoxModel),
           isAgent = user.isAgent)
         )
     }
@@ -100,8 +100,7 @@ class SubmitFormController @Inject()(val messagesApi: MessagesApi,
       obligations <- vatObligationsService.getObligations(user.vrn)
     } yield {
       (customerInformation, obligations) match {
-        case (Right(customerDetails), Right(obs)) => {
-
+        case (Right(customerDetails), Right(obs)) =>
           val decodedPeriodKey: String = URLDecoder.decode(periodKey, "utf-8")
           val obligationToSubmit: Seq[VatObligation] = obs.obligations.filter(_.periodKey == decodedPeriodKey)
 
@@ -132,7 +131,6 @@ class SubmitFormController @Inject()(val messagesApi: MessagesApi,
               Logger.warn("[SubmitFormController][Show]: Length of matched obligations to period key is not equal to 1")
               Redirect(appConfig.returnDeadlinesUrl)
           }
-        }
         case (_, _) => errorHandler.showInternalServerError
       }
     }
@@ -140,7 +138,7 @@ class SubmitFormController @Inject()(val messagesApi: MessagesApi,
 
   def submit(periodKey: String): Action[AnyContent] = (authPredicate andThen mandationStatusCheck).async { implicit user =>
 
-    validateBoxCalculations(NineBoxForm.nineBoxForm.bindFromRequest()).fold(
+    validateBoxCalculations(SubmitVatReturnForm.nineBoxForm.bindFromRequest()).fold(
       failure => {
 
         user.session.get(SessionKeys.viewModel) match {
@@ -149,7 +147,7 @@ class SubmitFormController @Inject()(val messagesApi: MessagesApi,
             val sessionData = Json.parse(model).as[SubmitFormViewModel]
 
             vatSubscriptionService.getCustomerDetails(user.vrn) map {
-              case (Right(customerDetails)) => {
+              case (Right(customerDetails)) =>
                 BadRequest(views.html.submit_form(
                   periodKey,
                   customerDetails.clientName,
@@ -158,8 +156,7 @@ class SubmitFormController @Inject()(val messagesApi: MessagesApi,
                   failure,
                   user.isAgent)
                 )
-              }
-              case (_) => {
+              case (_) =>
                 BadRequest(views.html.submit_form(
                   periodKey,
                   None,
@@ -168,7 +165,6 @@ class SubmitFormController @Inject()(val messagesApi: MessagesApi,
                   failure,
                   isAgent = user.isAgent)
                 )
-              }
             }
           case _ => renderViewWithoutSessionData(periodKey, failure)
         }
@@ -208,6 +204,12 @@ class SubmitFormController @Inject()(val messagesApi: MessagesApi,
             Logger.debug(s"[SubmitFormController][submitSuccess] Obligation end date for period $periodKey has not yet passed.")
             errorHandler.showBadRequestError
           }
+        case (Left(error), _) =>
+          Logger.warn(s"[SubmitFormController][submitSuccess] Error received when retrieving customer details $error")
+          errorHandler.showInternalServerError
+        case (_, Left(error)) =>
+          Logger.warn(s"[SubmitFormController][submitSuccess] Error received when retrieving obligation details $error")
+          errorHandler.showInternalServerError
       }
     }
   }
