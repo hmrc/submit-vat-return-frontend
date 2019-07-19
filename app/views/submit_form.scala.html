@@ -27,7 +27,7 @@
         clientName: Option[String],
         flatRateScheme: Boolean,
         obligation: VatObligation,
-        form: Form[SubmitVatReturnModel],
+        form: Form[NineBoxModel],
         isAgent: Boolean)(implicit request: Request[_], messages: Messages, appConfig: AppConfig,
 user: User[_])
 
@@ -125,10 +125,6 @@ user: User[_])
                     class="button"
                     value="@messages("common.continue")" >
             </div>
-            <input type="hidden" name="flatRateScheme" value=@flatRateScheme>
-            <input type="hidden" name="start" value=@obligation.start.toString>
-            <input type="hidden" name="end" value=@obligation.end.toString>
-            <input type="hidden" name="due" value=@obligation.due.toString>
         }
     </div>
 }

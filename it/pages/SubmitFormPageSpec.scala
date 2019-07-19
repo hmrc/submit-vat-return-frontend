@@ -28,7 +28,7 @@ import stubs.VatObligationsStub._
 import stubs.VatSubscriptionStub._
 import stubs.{AuthStub, VatObligationsStub, VatSubscriptionStub}
 import forms.SubmitVatReturnForm
-import models.{SubmitFormViewModel, SubmitVatReturnModel}
+import models.{NineBoxModel, SubmitFormViewModel, SubmitVatReturnModel}
 import org.jsoup.Jsoup
 
 class SubmitFormPageSpec extends BaseISpec {
@@ -166,7 +166,7 @@ class SubmitFormPageSpec extends BaseISpec {
 
     "there is a POST request" when {
 
-      val validSubmissionModel = SubmitVatReturnModel(
+      val validSubmissionModel = NineBoxModel(
         box1 = 1000.00,
         box2 = 1000.00,
         box3 = 2000.00,
@@ -175,17 +175,13 @@ class SubmitFormPageSpec extends BaseISpec {
         box6 = 1000.00,
         box7 = 1000.00,
         box8 = 1000.00,
-        box9 = 1000.00,
-        flatRateScheme = true,
-        start = LocalDate.parse("2019-01-01"),
-        end = LocalDate.parse("2019-01-04"),
-        due = LocalDate.parse("2019-01-05")
+        box9 = 1000.00
       )
 
-      def postRequest(data: SubmitVatReturnModel): WSResponse = postForm(
+      def postRequest(data: NineBoxModel): WSResponse = postForm(
         "/18AA/submit-form",
         formatSessionMandationStatus(Some(MandationStatuses.nonMTDfB)),
-        toFormData(SubmitVatReturnForm.submitVatReturnForm, data)
+        toFormData(SubmitVatReturnForm.nineBoxForm, data)
       )
 
       "user is authorised" when {
@@ -195,7 +191,8 @@ class SubmitFormPageSpec extends BaseISpec {
           "return 303" in {
 
             AuthStub.stubResponse(OK, mtdVatAuthResponse)
-
+            VatSubscriptionStub.stubResponse("customer-details", OK, customerInformationSuccessJson)
+            VatObligationsStub.stubResponse(OK, vatObligationsSuccessJson())
             val response: WSResponse = postRequest(validSubmissionModel)
 
             response.status shouldBe SEE_OTHER
@@ -204,7 +201,7 @@ class SubmitFormPageSpec extends BaseISpec {
 
         "the data posted is invalid" when {
 
-          val invalidSubmissionModel = SubmitVatReturnModel(
+          val invalidSubmissionModel = NineBoxModel(
             box1 = 1000.00,
             box2 = 1000.00,
             box3 = 1000.00,
@@ -213,11 +210,7 @@ class SubmitFormPageSpec extends BaseISpec {
             box6 = 1000.00,
             box7 = 1000.00,
             box8 = 1000.00,
-            box9 = 1000.00,
-            flatRateScheme = true,
-            start = LocalDate.parse("2019-01-01"),
-            end = LocalDate.parse("2019-01-04"),
-            due = LocalDate.parse("2019-01-05")
+            box9 = 1000.00
           )
 
           "there is a view model in session" should {
@@ -229,10 +222,10 @@ class SubmitFormPageSpec extends BaseISpec {
               due = LocalDate.parse("2019-01-05")
             )).toString
 
-            def postRequest(data: SubmitVatReturnModel): WSResponse =
+            def postRequest(data: NineBoxModel): WSResponse =
               postForm("/18AA/submit-form",
                 formatSessionMandationStatus(Some(MandationStatuses.nonMTDfB))
-                  ++ formatViewModel(Some(viewModel)), toFormData(SubmitVatReturnForm.submitVatReturnForm, data))
+                  ++ formatViewModel(Some(viewModel)), toFormData(SubmitVatReturnForm.nineBoxForm, data))
 
             "return 200" in {
 
@@ -248,10 +241,10 @@ class SubmitFormPageSpec extends BaseISpec {
 
           "there is not a view model in session" should {
 
-            def postRequest(data: SubmitVatReturnModel): WSResponse = postForm(
+            def postRequest(data: NineBoxModel): WSResponse = postForm(
               "/18AA/submit-form",
               formatSessionMandationStatus(Some(MandationStatuses.nonMTDfB)),
-              toFormData(SubmitVatReturnForm.submitVatReturnForm, data)
+              toFormData(SubmitVatReturnForm.nineBoxForm, data)
             )
 
             "return 200" in {
@@ -282,10 +275,10 @@ class SubmitFormPageSpec extends BaseISpec {
 
       "user is not mandated" should {
 
-        def postRequest(data: SubmitVatReturnModel): WSResponse = postForm(
+        def postRequest(data: NineBoxModel): WSResponse = postForm(
           "/18AA/submit-form",
           formatSessionMandationStatus(Some("unsupportedMandationStatus")),
-          toFormData(SubmitVatReturnForm.submitVatReturnForm, data)
+          toFormData(SubmitVatReturnForm.nineBoxForm, data)
         )
 
         "return 403" in {
