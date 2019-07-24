@@ -101,24 +101,24 @@ class SubmitFormController @Inject()(val messagesApi: MessagesApi,
     } yield {
       (customerInformation, obligations) match {
         case (Right(customerDetails), Right(obs)) =>
-          val decodedPeriodKey: String = URLDecoder.decode(periodKey, "utf-8")
-          val obligationToSubmit: Seq[VatObligation] = obs.obligations.filter(_.periodKey == decodedPeriodKey)
 
-          obligationToSubmit.length match {
-            case 1 =>
-              if(dateService.dateHasPassed(obligationToSubmit.head.end)) {
+          val decodedPeriodKey: String = URLDecoder.decode(periodKey, "utf-8")
+
+          obs.obligations.find(_.periodKey == decodedPeriodKey) match {
+            case Some(obligation) =>
+              if(dateService.dateHasPassed(obligation.end)) {
                 val viewModel = SubmitFormViewModel(
                   customerDetails.hasFlatRateScheme,
-                  obligationToSubmit.head.start,
-                  obligationToSubmit.head.end,
-                  obligationToSubmit.head.due
+                  obligation.start,
+                  obligation.end,
+                  obligation.due
                 )
 
                 Ok(views.html.submit_form(
                   periodKey,
                   customerDetails.clientName,
                   customerDetails.hasFlatRateScheme,
-                  obligationToSubmit.head,
+                  obligation,
                   form,
                   user.isAgent
                 )).addingToSession(SessionKeys.viewModel -> Json.toJson(viewModel).toString())
@@ -128,7 +128,7 @@ class SubmitFormController @Inject()(val messagesApi: MessagesApi,
                 errorHandler.showBadRequestError
               }
             case _ =>
-              Logger.warn("[SubmitFormController][Show]: Length of matched obligations to period key is not equal to 1")
+              Logger.warn(s"[SubmitFormController][Show]: Obligation not found for period key $periodKey")
               Redirect(appConfig.returnDeadlinesUrl)
           }
         case (_, _) => errorHandler.showInternalServerError
@@ -181,28 +181,38 @@ class SubmitFormController @Inject()(val messagesApi: MessagesApi,
       obligations <- vatObligationsService.getObligations(user.vrn)
     } yield {
       (customerInformation, obligations) match {
+
         case (Right(customerDetails), Right(obs)) =>
-          if(dateService.dateHasPassed(obs.obligations.head.end)){
-            val sessionModel = SubmitVatReturnModel(
-              model.box1,
-              model.box2,
-              model.box3,
-              model.box4,
-              model.box5,
-              model.box6,
-              model.box7,
-              model.box8,
-              model.box9,
-              customerDetails.hasFlatRateScheme,
-              obs.obligations.head.start,
-              obs.obligations.head.end,
-              obs.obligations.head.due)
-            Redirect(controllers.routes.ConfirmSubmissionController.show(periodKey))
-              .addingToSession(SessionKeys.returnData -> Json.toJson(sessionModel).toString())
-              .removingFromSession(SessionKeys.viewModel)
-          } else {
-            Logger.debug(s"[SubmitFormController][submitSuccess] Obligation end date for period $periodKey has not yet passed.")
-            errorHandler.showBadRequestError
+
+          val decodedPeriodKey: String = URLDecoder.decode(periodKey, "utf-8")
+
+          obs.obligations.find(_.periodKey == decodedPeriodKey) match {
+            case Some(obligation) =>
+              if(dateService.dateHasPassed(obligation.end)){
+                val sessionModel = SubmitVatReturnModel(
+                  model.box1,
+                  model.box2,
+                  model.box3,
+                  model.box4,
+                  model.box5,
+                  model.box6,
+                  model.box7,
+                  model.box8,
+                  model.box9,
+                  customerDetails.hasFlatRateScheme,
+                  obligation.start,
+                  obligation.end,
+                  obligation.due)
+                Redirect(controllers.routes.ConfirmSubmissionController.show(periodKey))
+                  .addingToSession(SessionKeys.returnData -> Json.toJson(sessionModel).toString())
+                  .removingFromSession(SessionKeys.viewModel)
+              } else {
+                Logger.debug(s"[SubmitFormController][submitSuccess] Obligation end date for period $periodKey has not yet passed.")
+                errorHandler.showBadRequestError
+              }
+            case _ =>
+              Logger.warn(s"[SubmitFormController][submitSuccess]: Obligation not found for period key $periodKey")
+              Redirect(appConfig.returnDeadlinesUrl)
           }
         case (Left(error), _) =>
           Logger.warn(s"[SubmitFormController][submitSuccess] Error received when retrieving customer details $error")

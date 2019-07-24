@@ -53,6 +53,12 @@ class SubmitFormControllerSpec extends BaseSpec
       LocalDate.parse("2019-04-12"),
       LocalDate.parse("2019-05-12"),
       "18AA"
+    ),
+    VatObligation(
+      LocalDate.parse("2019-01-12"),
+      LocalDate.now().plusYears(1),
+      LocalDate.parse("2019-05-12"),
+      "18AB"
     )
   ))
 
@@ -256,42 +262,88 @@ class SubmitFormControllerSpec extends BaseSpec
 
   "SubmitFormController .submit" when {
 
-    "successful" should {
+    "submission data is valid" when {
 
-      "redirect to next page" should {
+      "service calls are successful" when {
 
-        lazy val request = FakeRequest().withFormUrlEncodedBody(
-          "box1" -> "1000.11",
-          "box2" -> "1000",
-          "box3" -> "2000.11",
-          "box4" -> "1000",
-          "box5" -> "1000.11",
-          "box6" -> "1000",
-          "box7" -> "1000",
-          "box8" -> "1234567890123",
-          "box9" -> "1234567890123"
-        ).withSession(
-          SessionKeys.mandationStatus -> MandationStatuses.nonMTDfB
-        )
+        "matching obligation is found for period key" should {
 
-        lazy val result = {
-          TestSubmitFormController.submit(periodKey = "93DH")(request)
+          lazy val request = FakeRequest().withFormUrlEncodedBody(
+            "box1" -> "1000.11",
+            "box2" -> "1000",
+            "box3" -> "2000.11",
+            "box4" -> "1000",
+            "box5" -> "1000.11",
+            "box6" -> "1000",
+            "box7" -> "1000",
+            "box8" -> "1234567890123",
+            "box9" -> "1234567890123"
+          ).withSession(
+            SessionKeys.mandationStatus -> MandationStatuses.nonMTDfB
+          )
+
+          lazy val result = {
+            TestSubmitFormController.submit(periodKey = "18AA")(request)
+          }
+
+          "status is SEE_OTHER" in {
+            mockAuthorise(mtdVatAuthorisedResponse)
+            mockDateHasPassed(response = true)
+            setupVatSubscriptionService(vatSubscriptionResponse)
+            setupVatObligationsService(vatObligationsResponse)
+            status(result) shouldBe SEE_OTHER
+          }
+
+          s"redirect to ${controllers.routes.ConfirmationController.show()}" in {
+            redirectLocation(result).get.contains(controllers.routes.ConfirmSubmissionController.show("18AA").url) shouldBe true
+          }
         }
 
-        "status is SEE_OTHER" in {
-          mockAuthorise(mtdVatAuthorisedResponse)
-          mockDateHasPassed(response = true)
-          setupVatSubscriptionService(vatSubscriptionResponse)
-          setupVatObligationsService(vatObligationsResponse)
-          status(result) shouldBe SEE_OTHER
-        }
+        "no matching obligation is found for period key" should {
 
-        s"redirect to ${controllers.routes.ConfirmationController.show()}" in {
-          redirectLocation(result).get.contains(controllers.routes.ConfirmSubmissionController.show("93DH").url) shouldBe true
+          lazy val request = FakeRequest().withFormUrlEncodedBody(
+            "box1" -> "1000.11",
+            "box2" -> "1000",
+            "box3" -> "2000.11",
+            "box4" -> "1000",
+            "box5" -> "1000.11",
+            "box6" -> "1000",
+            "box7" -> "1000",
+            "box8" -> "1234567890123",
+            "box9" -> "1234567890123"
+          ).withSession(
+            SessionKeys.mandationStatus -> MandationStatuses.nonMTDfB
+          )
+
+          lazy val result = {
+            TestSubmitFormController.submit(periodKey = "18AA")(request)
+          }
+
+          val badPeriodKeyObs: VatObligations = VatObligations(Seq(
+            VatObligation(
+              LocalDate.parse("2019-01-12"),
+              LocalDate.parse("2019-04-12"),
+              LocalDate.parse("2019-05-12"),
+              "17AA"
+            )
+          ))
+
+          val badPeriodKeyObsResponse: Future[HttpGetResult[VatObligations]] = Future.successful(Right(badPeriodKeyObs))
+
+          "return a 303" in {
+            mockAuthorise(mtdVatAuthorisedResponse)
+            setupVatSubscriptionService(vatSubscriptionResponse)
+            setupVatObligationsService(badPeriodKeyObsResponse)
+            status(result) shouldBe Status.SEE_OTHER
+          }
+
+          s"redirect to ${mockAppConfig.returnDeadlinesUrl}" in {
+            redirectLocation(result) shouldBe Some(mockAppConfig.returnDeadlinesUrl)
+          }
         }
       }
 
-      "when the call to retrieve obligations fails" should {
+      "the call to retrieve obligations fails" should {
 
         lazy val request = FakeRequest().withFormUrlEncodedBody(
           "box1" -> "1000.11",
@@ -308,7 +360,7 @@ class SubmitFormControllerSpec extends BaseSpec
         )
 
         lazy val result = {
-          TestSubmitFormController.submit(periodKey = "93DH")(request)
+          TestSubmitFormController.submit(periodKey = "18AA")(request)
         }
 
         "status is INTERNAL_SERVER_ERROR" in {
@@ -319,7 +371,7 @@ class SubmitFormControllerSpec extends BaseSpec
         }
       }
 
-      "when the call to retrieve customer information fails" should {
+      "the call to retrieve customer information fails" should {
         lazy val request = FakeRequest().withFormUrlEncodedBody(
           "box1" -> "1000.11",
           "box2" -> "1000",
@@ -335,7 +387,7 @@ class SubmitFormControllerSpec extends BaseSpec
         )
 
         lazy val result = {
-          TestSubmitFormController.submit(periodKey = "93DH")(request)
+          TestSubmitFormController.submit(periodKey = "18AA")(request)
         }
 
         "status is INTERNAL_SERVER_ERROR" in {
@@ -368,7 +420,7 @@ class SubmitFormControllerSpec extends BaseSpec
       )
 
       lazy val result = {
-        TestSubmitFormController.submit(periodKey = "93DH")(request)
+        TestSubmitFormController.submit(periodKey = "18AA")(request)
       }
 
       "return 400" in {
@@ -384,7 +436,7 @@ class SubmitFormControllerSpec extends BaseSpec
       }
     }
 
-    "display a validation error" when {
+    "submission data is invalid" when {
 
       "there is a Submit Form view model in session" when {
 
@@ -672,6 +724,12 @@ class SubmitFormControllerSpec extends BaseSpec
               LocalDate.parse("2019-04-12"),
               LocalDate.parse("2019-05-12"),
               "18AA"
+            ),
+            VatObligation(
+              LocalDate.parse("2019-01-12"),
+              LocalDate.now().plusYears(1),
+              LocalDate.parse("2019-05-12"),
+              "18AB"
             )
           ))
 
