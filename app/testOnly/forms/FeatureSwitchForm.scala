@@ -26,7 +26,8 @@ object FeatureSwitchForm {
   val form: Form[FeatureSwitchModel] = Form(
     mapping(
       ConfigKeys.staticDateEnabledFeature -> boolean,
-      ConfigKeys.languageToggleFeature -> boolean
+      ConfigKeys.languageToggleFeature -> boolean,
+      ConfigKeys.nrsSubmissionEnabled -> boolean
   )(FeatureSwitchModel.apply)(FeatureSwitchModel.unapply)
   )
 }
