@@ -57,7 +57,8 @@ object ConfigKeys {
   val govUkGuidanceMtdVat: String = "gov-uk.guidance.mtdVat.url"
   val govUkGuidanceAgentServices: String = "gov-uk.guidance.agentServices.url"
   val vatReturnsBase: String = "vat-returns"
-  val vatReturnsUrl: String = s"microservice.services.$vatReturnsBase.url"
+  val submitReturnUrl: String = s"microservice.services.$vatReturnsBase.returnUrl"
+  val submitNrsUrl: String = s"microservice.services.$vatReturnsBase.nrsUrl"
   val manageClientUrl: String = "vat-agent-client-lookup-frontend.whatToDoUrl"
 
   val languageToggleFeature: String = "features.languageToggle.enabled"

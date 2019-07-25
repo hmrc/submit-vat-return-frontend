@@ -36,7 +36,7 @@ class VatReturnsConnector @Inject()(http: HttpClient,
 
     implicit val headerCarrier: HeaderCarrier = hc.withExtraHeaders("OriginatorID" -> "VATUI")
 
-    http.POST[SubmissionModel, HttpGetResult[SubmissionSuccessModel]](appConfig.vatReturnsUrl(vrn), model)(
+    http.POST[SubmissionModel, HttpGetResult[SubmissionSuccessModel]](appConfig.submitReturnUrl(vrn), model)(
       implicitly[Writes[SubmissionModel]],
       implicitly[HttpReads[HttpGetResult[SubmissionSuccessModel]]],
       headerCarrier,

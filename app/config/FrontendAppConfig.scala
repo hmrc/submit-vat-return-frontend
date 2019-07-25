@@ -55,7 +55,8 @@ trait AppConfig extends ServicesConfig {
   val feedbackSurveyUrl: String
   val features: Features
   val staticDateValue: String
-  def vatReturnsUrl(vrn: String): String
+  def submitReturnUrl(vrn: String): String
+  val submitNrsUrl: String
   val agentActionUrl: String
   def feedbackUrl(redirectUrl: String): String
   def routeToSwitchLanguage: String => Call
@@ -143,7 +144,9 @@ class FrontendAppConfig @Inject()(val runModeConfiguration: Configuration, envir
     getString(ConfigKeys.vatAgentClientLookupFrontendHost) + getString(ConfigKeys.vatAgentClientLookupFrontendStartUrl)
   override lazy val agentActionUrl: String = agentClientLookupHost + getString(ConfigKeys.vatAgentClientLookupFrontendAgentActionUrl)
 
-  override def vatReturnsUrl(vrn: String): String = s"${baseUrl(ConfigKeys.vatReturnsBase)}/${getString(ConfigKeys.vatReturnsUrl)}/$vrn"
+  private lazy val vatReturnsHost: String = baseUrl(ConfigKeys.vatReturnsBase)
+  override def submitReturnUrl(vrn: String): String = s"$vatReturnsHost/${getString(ConfigKeys.submitReturnUrl)}/$vrn"
+  override lazy val submitNrsUrl: String = s"$vatReturnsHost/${getString(ConfigKeys.submitNrsUrl)}"
 
   override val features = new Features(runModeConfiguration)
   override lazy val staticDateValue: String = getString(ConfigKeys.staticDateValue)
