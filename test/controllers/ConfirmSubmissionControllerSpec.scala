@@ -19,6 +19,7 @@ package controllers
 import java.time.LocalDate
 
 import assets.CustomerDetailsTestAssets._
+import assets.NrsTestData.IdentityDataTestData
 import assets.messages.SubmissionErrorMessages
 import audit.mocks.MockAuditingService
 import base.BaseSpec
@@ -27,16 +28,21 @@ import connectors.httpParsers.ResponseHttpParsers.HttpGetResult
 import mocks.service.{MockDateService, MockVatReturnsService, MockVatSubscriptionService}
 import mocks.{MockAuth, MockMandationPredicate}
 import models.auth.User
-import models.{CustomerDetails, SubmitVatReturnModel}
 import models.errors.UnexpectedJsonFormat
 import models.vatReturnSubmission.SubmissionSuccessModel
+import models.{CustomerDetails, SubmitVatReturnModel}
+import org.joda.time.DateTime
 import org.jsoup.Jsoup
 import play.api.http.Status
 import play.api.libs.json.Json
 import play.api.mvc.{AnyContentAsEmpty, Result}
 import play.api.test.Helpers._
+import uk.gov.hmrc.auth.core.authorise.Predicate
+import uk.gov.hmrc.auth.core.retrieve._
+import uk.gov.hmrc.auth.core.{AffinityGroup, BearerTokenExpired}
+import uk.gov.hmrc.http.HeaderCarrier
 
-import scala.concurrent.Future
+import scala.concurrent.{ExecutionContext, Future}
 
 class ConfirmSubmissionControllerSpec extends BaseSpec
   with MockAuth
@@ -46,7 +52,7 @@ class ConfirmSubmissionControllerSpec extends BaseSpec
   with MockDateService
   with MockAuditingService {
 
-  object TestConfirmSubmissionController extends ConfirmSubmissionController (
+  object TestConfirmSubmissionController extends ConfirmSubmissionController(
     messagesApi,
     mockMandationStatusPredicate,
     errorHandler,
@@ -56,7 +62,8 @@ class ConfirmSubmissionControllerSpec extends BaseSpec
     mockAuditService,
     ec,
     mockAppConfig,
-    mockDateService
+    mockDateService,
+    mockEnrolmentsAuthService
   )
 
   "ConfirmSubmissionController .show" when {
@@ -91,7 +98,7 @@ class ConfirmSubmissionControllerSpec extends BaseSpec
             User[AnyContentAsEmpty.type]("123456789")(fakeRequest.withSession(
               SessionKeys.returnData -> nineBoxModel,
               SessionKeys.mandationStatus -> MandationStatuses.nonMTDfB
-              )
+            )
             )
 
           lazy val result: Future[Result] = {
@@ -285,5 +292,153 @@ class ConfirmSubmissionControllerSpec extends BaseSpec
     }
 
     authControllerChecks(TestConfirmSubmissionController.submit("18AA"), fakeRequest)
+  }
+
+  "ConfirmSubmissionController .buildIdentityData" when {
+
+    def mockAuthResponse[A](authResponse: Future[A]): Unit = {
+      (mockAuthConnector.authorise(_: Predicate, _: Retrieval[_])(_: HeaderCarrier, _: ExecutionContext))
+        .expects(*, *, *, *)
+        .returns(authResponse)
+    }
+
+    "a successful call to the auth service is made" when {
+
+      "all of the information is returned from the auth service" should {
+
+        val authResponse =
+          new ~(new ~(new ~(new ~(new ~(new ~(new ~(new ~(new ~(new ~(new ~(new ~(new ~(new ~(new ~(new ~(new ~(new ~(new ~(
+            Some(AffinityGroup.Agent),
+            IdentityDataTestData.correctModel.internalId),
+            IdentityDataTestData.correctModel.externalId),
+            IdentityDataTestData.correctModel.agentCode),
+            Some(IdentityDataTestData.correctModel.credentials)),
+            IdentityDataTestData.correctModel.confidenceLevel),
+            IdentityDataTestData.correctModel.nino),
+            IdentityDataTestData.correctModel.saUtr),
+            Some(IdentityDataTestData.correctModel.name)),
+            IdentityDataTestData.correctModel.dateOfBirth),
+            IdentityDataTestData.correctModel.email),
+            IdentityDataTestData.correctModel.agentInformation),
+            IdentityDataTestData.correctModel.groupIdentifier),
+            IdentityDataTestData.correctModel.credentialRole),
+            IdentityDataTestData.correctModel.mdtpInformation),
+            Some(IdentityDataTestData.correctModel.itmpName)),
+            IdentityDataTestData.correctModel.itmpDateOfBirth),
+            Some(IdentityDataTestData.correctModel.itmpAddress)),
+            IdentityDataTestData.correctModel.credentialStrength),
+            LoginTimes(new DateTime("2016-11-27T09:00:00.000Z"), Some(new DateTime("2016-11-01T12:00:00.000Z")))
+          )
+
+        val expectedResponse = Right(IdentityDataTestData.correctModel)
+
+        lazy val result = {
+          mockAuthResponse(authResponse)
+          TestConfirmSubmissionController.buildIdentityData()(user)
+        }
+
+        "return a full IdentityData model" in {
+          await(result) shouldBe expectedResponse
+        }
+      }
+
+      "none of the mandatory fields are returned from the auth service" should {
+
+        val authResponse =
+          new ~(new ~(new ~(new ~(new ~(new ~(new ~(new ~(new ~(new ~(new ~(new ~(new ~(new ~(new ~(new ~(new ~(new ~(new ~(
+            Some(AffinityGroup.Agent),
+            IdentityDataTestData.correctModel.internalId),
+            IdentityDataTestData.correctModel.externalId),
+            IdentityDataTestData.correctModel.agentCode),
+            None),
+            IdentityDataTestData.correctModel.confidenceLevel),
+            IdentityDataTestData.correctModel.nino),
+            IdentityDataTestData.correctModel.saUtr),
+            None),
+            IdentityDataTestData.correctModel.dateOfBirth),
+            IdentityDataTestData.correctModel.email),
+            IdentityDataTestData.correctModel.agentInformation),
+            IdentityDataTestData.correctModel.groupIdentifier),
+            IdentityDataTestData.correctModel.credentialRole),
+            IdentityDataTestData.correctModel.mdtpInformation),
+            Some(IdentityDataTestData.correctModel.itmpName)),
+            IdentityDataTestData.correctModel.itmpDateOfBirth),
+            Some(IdentityDataTestData.correctModel.itmpAddress)),
+            IdentityDataTestData.correctModel.credentialStrength),
+            LoginTimes(new DateTime("2016-11-27T09:00:00.000Z"), Some(new DateTime("2016-11-01T12:00:00.000Z")))
+          )
+
+        lazy val result = {
+          mockAuthResponse(authResponse)
+          TestConfirmSubmissionController.buildIdentityData()(user)
+        }
+
+        "return an internal server error" in {
+          status(result.left.get) shouldBe 500
+        }
+      }
+    }
+
+    "an exception is returned from the auth service" should {
+
+      lazy val result = {
+        mockAuthResponse(Future.failed(BearerTokenExpired()))
+        TestConfirmSubmissionController.buildIdentityData()(user)
+      }
+
+      "return an internal server error" in {
+        status(result.left.get) shouldBe 500
+      }
+    }
+  }
+
+  "ConfirmSubmissionController .handleITMPData" when {
+
+    val itmpName = ItmpName(Some("First"), Some("Middle"), Some("Last"))
+    val emptyItmpName = ItmpName(None, None, None)
+
+    val itmpAddress = ItmpAddress(Some("Line 1"), None, None, None, None, Some("Post code"), Some("United Kingdom"), Some("UK"))
+    val emptyItmpAddress = ItmpAddress(None, None, None, None, None, None, None, None)
+
+
+    "an ITMP Name and Address is available" in {
+
+      val expectedResult: (ItmpName, ItmpAddress) = (itmpName, itmpAddress)
+
+      val result: (ItmpName, ItmpAddress) = TestConfirmSubmissionController.handleITMPData(Some(itmpName), Some(itmpAddress))
+
+      result shouldBe expectedResult
+
+    }
+
+    "an ITMP Name is available" in {
+
+      val expectedResult: (ItmpName, ItmpAddress) = (itmpName, emptyItmpAddress)
+
+      val result: (ItmpName, ItmpAddress) = TestConfirmSubmissionController.handleITMPData(Some(itmpName), None)
+
+      result shouldBe expectedResult
+
+    }
+
+    "an ITMP Address is available" in {
+
+      val expectedResult: (ItmpName, ItmpAddress) = (emptyItmpName, itmpAddress)
+
+      val result: (ItmpName, ItmpAddress) = TestConfirmSubmissionController.handleITMPData(None, Some(itmpAddress))
+
+      result shouldBe expectedResult
+
+    }
+
+    "none of the information is available" in {
+
+      val expectedResult: (ItmpName, ItmpAddress) = (emptyItmpName, emptyItmpAddress)
+
+      val result: (ItmpName, ItmpAddress) = TestConfirmSubmissionController.handleITMPData(None, None)
+
+      result shouldBe expectedResult
+
+    }
   }
 }

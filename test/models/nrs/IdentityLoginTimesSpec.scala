@@ -14,12 +14,12 @@
  * limitations under the License.
  */
 
-package models.nrs.identityData
+package models.nrs
 
 import java.time.{Instant, LocalDateTime, ZoneId}
 
-import base.BaseSpec
 import play.api.libs.json.{JsObject, Json}
+import base.BaseSpec
 
 class IdentityLoginTimesSpec extends BaseSpec {
 
@@ -34,17 +34,22 @@ class IdentityLoginTimesSpec extends BaseSpec {
     "previousLogin" -> previousDateTimeString
   )
 
+  val minCorrectJson: JsObject = Json.obj("currentLogin" -> currentDateTimeString)
+
   val correctModel: IdentityLoginTimes = IdentityLoginTimes(
     currentDateTimeToUse,
-    previousDateTimeToUse
+    Some(previousDateTimeToUse)
   )
 
-  "Formats" should {
+  val minCorrectModel: IdentityLoginTimes = IdentityLoginTimes(currentDateTimeToUse, None)
 
+  "Formats" should {
     "parse correctly from json" in {
       correctJson.as[IdentityLoginTimes] shouldBe correctModel
     }
-
+    "parse correctly from json with minimum objects" in {
+      minCorrectJson.as[IdentityLoginTimes] shouldBe minCorrectModel
+    }
     "parse correctly to json" in {
       Json.toJson(correctModel) shouldBe correctJson
     }

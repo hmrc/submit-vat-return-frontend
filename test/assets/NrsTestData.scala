@@ -16,18 +16,21 @@
 
 package assets
 
-import java.time.{Instant, LocalDate, LocalDateTime, ZoneId}
+import java.time.{Instant, LocalDateTime, ZoneId}
 
 import models.nrs._
-import models.nrs.identityData._
+import org.joda.time.LocalDate
 import play.api.libs.json.{JsObject, JsValue, Json}
+import uk.gov.hmrc.auth.core.AffinityGroup.Agent
+import uk.gov.hmrc.auth.core.retrieve._
+import uk.gov.hmrc.auth.core.{Admin, ConfidenceLevel}
 
 object NrsTestData {
 
   object AnswerTestData {
 
     object MockJson {
-      
+
       val correctJsonSingleLineAnswer: JsObject = Json.obj(
         "questionId" -> "question id",
         "question" -> "question",
@@ -69,7 +72,7 @@ object NrsTestData {
   }
 
   object AnswersTestData {
-    
+
     val correctJson: JsObject = Json.obj(
       "title" -> "answer title",
       "data" -> Json.arr(
@@ -129,7 +132,7 @@ object NrsTestData {
   }
 
   object IdentityDataTestData {
-    
+
     val correctJson: JsValue = Json.parse(
       """{
         |  "internalId": "some-id",
@@ -144,23 +147,16 @@ object NrsTestData {
         |  "dateOfBirth": "1985-01-01",
         |  "email":"test@test.com",
         |  "agentInformation": {
+        |    "agentId": "BDGL",
         |    "agentCode" : "TZRXXV",
-        |    "agentFriendlyName" : "Bodgitt & Legget LLP",
-        |    "agentId": "BDGL"
+        |    "agentFriendlyName" : "Bodgitt & Legget LLP"
         |  },
         |  "groupIdentifier" : "GroupId",
-        |  "credentialRole": "admin",
+        |  "credentialRole": "Admin",
         |  "mdtpInformation" : {"deviceId" : "DeviceId",
         |    "sessionId": "SessionId" },
-        |  "itmpName" : { "givenName": "test",
-        |    "middleName": "test", "familyName": "test" },
-        |  "itmpDateOfBirth" : "1985-01-01",
-        |  "itmpAddress" : {
-        |    "line1": "Line 1",
-        |    "postCode": "NW94HD",
-        |    "countryName": "United Kingdom",
-        |    "countryCode": "UK"
-        |    },
+        |  "itmpName" : {},
+        |  "itmpAddress" : {},
         |  "affinityGroup": "Agent",
         |  "credentialStrength": "strong",
         |  "loginTimes": {
@@ -170,18 +166,28 @@ object NrsTestData {
         |}""".stripMargin)
 
     val correctModel: IdentityData = IdentityData(
-      Some("some-id"), Some("some-id"), Some("TZRXXV"),
-      IdentityCredentials("12345-credId", "GovernmentGateway"),
-      200, Some("DH00475D"), Some("Utr"),
-      IdentityName("test", "test"),
-      Some(LocalDate.parse("1985-01-01")), Some("test@test.com"),
-      IdentityAgentInformation("TZRXXV", "Bodgitt & Legget LLP", "BDGL"), Some("GroupId"), Some("admin"),
-      Some(IdentityMdtpInformation("DeviceId", "SessionId")),
-      IdentityItmpName("test", "test", "test"), Some(LocalDate.parse("1985-01-01")),
-      IdentityItmpAddress("Line 1", "NW94HD", "United Kingdom", "UK"), Some("Agent"), Some("strong"),
-      IdentityLoginTimes(
+      internalId = Some("some-id"),
+      externalId = Some("some-id"),
+      agentCode = Some("TZRXXV"),
+      credentials = Credentials("12345-credId", "GovernmentGateway"),
+      confidenceLevel = ConfidenceLevel.L200,
+      nino = Some("DH00475D"),
+      saUtr = Some("Utr"),
+      name = Name(Some("test"), Some("test")),
+      dateOfBirth = Some(LocalDate.parse("1985-01-01")),
+      email = Some("test@test.com"),
+      agentInformation = AgentInformation(agentCode = Some("TZRXXV"), agentFriendlyName = Some("Bodgitt & Legget LLP"), agentId = Some("BDGL")),
+      groupIdentifier = Some("GroupId"),
+      credentialRole = Some(Admin),
+      mdtpInformation = Some(MdtpInformation("DeviceId", "SessionId")),
+      itmpName = ItmpName(None, None, None),
+      itmpDateOfBirth = None,
+      itmpAddress = ItmpAddress(None, None, None, None, None, None, None, None),
+      affinityGroup = Some(Agent),
+      credentialStrength = Some("strong"),
+      loginTimes = IdentityLoginTimes(
         LocalDateTime.ofInstant(Instant.parse("2016-11-27T09:00:00.000Z"), ZoneId.of("UTC")),
-        LocalDateTime.ofInstant(Instant.parse("2016-11-01T12:00:00.000Z"), ZoneId.of("UTC"))
+        Some(LocalDateTime.ofInstant(Instant.parse("2016-11-01T12:00:00.000Z"), ZoneId.of("UTC")))
       )
     )
   }
@@ -276,15 +282,15 @@ object NrsTestData {
       identityData = IdentityDataTestData.correctModel,
       userAuthToken = "Bearer AbCdEf123456...",
       headerData = Map(
-           "Gov-Client-Public-IP"->"127.0.0.0",
-           "Gov-Client-Public-Port"->"12345",
-           "Gov-Client-Device-ID"->"beec798b-b366-47fa-b1f8-92cede14a1ce",
-           "Gov-Client-User-ID"->"alice_desktop",
-           "Gov-Client-Timezone"->"GMT+3",
-           "Gov-Client-Local-IP"->"10.1.2.3",
-           "Gov-Client-Screen-Resolution"->"1920x1080",
-           "Gov-Client-Window-Size"->"1256x803",
-           "Gov-Client-Colour-Depth"->"24"
+        "Gov-Client-Public-IP" -> "127.0.0.0",
+        "Gov-Client-Public-Port" -> "12345",
+        "Gov-Client-Device-ID" -> "beec798b-b366-47fa-b1f8-92cede14a1ce",
+        "Gov-Client-User-ID" -> "alice_desktop",
+        "Gov-Client-Timezone" -> "GMT+3",
+        "Gov-Client-Local-IP" -> "10.1.2.3",
+        "Gov-Client-Screen-Resolution" -> "1920x1080",
+        "Gov-Client-Window-Size" -> "1256x803",
+        "Gov-Client-Colour-Depth" -> "24"
       ),
       searchKeys = SearchKeys("123456789", "18AA"),
       receiptData = ReceiptData(
@@ -338,4 +344,5 @@ object NrsTestData {
       "XXX-base64-CheckYourAnswersHTML-XXX", MetadataTestData.correctModel
     )
   }
+
 }

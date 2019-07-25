@@ -42,7 +42,8 @@ val compile = Seq(
   "uk.gov.hmrc" %% "play-ui" % "7.40.0-play-25",
   "uk.gov.hmrc" %% "bootstrap-play-25" % "4.13.0",
   "uk.gov.hmrc" %% "play-whitelist-filter" % "3.1.0-play-25",
-  "uk.gov.hmrc" %% "play-language" % "3.4.0"
+  "uk.gov.hmrc" %% "play-language" % "3.4.0",
+  "uk.gov.hmrc" %% "auth-client" % "2.22.0-play-25"
 )
 
 val test = Seq(

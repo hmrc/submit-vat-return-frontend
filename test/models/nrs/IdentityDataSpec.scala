@@ -27,7 +27,6 @@ class IdentityDataSpec extends BaseSpec {
     "parse correctly from json" in {
       correctJson.as[IdentityData] shouldBe correctModel
     }
-
     "parse correctly to json" in {
       Json.toJson(correctModel) shouldBe correctJson
     }

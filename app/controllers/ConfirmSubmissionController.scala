@@ -17,6 +17,7 @@
 package controllers
 
 import java.net.URLDecoder
+import java.time.{Instant, LocalDateTime, ZoneId}
 
 import audit.AuditService
 import audit.models.SubmitVatReturnAuditModel
@@ -25,14 +26,19 @@ import config.{AppConfig, ErrorHandler}
 import controllers.predicates.{AuthPredicate, MandationStatusPredicate}
 import javax.inject.{Inject, Singleton}
 import models.auth.User
+import models.nrs.{IdentityData, IdentityLoginTimes}
 import models.vatReturnSubmission.SubmissionModel
 import models.{ConfirmSubmissionViewModel, SubmitVatReturnModel}
 import play.api.Logger
 import play.api.i18n.{I18nSupport, MessagesApi}
 import play.api.libs.json.Json
-import play.api.mvc._
+import play.api.mvc.{Result, _}
 import play.twirl.api.Html
-import services.{DateService, VatReturnsService, VatSubscriptionService}
+import services.{DateService, EnrolmentsAuthService, VatReturnsService, VatSubscriptionService}
+import uk.gov.hmrc.auth.core.AffinityGroup._
+import uk.gov.hmrc.auth.core.AuthorisationException
+import uk.gov.hmrc.auth.core.retrieve.v2.Retrievals
+import uk.gov.hmrc.auth.core.retrieve.{ItmpAddress, ItmpName, ~}
 import uk.gov.hmrc.play.bootstrap.controller.FrontendController
 import utils.HashUtil
 
@@ -49,7 +55,8 @@ class ConfirmSubmissionController @Inject()(val messagesApi: MessagesApi,
                                             val auditService: AuditService,
                                             implicit val executionContext: ExecutionContext,
                                             implicit val appConfig: AppConfig,
-                                            val dateService: DateService) extends FrontendController with I18nSupport {
+                                            val dateService: DateService,
+                                            authService: EnrolmentsAuthService) extends FrontendController with I18nSupport {
 
   def show(periodKey: String): Action[AnyContent] = (authPredicate andThen mandationStatusCheck).async { implicit user =>
 
@@ -62,7 +69,7 @@ class ConfirmSubmissionController @Inject()(val messagesApi: MessagesApi,
   }
 
   private def renderConfirmSubmissionView[A](periodKey: String,
-                                             sessionData: SubmitVatReturnModel)(implicit user: User[A]): Future[Html]  = {
+                                             sessionData: SubmitVatReturnModel)(implicit user: User[A]): Future[Html] = {
 
     val clientName: Future[Option[String]] = vatSubscriptionService.getCustomerDetails(user.vrn) map {
       case (Right(customerDetails)) => customerDetails.clientName
@@ -81,7 +88,7 @@ class ConfirmSubmissionController @Inject()(val messagesApi: MessagesApi,
         case Some(data) =>
           Try(Json.parse(data).as[SubmitVatReturnModel]) match {
             case Success(model) =>
-              if(dateService.dateHasPassed(model.end)) {
+              if (dateService.dateHasPassed(model.end)) {
                 submitVatReturn(periodKey, model)
               } else {
                 Logger.debug(s"[ConfirmSubmissionController][submit] Obligation end date for period $periodKey has not yet passed.")
@@ -138,6 +145,70 @@ class ConfirmSubmissionController @Inject()(val messagesApi: MessagesApi,
 
       //TODO: Call NRS service (BTAT-6419)
       Ok
+    }
+  }
+
+  private val authRetrievals = Retrievals.affinityGroup and Retrievals.internalId and
+    Retrievals.externalId and Retrievals.agentCode and
+    Retrievals.credentials and Retrievals.confidenceLevel and
+    Retrievals.nino and Retrievals.saUtr and
+    Retrievals.name and Retrievals.dateOfBirth and
+    Retrievals.email and Retrievals.agentInformation and
+    Retrievals.groupIdentifier and Retrievals.credentialRole and
+    Retrievals.mdtpInformation and Retrievals.itmpName and
+    Retrievals.itmpDateOfBirth and Retrievals.itmpAddress and
+    Retrievals.credentialStrength and Retrievals.loginTimes
+
+  private[controllers] def buildIdentityData[A]()(implicit user: User[A]): Future[Either[Result, IdentityData]] = {
+    authService.authorised().retrieve(authRetrievals) {
+
+      case affinityGroup ~ internalId ~
+        externalId ~ agentCode ~
+        Some(credentials) ~ confidenceLevel ~
+        nino ~ saUtr ~
+        Some(name) ~ dateOfBirth ~
+        email ~ agentInfo ~
+        groupId ~ credentialRole ~
+        mdtpInfo ~ itmpName ~
+        itmpDateOfBirth ~ itmpAddress ~
+        credentialStrength ~ loginTimes =>
+
+        val itmpData = handleITMPData(itmpName, itmpAddress)
+        val identityData = IdentityData(internalId, externalId, agentCode,
+          credentials, confidenceLevel, nino, saUtr, name, dateOfBirth,
+          email, agentInfo, groupIdentifier = groupId,
+          credentialRole, mdtpInformation = mdtpInfo,
+          itmpName = itmpData._1, itmpDateOfBirth,
+          itmpAddress = itmpData._2, affinityGroup, credentialStrength,
+          loginTimes = IdentityLoginTimes(
+            LocalDateTime.ofInstant(Instant.parse(loginTimes.currentLogin.toInstant.toString), ZoneId.of("UTC")),
+            loginTimes.previousLogin.map(dateTime => LocalDateTime.ofInstant(Instant.parse(dateTime.toInstant.toString), ZoneId.of("UTC")))
+          )
+        )
+
+        Future.successful(Right(identityData))
+
+      case _ =>
+        Logger.warn("[ConfirmSubmission][buildIdentityData] - Did not receive minimum data from Auth required for NRS Submission")
+        Future.successful(Left(errorHandler.showInternalServerError))
+    }
+  } recover {
+    case exception: AuthorisationException =>
+      Logger.warn(s"[ConfirmSubmissionController][buildIdentityData]" +
+        s" Client authorisation failed due to internal server error. auth-client exception was $exception")
+      Left(errorHandler.showInternalServerError)
+  }
+
+  private[controllers] def handleITMPData(itmpName: Option[ItmpName], itmpAddress: Option[ItmpAddress]): (ItmpName, ItmpAddress) = {
+
+    val emptyItmpName = ItmpName(None, None, None)
+    val emptyItmpAddress = ItmpAddress(None, None, None, None, None, None, None, None)
+
+    (itmpName, itmpAddress) match {
+      case (Some(nme), Some(add)) => (nme, add)
+      case (Some(nme), None) => (nme, emptyItmpAddress)
+      case (None, Some(add)) => (emptyItmpName, add)
+      case (_, _) => (emptyItmpName, emptyItmpAddress)
     }
   }
 }

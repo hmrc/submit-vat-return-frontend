@@ -16,16 +16,20 @@
 
 package utils
 
-import java.time.{Instant, LocalDate, LocalDateTime, ZoneId}
+import java.time.{Instant, LocalDateTime, ZoneId}
 
 import models.nrs._
-import models.nrs.identityData._
-import play.api.libs.json.{JsObject, JsValue, Json}
+import play.api.libs.json.{JsValue, Json}
+import uk.gov.hmrc.auth.core.AffinityGroup.Agent
+import uk.gov.hmrc.auth.core.retrieve._
+import uk.gov.hmrc.auth.core.{Admin, ConfidenceLevel}
 
 object NrsTestData {
 
   object IdentityDataTestData {
-    
+
+    import org.joda.time.LocalDate
+
     val expectedJson: JsValue = Json.parse(
       """{
         |  "internalId": "some-id",
@@ -45,12 +49,12 @@ object NrsTestData {
         |  "dateOfBirth": "1985-01-01",
         |  "email":"test@test.com",
         |  "agentInformation": {
+        |    "agentId": "BDGL",
         |    "agentCode" : "TZRXXV",
-        |    "agentFriendlyName" : "Bodgitt & Legget LLP",
-        |    "agentId": "BDGL"
+        |    "agentFriendlyName" : "Bodgitt & Legget LLP"
         |  },
         |  "groupIdentifier" : "GroupId",
-        |  "credentialRole": "admin",
+        |  "credentialRole": "Admin",
         |  "mdtpInformation" : {
         |    "deviceId" : "DeviceId",
         |    "sessionId": "SessionId"
@@ -80,25 +84,25 @@ object NrsTestData {
       internalId = Some("some-id"),
       externalId = Some("some-id"),
       agentCode = Some("TZRXXV"),
-      credentials = IdentityCredentials("12345-credId", "GovernmentGateway"),
-      confidenceLevel = 200,
+      credentials = Credentials("12345-credId", "GovernmentGateway"),
+      confidenceLevel = ConfidenceLevel.L200,
       nino = Some("DH00475D"),
       saUtr = Some("Utr"),
-      name = IdentityName("test", "test"),
+      name = Name(Some("test"), Some("test")),
       dateOfBirth = Some(LocalDate.parse("1985-01-01")),
       email = Some("test@test.com"),
-      agentInformation = IdentityAgentInformation("TZRXXV", "Bodgitt & Legget LLP", "BDGL"),
+      agentInformation = AgentInformation(agentCode = Some("TZRXXV"), agentFriendlyName = Some("Bodgitt & Legget LLP"), agentId = Some("BDGL")),
       groupIdentifier = Some("GroupId"),
-      credentialRole = Some("admin"),
-      mdtpInformation = Some(IdentityMdtpInformation("DeviceId", "SessionId")),
-      itmpName = IdentityItmpName("test", "test", "test"),
+      credentialRole = Some(Admin),
+      mdtpInformation = Some(MdtpInformation("DeviceId", "SessionId")),
+      itmpName = ItmpName(Some("test"), Some("test"), Some("test")),
       itmpDateOfBirth = Some(LocalDate.parse("1985-01-01")),
-      itmpAddress = IdentityItmpAddress("Line 1", "NW94HD", "United Kingdom", "UK"),
-      affinityGroup = Some("Agent"),
+      itmpAddress = ItmpAddress(Some("Line 1"), None, None, None, None, Some("NW94HD"), Some("United Kingdom"), Some("UK")),
+      affinityGroup = Some(Agent),
       credentialStrength = Some("strong"),
       loginTimes = IdentityLoginTimes(
         LocalDateTime.ofInstant(Instant.parse("2016-11-27T09:00:00.000Z"), ZoneId.of("UTC")),
-        LocalDateTime.ofInstant(Instant.parse("2016-11-01T12:00:00.000Z"), ZoneId.of("UTC"))
+        Some(LocalDateTime.ofInstant(Instant.parse("2016-11-01T12:00:00.000Z"), ZoneId.of("UTC")))
       )
     )
   }
@@ -107,53 +111,50 @@ object NrsTestData {
 
     val expectedJson: JsValue = Json.parse(
       s"""
-        | {
-        |   "payload" : "XXX-base64-CheckYourAnswersHTML-XXX",
-        |   "metadata" : {
-        |     "businessId": "vat",
-        |     "notableEvent": "vat-registration",
-        |     "payloadContentType": "text/html",
-        |     "payloadSha256Checksum": "426a1c28<snip>d6d363",
-        |     "userSubmissionTimestamp": "2018-04-07T12:13:25.156Z",
-        |     "identityData": ${IdentityDataTestData.expectedJson},
-        |     "userAuthToken": "Bearer AbCdEf123456...",
-        |     "headerData": { "...":"..." },
-        |     "searchKeys": {
-        |       "vrn": "123456789",
-        |       "periodKey": "18AA"
-        |     },
-        |     "receiptData": {
-        |       "language": "en",
-        |       "checkYourAnswersSections": [
-        |         {
-        |           "title": "VAT details",
-        |           "data": [
-        |             {
-        |               "questionId":"fooVatDetails1",
-        |               "question": "VAT taxable sales ...",
-        |               "answer": "Yes"
-        |             }
-        |           ]
-        |         }
-        |      ],
-        |      "declaration": {
-        |        "declarationText": "I confirm the data ....",
-        |        "declarationName": "John Smith",
-        |        "declarationRole": "Finance Director",
-        |        "declarationConsent": true
-        |      }
-        |    }
-        |  }
-        | }
+         | {
+         |   "payload" : "XXX-base64-CheckYourAnswersHTML-XXX",
+         |   "metadata" : {
+         |     "businessId": "vat",
+         |     "notableEvent": "vat-return",
+         |     "payloadContentType": "text/html",
+         |     "payloadSha256Checksum": "426a1c28<snip>d6d363",
+         |     "userSubmissionTimestamp": "2018-04-07T12:13:25.156Z",
+         |     "identityData": ${IdentityDataTestData.expectedJson},
+         |     "userAuthToken": "Bearer AbCdEf123456...",
+         |     "headerData": { "...":"..." },
+         |     "searchKeys": {
+         |       "vrn": "123456789",
+         |       "periodKey": "18AA"
+         |     },
+         |     "receiptData": {
+         |       "language": "en",
+         |       "checkYourAnswersSections": [
+         |         {
+         |           "title": "VAT details",
+         |           "data": [
+         |             {
+         |               "questionId":"fooVatDetails1",
+         |               "question": "VAT taxable sales ...",
+         |               "answer": "Yes"
+         |             }
+         |           ]
+         |         }
+         |      ],
+         |      "declaration": {
+         |        "declarationText": "I confirm the data ....",
+         |        "declarationName": "John Smith",
+         |        "declarationRole": "Finance Director",
+         |        "declarationConsent": true
+         |      }
+         |    }
+         |  }
+         | }
       """.stripMargin
     )
 
     val requestModel: RequestModel = RequestModel(
       payload = "XXX-base64-CheckYourAnswersHTML-XXX",
       metadata = Metadata(
-        businessId = "vat",
-        notableEvent = "vat-registration",
-        payloadContentType = "text/html",
         payloadSha256Checksum = "426a1c28<snip>d6d363",
         userSubmissionTimestamp = LocalDateTime.ofInstant(Instant.parse("2018-04-07T12:13:25.156Z"), ZoneId.of("UTC")),
         identityData = IdentityDataTestData.requestModel,
@@ -184,4 +185,5 @@ object NrsTestData {
       )
     )
   }
+
 }
