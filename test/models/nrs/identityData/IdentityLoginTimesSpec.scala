@@ -40,9 +40,11 @@ class IdentityLoginTimesSpec extends BaseSpec {
   )
 
   "Formats" should {
+
     "parse correctly from json" in {
       correctJson.as[IdentityLoginTimes] shouldBe correctModel
     }
+
     "parse correctly to json" in {
       Json.toJson(correctModel) shouldBe correctJson
     }

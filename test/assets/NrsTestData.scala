@@ -269,7 +269,7 @@ object NrsTestData {
       identityData = IdentityDataTestData.correctModel,
       userAuthToken = "Bearer AbCdEf123456...",
       headerData = Map("..." -> "..."),
-      searchKeys = SearchKeys("123456789", "18AA", None),
+      searchKeys = SearchKeys("123456789", "18AA"),
       receiptData = ReceiptData(
         EN, Seq(
           Answers(

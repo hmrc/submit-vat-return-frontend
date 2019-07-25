@@ -22,21 +22,23 @@ import play.api.libs.json.{JsObject, Json}
 class IdentityAgentInformationSpec extends BaseSpec {
 
   val correctJson: JsObject = Json.obj(
-    "agentCode" -> "SOT7D",
-    "agentFriendlyName" -> "Scions of the Seventh Dawn",
-    "agentId" -> "SOEZ"
+    "agentCode" -> "agent code",
+    "agentFriendlyName" -> "friendly name",
+    "agentId" -> "agent id"
   )
 
   val correctModel = IdentityAgentInformation(
-    "SOT7D",
-    "Scions of the Seventh Dawn",
-    "SOEZ"
+    "agent code",
+    "friendly name",
+    "agent id"
   )
 
   "Formats" should {
+
     "correctly parse from json" in {
       correctJson.as[IdentityAgentInformation] shouldBe correctModel
     }
+
     "correctly parse to json" in {
       Json.toJson(correctModel) shouldBe correctJson
     }

@@ -29,9 +29,11 @@ class IdentityNameSpec extends BaseSpec {
   val correctModel = IdentityName("Warrior", "Light")
 
   "Formats" should {
+
     "correctly parse from json" in {
       correctJson.as[IdentityName] shouldBe correctModel
     }
+
     "correctly parse to json" in {
       Json.toJson(correctModel) shouldBe correctJson
     }

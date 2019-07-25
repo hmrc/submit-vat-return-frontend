@@ -19,8 +19,7 @@ package models.nrs
 import play.api.libs.json.{Json, OFormat}
 
 case class SearchKeys(vrn: String,
-                      periodKey: String,
-                      arn: Option[String])
+                      periodKey: String)
 
 object SearchKeys {
   implicit val formats: OFormat[SearchKeys] = Json.format[SearchKeys]

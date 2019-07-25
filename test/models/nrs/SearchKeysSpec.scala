@@ -22,21 +22,18 @@ import play.api.libs.json.{JsObject, Json}
 class SearchKeysSpec extends BaseSpec {
 
   val correctJson: JsObject = Json.obj(
-    "vrn" -> "virn",
-    "periodKey" -> "likeAnAmericanDrama",
-    "arn" -> "oooowhatugannasaaaaaaaay"
+    "vrn" -> "vrn",
+    "periodKey" -> "period key"
   )
 
-  val correctModel: SearchKeys = SearchKeys(
-    "virn", "likeAnAmericanDrama", Some("oooowhatugannasaaaaaaaay")
-  )
+  val correctModel: SearchKeys = SearchKeys("vrn", "period key")
 
   "Formats" should {
 
     "parse correctly from json" in {
       correctJson.as[SearchKeys] shouldBe correctModel
     }
-    
+
     "parse correctly to json" in {
       Json.toJson(correctModel) shouldBe correctJson
     }

@@ -29,9 +29,11 @@ class IdentityCredentialsSpec extends BaseSpec {
   val correctObject = IdentityCredentials("someStringValue", "someProviderName")
 
   "Formats" should {
+
     "correctly parse from Json" in {
       correctJson.as[IdentityCredentials] shouldBe correctObject
     }
+
     "correctly parse to Json" in {
       Json.toJson(correctObject) shouldBe correctJson
     }
