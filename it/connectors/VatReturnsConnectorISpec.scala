@@ -16,48 +16,20 @@
 
 package connectors
 
+import utils.NrsTestData
 import base.BaseISpec
 import models.errors.{ServerSideError, UnexpectedJsonFormat}
+import models.nrs.SuccessModel
 import models.vatReturnSubmission.{SubmissionModel, SubmissionSuccessModel}
 import play.api.http.Status
 import play.api.libs.json.{JsValue, Json}
 import stubs.VatReturnsStub
+import stubs.VatReturnsStub._
 import uk.gov.hmrc.http.HeaderCarrier
+
 import scala.concurrent.ExecutionContext.Implicits.global
 
 class VatReturnsConnectorISpec extends BaseISpec {
-
-  val model: SubmissionModel = SubmissionModel(
-    periodKey = "#001",
-    vatDueSales = 9999999999999.99,
-    vatDueAcquisitions = -9999999999999.99,
-    vatDueTotal = 0.00,
-    vatReclaimedCurrPeriod = 0.00,
-    vatDueNet = 0.00,
-    totalValueSalesExVAT = 0.00,
-    totalValuePurchasesExVAT = 0.00,
-    totalValueGoodsSuppliedExVAT = 0.00,
-    totalAllAcquisitionsExVAT = 0.00,
-    agentReferenceNumber = Some("XAIT1234567")
-  )
-  
-  val postRequestJsonBody: JsValue = Json.parse(
-    """
-      |{
-      |  "periodKey" : "#001",
-      |  "vatDueSales" : 9999999999999.99,
-      |  "vatDueAcquisitions" : -9999999999999.99,
-      |  "vatDueTotal" : 0.00,
-      |  "vatReclaimedCurrPeriod" : 0.00,
-      |  "vatDueNet" : 0.00,
-      |  "totalValueSalesExVAT" : 0.00,
-      |  "totalValuePurchasesExVAT" : 0.00,
-      |  "totalValueGoodsSuppliedExVAT" : 0.00,
-      |  "totalAllAcquisitionsExVAT" : 0.00,
-      |  "agentReferenceNumber" : "XAIT1234567"
-      |}
-    """.stripMargin
-  )
   
   private trait Test {
     val connector: VatReturnsConnector = app.injector.instanceOf[VatReturnsConnector]
@@ -66,16 +38,48 @@ class VatReturnsConnectorISpec extends BaseISpec {
   
   "Calling .submitVatReturn" when {
 
+    val model: SubmissionModel = SubmissionModel(
+      periodKey = "#001",
+      vatDueSales = 9999999999999.99,
+      vatDueAcquisitions = -9999999999999.99,
+      vatDueTotal = 0.00,
+      vatReclaimedCurrPeriod = 0.00,
+      vatDueNet = 0.00,
+      totalValueSalesExVAT = 0.00,
+      totalValuePurchasesExVAT = 0.00,
+      totalValueGoodsSuppliedExVAT = 0.00,
+      totalAllAcquisitionsExVAT = 0.00,
+      agentReferenceNumber = Some("XAIT1234567")
+    )
+
+    val postRequestJsonBody: JsValue = Json.parse(
+      """
+        |{
+        |  "periodKey" : "#001",
+        |  "vatDueSales" : 9999999999999.99,
+        |  "vatDueAcquisitions" : -9999999999999.99,
+        |  "vatDueTotal" : 0.00,
+        |  "vatReclaimedCurrPeriod" : 0.00,
+        |  "vatDueNet" : 0.00,
+        |  "totalValueSalesExVAT" : 0.00,
+        |  "totalValuePurchasesExVAT" : 0.00,
+        |  "totalValueGoodsSuppliedExVAT" : 0.00,
+        |  "totalAllAcquisitionsExVAT" : 0.00,
+        |  "agentReferenceNumber" : "XAIT1234567"
+        |}
+      """.stripMargin
+    )
+
     "response is 200" when {
 
       "response body is valid" should {
 
         "return a SuccessModel" in new Test {
 
-          VatReturnsStub.stubResponse("999999999")(Status.OK, Json.obj("formBundleNumber" -> "12345"))
+          VatReturnsStub.stubResponse(vatReturnUri("999999999"))(Status.OK, Json.obj("formBundleNumber" -> "12345"))
 
           private val result = await(connector.submitVatReturn("999999999", model))
-          VatReturnsStub.verifySubmission("999999999", postRequestJsonBody)
+          VatReturnsStub.verifyVatReturnSubmission("999999999", postRequestJsonBody)
 
           result shouldBe Right(SubmissionSuccessModel(formBundleNumber = "12345"))
         }
@@ -85,10 +89,10 @@ class VatReturnsConnectorISpec extends BaseISpec {
 
         "return an InvalidJsonResponse" in new Test {
 
-          VatReturnsStub.stubResponse("999999999")(Status.OK, Json.obj())
+          VatReturnsStub.stubResponse(vatReturnUri("999999999"))(Status.OK, Json.obj())
 
           private val result = await(connector.submitVatReturn("999999999", model))
-          VatReturnsStub.verifySubmission("999999999", postRequestJsonBody)
+          VatReturnsStub.verifyVatReturnSubmission("999999999", postRequestJsonBody)
 
           result shouldBe Left(UnexpectedJsonFormat)
         }
@@ -99,15 +103,66 @@ class VatReturnsConnectorISpec extends BaseISpec {
 
       "return a ServerSideError" in new Test {
 
-        VatReturnsStub.stubResponse("999999999")(
+        VatReturnsStub.stubResponse(vatReturnUri("999999999"))(
           Status.INTERNAL_SERVER_ERROR,
           Json.obj("code" -> "500", "reason" -> "DES")
         )
 
         private val result = await(connector.submitVatReturn("999999999", model))
-        VatReturnsStub.verifySubmission("999999999", postRequestJsonBody)
+        VatReturnsStub.verifyVatReturnSubmission("999999999", postRequestJsonBody)
 
         result shouldBe Left(ServerSideError("500", "Received downstream error when submitting VAT return."))
+      }
+    }
+  }
+
+  "Calling .nrsSubmission" when {
+
+    val postRequestJsonBody: JsValue = NrsTestData.FullRequestTestData.expectedJson
+    val postRequestModel = NrsTestData.FullRequestTestData.requestModel
+
+    "response is 202" when {
+
+      "response body is valid" should {
+
+        "return a SuccessModel" in new Test {
+
+          VatReturnsStub.stubResponse(nrsSubmissionUri)(Status.ACCEPTED, Json.obj("nrSubmissionId" -> "12345"))
+
+          private val result = await(connector.nrsSubmission(postRequestModel))
+          VatReturnsStub.verifyNrsSubmission(postRequestJsonBody)
+
+          result shouldBe Right(SuccessModel(nrSubmissionId = "12345"))
+        }
+      }
+
+      "response body is invalid" should {
+
+        "return an InvalidJsonResponse" in new Test {
+
+          VatReturnsStub.stubResponse(nrsSubmissionUri)(Status.ACCEPTED, Json.obj("nope" -> "nope"))
+
+          private val result = await(connector.nrsSubmission(postRequestModel))
+          VatReturnsStub.verifyNrsSubmission(postRequestJsonBody)
+
+          result shouldBe Left(UnexpectedJsonFormat)
+        }
+      }
+    }
+
+    "response is unexpected" should {
+
+      "return a ServerSideError" in new Test {
+
+        VatReturnsStub.stubResponse(nrsSubmissionUri)(
+          Status.INTERNAL_SERVER_ERROR,
+          Json.obj("code" -> "500", "reason" -> "oh no")
+        )
+
+        private val result = await(connector.nrsSubmission(postRequestModel))
+        VatReturnsStub.verifyNrsSubmission(postRequestJsonBody)
+
+        result shouldBe Left(ServerSideError("500", "Received downstream error when submitting to NRS"))
       }
     }
   }

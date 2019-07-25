@@ -88,7 +88,7 @@ class ConfirmSubmissionPageSpec extends BaseISpec with GivenWhenThen {
               val response: WSResponse = request(fullSessionValues)
 
               And("The backend submission was made with the correct nine box value mappings and headers")
-              VatReturnsStub.verifySubmission("999999999", postRequestJsonBody)
+              VatReturnsStub.verifyVatReturnSubmission("999999999", postRequestJsonBody)
 
               Then("The response should be 303")
               response.status shouldBe SEE_OTHER
@@ -111,7 +111,7 @@ class ConfirmSubmissionPageSpec extends BaseISpec with GivenWhenThen {
               val response: WSResponse = request(fullSessionValues)
 
               And("The backend submission was made with the correct nine box values")
-              VatReturnsStub.verifySubmission("999999999", postRequestJsonBody)
+              VatReturnsStub.verifyVatReturnSubmission("999999999", postRequestJsonBody)
 
               Then("The response should be 500")
               response.status shouldBe INTERNAL_SERVER_ERROR
@@ -169,7 +169,7 @@ class ConfirmSubmissionPageSpec extends BaseISpec with GivenWhenThen {
             val response: WSResponse = postJson(s"/$encodedPeriodKey/confirm-submission", fullSessionValues)
 
             And("The backend submission contained the decoded period key")
-            VatReturnsStub.verifySubmission("999999999", postRequestJsonBody)
+            VatReturnsStub.verifyVatReturnSubmission("999999999", postRequestJsonBody)
 
             Then("The response should be 303")
             response.status shouldBe SEE_OTHER
