@@ -25,6 +25,7 @@ import play.api.libs.json.{JsValue, Json}
 import play.api.libs.ws.WSResponse
 import stubs.AuthStub._
 import stubs.{AuthStub, VatReturnsStub}
+import stubs.VatReturnsStub._
 
 class ConfirmSubmissionPageSpec extends BaseISpec with GivenWhenThen {
 
@@ -83,7 +84,7 @@ class ConfirmSubmissionPageSpec extends BaseISpec with GivenWhenThen {
               AuthStub.stubResponse(OK, mtdVatAuthResponse)
 
               And("The POST to vat-returns is successful")
-              VatReturnsStub.stubResponse("999999999")(OK, Json.obj("formBundleNumber" -> "12345"))
+              VatReturnsStub.stubResponse(vatReturnUri("999999999"))(OK, Json.obj("formBundleNumber" -> "12345"))
 
               val response: WSResponse = request(fullSessionValues)
 
@@ -106,7 +107,7 @@ class ConfirmSubmissionPageSpec extends BaseISpec with GivenWhenThen {
               AuthStub.stubResponse(OK, mtdVatAuthResponse)
 
               And("The POST to vat-returns is unsuccessful")
-              VatReturnsStub.stubResponse("999999999")(SERVICE_UNAVAILABLE, Json.obj("oh no" -> "oh yes"))
+              VatReturnsStub.stubResponse(vatReturnUri("999999999"))(SERVICE_UNAVAILABLE, Json.obj("oh no" -> "oh yes"))
 
               val response: WSResponse = request(fullSessionValues)
 
@@ -164,7 +165,7 @@ class ConfirmSubmissionPageSpec extends BaseISpec with GivenWhenThen {
             AuthStub.stubResponse(OK, mtdVatAuthResponse)
 
             And("The POST to vat-returns is successful")
-            VatReturnsStub.stubResponse("999999999")(OK, Json.obj("formBundleNumber" -> "12345"))
+            VatReturnsStub.stubResponse(vatReturnUri("999999999"))(OK, Json.obj("formBundleNumber" -> "12345"))
 
             val response: WSResponse = postJson(s"/$encodedPeriodKey/confirm-submission", fullSessionValues)
 
