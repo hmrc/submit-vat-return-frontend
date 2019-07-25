@@ -109,7 +109,7 @@ object NrsTestData {
     val correctModel: Declaration = Declaration(
       "declaration text",
       "declaration name",
-      "declaration role",
+      Some("declaration role"),
       declarationConsent = true
     )
   }
@@ -304,7 +304,7 @@ object NrsTestData {
         Declaration(
           "I confirm the data ....",
           "John Smith",
-          "Finance Director",
+          Some("Finance Director"),
           declarationConsent = true
         )
       )
