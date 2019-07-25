@@ -62,5 +62,6 @@ object ConfigKeys {
 
   val languageToggleFeature: String = "features.languageToggle.enabled"
   val staticDateEnabledFeature: String = "features.staticDate.enabled"
+  val nrsSubmissionEnabled: String = "features.nrsSubmission.enabled"
   val staticDateValue: String = "date-service.staticDate.value"
 }
