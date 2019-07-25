@@ -18,13 +18,12 @@ package connectors
 
 import config.AppConfig
 import connectors.httpParsers.ResponseHttpParsers.HttpGetResult
-import connectors.httpParsers.SubmitVatReturnHttpParser._
 import javax.inject.{Inject, Singleton}
+import models.nrs.{RequestModel, SuccessModel}
 import models.vatReturnSubmission.{SubmissionModel, SubmissionSuccessModel}
 import play.api.libs.json.Writes
 import uk.gov.hmrc.http.{HeaderCarrier, HttpReads}
 import uk.gov.hmrc.play.bootstrap.http.HttpClient
-
 import scala.concurrent.{ExecutionContext, Future}
 
 @Singleton
@@ -34,6 +33,8 @@ class VatReturnsConnector @Inject()(http: HttpClient,
   def submitVatReturn(vrn: String, model: SubmissionModel)
                      (implicit hc: HeaderCarrier, ec: ExecutionContext): Future[HttpGetResult[SubmissionSuccessModel]] = {
 
+    import connectors.httpParsers.SubmitVatReturnHttpParser._
+
     implicit val headerCarrier: HeaderCarrier = hc.withExtraHeaders("OriginatorID" -> "VATUI")
 
     http.POST[SubmissionModel, HttpGetResult[SubmissionSuccessModel]](appConfig.submitReturnUrl(vrn), model)(
@@ -42,5 +43,13 @@ class VatReturnsConnector @Inject()(http: HttpClient,
       headerCarrier,
       implicitly[ExecutionContext]
     )
+  }
+
+  def nrsSubmission(requestModel: RequestModel)
+                   (implicit hc: HeaderCarrier, ec: ExecutionContext): Future[HttpGetResult[SuccessModel]] = {
+
+    import connectors.httpParsers.NrsSubmissionHttpParser._
+
+    http.POST[RequestModel, HttpGetResult[SuccessModel]](appConfig.submitNrsUrl, requestModel)
   }
 }
