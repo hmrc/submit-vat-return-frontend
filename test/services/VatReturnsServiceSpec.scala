@@ -16,14 +16,12 @@
 
 package services
 
-import java.time.LocalDate
-
 import base.BaseSpec
-import connectors.{VatObligationsConnector, VatReturnsConnector}
+import connectors.VatReturnsConnector
 import connectors.httpParsers.ResponseHttpParsers.HttpGetResult
 import models.errors.UnexpectedJsonFormat
+import models.nrs.{RequestModel, SuccessModel}
 import models.vatReturnSubmission.{SubmissionModel, SubmissionSuccessModel}
-import models.{VatObligation, VatObligations}
 import uk.gov.hmrc.http.HeaderCarrier
 
 import scala.concurrent.{ExecutionContext, Future}
@@ -74,6 +72,41 @@ class VatReturnsServiceSpec extends BaseSpec {
           .returning(Future.successful(expectedResult))
 
         val result: HttpGetResult[SubmissionSuccessModel] = await(service.submitVatReturn("999999999", submissionModel))
+
+        result shouldBe expectedResult
+      }
+    }
+  }
+
+  "Calling .nrsSubmission" when {
+
+    "submission is successful" should {
+
+      val expectedResult = Right(SuccessModel(nrSubmissionId = "12345"))
+
+      "return a SuccessModel" in {
+
+        (mockConnector.nrsSubmission(_: RequestModel)(_: HeaderCarrier, _: ExecutionContext))
+          .expects(*, *, *)
+          .returning(Future.successful(expectedResult))
+
+        val result: HttpGetResult[SuccessModel] = await(service.nrsSubmission())
+
+        result shouldBe expectedResult
+      }
+    }
+
+    "submission is unsuccessful" should {
+
+      val expectedResult = Left(UnexpectedJsonFormat)
+
+      "return a HttpError" in {
+
+        (mockConnector.nrsSubmission(_: RequestModel)(_: HeaderCarrier, _: ExecutionContext))
+          .expects(*, *, *)
+          .returning(Future.successful(expectedResult))
+
+        val result: HttpGetResult[SuccessModel] = await(service.nrsSubmission())
 
         result shouldBe expectedResult
       }
