@@ -24,24 +24,21 @@ import play.api.libs.json.{JsObject, JsValue, Json}
 
 object VatReturnsStub extends BaseISpec {
 
-  private def uri(vrn: String): String = s"/vat-returns/returns/vrn/$vrn"
+  def vatReturnUri(vrn: String): String = s"/vat-returns/returns/vrn/$vrn"
+  val nrsSubmissionUri: String = "/vat-returns/nrs/submission"
 
-  val successResponseJson: JsObject = Json.obj(
-    "formBundleNumber" -> "12345"
-  )
-
-  val invalidResponseJson: JsObject = Json.obj(
-    "blue" -> "green"
-  )
-
-  def stubResponse(vrn: String)(status: Int, body: JsObject): StubMapping = {
-    stubPost(uri(vrn), Json.stringify(body), status)
+  def stubResponse(uri: String)(status: Int, body: JsObject): StubMapping = {
+    stubPost(uri, Json.stringify(body), status)
   }
 
-  def verifySubmission(vrn: String, body: JsValue): Unit =
-    verify(postRequestedFor(urlEqualTo(uri(vrn)))
+  def verifyVatReturnSubmission(vrn: String, body: JsValue): Unit =
+    verify(postRequestedFor(urlEqualTo(vatReturnUri(vrn)))
       .withRequestBody(equalToJson(body.toString()))
       .withHeader("OriginatorID", equalTo("VATUI"))
     )
 
+  def verifyNrsSubmission(body: JsValue): Unit =
+    verify(postRequestedFor(urlEqualTo(nrsSubmissionUri))
+      .withRequestBody(equalToJson(body.toString()))
+    )
 }

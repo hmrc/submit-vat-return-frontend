@@ -25,6 +25,7 @@ import play.api.libs.json.{JsValue, Json}
 import play.api.libs.ws.WSResponse
 import stubs.AuthStub._
 import stubs.{AuthStub, VatReturnsStub}
+import stubs.VatReturnsStub._
 
 class ConfirmSubmissionPageSpec extends BaseISpec with GivenWhenThen {
 
@@ -83,12 +84,12 @@ class ConfirmSubmissionPageSpec extends BaseISpec with GivenWhenThen {
               AuthStub.stubResponse(OK, mtdVatAuthResponse)
 
               And("The POST to vat-returns is successful")
-              VatReturnsStub.stubResponse("999999999")(OK, Json.obj("formBundleNumber" -> "12345"))
+              VatReturnsStub.stubResponse(vatReturnUri("999999999"))(OK, Json.obj("formBundleNumber" -> "12345"))
 
               val response: WSResponse = request(fullSessionValues)
 
               And("The backend submission was made with the correct nine box value mappings and headers")
-              VatReturnsStub.verifySubmission("999999999", postRequestJsonBody)
+              VatReturnsStub.verifyVatReturnSubmission("999999999", postRequestJsonBody)
 
               Then("The response should be 303")
               response.status shouldBe SEE_OTHER
@@ -106,12 +107,12 @@ class ConfirmSubmissionPageSpec extends BaseISpec with GivenWhenThen {
               AuthStub.stubResponse(OK, mtdVatAuthResponse)
 
               And("The POST to vat-returns is unsuccessful")
-              VatReturnsStub.stubResponse("999999999")(SERVICE_UNAVAILABLE, Json.obj("oh no" -> "oh yes"))
+              VatReturnsStub.stubResponse(vatReturnUri("999999999"))(SERVICE_UNAVAILABLE, Json.obj("oh no" -> "oh yes"))
 
               val response: WSResponse = request(fullSessionValues)
 
               And("The backend submission was made with the correct nine box values")
-              VatReturnsStub.verifySubmission("999999999", postRequestJsonBody)
+              VatReturnsStub.verifyVatReturnSubmission("999999999", postRequestJsonBody)
 
               Then("The response should be 500")
               response.status shouldBe INTERNAL_SERVER_ERROR
@@ -164,12 +165,12 @@ class ConfirmSubmissionPageSpec extends BaseISpec with GivenWhenThen {
             AuthStub.stubResponse(OK, mtdVatAuthResponse)
 
             And("The POST to vat-returns is successful")
-            VatReturnsStub.stubResponse("999999999")(OK, Json.obj("formBundleNumber" -> "12345"))
+            VatReturnsStub.stubResponse(vatReturnUri("999999999"))(OK, Json.obj("formBundleNumber" -> "12345"))
 
             val response: WSResponse = postJson(s"/$encodedPeriodKey/confirm-submission", fullSessionValues)
 
             And("The backend submission contained the decoded period key")
-            VatReturnsStub.verifySubmission("999999999", postRequestJsonBody)
+            VatReturnsStub.verifyVatReturnSubmission("999999999", postRequestJsonBody)
 
             Then("The response should be 303")
             response.status shouldBe SEE_OTHER
