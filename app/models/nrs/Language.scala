@@ -24,6 +24,13 @@ object EN extends Language("en")
 object CY extends Language("cy")
 
 object Language {
+  def fromString(input: String): Language = {
+    input match {
+      case EN.languageCode => EN
+      case CY.languageCode => CY
+    }
+  }
+
   implicit val reads: Reads[Language] = for {
     languageString <- JsPath.read[String]
   } yield {

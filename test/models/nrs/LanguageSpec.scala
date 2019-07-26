@@ -26,6 +26,11 @@ class LanguageSpec extends BaseSpec {
     Json.toJson(CY.languageCode) -> CY
   )
 
+  val stringModelMap = Map(
+    EN.languageCode -> EN,
+    CY.languageCode -> CY
+  )
+
   "Formats" should {
 
     jsonModelMap.foreach { case (correctJson, correctModel) =>
@@ -36,6 +41,14 @@ class LanguageSpec extends BaseSpec {
 
       s"parse ${correctModel.languageCode} correctly into json" in {
           Json.toJson(correctModel) shouldBe correctJson
+      }
+    }
+  }
+
+  "fromString" should {
+    stringModelMap.foreach { case (languageString, expectedResult) =>
+      s"correctly parse $languageString into $expectedResult" in {
+        Language.fromString(languageString) shouldBe expectedResult
       }
     }
   }
