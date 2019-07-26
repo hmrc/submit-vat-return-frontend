@@ -90,7 +90,7 @@ class VatReturnsServiceSpec extends BaseSpec {
           .expects(*, *, *)
           .returning(Future.successful(expectedResult))
 
-        val result: HttpGetResult[SuccessModel] = await(service.nrsSubmission("payload", "checksum"))
+        val result: HttpGetResult[SuccessModel] = await(service.nrsSubmission("18AA", "payload", "checksum")(hc, ec, user))
 
         result shouldBe expectedResult
       }
@@ -106,7 +106,7 @@ class VatReturnsServiceSpec extends BaseSpec {
           .expects(*, *, *)
           .returning(Future.successful(expectedResult))
 
-        val result: HttpGetResult[SuccessModel] = await(service.nrsSubmission("payload", "checksum"))
+        val result: HttpGetResult[SuccessModel] = await(service.nrsSubmission("18AA", "payload", "checksum")(hc, ec, user))
 
         result shouldBe expectedResult
       }

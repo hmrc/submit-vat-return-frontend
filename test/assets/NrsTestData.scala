@@ -191,7 +191,7 @@ object NrsTestData {
       s"""
          |{
          |    "businessId": "vat",
-         |    "notableEvent": "vat-registration",
+         |    "notableEvent": "vat-return",
          |    "payloadContentType": "text/html",
          |    "payloadSha256Checksum": "426a1c28<snip>d6d363",
          |    "userSubmissionTimestamp": "2018-04-07T12:13:25.156Z",
@@ -261,9 +261,6 @@ object NrsTestData {
       """.stripMargin)
 
     val correctModel: Metadata = Metadata(
-      businessId = "vat",
-      notableEvent = "vat-registration",
-      payloadContentType = "text/html",
       payloadSha256Checksum = "426a1c28<snip>d6d363",
       userSubmissionTimestamp = LocalDateTime.ofInstant(Instant.parse("2018-04-07T12:13:25.156Z"), ZoneId.of("UTC")),
       identityData = IdentityDataTestData.correctModel,
