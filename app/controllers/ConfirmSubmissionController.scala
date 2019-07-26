@@ -81,30 +81,7 @@ class ConfirmSubmissionController @Inject()(val messagesApi: MessagesApi,
           Try(Json.parse(data).as[SubmitVatReturnModel]) match {
             case Success(model) =>
               if(dateService.dateHasPassed(model.end)) {
-                val submissionModel = SubmissionModel(
-                  periodKey = URLDecoder.decode(periodKey, "utf-8"),
-                  vatDueSales = model.box1,
-                  vatDueAcquisitions = model.box2,
-                  vatDueTotal = model.box3,
-                  vatReclaimedCurrPeriod = model.box4,
-                  vatDueNet = model.box5,
-                  totalValueSalesExVAT = model.box6,
-                  totalValuePurchasesExVAT = model.box7,
-                  totalValueGoodsSuppliedExVAT = model.box8,
-                  totalAllAcquisitionsExVAT = model.box9,
-                  agentReferenceNumber = user.arn
-                )
-                vatReturnsService.submitVatReturn(user.vrn, submissionModel) map {
-                  case Right(_) =>
-                    auditService.audit(
-                      SubmitVatReturnAuditModel(user, model, periodKey),
-                      Some(controllers.routes.ConfirmSubmissionController.submit(periodKey).url)
-                    )
-                    Redirect(controllers.routes.ConfirmationController.show().url).removingFromSession(SessionKeys.returnData)
-                  case Left(error) =>
-                    Logger.warn(s"[ConfirmSubmissionController][submit] Error returned from vat-returns service: $error")
-                    InternalServerError(views.html.errors.submission_error())
-                }
+                submitVatReturn(periodKey, model)
               } else {
                 Logger.debug(s"[ConfirmSubmissionController][submit] Obligation end date for period $periodKey has not yet passed.")
                 Future.successful(errorHandler.showBadRequestError)
@@ -120,5 +97,33 @@ class ConfirmSubmissionController @Inject()(val messagesApi: MessagesApi,
             "Redirecting to 9 box entry page.")
           Future.successful(Redirect(controllers.routes.SubmitFormController.show(periodKey)))
       }
+  }
+
+  private def submitVatReturn[A](periodKey: String,
+                                 sessionData: SubmitVatReturnModel)(implicit user: User[A]): Future[Result] = {
+    val submissionModel = SubmissionModel(
+      periodKey = URLDecoder.decode(periodKey, "utf-8"),
+      vatDueSales = sessionData.box1,
+      vatDueAcquisitions = sessionData.box2,
+      vatDueTotal = sessionData.box3,
+      vatReclaimedCurrPeriod = sessionData.box4,
+      vatDueNet = sessionData.box5,
+      totalValueSalesExVAT = sessionData.box6,
+      totalValuePurchasesExVAT = sessionData.box7,
+      totalValueGoodsSuppliedExVAT = sessionData.box8,
+      totalAllAcquisitionsExVAT = sessionData.box9,
+      agentReferenceNumber = user.arn
+    )
+    vatReturnsService.submitVatReturn(user.vrn, submissionModel) map {
+      case Right(_) =>
+        auditService.audit(
+          SubmitVatReturnAuditModel(user, sessionData, periodKey),
+          Some(controllers.routes.ConfirmSubmissionController.submit(periodKey).url)
+        )
+        Redirect(controllers.routes.ConfirmationController.show().url).removingFromSession(SessionKeys.returnData)
+      case Left(error) =>
+        Logger.warn(s"[ConfirmSubmissionController][submit] Error returned from vat-returns service: $error")
+        InternalServerError(views.html.errors.submission_error())
+    }
   }
 }
