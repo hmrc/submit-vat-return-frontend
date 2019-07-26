@@ -34,6 +34,7 @@ import play.api.mvc._
 import play.twirl.api.Html
 import services.{DateService, VatReturnsService, VatSubscriptionService}
 import uk.gov.hmrc.play.bootstrap.controller.FrontendController
+import utils.HashUtil
 
 import scala.concurrent.{ExecutionContext, Future}
 import scala.util.{Failure, Success, Try}
@@ -124,6 +125,19 @@ class ConfirmSubmissionController @Inject()(val messagesApi: MessagesApi,
       case Left(error) =>
         Logger.warn(s"[ConfirmSubmissionController][submit] Error returned from vat-returns service: $error")
         InternalServerError(views.html.errors.submission_error())
+    }
+  }
+
+  private def submitToNrs[A](periodKey: String,
+                             sessionData: SubmitVatReturnModel)(implicit user: User[A]): Future[Result] = {
+    val pageHtml: Future[Html] = renderConfirmSubmissionView(periodKey, sessionData)
+
+    pageHtml map { html =>
+      val htmlPayload = HashUtil.encode(html.body)
+      val sha256Checksum = HashUtil.getHash(html.body)
+
+      //TODO: Call NRS service (BTAT-6419)
+      Ok
     }
   }
 }
