@@ -20,7 +20,7 @@ import base.BaseSpec
 import connectors.VatReturnsConnector
 import connectors.httpParsers.ResponseHttpParsers.HttpGetResult
 import models.errors.UnexpectedJsonFormat
-import models.nrs.{RequestModel, SuccessModel}
+import models.nrs.{RequestModel, SearchKeys, SuccessModel}
 import models.vatReturnSubmission.{SubmissionModel, SubmissionSuccessModel}
 import uk.gov.hmrc.http.HeaderCarrier
 
@@ -110,6 +110,13 @@ class VatReturnsServiceSpec extends BaseSpec {
 
         result shouldBe expectedResult
       }
+    }
+  }
+
+  "Calling .searchKeys" should {
+
+    "return vrn and decoded period key in a model" in {
+      service.searchKeys("123456789", "%23001") shouldBe SearchKeys("123456789", "#001")
     }
   }
 }

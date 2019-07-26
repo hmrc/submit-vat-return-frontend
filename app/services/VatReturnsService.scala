@@ -16,6 +16,7 @@
 
 package services
 
+import java.net.URLDecoder
 import java.time.{LocalDateTime, ZoneOffset}
 
 import connectors.VatReturnsConnector
@@ -72,10 +73,7 @@ class VatReturnsService @Inject()(vatReturnsConnector: VatReturnsConnector) {
       identityData = identityDataModel,
       userAuthToken = "",
       headerData = headerData,
-      searchKeys = SearchKeys(
-        vrn = user.vrn,
-        periodKey = periodKey
-      ),
+      searchKeys = searchKeys(user.vrn, periodKey),
       receiptData = receiptDataModel
     )
 
@@ -86,4 +84,9 @@ class VatReturnsService @Inject()(vatReturnsConnector: VatReturnsConnector) {
 
     vatReturnsConnector.nrsSubmission(submissionModel)
   }
+
+  private[services] def searchKeys(vrn: String, periodKey: String): SearchKeys = SearchKeys(
+    vrn = vrn,
+    periodKey = URLDecoder.decode(periodKey, "UTF-8")
+  )
 }
