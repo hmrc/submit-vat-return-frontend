@@ -35,7 +35,8 @@ class VatReturnsService @Inject()(vatReturnsConnector: VatReturnsConnector) {
     vatReturnsConnector.submitVatReturn(vrn, model)
   }
 
-  def nrsSubmission()
+  def nrsSubmission(payload: String,
+                    payloadCheckSum: String)
                    (implicit hc: HeaderCarrier, ec: ExecutionContext): Future[HttpGetResult[SuccessModel]] = {
 
     //TODO: BTAT-6413
@@ -64,7 +65,7 @@ class VatReturnsService @Inject()(vatReturnsConnector: VatReturnsConnector) {
       businessId = "",
       notableEvent = "",
       payloadContentType = "",
-      payloadSha256Checksum = "",
+      payloadSha256Checksum = payloadCheckSum,
       userSubmissionTimestamp = LocalDateTime.now(),
       identityData = identityDataModel,
       userAuthToken = "",
@@ -72,9 +73,6 @@ class VatReturnsService @Inject()(vatReturnsConnector: VatReturnsConnector) {
       searchKeys = SearchKeys("", ""),
       receiptData = receiptDataModel
     )
-
-    //TODO: BTAT-6415
-    val payload = ""
 
     val submissionModel = RequestModel(
       payload = payload,
