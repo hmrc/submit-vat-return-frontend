@@ -24,12 +24,14 @@ import common.SessionKeys
 import config.{AppConfig, ErrorHandler}
 import controllers.predicates.{AuthPredicate, MandationStatusPredicate}
 import javax.inject.{Inject, Singleton}
+import models.auth.User
 import models.vatReturnSubmission.SubmissionModel
 import models.{ConfirmSubmissionViewModel, SubmitVatReturnModel}
 import play.api.Logger
 import play.api.i18n.{I18nSupport, MessagesApi}
 import play.api.libs.json.Json
 import play.api.mvc._
+import play.twirl.api.Html
 import services.{DateService, VatReturnsService, VatSubscriptionService}
 import uk.gov.hmrc.play.bootstrap.controller.FrontendController
 
@@ -51,21 +53,24 @@ class ConfirmSubmissionController @Inject()(val messagesApi: MessagesApi,
   def show(periodKey: String): Action[AnyContent] = (authPredicate andThen mandationStatusCheck).async { implicit user =>
 
     user.session.get(SessionKeys.returnData) match {
-      case Some(model) => {
+      case Some(model) =>
         val sessionData = Json.parse(model).as[SubmitVatReturnModel]
-
-        vatSubscriptionService.getCustomerDetails(user.vrn) map {
-          case (Right(customerDetails)) => {
-            val viewModel = ConfirmSubmissionViewModel(sessionData, periodKey, customerDetails.clientName)
-            Ok(views.html.confirm_submission(viewModel, user.isAgent))
-          }
-          case _ => {
-            val viewModel = ConfirmSubmissionViewModel(sessionData, periodKey, None)
-            Ok(views.html.confirm_submission(viewModel, user.isAgent))
-          }
-        }
-      }
+        renderConfirmSubmissionView(periodKey, sessionData).map(view => Ok(view))
       case _ => Future.successful(Redirect(controllers.routes.SubmitFormController.show(periodKey)))
+    }
+  }
+
+  private def renderConfirmSubmissionView[A](periodKey: String,
+                                             sessionData: SubmitVatReturnModel)(implicit user: User[A]): Future[Html]  = {
+
+    val clientName: Future[Option[String]] = vatSubscriptionService.getCustomerDetails(user.vrn) map {
+      case (Right(customerDetails)) => customerDetails.clientName
+      case _ => None
+    }
+
+    clientName map { name =>
+      val viewModel = ConfirmSubmissionViewModel(sessionData, periodKey, name)
+      views.html.confirm_submission(viewModel, user.isAgent)
     }
   }
 
