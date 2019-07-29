@@ -69,8 +69,8 @@ class VatReturnsService @Inject()(vatReturnsConnector: VatReturnsConnector) {
       userSubmissionTimestamp = LocalDateTime.now(ZoneOffset.UTC),
       identityData = identityDataModel,
       searchKeys = searchKeys(user.vrn, periodKey),
-      userAuthToken = request.headers.get("Authorization").get,
-      headerData = request.headers.toMap.map { h => h._1 -> h._2.head },
+      userAuthToken = user.headers.get("Authorization").get,
+      headerData = user.headers.toMap.map { h => h._1 -> h._2.head },
       receiptData = receiptDataModel
     )
 
