@@ -21,9 +21,9 @@ import java.time.{LocalDateTime, ZoneId}
 
 import play.api.libs.json._
 
-case class Metadata(businessId: String,
-                    notableEvent: String,
-                    payloadContentType: String,
+case class Metadata(businessId: String = "vat",
+                    notableEvent: String = "vat-return",
+                    payloadContentType: String = "text/html",
                     payloadSha256Checksum: String,
                     userSubmissionTimestamp: LocalDateTime,
                     identityData: IdentityData,

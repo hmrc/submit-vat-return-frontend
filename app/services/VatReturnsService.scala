@@ -16,10 +16,13 @@
 
 package services
 
-import java.time.LocalDateTime
+import java.net.URLDecoder
+import java.time.{LocalDateTime, ZoneOffset}
+
 import connectors.VatReturnsConnector
 import connectors.httpParsers.ResponseHttpParsers.HttpGetResult
 import javax.inject.{Inject, Singleton}
+import models.auth.User
 import models.nrs._
 import models.nrs.identityData._
 import models.vatReturnSubmission.{SubmissionModel, SubmissionSuccessModel}
@@ -35,9 +38,10 @@ class VatReturnsService @Inject()(vatReturnsConnector: VatReturnsConnector) {
     vatReturnsConnector.submitVatReturn(vrn, model)
   }
 
-  def nrsSubmission(payload: String,
-                    payloadCheckSum: String)
-                   (implicit hc: HeaderCarrier, ec: ExecutionContext): Future[HttpGetResult[SuccessModel]] = {
+  def nrsSubmission[A](periodKey: String,
+                       payload: String,
+                       payloadCheckSum: String)
+                      (implicit hc: HeaderCarrier, ec: ExecutionContext, user: User[A]): Future[HttpGetResult[SuccessModel]] = {
 
     //TODO: BTAT-6413
     val identityDataModel = IdentityData(
@@ -60,17 +64,16 @@ class VatReturnsService @Inject()(vatReturnsConnector: VatReturnsConnector) {
     //TODO: BTAT-6414
     val headerData = Map.empty[String, String]
 
-    //TODO: BTAT-6417
     val metaData = Metadata(
       businessId = "",
       notableEvent = "",
       payloadContentType = "",
       payloadSha256Checksum = payloadCheckSum,
-      userSubmissionTimestamp = LocalDateTime.now(),
+      userSubmissionTimestamp = LocalDateTime.now(ZoneOffset.UTC),
       identityData = identityDataModel,
       userAuthToken = "",
       headerData = headerData,
-      searchKeys = SearchKeys("", ""),
+      searchKeys = searchKeys(user.vrn, periodKey),
       receiptData = receiptDataModel
     )
 
@@ -81,4 +84,9 @@ class VatReturnsService @Inject()(vatReturnsConnector: VatReturnsConnector) {
 
     vatReturnsConnector.nrsSubmission(submissionModel)
   }
+
+  private[services] def searchKeys(vrn: String, periodKey: String): SearchKeys = SearchKeys(
+    vrn = vrn,
+    periodKey = URLDecoder.decode(periodKey, "UTF-8")
+  )
 }
