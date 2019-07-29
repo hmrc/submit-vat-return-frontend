@@ -65,9 +65,6 @@ class VatReturnsService @Inject()(vatReturnsConnector: VatReturnsConnector) {
     val headerData = Map.empty[String, String]
 
     val metaData = Metadata(
-      businessId = "",
-      notableEvent = "",
-      payloadContentType = "",
       payloadSha256Checksum = payloadCheckSum,
       userSubmissionTimestamp = LocalDateTime.now(ZoneOffset.UTC),
       identityData = identityDataModel,
