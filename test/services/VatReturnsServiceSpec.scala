@@ -95,12 +95,8 @@ class VatReturnsServiceSpec extends BaseSpec {
           .expects(*, *, *)
           .returning(Future.successful(expectedResult))
 
-<<<<<<< HEAD
-        val result: HttpGetResult[SuccessModel] = await(service.nrsSubmission("18AA", "payload", "checksum")(hc, ec, user))
-=======
 
-        val result: HttpGetResult[SuccessModel] = await(service.nrsSubmission("payload", "checksum")(hc, ec, request))
->>>>>>> Added the header info and to populate model as per the NRS spec.
+        val result: HttpGetResult[SuccessModel] = await(service.nrsSubmission("18AA", "payload", "checksum")(hc, ec,user, request))
 
         result shouldBe expectedResult
       }
@@ -116,13 +112,7 @@ class VatReturnsServiceSpec extends BaseSpec {
           .expects(*, *, *)
           .returning(Future.successful(expectedResult))
 
-<<<<<<< HEAD
-        val result: HttpGetResult[SuccessModel] = await(service.nrsSubmission("18AA", "payload", "checksum")(hc, ec, user))
-=======
-
-
-        val result: HttpGetResult[SuccessModel] = await(service.nrsSubmission("payload", "checksum")(hc, ec, request))
->>>>>>> Added the header info and to populate model as per the NRS spec.
+        val result: HttpGetResult[SuccessModel] = await(service.nrsSubmission("18AA", "payload", "checksum")(hc, ec, user, request))
 
         result shouldBe expectedResult
       }
