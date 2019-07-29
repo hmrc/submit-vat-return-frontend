@@ -197,7 +197,17 @@ object NrsTestData {
          |    "userSubmissionTimestamp": "2018-04-07T12:13:25.156Z",
          |    "identityData": ${IdentityDataTestData.correctJson},
          |    "userAuthToken": "Bearer AbCdEf123456...",
-         |    "headerData": { "...":"..." },
+         |    "headerData": {
+         |      "Gov-Client-Public-IP": "127.0.0.0",
+         |      "Gov-Client-Public-Port": "12345",
+         |      "Gov-Client-Device-ID": "beec798b-b366-47fa-b1f8-92cede14a1ce",
+         |      "Gov-Client-User-ID": "alice_desktop",
+         |      "Gov-Client-Timezone": "GMT+3",
+         |      "Gov-Client-Local-IP": "10.1.2.3",
+         |      "Gov-Client-Screen-Resolution": "1920x1080",
+         |      "Gov-Client-Window-Size": "1256x803",
+         |      "Gov-Client-Colour-Depth": "24"
+         |    },
          |    "searchKeys": {
          |      "vrn": "123456789",
          |      "periodKey": "18AA"
@@ -265,7 +275,17 @@ object NrsTestData {
       userSubmissionTimestamp = LocalDateTime.ofInstant(Instant.parse("2018-04-07T12:13:25.156Z"), ZoneId.of("UTC")),
       identityData = IdentityDataTestData.correctModel,
       userAuthToken = "Bearer AbCdEf123456...",
-      headerData = Map("..." -> "..."),
+      headerData = Map(
+           "Gov-Client-Public-IP"->"127.0.0.0",
+           "Gov-Client-Public-Port"->"12345",
+           "Gov-Client-Device-ID"->"beec798b-b366-47fa-b1f8-92cede14a1ce",
+           "Gov-Client-User-ID"->"alice_desktop",
+           "Gov-Client-Timezone"->"GMT+3",
+           "Gov-Client-Local-IP"->"10.1.2.3",
+           "Gov-Client-Screen-Resolution"->"1920x1080",
+           "Gov-Client-Window-Size"->"1256x803",
+           "Gov-Client-Colour-Depth"->"24"
+      ),
       searchKeys = SearchKeys("123456789", "18AA"),
       receiptData = ReceiptData(
         EN, Seq(

@@ -19,9 +19,12 @@ package services
 import base.BaseSpec
 import connectors.VatReturnsConnector
 import connectors.httpParsers.ResponseHttpParsers.HttpGetResult
+import models.auth.User
 import models.errors.UnexpectedJsonFormat
 import models.nrs.{RequestModel, SearchKeys, SuccessModel}
 import models.vatReturnSubmission.{SubmissionModel, SubmissionSuccessModel}
+import play.api.mvc.AnyContentAsEmpty
+import play.api.test.FakeRequest
 import uk.gov.hmrc.http.HeaderCarrier
 
 import scala.concurrent.{ExecutionContext, Future}
@@ -80,6 +83,8 @@ class VatReturnsServiceSpec extends BaseSpec {
 
   "Calling .nrsSubmission" when {
 
+    lazy val request: User[AnyContentAsEmpty.type] = User[AnyContentAsEmpty.type](vrn)(FakeRequest().withHeaders("Authorization" -> ""))
+
     "submission is successful" should {
 
       val expectedResult = Right(SuccessModel(nrSubmissionId = "12345"))
@@ -90,7 +95,8 @@ class VatReturnsServiceSpec extends BaseSpec {
           .expects(*, *, *)
           .returning(Future.successful(expectedResult))
 
-        val result: HttpGetResult[SuccessModel] = await(service.nrsSubmission("18AA", "payload", "checksum")(hc, ec, user))
+
+        val result: HttpGetResult[SuccessModel] = await(service.nrsSubmission("18AA", "payload", "checksum")(hc, ec,request))
 
         result shouldBe expectedResult
       }
@@ -106,7 +112,7 @@ class VatReturnsServiceSpec extends BaseSpec {
           .expects(*, *, *)
           .returning(Future.successful(expectedResult))
 
-        val result: HttpGetResult[SuccessModel] = await(service.nrsSubmission("18AA", "payload", "checksum")(hc, ec, user))
+        val result: HttpGetResult[SuccessModel] = await(service.nrsSubmission("18AA", "payload", "checksum")(hc, ec, request))
 
         result shouldBe expectedResult
       }
