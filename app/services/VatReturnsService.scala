@@ -41,7 +41,7 @@ class VatReturnsService @Inject()(vatReturnsConnector: VatReturnsConnector) {
   def nrsSubmission[A](periodKey: String,
                        payload: String,
                        payloadCheckSum: String)
-                   (implicit hc: HeaderCarrier, ec: ExecutionContext, user: User[A],request: User[_] ): Future[HttpGetResult[SuccessModel]] = {
+                   (implicit hc: HeaderCarrier, ec: ExecutionContext, user: User[A]): Future[HttpGetResult[SuccessModel]] = {
 
 
     //TODO: BTAT-6413
