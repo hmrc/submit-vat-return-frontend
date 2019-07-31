@@ -46,7 +46,7 @@ confirm_submission.returnTotal = Return total:
 
 confirm_submission.additionalInfo = Additional information
 confirm_submission.boxOne = Box 1
-confirm_submission.boxOneDescription = VAT you charged on sales and other supplies
+confirm_submission.boxOneDescription = I`M WELSH INIT BRUH
 confirm_submission.boxOneAmt = Box 1 amount
 confirm_submission.boxTwo = Box 2
 confirm_submission.boxTwoDescription = VAT you owe on goods purchased from EC countries and brought into the UK

@@ -26,6 +26,7 @@ import models.nrs._
 import models.{CustomerDetails, SubmitVatReturnModel}
 import play.api.mvc.{AnyContentAsEmpty, Cookie}
 import uk.gov.hmrc.http.HeaderCarrier
+import uk.gov.hmrc.play.views.helpers.MoneyPounds
 
 import scala.concurrent.{ExecutionContext, Future}
 
@@ -38,26 +39,38 @@ class ReceiptDataHelperSpec extends BaseSpec {
   val dateToUse: LocalDate = LocalDate.now()
 
   def createReturnModel(flatRateScheme: Boolean): SubmitVatReturnModel = SubmitVatReturnModel(
-    1, 2, 3, 4, 5, 6, 7, 8, 9, flatRateScheme, dateToUse, dateToUse, dateToUse
+    10, 25.55, 33, 74, 95.06, 1006, 1006.66, 889.9, 900.0, flatRateScheme, dateToUse, dateToUse, dateToUse
   )
 
-  def expectedAnswers(frs: Boolean): Seq[Answers] = {
-    val boxSixExpected: String = if (frs) "Total value of sales and other supplies, including VAT" else
-      "Total value of sales and other supplies, excluding VAT"
+  def expectedAnswers(frs: Boolean, language: Language): Seq[Answers] = {
+
+    val box1Expected = if(language == EN) {
+      "VAT you charged on sales and other supplies"
+    } else {
+      "I`M WELSH INIT BRUH"
+    }
+
+    val boxSixExpected = (frs, language) match {
+      case (true, EN) => "Total value of sales and other supplies, including VAT"
+      case (false, EN) => "Total value of sales and other supplies, excluding VAT"
+      case (true, CY) => "Total value of sales and other supplies, including VAT"
+      case (false, CY) => "Total value of sales and other supplies, excluding VAT"
+    }
+
     Seq(Answers(
       "Nine box submission",
       Seq(
-        ("box1", "VAT you charged on sales and other supplies", 1),
-        ("box2", "VAT you owe on goods purchased from EC countries and brought into the UK", 2),
-        ("box3", "VAT you owe before deductions (this is the total of box 1 and 2)", 3),
-        ("box4", "VAT you have claimed back", 4),
-        ("box5", "Return total", 5),
-        ("box6", boxSixExpected, 6),
-        ("box7", "Total value of purchases and other expenses, excluding VAT", 7),
-        ("box8", "Total value of supplied goods to EC countries and related costs (excluding VAT)", 8),
-        ("box9", "Total value of goods purchased from EC countries and brought into the UK, as well as any related costs (excluding VAT)", 9)
+        ("box1", box1Expected, 10.00),
+        ("box2", "VAT you owe on goods purchased from EC countries and brought into the UK", 25.55),
+        ("box3", "VAT you owe before deductions (this is the total of box 1 and 2)", 33.00),
+        ("box4", "VAT you have claimed back", 74.00),
+        ("box5", "Return total", 95.06),
+        ("box6", boxSixExpected, 1006.00),
+        ("box7", "Total value of purchases and other expenses, excluding VAT", 1006.66),
+        ("box8", "Total value of supplied goods to EC countries and related costs (excluding VAT)", 889.90),
+        ("box9", "Total value of goods purchased from EC countries and brought into the UK, as well as any related costs (excluding VAT)", 900.00)
       ).map { case (questionId, question, answer) =>
-        Answer(questionId, question, Some(answer.toString))
+        Answer(questionId, question, Some("£" + MoneyPounds(answer, 2).quantity))
       }))
   }
 
@@ -95,26 +108,34 @@ class ReceiptDataHelperSpec extends BaseSpec {
 
   "extractReceiptData" should {
     "return a receipt" when {
-      (for {
-        language <- Seq(EN, CY)
-        flatRateScheme <- Seq(true, false)
-        isAgent <- Seq(true, false)
-      } yield {
-        (language, flatRateScheme, isAgent)
-      }).foreach { case (language, frs, isAgent) =>
+      "the user is an agent, with frs" in {
+        val userToUse = agentUserWithCookie(EN.languageCode)
+        mockOutboundCall(frs = true)
 
-        s"language is ${language.languageCode}, flatRateScheme is $frs and isAgent is $isAgent" in {
-          val implicitUser: User[AnyContentAsEmpty.type] = if (isAgent) agentUserWithCookie(language.languageCode) else
-            userWithCookie(language.languageCode)
+        val result = await(service.extractReceiptData(createReturnModel(true))(userToUse, hc, ec))
 
-          val expectedResult = ReceiptData(language, expectedAnswers(frs), expectedDeclaration(isAgent))
-          mockOutboundCall(frs)
+        result shouldBe Right(
+          ReceiptData(EN, expectedAnswers(frs = true, EN), expectedDeclaration(true))
+        )
+      }
+      "the user is an individual, without frs" in {
+        val userToUse = userWithCookie(CY.languageCode)
+        mockOutboundCall(frs = false)
 
-          val result = await(service.extractReceiptData(createReturnModel(frs))(user = implicitUser, hc, ec))
+        val result = await(service.extractReceiptData(createReturnModel(false))(userToUse, hc, ec))
 
-          result shouldBe Right(expectedResult)
-        }
+        result shouldBe Right(
+          ReceiptData(CY, expectedAnswers(frs = false, CY), expectedDeclaration(false))
+        )
+      }
+      "the user has no language cookie" in {
+        mockOutboundCall(frs = false)
 
+        val result = await(service.extractReceiptData(createReturnModel(false))(user, hc, ec))
+
+        result shouldBe Right(
+          ReceiptData(EN, expectedAnswers(frs = false, EN), expectedDeclaration(false))
+        )
       }
     }
     "return an error" when {
