@@ -66,6 +66,8 @@ class ConfirmSubmissionControllerSpec extends BaseSpec
     mockEnrolmentsAuthService
   )
 
+  mockAppConfig.features.nrsSubmissionEnabled(false)
+
   "ConfirmSubmissionController .show" when {
 
     "user is authorised" when {

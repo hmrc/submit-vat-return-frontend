@@ -20,11 +20,12 @@ import java.time.LocalDate
 
 import base.BaseISpec
 import org.scalatest.GivenWhenThen
+import play.api.http.Status
 import play.api.http.Status._
 import play.api.libs.json.{JsValue, Json}
 import play.api.libs.ws.WSResponse
 import stubs.AuthStub._
-import stubs.{AuthStub, VatReturnsStub}
+import stubs.{AuthStub, VatReturnsStub, VatSubscriptionStub}
 import stubs.VatReturnsStub._
 
 class ConfirmSubmissionPageSpec extends BaseISpec with GivenWhenThen {
@@ -55,7 +56,9 @@ class ConfirmSubmissionPageSpec extends BaseISpec with GivenWhenThen {
 
     "user is authorised" when {
 
-      "valid nine box session data exists" when {
+      "valid nine box session data exists and the NRS Feature Switch is off" when {
+
+        appConfig.features.nrsSubmissionEnabled(false)
 
         "matching obligation end date is in the past" when {
 
@@ -177,6 +180,112 @@ class ConfirmSubmissionPageSpec extends BaseISpec with GivenWhenThen {
 
             And("The redirect location is correct")
             response.header("Location") shouldBe Some(controllers.routes.ConfirmationController.show().url)
+          }
+        }
+      }
+
+      "valid nine box session data exists and the NRS Feature Switch is on" when {
+
+        "matching obligation end date is in the past" when {
+
+          val postRequestJsonBody: JsValue = Json.parse(
+            """
+              |{
+              |  "periodKey" : "18AA",
+              |  "vatDueSales" : 10.01,
+              |  "vatDueAcquisitions" : 10.02,
+              |  "vatDueTotal" : 10.03,
+              |  "vatReclaimedCurrPeriod" : 10.04,
+              |  "vatDueNet" : 10.05,
+              |  "totalValueSalesExVAT" : 10.06,
+              |  "totalValuePurchasesExVAT" : 10.07,
+              |  "totalValueGoodsSuppliedExVAT" : 10.08,
+              |  "totalAllAcquisitionsExVAT" : 10.09
+              |}
+            """.stripMargin
+          )
+
+          "NRS returns successful response and backend submission returns 200" should {
+
+            "redirect to confirmation page" in {
+              appConfig.features.nrsSubmissionEnabled(true)
+
+              When("The user is authenticated and authorised")
+              AuthStub.stubResponse(OK, mtdVatAuthResponse)
+
+              And("The customer-details call is successful")
+              VatSubscriptionStub.stubResponse("customer-details", OK, Json.obj())
+
+              And("The POST to NRS is successful")
+              VatReturnsStub.stubResponse(nrsSubmissionUri)(ACCEPTED, Json.obj("nrSubmissionId" -> "everything is awesome"))
+
+              And("The POST to vat-returns is successful")
+              VatReturnsStub.stubResponse(vatReturnUri("999999999"))(OK, Json.obj("formBundleNumber" -> "12345"))
+
+              val response: WSResponse = request(fullSessionValues)
+
+              And("The backend submission was made with the correct nine box value mappings and headers")
+              VatReturnsStub.verifyVatReturnSubmission("999999999", postRequestJsonBody)
+
+              Then("The response should be 303")
+              response.status shouldBe SEE_OTHER
+
+              And("The redirect location is correct")
+              response.header("Location") shouldBe Some(controllers.routes.ConfirmationController.show().url)
+            }
+          }
+
+          "NRS returns a BAD_REQUEST" should {
+
+            "return ISE" in {
+
+              appConfig.features.nrsSubmissionEnabled(true)
+
+              When("The user is authenticated and authorised")
+              AuthStub.stubResponse(OK, mtdVatAuthResponse)
+
+              And("The customer-details call is successful")
+              VatSubscriptionStub.stubResponse("customer-details", OK, Json.obj())
+
+              And("The POST to NRS is successful")
+              VatReturnsStub.stubResponse(nrsSubmissionUri)(BAD_REQUEST, Json.obj())
+
+              val response: WSResponse = request(fullSessionValues)
+
+              Then("The response should be 500")
+              response.status shouldBe INTERNAL_SERVER_ERROR
+            }
+          }
+
+          "NRS returns an error other than a BAD_REQUEST and the backend submission returns 200" should {
+
+            "redirect to confirmation page" in {
+              appConfig.features.nrsSubmissionEnabled(true)
+
+              When("The user is authenticated and authorised")
+              AuthStub.stubResponse(OK, mtdVatAuthResponse)
+
+              And("The customer-details call is successful")
+              VatSubscriptionStub.stubResponse("customer-details", OK, Json.obj())
+
+              And("The POST to NRS is successful")
+              VatReturnsStub.stubResponse(nrsSubmissionUri)(INTERNAL_SERVER_ERROR, Json.obj())
+
+              And("The POST to vat-returns is successful")
+              VatReturnsStub.stubResponse(vatReturnUri("999999999"))(OK, Json.obj("formBundleNumber" -> "12345"))
+
+              val response: WSResponse = request(fullSessionValues)
+
+              And("The backend submission was made with the correct nine box value mappings and headers")
+              VatReturnsStub.verifyVatReturnSubmission("999999999", postRequestJsonBody)
+
+              Then("The response should be 303")
+              response.status shouldBe SEE_OTHER
+
+              And("The redirect location is correct")
+              response.header("Location") shouldBe Some(controllers.routes.ConfirmationController.show().url)
+            }
+
           }
         }
       }

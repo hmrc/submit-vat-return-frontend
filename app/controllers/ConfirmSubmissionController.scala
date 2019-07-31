@@ -24,10 +24,13 @@ import audit.models.SubmitVatReturnAuditModel
 import audit.models.journey.{FailureAuditModel, StartAuditModel, SuccessAuditModel}
 import common.SessionKeys
 import config.{AppConfig, ErrorHandler}
+import connectors.httpParsers.ResponseHttpParsers.HttpGetResult
 import controllers.predicates.{AuthPredicate, MandationStatusPredicate}
 import javax.inject.{Inject, Singleton}
 import models.auth.User
 import models.nrs.{IdentityData, IdentityLoginTimes}
+import models.errors.BadRequestError
+import models.nrs.SuccessModel
 import models.vatReturnSubmission.SubmissionModel
 import models.{ConfirmSubmissionViewModel, SubmitVatReturnModel}
 import play.api.Logger
@@ -89,8 +92,14 @@ class ConfirmSubmissionController @Inject()(val messagesApi: MessagesApi,
         case Some(data) =>
           Try(Json.parse(data).as[SubmitVatReturnModel]) match {
             case Success(model) =>
-              if (dateService.dateHasPassed(model.end)) {
-                submitVatReturn(periodKey, model)
+              if(dateService.dateHasPassed(model.end)) {
+
+                if(appConfig.features.nrsSubmissionEnabled()){
+                  submitToNrs(periodKey, model)
+                } else {
+                  submitVatReturn(periodKey, model)
+                }
+
               } else {
                 Logger.debug(s"[ConfirmSubmissionController][submit] Obligation end date for period $periodKey has not yet passed.")
                 Future.successful(errorHandler.showBadRequestError)
@@ -148,13 +157,22 @@ class ConfirmSubmissionController @Inject()(val messagesApi: MessagesApi,
                              sessionData: SubmitVatReturnModel)(implicit user: User[A]): Future[Result] = {
     val pageHtml: Future[Html] = renderConfirmSubmissionView(periodKey, sessionData)
 
-    pageHtml map { html =>
-      val htmlPayload = HashUtil.encode(html.body)
-      val sha256Checksum = HashUtil.getHash(html.body)
-
-      //TODO: Call NRS service (BTAT-6419)
-      Ok
-    }
+    for {
+      html <- pageHtml
+      htmlPayload = HashUtil.encode(html.body)
+      sha256Checksum = HashUtil.getHash(html.body)
+      identity <- buildIdentityData()
+      result <- identity match {
+        case Right(id) => vatReturnsService.nrsSubmission(periodKey, htmlPayload, sha256Checksum, id) flatMap {
+          case Left(error: BadRequestError) =>
+            Logger.debug(s"[ConfirmSubmissionController][submitToNRS] - NRS returned BAD_REQUEST: $error")
+            Logger.warn("[ConfirmSubmissionController][submitToNRS] - NRS returned BAD_REQUEST")
+            Future.successful(errorHandler.showInternalServerError)
+          case _ => submitVatReturn(periodKey, sessionData)
+        }
+        case Left(error) => Future.successful(error)
+      }
+    } yield result
   }
 
   private val authRetrievals = Retrievals.affinityGroup and Retrievals.internalId and
