@@ -74,7 +74,7 @@ class ReceiptDataHelper @Inject()(
     }
 
     Seq(Answers(
-      "Nine box submission",
+      messages("confirmation_view.title"),
       answerSeq
     ))
   }

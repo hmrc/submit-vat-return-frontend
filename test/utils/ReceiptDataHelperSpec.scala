@@ -26,7 +26,6 @@ import models.nrs._
 import models.{CustomerDetails, SubmitVatReturnModel}
 import play.api.mvc.{AnyContentAsEmpty, Cookie}
 import uk.gov.hmrc.http.HeaderCarrier
-import uk.gov.hmrc.play.views.helpers.MoneyPounds
 
 import scala.concurrent.{ExecutionContext, Future}
 
@@ -58,20 +57,18 @@ class ReceiptDataHelperSpec extends BaseSpec {
     }
 
     Seq(Answers(
-      "Nine box submission",
+      "Your VAT Return",
       Seq(
-        ("box1", box1Expected, 10.00),
-        ("box2", "VAT you owe on goods purchased from EC countries and brought into the UK", 25.55),
-        ("box3", "VAT you owe before deductions (this is the total of box 1 and 2)", 33.00),
-        ("box4", "VAT you have claimed back", 74.00),
-        ("box5", "Return total", 95.06),
-        ("box6", boxSixExpected, 1006.00),
-        ("box7", "Total value of purchases and other expenses, excluding VAT", 1006.66),
-        ("box8", "Total value of supplied goods to EC countries and related costs (excluding VAT)", 889.90),
-        ("box9", "Total value of goods purchased from EC countries and brought into the UK, as well as any related costs (excluding VAT)", 900.00)
-      ).map { case (questionId, question, answer) =>
-        Answer(questionId, question, Some("£" + MoneyPounds(answer, 2).quantity))
-      }))
+        ("box1", box1Expected, Some("£10.00"), None),
+        ("box2", "VAT you owe on goods purchased from EC countries and brought into the UK", Some("£25.55"), None),
+        ("box3", "VAT you owe before deductions (this is the total of box 1 and 2)", Some("£33.00"), None),
+        ("box4", "VAT you have claimed back", Some("£74.00"), None),
+        ("box5", "Return total", Some("£95.06"), None),
+        ("box6", boxSixExpected, Some("£1,006.00"), None),
+        ("box7", "Total value of purchases and other expenses, excluding VAT", Some("£1,006.66"), None),
+        ("box8", "Total value of supplied goods to EC countries and related costs (excluding VAT)", Some("£889.90"), None),
+        ("box9", "Total value of goods purchased from EC countries and brought into the UK, as well as any related costs (excluding VAT)", Some("£900.00"), None)
+      ).map((Answer.apply _).tupled(_))))
   }
 
   def expectedDeclaration(isAgent: Boolean): Declaration = {
