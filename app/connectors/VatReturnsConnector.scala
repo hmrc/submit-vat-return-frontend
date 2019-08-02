@@ -45,11 +45,11 @@ class VatReturnsConnector @Inject()(http: HttpClient,
     )
   }
 
-  def nrsSubmission(requestModel: RequestModel)
+  def nrsSubmission(requestModel: RequestModel, vrn: String)
                    (implicit hc: HeaderCarrier, ec: ExecutionContext): Future[HttpGetResult[SuccessModel]] = {
 
     import connectors.httpParsers.NrsSubmissionHttpParser._
 
-    http.POST[RequestModel, HttpGetResult[SuccessModel]](appConfig.submitNrsUrl, requestModel)
+    http.POST[RequestModel, HttpGetResult[SuccessModel]](appConfig.submitNrsUrl + s"/$vrn", requestModel)
   }
 }

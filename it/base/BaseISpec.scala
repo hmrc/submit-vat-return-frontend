@@ -66,7 +66,9 @@ trait BaseISpec extends WordSpec with WireMockHelper with Matchers with
 
   implicit val fakeRequest: FakeRequest[AnyContentAsEmpty.type] = FakeRequest()
 
-  def user: User[AnyContentAsEmpty.type] = new User[AnyContentAsEmpty.type]("999999999")
+  lazy val vrn = "999999999"
+
+  def user: User[AnyContentAsEmpty.type] = new User[AnyContentAsEmpty.type](vrn)
 
   override def beforeAll(): Unit = {
     super.beforeAll()

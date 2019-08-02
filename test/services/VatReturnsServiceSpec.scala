@@ -92,8 +92,8 @@ class VatReturnsServiceSpec extends BaseSpec {
 
       "return a SuccessModel" in {
 
-        (mockConnector.nrsSubmission(_: RequestModel)(_: HeaderCarrier, _: ExecutionContext))
-          .expects(*, *, *)
+        (mockConnector.nrsSubmission(_: RequestModel, _: String)(_: HeaderCarrier, _: ExecutionContext))
+          .expects(*, *, *, *)
           .returning(Future.successful(expectedResult))
 
         val result: HttpGetResult[SuccessModel] = await(service.nrsSubmission("18AA", "payload", "checksum", testIdentityModel)(hc, ec,request))
@@ -108,8 +108,8 @@ class VatReturnsServiceSpec extends BaseSpec {
 
       "return a HttpError" in {
 
-        (mockConnector.nrsSubmission(_: RequestModel)(_: HeaderCarrier, _: ExecutionContext))
-          .expects(*, *, *)
+        (mockConnector.nrsSubmission(_: RequestModel, _: String)(_: HeaderCarrier, _: ExecutionContext))
+          .expects(*, *, *, *)
           .returning(Future.successful(expectedResult))
 
         val result: HttpGetResult[SuccessModel] = await(service.nrsSubmission("18AA", "payload", "checksum", testIdentityModel)(hc, ec, request))

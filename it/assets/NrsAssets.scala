@@ -23,8 +23,6 @@ trait NrsAssets extends BaseISpec {
   lazy val businessId = "vat"
   lazy val notableEvent = "vat-return"
   lazy val payloadContentType = "text\\/html"
-  lazy val timestamp = "\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}:\\d{2}\\.\\d{3}Z"
-  lazy val confidenceLevel = 0
 
   lazy val jaason: String =
     """\{"payload":".*?","metadata":\{"businessId":"""" + businessId + """","notableEvent":"""" + notableEvent +

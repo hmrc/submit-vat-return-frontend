@@ -25,7 +25,7 @@ import play.api.libs.json.{JsObject, JsValue, Json}
 object VatReturnsStub extends BaseISpec {
 
   def vatReturnUri(vrn: String): String = s"/vat-returns/returns/vrn/$vrn"
-  val nrsSubmissionUri: String = "/vat-returns/nrs/submission"
+  val nrsSubmissionUri: String = "/vat-returns/nrs/submission/" + vrn
 
   def stubResponse(uri: String)(status: Int, body: JsObject): StubMapping = {
     stubPost(uri, Json.stringify(body), status)

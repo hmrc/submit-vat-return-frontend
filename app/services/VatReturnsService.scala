@@ -63,7 +63,7 @@ class VatReturnsService @Inject()(vatReturnsConnector: VatReturnsConnector) {
       metadata = metaData
     )
 
-    vatReturnsConnector.nrsSubmission(submissionModel)
+    vatReturnsConnector.nrsSubmission(submissionModel, user.vrn)
   }
 
   private[services] def searchKeys(vrn: String, periodKey: String): SearchKeys = SearchKeys(
