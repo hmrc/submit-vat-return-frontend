@@ -19,16 +19,23 @@ package pages
 import java.time.LocalDate
 
 import base.BaseISpec
+import models.{ConfirmSubmissionViewModel, CustomerDetails, SubmitVatReturnModel}
 import org.scalatest.GivenWhenThen
 import play.api.http.Status
 import play.api.http.Status._
-import play.api.libs.json.{JsValue, Json}
+import play.api.libs.json.{JsObject, JsValue, Json}
 import play.api.libs.ws.WSResponse
+import play.api.test.FakeRequest
+import play.twirl.api.Html
 import stubs.AuthStub._
 import stubs.{AuthStub, VatReturnsStub, VatSubscriptionStub}
 import stubs.VatReturnsStub._
+import utils.HashUtil
+import assets.NrsAssets
 
-class ConfirmSubmissionPageSpec extends BaseISpec with GivenWhenThen {
+import scala.concurrent.Future
+
+class ConfirmSubmissionPageSpec extends NrsAssets with GivenWhenThen {
 
   "Calling /:periodKey/confirm-submission" when {
 
@@ -213,8 +220,13 @@ class ConfirmSubmissionPageSpec extends BaseISpec with GivenWhenThen {
               When("The user is authenticated and authorised")
               AuthStub.stubResponse(OK, mtdVatAuthResponse)
 
+              val custDeets: JsObject = Json.obj(
+                "firstName" -> "Duanne",
+                "lastName" -> "Kilometers"
+              )
+
               And("The customer-details call is successful")
-              VatSubscriptionStub.stubResponse("customer-details", OK, Json.obj())
+              VatSubscriptionStub.stubResponse("customer-details", OK, custDeets)
 
               And("The POST to NRS is successful")
               VatReturnsStub.stubResponse(nrsSubmissionUri)(ACCEPTED, Json.obj("nrSubmissionId" -> "everything is awesome"))
@@ -223,6 +235,9 @@ class ConfirmSubmissionPageSpec extends BaseISpec with GivenWhenThen {
               VatReturnsStub.stubResponse(vatReturnUri("999999999"))(OK, Json.obj("formBundleNumber" -> "12345"))
 
               val response: WSResponse = request(fullSessionValues)
+
+              And("The NRS submission was made with the correct request body")
+              VatReturnsStub.nrsRegexMatcher(jaason)
 
               And("The backend submission was made with the correct nine box value mappings and headers")
               VatReturnsStub.verifyVatReturnSubmission("999999999", postRequestJsonBody)
@@ -285,7 +300,6 @@ class ConfirmSubmissionPageSpec extends BaseISpec with GivenWhenThen {
               And("The redirect location is correct")
               response.header("Location") shouldBe Some(controllers.routes.ConfirmationController.show().url)
             }
-
           }
         }
       }

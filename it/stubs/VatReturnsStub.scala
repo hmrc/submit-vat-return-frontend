@@ -18,7 +18,7 @@ package stubs
 
 import base.BaseISpec
 import com.github.tomakehurst.wiremock.client.WireMock.equalTo
-import com.github.tomakehurst.wiremock.client.WireMock.{equalToJson, postRequestedFor, urlEqualTo, verify}
+import com.github.tomakehurst.wiremock.client.WireMock.{equalToJson, postRequestedFor, urlEqualTo, verify, matching}
 import com.github.tomakehurst.wiremock.stubbing.StubMapping
 import play.api.libs.json.{JsObject, JsValue, Json}
 
@@ -41,4 +41,9 @@ object VatReturnsStub extends BaseISpec {
     verify(postRequestedFor(urlEqualTo(nrsSubmissionUri))
       .withRequestBody(equalToJson(body.toString()))
     )
+
+  def nrsRegexMatcher(body: String): Unit = {
+    verify(postRequestedFor(urlEqualTo(nrsSubmissionUri))
+      .withRequestBody(matching(body)))
+  }
 }
