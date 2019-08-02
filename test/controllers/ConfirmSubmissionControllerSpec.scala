@@ -392,52 +392,48 @@ class ConfirmSubmissionControllerSpec extends BaseSpec
     }
   }
 
-  "ConfirmSubmissionController .handleITMPData" when {
+  "ConfirmSubmissionController .handleITMPName" should {
 
-    val itmpName = ItmpName(Some("First"), Some("Middle"), Some("Last"))
-    val emptyItmpName = ItmpName(None, None, None)
+    "return ITMP Name when one is available" in {
 
-    val itmpAddress = ItmpAddress(Some("Line 1"), None, None, None, None, Some("Post code"), Some("United Kingdom"), Some("UK"))
-    val emptyItmpAddress = ItmpAddress(None, None, None, None, None, None, None, None)
+      val itmpName = ItmpName(Some("First"), Some("Middle"), Some("Last"))
 
+      val expectedResult: ItmpName = itmpName
 
-    "an ITMP Name and Address is available" in {
-
-      val expectedResult: (ItmpName, ItmpAddress) = (itmpName, itmpAddress)
-
-      val result: (ItmpName, ItmpAddress) = TestConfirmSubmissionController.handleITMPData(Some(itmpName), Some(itmpAddress))
+      val result: ItmpName = TestConfirmSubmissionController.handleItmpName(Some(itmpName))
 
       result shouldBe expectedResult
 
     }
 
-    "an ITMP Name is available" in {
+    "return an empty ITMP Name when none is available" in {
 
-      val expectedResult: (ItmpName, ItmpAddress) = (itmpName, emptyItmpAddress)
+      val result: ItmpName = TestConfirmSubmissionController.handleItmpName(None)
 
-      val result: (ItmpName, ItmpAddress) = TestConfirmSubmissionController.handleITMPData(Some(itmpName), None)
+      result shouldBe ItmpName(None, None, None)
+
+    }
+  }
+
+  "ConfirmSubmissionController .handleITMPAddress" should {
+
+    "return an ITMP Address when one is available" in {
+
+      val itmpAddress = ItmpAddress(Some("Line 1"), None, None, None, None, Some("Post code"), Some("United Kingdom"), Some("UK"))
+
+      val expectedResult: ItmpAddress = itmpAddress
+
+      val result: ItmpAddress = TestConfirmSubmissionController.handleItmpAddress(Some(itmpAddress))
 
       result shouldBe expectedResult
 
     }
 
-    "an ITMP Address is available" in {
+    "return an empty ITMP Address when none is available" in {
 
-      val expectedResult: (ItmpName, ItmpAddress) = (emptyItmpName, itmpAddress)
+      val result: ItmpAddress = TestConfirmSubmissionController.handleItmpAddress(None)
 
-      val result: (ItmpName, ItmpAddress) = TestConfirmSubmissionController.handleITMPData(None, Some(itmpAddress))
-
-      result shouldBe expectedResult
-
-    }
-
-    "none of the information is available" in {
-
-      val expectedResult: (ItmpName, ItmpAddress) = (emptyItmpName, emptyItmpAddress)
-
-      val result: (ItmpName, ItmpAddress) = TestConfirmSubmissionController.handleITMPData(None, None)
-
-      result shouldBe expectedResult
+      result shouldBe ItmpAddress(None, None, None, None, None, None, None, None)
 
     }
   }

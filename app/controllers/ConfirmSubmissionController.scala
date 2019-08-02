@@ -173,13 +173,12 @@ class ConfirmSubmissionController @Inject()(val messagesApi: MessagesApi,
         itmpDateOfBirth ~ itmpAddress ~
         credentialStrength ~ loginTimes =>
 
-        val itmpData = handleITMPData(itmpName, itmpAddress)
         val identityData = IdentityData(internalId, externalId, agentCode,
           credentials, confidenceLevel, nino, saUtr, name, dateOfBirth,
           email, agentInfo, groupIdentifier = groupId,
           credentialRole, mdtpInformation = mdtpInfo,
-          itmpName = itmpData._1, itmpDateOfBirth,
-          itmpAddress = itmpData._2, affinityGroup, credentialStrength,
+          itmpName = handleItmpName(itmpName), itmpDateOfBirth,
+          itmpAddress = handleItmpAddress(itmpAddress), affinityGroup, credentialStrength,
           loginTimes = IdentityLoginTimes(
             LocalDateTime.ofInstant(Instant.parse(loginTimes.currentLogin.toInstant.toString), ZoneId.of("UTC")),
             loginTimes.previousLogin.map(dateTime => LocalDateTime.ofInstant(Instant.parse(dateTime.toInstant.toString), ZoneId.of("UTC")))
@@ -191,24 +190,18 @@ class ConfirmSubmissionController @Inject()(val messagesApi: MessagesApi,
       case _ =>
         Logger.warn("[ConfirmSubmission][buildIdentityData] - Did not receive minimum data from Auth required for NRS Submission")
         Future.successful(Left(errorHandler.showInternalServerError))
-    }
-  } recover {
-    case exception: AuthorisationException =>
-      Logger.warn(s"[ConfirmSubmissionController][buildIdentityData]" +
-        s" Client authorisation failed due to internal server error. auth-client exception was $exception")
-      Left(errorHandler.showInternalServerError)
-  }
 
-  private[controllers] def handleITMPData(itmpName: Option[ItmpName], itmpAddress: Option[ItmpAddress]): (ItmpName, ItmpAddress) = {
 
-    val emptyItmpName = ItmpName(None, None, None)
-    val emptyItmpAddress = ItmpAddress(None, None, None, None, None, None, None, None)
-
-    (itmpName, itmpAddress) match {
-      case (Some(nme), Some(add)) => (nme, add)
-      case (Some(nme), None) => (nme, emptyItmpAddress)
-      case (None, Some(add)) => (emptyItmpName, add)
-      case (_, _) => (emptyItmpName, emptyItmpAddress)
+    } recover {
+      case exception: AuthorisationException =>
+        Logger.warn(s"[ConfirmSubmissionController][buildIdentityData]" +
+          s" Client authorisation failed due to internal server error. auth-client exception was $exception")
+        Left(errorHandler.showInternalServerError)
     }
   }
+
+  private[controllers] def handleItmpName(itmpName: Option[ItmpName]): ItmpName = itmpName.fold(ItmpName(None, None, None))(name => name)
+  private[controllers] def handleItmpAddress(itmpAddress: Option[ItmpAddress]): ItmpAddress =
+    itmpAddress.fold(ItmpAddress(None, None, None, None, None, None, None, None))(address => address)
+
 }
