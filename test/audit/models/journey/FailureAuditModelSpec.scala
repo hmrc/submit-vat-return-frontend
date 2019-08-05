@@ -50,7 +50,7 @@ class FailureAuditModelSpec extends BaseSpec {
 
     "user is an agent" should {
 
-      val model = StartAuditModel("123456789", "19AA", Some("XARN1234567"))
+      val model = FailureAuditModel("123456789", "19AA", Some("XARN1234567"), Status.INTERNAL_SERVER_ERROR)
 
       "have the correct detail for the audit event" in {
         model.detail shouldBe Json.obj(

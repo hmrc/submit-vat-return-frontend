@@ -48,7 +48,7 @@ class SuccessAuditModelSpec extends BaseSpec {
 
     "user is an agent" should {
 
-      val model = StartAuditModel("123456789", "19AA", Some("XARN1234567"))
+      val model = SuccessAuditModel("123456789", "19AA", Some("XARN1234567"))
 
       "have the correct detail for the audit event" in {
         model.detail shouldBe Json.obj(

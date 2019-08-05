@@ -38,7 +38,7 @@ import forms.SubmitVatReturnForm._
 import java.net.URLDecoder
 
 import audit.AuditService
-import audit.models.SubmitVatReturnAuditModel
+import audit.models.journey.StartAuditModel
 
 @Singleton
 class SubmitFormController @Inject()(val messagesApi: MessagesApi,
@@ -46,17 +46,17 @@ class SubmitFormController @Inject()(val messagesApi: MessagesApi,
                                      val vatObligationsService: VatObligationsService,
                                      val mandationStatusCheck: MandationStatusPredicate,
                                      val errorHandler: ErrorHandler,
-//                                     val auditService: AuditService,
+                                     val auditService: AuditService,
                                      authPredicate: AuthPredicate,
                                      implicit val appConfig: AppConfig,
                                      val dateService: DateService) extends FrontendController with I18nSupport {
 
   def show(periodKey: String): Action[AnyContent] = (authPredicate andThen mandationStatusCheck).async { implicit user =>
 
-//    auditService.audit(
-//      Journey(user, sessionData, periodKey),
-//      Some(controllers.routes.ConfirmSubmissionController.submit(periodKey).url)
-//    )
+    auditService.audit(
+      StartAuditModel(user.vrn, periodKey, user.arn),
+      Some(controllers.routes.SubmitFormController.show(periodKey).url)
+    )
 
     user.session.get(SessionKeys.returnData) match {
       case Some(model) => renderViewWithSessionData(periodKey, model)
