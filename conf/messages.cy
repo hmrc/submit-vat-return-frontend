@@ -17,7 +17,7 @@ error.summary.title = Mae problem wedi codi
 banner.newService = Gwasanaeth newydd yw hwn – bydd eich
 banner.feedback = adborth
 banner.feedbackImprove = yn ein helpu i’w wella.
-banner.phaseName = Welsh
+banner.phaseName = BETA
 
 session_expired.title = Mae’ch sesiwn wedi’i therfynu
 session_expired.heading = Mae’ch sesiwn wedi’i therfynu
@@ -98,7 +98,7 @@ breadcrumbs.yourVatDetails = Eich manylion TAW
 breadcrumbs.submitVatReturn = Cyflwyno Ffurflen TAW
 breadcrumbs.submitReturnForDate = Cyflwyno Ffurflen TAW {0}
 
-incorrect_mandation.title = Submit VAT Return
+incorrect_mandation.title = Cyflwyno Ffurflen TAW
 incorrect_mandation.heading = Mae’r busnes yn cyflwyno Ffurflenni TAW drwy ddefnyddio’r cynllun Troi Treth yn Ddigidol
 incorrect_mandation.paragraph = Mae’r busnes wedi cofrestru ar gyfer y gwasanaeth Troi Treth yn Ddigidol.
 incorrect_mandation.agent.text = Mae’n rhaid i chi gyflwyno Ffurflenni TAW eich cleient i CThEM gan ddefnyddio meddalwedd gyfrifyddu sy’n cydweddu.
