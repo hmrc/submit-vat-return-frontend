@@ -16,32 +16,44 @@
 
 package models.nrs
 
-import java.time.LocalDate
 
-import models.nrs.identityData._
-import play.api.libs.json.{Json, OFormat}
+import org.joda.time.LocalDate
+import play.api.libs.json.{Format, Json, OFormat}
+import uk.gov.hmrc.auth.core.{AffinityGroup, ConfidenceLevel, CredentialRole}
+import uk.gov.hmrc.auth.core.retrieve._
+import uk.gov.hmrc.http.controllers.RestFormats
 
-case class IdentityData(internalId: Option[String] = None,
-                        externalId: Option[String] = None,
-                        agentCode: Option[String] = None,
-                        credentials: IdentityCredentials,
-                        confidenceLevel: Int,
-                        nino: Option[String] = None,
-                        saUtr: Option[String] = None,
-                        name: IdentityName,
-                        dateOfBirth: Option[LocalDate] = None,
-                        email: Option[String] = None,
-                        agentInformation: IdentityAgentInformation,
-                        groupIdentifier: Option[String] = None,
-                        credentialRole: Option[String] = None,
-                        mdtpInformation: Option[IdentityMdtpInformation] = None,
-                        itmpName: IdentityItmpName,
-                        itmpDateOfBirth: Option[LocalDate] = None,
-                        itmpAddress: IdentityItmpAddress,
-                        affinityGroup: Option[String] = None,
-                        credentialStrength: Option[String] = None,
-                        loginTimes: IdentityLoginTimes)
+case class IdentityData(
+                         internalId: Option[String] = None,
+                         externalId: Option[String] = None,
+                         agentCode: Option[String] = None,
+                         credentials: Credentials,
+                         confidenceLevel: ConfidenceLevel,
+                         nino: Option[String] = None,
+                         saUtr: Option[String] = None,
+                         name: Name,
+                         dateOfBirth: Option[LocalDate] = None,
+                         email: Option[String] = None,
+                         agentInformation: AgentInformation,
+                         groupIdentifier: Option[String] = None,
+                         credentialRole: Option[CredentialRole] = None,
+                         mdtpInformation: Option[MdtpInformation] = None,
+                         itmpName: ItmpName,
+                         itmpDateOfBirth: Option[LocalDate] = None,
+                         itmpAddress: ItmpAddress,
+                         affinityGroup: Option[AffinityGroup] = None,
+                         credentialStrength: Option[String] = None,
+                         loginTimes: IdentityLoginTimes
+                       )
 
 object IdentityData {
+  implicit val localDateFormat: Format[LocalDate] = RestFormats.localDateFormats
+  implicit val credFormat: OFormat[Credentials] = Json.format[Credentials]
+  implicit val nameFormat: OFormat[Name] = Json.format[Name]
+  implicit val agentInfoFormat: OFormat[AgentInformation] = Json.format[AgentInformation]
+  implicit val mdtpInfoFormat: OFormat[MdtpInformation] = Json.format[MdtpInformation]
+  implicit val itmpNameFormat: OFormat[ItmpName] = Json.format[ItmpName]
+  implicit val itmpAddressFormat: OFormat[ItmpAddress] = Json.format[ItmpAddress]
+  implicit val loginTimes: OFormat[LoginTimes] = Json.format[LoginTimes]
   implicit val formats: OFormat[IdentityData] = Json.format[IdentityData]
 }

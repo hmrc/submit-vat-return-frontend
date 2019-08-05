@@ -14,15 +14,16 @@
  * limitations under the License.
  */
 
-package models.nrs.identityData
+package models.nrs
 
 import java.time.format.DateTimeFormatter
 import java.time.{Instant, LocalDateTime, ZoneId}
-
 import play.api.libs.json._
 
-case class IdentityLoginTimes(currentLogin: LocalDateTime,
-                              previousLogin: LocalDateTime)
+case class IdentityLoginTimes(
+                               currentLogin: LocalDateTime,
+                               previousLogin: Option[LocalDateTime]
+                             )
 
 object IdentityLoginTimes {
   private val zoneId = ZoneId.of("UTC")
@@ -38,8 +39,13 @@ object IdentityLoginTimes {
 
   implicit val writes: Writes[IdentityLoginTimes] = Writes[IdentityLoginTimes] { model =>
     Json.obj(
-      "currentLogin" -> parseDatesAsString(model.currentLogin),
-      "previousLogin" -> parseDatesAsString(model.previousLogin)
+      "currentLogin" -> parseDatesAsString(model.currentLogin)
+    ) ++ model.previousLogin.fold(
+      Json.obj()
+    )(
+      time => Json.obj(
+        "previousLogin" -> parseDatesAsString(time)
+      )
     )
   }
 
@@ -48,12 +54,11 @@ object IdentityLoginTimes {
 
   implicit val reads: Reads[IdentityLoginTimes] = for {
     currentLoginString <- currentLoginPath.read[String]
-    previousLoginString <- previousLoginPath.read[String]
+    previousLoginString <- previousLoginPath.readNullable[String]
   } yield {
     val currentLogin = LocalDateTime.ofInstant(Instant.parse(currentLoginString), zoneId)
-    val previousLogin = LocalDateTime.ofInstant(Instant.parse(previousLoginString), zoneId)
+    val previousLogin = previousLoginString.map(x => LocalDateTime.ofInstant(Instant.parse(x), zoneId))
 
     IdentityLoginTimes(currentLogin, previousLogin)
   }
-
 }

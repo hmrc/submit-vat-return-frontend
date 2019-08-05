@@ -25,6 +25,7 @@ import models.nrs.{RequestModel, SearchKeys, SuccessModel}
 import models.vatReturnSubmission.{SubmissionModel, SubmissionSuccessModel}
 import play.api.mvc.AnyContentAsEmpty
 import play.api.test.FakeRequest
+import assets.NrsTestData.IdentityDataTestData.{correctModel => testIdentityModel}
 import uk.gov.hmrc.http.HeaderCarrier
 
 import scala.concurrent.{ExecutionContext, Future}
@@ -95,8 +96,7 @@ class VatReturnsServiceSpec extends BaseSpec {
           .expects(*, *, *)
           .returning(Future.successful(expectedResult))
 
-
-        val result: HttpGetResult[SuccessModel] = await(service.nrsSubmission("18AA", "payload", "checksum")(hc, ec,request))
+        val result: HttpGetResult[SuccessModel] = await(service.nrsSubmission("18AA", "payload", "checksum", testIdentityModel)(hc, ec,request))
 
         result shouldBe expectedResult
       }
@@ -112,7 +112,7 @@ class VatReturnsServiceSpec extends BaseSpec {
           .expects(*, *, *)
           .returning(Future.successful(expectedResult))
 
-        val result: HttpGetResult[SuccessModel] = await(service.nrsSubmission("18AA", "payload", "checksum")(hc, ec, request))
+        val result: HttpGetResult[SuccessModel] = await(service.nrsSubmission("18AA", "payload", "checksum", testIdentityModel)(hc, ec, request))
 
         result shouldBe expectedResult
       }

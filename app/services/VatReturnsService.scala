@@ -23,7 +23,6 @@ import connectors.httpParsers.ResponseHttpParsers.HttpGetResult
 import javax.inject.{Inject, Singleton}
 import models.auth.User
 import models.nrs._
-import models.nrs.identityData._
 import models.vatReturnSubmission.{SubmissionModel, SubmissionSuccessModel}
 import uk.gov.hmrc.http.HeaderCarrier
 
@@ -37,37 +36,22 @@ class VatReturnsService @Inject()(vatReturnsConnector: VatReturnsConnector) {
     vatReturnsConnector.submitVatReturn(vrn, model)
   }
 
-
   def nrsSubmission[A](periodKey: String,
                        payload: String,
-                       payloadCheckSum: String)
+                       payloadCheckSum: String,
+                       identityData: IdentityData)
                    (implicit hc: HeaderCarrier, ec: ExecutionContext, user: User[A]): Future[HttpGetResult[SuccessModel]] = {
 
-
-    //TODO: BTAT-6413
-    val identityDataModel = IdentityData(
-      credentials = IdentityCredentials("", ""),
-      confidenceLevel = 0,
-      name = IdentityName("", ""),
-      agentInformation =  IdentityAgentInformation("", "", ""),
-      itmpName = IdentityItmpName("", "", ""),
-      itmpAddress = IdentityItmpAddress("", "", "", ""),
-      loginTimes = IdentityLoginTimes(LocalDateTime.now(), LocalDateTime.now())
-    )
-
-    //TODO: BTAT-6416
     val receiptDataModel = ReceiptData(
       EN,
       Seq(),
       Declaration("", "", None, declarationConsent = false)
     )
 
-
-    //TODO: BTAT-6417
     val metaData = Metadata(
       payloadSha256Checksum = payloadCheckSum,
       userSubmissionTimestamp = LocalDateTime.now(ZoneOffset.UTC),
-      identityData = identityDataModel,
+      identityData = identityData,
       searchKeys = searchKeys(user.vrn, periodKey),
       userAuthToken = user.headers.get("Authorization").get,
       headerData = user.headers.toMap.map { h => h._1 -> h._2.head },
