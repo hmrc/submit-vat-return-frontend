@@ -22,7 +22,7 @@ import play.api.libs.json.{Format, JsValue, Json}
 case class FailureAuditModel(vrn: String,
                              periodKey: String,
                              agentReferenceNumber: Option[String],
-                             errorCode: Int) extends ExtendedAuditModel {
+                             errorMessage: String) extends ExtendedAuditModel {
 
   override val transactionName: String = "journey-failure"
   override val auditType: String = "SubmitVATReturn"

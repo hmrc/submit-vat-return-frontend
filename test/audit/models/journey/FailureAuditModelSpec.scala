@@ -29,7 +29,7 @@ class FailureAuditModelSpec extends BaseSpec {
 
     "user is not an agent" should {
 
-      val model = FailureAuditModel("123456789", "19AA", None, Status.INTERNAL_SERVER_ERROR)
+      val model = FailureAuditModel("123456789", "19AA", None, "500")
 
       s"have the correct transaction name of '$transactionName'" in {
         model.transactionName shouldBe transactionName
@@ -43,21 +43,21 @@ class FailureAuditModelSpec extends BaseSpec {
         model.detail shouldBe Json.obj(
           "vrn" -> "123456789",
           "periodKey" -> "19AA",
-          "errorCode" -> 500
+          "errorMessage" -> "500"
         )
       }
     }
 
     "user is an agent" should {
 
-      val model = FailureAuditModel("123456789", "19AA", Some("XARN1234567"), Status.INTERNAL_SERVER_ERROR)
+      val model = FailureAuditModel("123456789", "19AA", Some("XARN1234567"), "500")
 
       "have the correct detail for the audit event" in {
         model.detail shouldBe Json.obj(
           "vrn" -> "123456789",
           "periodKey" -> "19AA",
           "agentReferenceNumber" -> "XARN1234567",
-          "errorCode" -> 500
+          "errorMessage" -> "500"
         )
       }
     }

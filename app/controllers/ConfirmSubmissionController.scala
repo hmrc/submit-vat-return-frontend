@@ -21,6 +21,7 @@ import java.time.{Instant, LocalDateTime, ZoneId}
 
 import audit.AuditService
 import audit.models.SubmitVatReturnAuditModel
+import audit.models.journey.{FailureAuditModel, StartAuditModel, SuccessAuditModel}
 import common.SessionKeys
 import config.{AppConfig, ErrorHandler}
 import controllers.predicates.{AuthPredicate, MandationStatusPredicate}
@@ -128,8 +129,16 @@ class ConfirmSubmissionController @Inject()(val messagesApi: MessagesApi,
           SubmitVatReturnAuditModel(user, sessionData, periodKey),
           Some(controllers.routes.ConfirmSubmissionController.submit(periodKey).url)
         )
+        auditService.audit(
+          SuccessAuditModel(user.vrn, periodKey, user.arn),
+          Some(controllers.routes.ConfirmSubmissionController.submit(periodKey).url)
+        )
         Redirect(controllers.routes.ConfirmationController.show().url).removingFromSession(SessionKeys.returnData)
       case Left(error) =>
+        auditService.audit(
+          FailureAuditModel(user.vrn, periodKey, user.arn, error.message),
+          Some(controllers.routes.ConfirmSubmissionController.submit(periodKey).url)
+        )
         Logger.warn(s"[ConfirmSubmissionController][submit] Error returned from vat-returns service: $error")
         InternalServerError(views.html.errors.submission_error())
     }
