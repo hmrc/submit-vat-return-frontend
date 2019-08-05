@@ -37,17 +37,26 @@ import uk.gov.hmrc.play.bootstrap.controller.FrontendController
 import forms.SubmitVatReturnForm._
 import java.net.URLDecoder
 
+import audit.AuditService
+import audit.models.SubmitVatReturnAuditModel
+
 @Singleton
 class SubmitFormController @Inject()(val messagesApi: MessagesApi,
                                      val vatSubscriptionService: VatSubscriptionService,
                                      val vatObligationsService: VatObligationsService,
                                      val mandationStatusCheck: MandationStatusPredicate,
                                      val errorHandler: ErrorHandler,
+//                                     val auditService: AuditService,
                                      authPredicate: AuthPredicate,
                                      implicit val appConfig: AppConfig,
                                      val dateService: DateService) extends FrontendController with I18nSupport {
 
   def show(periodKey: String): Action[AnyContent] = (authPredicate andThen mandationStatusCheck).async { implicit user =>
+
+//    auditService.audit(
+//      Journey(user, sessionData, periodKey),
+//      Some(controllers.routes.ConfirmSubmissionController.submit(periodKey).url)
+//    )
 
     user.session.get(SessionKeys.returnData) match {
       case Some(model) => renderViewWithSessionData(periodKey, model)
