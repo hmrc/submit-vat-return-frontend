@@ -24,13 +24,11 @@ import audit.models.SubmitVatReturnAuditModel
 import audit.models.journey.{FailureAuditModel, StartAuditModel, SuccessAuditModel}
 import common.SessionKeys
 import config.{AppConfig, ErrorHandler}
-import connectors.httpParsers.ResponseHttpParsers.HttpGetResult
 import controllers.predicates.{AuthPredicate, MandationStatusPredicate}
 import javax.inject.{Inject, Singleton}
 import models.auth.User
-import models.nrs.{IdentityData, IdentityLoginTimes}
 import models.errors.BadRequestError
-import models.nrs.SuccessModel
+import models.nrs.{IdentityData, IdentityLoginTimes}
 import models.vatReturnSubmission.SubmissionModel
 import models.{ConfirmSubmissionViewModel, SubmitVatReturnModel}
 import play.api.Logger
@@ -170,7 +168,10 @@ class ConfirmSubmissionController @Inject()(val messagesApi: MessagesApi,
             Future.successful(errorHandler.showInternalServerError)
           case _ => submitVatReturn(periodKey, sessionData)
         }
-        case Left(error) => Future.successful(error)
+        case Left(error) =>
+          Logger.debug(s"[ConfirmSubmissionController][submitToNRS] - Error returned when retrieving identity data: $error")
+          Logger.warn("[ConfirmSubmissionController][submitToNRS] - Error returned when retrieving identity data")
+          Future.successful(errorHandler.showInternalServerError)
       }
     } yield result
   }
@@ -215,7 +216,8 @@ class ConfirmSubmissionController @Inject()(val messagesApi: MessagesApi,
         Future.successful(Right(identityData))
 
       case error =>
-        Logger.warn(s"[ConfirmSubmission][buildIdentityData] - Did not receive minimum data from Auth required for NRS Submission: $error")
+        Logger.debug(s"[ConfirmSubmission][buildIdentityData] - Did not receive minimum data from Auth required for NRS Submission: $error")
+        Logger.warn(s"[ConfirmSubmission][buildIdentityData] - Did not receive minimum data from Auth required for NRS Submission")
         Future.successful(Left(errorHandler.showInternalServerError))
 
 

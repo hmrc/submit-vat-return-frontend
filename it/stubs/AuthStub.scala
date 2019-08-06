@@ -19,7 +19,7 @@ package stubs
 import base.BaseISpec
 import com.github.tomakehurst.wiremock.stubbing.StubMapping
 import play.api.http.Status.OK
-import play.api.libs.json.{JsObject, JsValue, Json}
+import play.api.libs.json.{JsObject, Json}
 
 object AuthStub extends BaseISpec {
 
@@ -55,20 +55,21 @@ object AuthStub extends BaseISpec {
     )
   )
   
-  val stupidlyLongAuthResponse: JsObject = Json.obj(
-    "internalId" -> "someId",
+  val fullNRSAuthResponse: JsObject = Json.obj(
+    "affinityGroup" -> "Individual",
+    "internalId" -> "some-id",
     "externalId" -> "some-id",
     "agentCode" -> "TZRXXV",
-    "credentials" -> Json.obj(
+    "optionalCredentials" -> Json.obj(
       "providerId" -> "12345-credId",
       "providerType" -> "GovernmentGateway"
     ),
     "confidenceLevel" -> 200,
     "nino" -> "DH00475D",
     "saUtr" -> "Utr",
-    "name" -> Json.obj(
-      "name" -> "Duanne",
-      "lastName" -> "Kilometers"
+    "optionalName" -> Json.obj(
+      "name" -> "Test",
+      "lastName" -> "Name"
     ),
     "dateOfBirth" -> "1985-01-01",
     "email" ->"test@test.com",
@@ -83,19 +84,18 @@ object AuthStub extends BaseISpec {
       "deviceId"  -> "DeviceId",
       "sessionId" -> "SessionId"
     ),
-    "itmpName"  -> Json.obj(
+    "optionalItmpName"  -> Json.obj(
       "givenName" -> "test",
       "middleName" -> "test",
       "familyName" -> "test"
     ),
     "itmpDateOfBirth"  -> "1985-01-01",
-    "itmpAddress"  -> Json.obj(
+    "optionalItmpAddress"  -> Json.obj(
       "line1" -> "Line 1",
       "postCode" -> "NW94HD",
       "countryName" -> "United Kingdom",
       "countryCode" -> "UK"
     ),
-    "affinityGroup" -> "Individual",
     "credentialStrength" -> "strong",
     "loginTimes" -> Json.obj(
       "currentLogin" -> "2016-11-27T09:00:00.000Z",
