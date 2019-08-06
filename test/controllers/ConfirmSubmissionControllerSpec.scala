@@ -235,7 +235,7 @@ class ConfirmSubmissionControllerSpec extends BaseSpec
             }
 
             "show the Submission error page" in {
-              Jsoup.parse(bodyOf(result)).title() shouldBe SubmissionErrorMessages.title
+              Jsoup.parse(bodyOf(result)).title() shouldBe SubmissionErrorMessages.heading
             }
           }
         }
@@ -334,7 +334,7 @@ class ConfirmSubmissionControllerSpec extends BaseSpec
       }
 
       "render the submission error page" in {
-        Jsoup.parse(bodyOf(result)).title shouldBe "Submit return error"
+        Jsoup.parse(bodyOf(result)).title shouldBe "Sorry, there is a problem with the service"
       }
     }
 
@@ -351,7 +351,7 @@ class ConfirmSubmissionControllerSpec extends BaseSpec
       }
 
       "render the submission error page" in {
-        Jsoup.parse(bodyOf(result)).title shouldBe "Submit return error"
+        Jsoup.parse(bodyOf(result)).title shouldBe "Sorry, there is a problem with the service"
       }
     }
   }
@@ -410,7 +410,7 @@ class ConfirmSubmissionControllerSpec extends BaseSpec
         }
 
         "render the submission error page" in {
-          Jsoup.parse(bodyOf(result.left.get)).title shouldBe "Submit return error"
+          Jsoup.parse(bodyOf(result.left.get)).title shouldBe "Sorry, there is a problem with the service"
         }
       }
     }
@@ -426,9 +426,8 @@ class ConfirmSubmissionControllerSpec extends BaseSpec
         status(result.left.get) shouldBe 500
       }
 
-      //TODO: Update the submission error page title to be correct. This needs to match the heading of the page and should be prefixed with Error: (I think)
       "render the submission error page" in {
-        Jsoup.parse(bodyOf(result.left.get)).title shouldBe "Submit return error"
+        Jsoup.parse(bodyOf(result.left.get)).title shouldBe "Sorry, there is a problem with the service"
       }
     }
   }

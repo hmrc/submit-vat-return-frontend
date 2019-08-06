@@ -104,8 +104,8 @@ incorrect_mandation.heading = The business submits VAT Returns using Making Tax 
 incorrect_mandation.paragraph = The business has signed up to the Making Tax Digital service.
 incorrect_mandation.agent.text = You must submit your client’s VAT Returns to HMRC using compatible accounting software.
 incorrect_mandation.nonAgent.text = You must submit your VAT Returns to HMRC using compatible accounting software.
-incorrect_mandation_nonAgent.link = View your VAT Return deadlines
-incorrect_mandation_agent_client.link = View your client options
+incorrect_mandation.nonAgent.link = View your VAT Return deadlines
+incorrect_mandation.agent.client.link = View your client options
 
 submissionError.title = Submit return error
 submissionError.heading = Sorry, there is a problem with the service

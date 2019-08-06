@@ -28,7 +28,7 @@ import play.mvc.Http.Status
 import play.api.test.Helpers._
 import base.BaseSpec
 import play.api.test.FakeRequest
-import assets.messages.IncorrectMandationMessages
+import assets.messages.MtdMandationMessages
 
 class MandationStatusPredicateSpec extends BaseSpec with MockMandationPredicate {
 
@@ -64,7 +64,7 @@ class MandationStatusPredicateSpec extends BaseSpec with MockMandationPredicate 
         }
 
         "show unsupported mandation status error view" in {
-          Jsoup.parse(bodyOf(result)).title shouldBe IncorrectMandationMessages.title
+          Jsoup.parse(bodyOf(result)).title shouldBe MtdMandationMessages.heading
         }
       }
 

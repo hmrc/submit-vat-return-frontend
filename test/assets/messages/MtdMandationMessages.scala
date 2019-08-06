@@ -16,7 +16,7 @@
 
 package assets.messages
 
-object IncorrectMandationMessages {
+object MtdMandationMessages {
 
   val title = "Submit VAT Return"
   val heading = "The business submits VAT Returns using Making Tax Digital"
