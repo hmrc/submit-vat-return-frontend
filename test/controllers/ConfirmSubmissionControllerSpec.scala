@@ -209,6 +209,7 @@ class ConfirmSubmissionControllerSpec extends BaseSpec
               mockDateHasPassed(response = true)
               mockVatReturnsService(Future.successful(Right(SubmissionSuccessModel("12345"))))
               setupAuditExtendedEvent
+              setupAuditExtendedEvent
               status(result) shouldBe Status.SEE_OTHER
             }
 
@@ -228,6 +229,8 @@ class ConfirmSubmissionControllerSpec extends BaseSpec
               mockAuthorise(mtdVatAuthorisedResponse)
               mockDateHasPassed(response = true)
               mockVatReturnsService(Future.successful(Left(UnexpectedJsonFormat)))
+              setupAuditExtendedEvent
+
               status(result) shouldBe Status.INTERNAL_SERVER_ERROR
             }
 

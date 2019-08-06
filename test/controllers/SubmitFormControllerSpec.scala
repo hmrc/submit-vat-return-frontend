@@ -21,6 +21,7 @@ import java.time.LocalDate
 import base.BaseSpec
 import common.{MandationStatuses, SessionKeys}
 import assets.CustomerDetailsTestAssets._
+import audit.mocks.MockAuditingService
 import connectors.httpParsers.ResponseHttpParsers.HttpGetResult
 import mocks.MockAuth
 import mocks.service.{MockDateService, MockVatObligationsService, MockVatSubscriptionService}
@@ -42,7 +43,8 @@ class SubmitFormControllerSpec extends BaseSpec
   with MockVatObligationsService
   with MockAuth
   with MockMandationPredicate
-  with MockDateService {
+  with MockDateService
+  with MockAuditingService {
 
   val vatSubscriptionResponse: Future[HttpGetResult[CustomerDetails]] = Future.successful(Right(customerDetailsWithFRS))
   val vatSubscriptionFailureResponse: Future[HttpGetResult[CustomerDetails]] = Future.successful(Left(UnexpectedJsonFormat))
@@ -71,6 +73,7 @@ class SubmitFormControllerSpec extends BaseSpec
     mockVatObligationsService,
     mockMandationStatusPredicate,
     errorHandler,
+    mockAuditService,
     mockAuthPredicate,
     mockAppConfig,
     mockDateService
@@ -113,6 +116,7 @@ class SubmitFormControllerSpec extends BaseSpec
 
           "return 200" in {
             mockAuthorise(mtdVatAuthorisedResponse)
+            setupAuditExtendedEvent
             setupVatSubscriptionService(vatSubscriptionResponse)
             status(result) shouldBe Status.OK
           }
@@ -139,6 +143,7 @@ class SubmitFormControllerSpec extends BaseSpec
 
           "return 200" in {
             mockAuthorise(mtdVatAuthorisedResponse)
+            setupAuditExtendedEvent
             setupVatSubscriptionService(vatSubscriptionFailureResponse)
             status(result) shouldBe Status.OK
           }
@@ -176,6 +181,7 @@ class SubmitFormControllerSpec extends BaseSpec
 
             "return 200" in {
               mockAuthorise(mtdVatAuthorisedResponse)
+              setupAuditExtendedEvent
               setupVatSubscriptionService(vatSubscriptionResponse)
               setupVatObligationsService(vatObligationsResponse)
               mockDateHasPassed(response = true)
@@ -195,6 +201,7 @@ class SubmitFormControllerSpec extends BaseSpec
 
             "return 400" in {
               mockAuthorise(mtdVatAuthorisedResponse)
+              setupAuditExtendedEvent
               setupVatSubscriptionService(vatSubscriptionResponse)
               setupVatObligationsService(vatObligationsResponse)
               mockDateHasPassed(response = false)
@@ -226,6 +233,7 @@ class SubmitFormControllerSpec extends BaseSpec
 
           "return a 303" in {
             mockAuthorise(mtdVatAuthorisedResponse)
+            setupAuditExtendedEvent
             setupVatSubscriptionService(vatSubscriptionResponse)
             setupVatObligationsService(badPeriodKeyObsResponse)
             status(result) shouldBe Status.SEE_OTHER
@@ -245,6 +253,7 @@ class SubmitFormControllerSpec extends BaseSpec
             val vatObligationsErrorResponse: Future[HttpGetResult[VatObligations]] = Future.successful(Left(UnexpectedJsonFormat))
 
             mockAuthorise(mtdVatAuthorisedResponse)
+            setupAuditExtendedEvent
             setupVatSubscriptionService(vatSubscriptionErrorResponse)
             setupVatObligationsService(vatObligationsErrorResponse)
 
