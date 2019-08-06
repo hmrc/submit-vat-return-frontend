@@ -27,7 +27,7 @@ import play.api.i18n.{Lang, Messages, MessagesApi}
 import play.api.inject.guice.GuiceApplicationBuilder
 import play.api.libs.json.{JsValue, Json}
 import play.api.libs.ws.{WSClient, WSRequest, WSResponse}
-import play.api.mvc.{AnyContentAsEmpty, Headers}
+import play.api.mvc.AnyContentAsEmpty
 import play.api.test.FakeRequest
 import play.api.{Application, Environment, Mode}
 import uk.gov.hmrc.play.bootstrap.http.HttpClient
@@ -109,7 +109,7 @@ trait BaseISpec extends WordSpec with WireMockHelper with Matchers with
       .withHeaders(
         HeaderNames.COOKIE -> SessionCookieBaker.bakeSessionCookie(additionalCookies),
         "Csrf-Token" -> "nocheck",
-      "Authorization" -> "Bearer 1234"
+        "Authorization" -> "Bearer 1234"
       )
       .withFollowRedirects(false)
 
