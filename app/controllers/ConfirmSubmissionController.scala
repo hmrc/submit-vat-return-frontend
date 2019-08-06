@@ -214,8 +214,8 @@ class ConfirmSubmissionController @Inject()(val messagesApi: MessagesApi,
 
         Future.successful(Right(identityData))
 
-      case _ =>
-        Logger.warn("[ConfirmSubmission][buildIdentityData] - Did not receive minimum data from Auth required for NRS Submission")
+      case error =>
+        Logger.warn(s"[ConfirmSubmission][buildIdentityData] - Did not receive minimum data from Auth required for NRS Submission: $error")
         Future.successful(Left(errorHandler.showInternalServerError))
 
 

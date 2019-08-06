@@ -218,11 +218,14 @@ class ConfirmSubmissionPageSpec extends NrsAssets with GivenWhenThen {
               appConfig.features.nrsSubmissionEnabled(true)
 
               When("The user is authenticated and authorised")
-              AuthStub.stubResponse(OK, mtdVatAuthResponse)
+              AuthStub.stubResponse(OK, stupidlyLongAuthResponse)
 
               val custDeets: JsObject = Json.obj(
                 "firstName" -> "Duanne",
-                "lastName" -> "Kilometers"
+                "lastName" -> "Kilometers",
+                "tradingName" -> "",
+                "organisationName" -> "",
+                "hasFlatRateScheme" -> false
               )
 
               And("The customer-details call is successful")
