@@ -17,15 +17,17 @@
 package mocks
 
 import akka.util.Timeout
+import assets.NrsTestData.IdentityDataTestData
 import base.BaseSpec
 import controllers.predicates.AuthPredicate
+import org.joda.time.DateTime
 import play.api.http.Status
 import play.api.mvc.{Action, AnyContent, Request}
 import play.api.test.Helpers.redirectLocation
 import services.EnrolmentsAuthService
 import uk.gov.hmrc.auth.core.AffinityGroup.{Agent, Individual}
 import uk.gov.hmrc.auth.core.authorise.Predicate
-import uk.gov.hmrc.auth.core.retrieve.{Retrieval, ~}
+import uk.gov.hmrc.auth.core.retrieve.{LoginTimes, Retrieval, ~}
 import uk.gov.hmrc.auth.core._
 import uk.gov.hmrc.http.HeaderCarrier
 
@@ -100,4 +102,34 @@ trait MockAuth extends BaseSpec {
   val otherEnrolment: Enrolments = createEnrolment("OTHER-ENROLMENT", "BLAH", "12345")
   val mtdVatAuthorisedResponse: Future[~[Option[AffinityGroup], Enrolments]] = Future.successful(new ~(Some(Individual), mtdVatEnrolment))
   val agentAuthorisedResponse: Future[~[Option[AffinityGroup], Enrolments]] = Future.successful(new ~(Some(Agent), agentServicesEnrolment))
+
+  def mockFullAuthResponse[A](authResponse: Future[A]): Unit = {
+    (mockAuthConnector.authorise(_: Predicate, _: Retrieval[_])(_: HeaderCarrier, _: ExecutionContext))
+      .expects(*, *, *, *)
+      .returns(authResponse)
+  }
+
+  val agentFullInformationResponse =
+    new ~(new ~(new ~(new ~(new ~(new ~(new ~(new ~(new ~(new ~(new ~(new ~(new ~(new ~(new ~(new ~(new ~(new ~(new ~(
+      Some(AffinityGroup.Agent),
+      IdentityDataTestData.correctModel.internalId),
+      IdentityDataTestData.correctModel.externalId),
+      IdentityDataTestData.correctModel.agentCode),
+      Some(IdentityDataTestData.correctModel.credentials)),
+      IdentityDataTestData.correctModel.confidenceLevel),
+      IdentityDataTestData.correctModel.nino),
+      IdentityDataTestData.correctModel.saUtr),
+      Some(IdentityDataTestData.correctModel.name)),
+      IdentityDataTestData.correctModel.dateOfBirth),
+      IdentityDataTestData.correctModel.email),
+      IdentityDataTestData.correctModel.agentInformation),
+      IdentityDataTestData.correctModel.groupIdentifier),
+      IdentityDataTestData.correctModel.credentialRole),
+      IdentityDataTestData.correctModel.mdtpInformation),
+      Some(IdentityDataTestData.correctModel.itmpName)),
+      IdentityDataTestData.correctModel.itmpDateOfBirth),
+      Some(IdentityDataTestData.correctModel.itmpAddress)),
+      IdentityDataTestData.correctModel.credentialStrength),
+      LoginTimes(new DateTime("2016-11-27T09:00:00.000Z"), Some(new DateTime("2016-11-01T12:00:00.000Z")))
+    )
 }

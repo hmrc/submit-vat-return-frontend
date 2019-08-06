@@ -17,6 +17,8 @@
 package mocks.service
 
 import connectors.httpParsers.ResponseHttpParsers.HttpGetResult
+import models.auth.User
+import models.nrs.{IdentityData, SuccessModel}
 import models.vatReturnSubmission.{SubmissionModel, SubmissionSuccessModel}
 import org.scalamock.scalatest.MockFactory
 import services.VatReturnsService
@@ -29,9 +31,15 @@ trait MockVatReturnsService extends UnitSpec with MockFactory {
 
   val mockVatReturnsService: VatReturnsService = mock[VatReturnsService]
 
-  def mockVatReturnsService(response: Future[HttpGetResult[SubmissionSuccessModel]])(implicit hc: HeaderCarrier, ec: ExecutionContext): Unit = {
+  def mockVatReturnSubmission(response: Future[HttpGetResult[SubmissionSuccessModel]])(implicit hc: HeaderCarrier, ec: ExecutionContext): Unit = {
     (mockVatReturnsService.submitVatReturn(_: String, _: SubmissionModel)(_: HeaderCarrier, _: ExecutionContext))
       .expects(*, *, *, *)
+      .returns(response)
+  }
+
+  def mockNrsSubmission[A](response: Future[HttpGetResult[SuccessModel]])(implicit hc: HeaderCarrier, ec: ExecutionContext): Unit = {
+    (mockVatReturnsService.nrsSubmission(_: String, _: String, _: String, _: IdentityData)(_: HeaderCarrier, _: ExecutionContext, _: User[A]))
+      .expects(*, *, *, *, *, *, *)
       .returns(response)
   }
 }

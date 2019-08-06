@@ -21,7 +21,7 @@ import java.time.{Instant, LocalDateTime, ZoneId}
 
 import audit.AuditService
 import audit.models.SubmitVatReturnAuditModel
-import audit.models.journey.{FailureAuditModel, StartAuditModel, SuccessAuditModel}
+import audit.models.journey.{FailureAuditModel, SuccessAuditModel}
 import common.SessionKeys
 import config.{AppConfig, ErrorHandler}
 import controllers.predicates.{AuthPredicate, MandationStatusPredicate}
@@ -115,8 +115,8 @@ class ConfirmSubmissionController @Inject()(val messagesApi: MessagesApi,
       }
   }
 
-  private def submitVatReturn[A](periodKey: String,
-                                 sessionData: SubmitVatReturnModel)(implicit user: User[A]): Future[Result] = {
+  private[controllers] def submitVatReturn[A](periodKey: String,
+                                              sessionData: SubmitVatReturnModel)(implicit user: User[A]): Future[Result] = {
     val submissionModel = SubmissionModel(
       periodKey = URLDecoder.decode(periodKey, "utf-8"),
       vatDueSales = sessionData.box1,
@@ -146,17 +146,15 @@ class ConfirmSubmissionController @Inject()(val messagesApi: MessagesApi,
           FailureAuditModel(user.vrn, periodKey, user.arn, error.message),
           Some(controllers.routes.ConfirmSubmissionController.submit(periodKey).url)
         )
-        Logger.warn(s"[ConfirmSubmissionController][submit] Error returned from vat-returns service: $error")
+        Logger.warn(s"[ConfirmSubmissionController][submitVatReturn] Error returned from vat-returns service: $error")
         InternalServerError(views.html.errors.submission_error())
     }
   }
 
-  private def submitToNrs[A](periodKey: String,
-                             sessionData: SubmitVatReturnModel)(implicit user: User[A]): Future[Result] = {
-    val pageHtml: Future[Html] = renderConfirmSubmissionView(periodKey, sessionData)
-
+  private[controllers] def submitToNrs[A](periodKey: String,
+                                          sessionData: SubmitVatReturnModel)(implicit user: User[A]): Future[Result] = {
     for {
-      html <- pageHtml
+      html <- renderConfirmSubmissionView(periodKey, sessionData)
       htmlPayload = HashUtil.encode(html.body)
       sha256Checksum = HashUtil.getHash(html.body)
       identity <- buildIdentityData()
@@ -165,13 +163,10 @@ class ConfirmSubmissionController @Inject()(val messagesApi: MessagesApi,
           case Left(error: BadRequestError) =>
             Logger.debug(s"[ConfirmSubmissionController][submitToNRS] - NRS returned BAD_REQUEST: $error")
             Logger.warn("[ConfirmSubmissionController][submitToNRS] - NRS returned BAD_REQUEST")
-            Future.successful(errorHandler.showInternalServerError)
+            Future.successful(InternalServerError(views.html.errors.submission_error()))
           case _ => submitVatReturn(periodKey, sessionData)
         }
-        case Left(error) =>
-          Logger.debug(s"[ConfirmSubmissionController][submitToNRS] - Error returned when retrieving identity data: $error")
-          Logger.warn("[ConfirmSubmissionController][submitToNRS] - Error returned when retrieving identity data")
-          Future.successful(errorHandler.showInternalServerError)
+        case Left(errorResult) => Future(errorResult)
       }
     } yield result
   }
@@ -218,14 +213,13 @@ class ConfirmSubmissionController @Inject()(val messagesApi: MessagesApi,
       case error =>
         Logger.debug(s"[ConfirmSubmission][buildIdentityData] - Did not receive minimum data from Auth required for NRS Submission: $error")
         Logger.warn(s"[ConfirmSubmission][buildIdentityData] - Did not receive minimum data from Auth required for NRS Submission")
-        Future.successful(Left(errorHandler.showInternalServerError))
-
+        Future.successful(Left(InternalServerError(views.html.errors.submission_error())))
 
     } recover {
       case exception: AuthorisationException =>
         Logger.warn(s"[ConfirmSubmissionController][buildIdentityData]" +
-          s" Client authorisation failed due to internal server error. auth-client exception was $exception")
-        Left(errorHandler.showInternalServerError)
+          s"Client authorisation failed due to internal server error. auth-client exception was $exception")
+        Left(InternalServerError(views.html.errors.submission_error()))
     }
   }
 

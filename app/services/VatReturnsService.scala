@@ -48,12 +48,13 @@ class VatReturnsService @Inject()(vatReturnsConnector: VatReturnsConnector) {
       Declaration("", "", None, declarationConsent = false)
     )
 
+    //TODO: Change userAuthToken to do it properly
     val metaData = Metadata(
       payloadSha256Checksum = payloadCheckSum,
       userSubmissionTimestamp = LocalDateTime.now(ZoneOffset.UTC),
       identityData = identityData,
       searchKeys = searchKeys(user.vrn, periodKey),
-      userAuthToken = "authToken",
+      userAuthToken = user.headers.get("Authorization").get,
       headerData = user.headers.toMap.map { h => h._1 -> h._2.head },
       receiptData = receiptDataModel
     )

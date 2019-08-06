@@ -106,7 +106,11 @@ trait BaseISpec extends WordSpec with WireMockHelper with Matchers with
 
   def buildRequest(path: String, additionalCookies: Map[String, String] = Map.empty): WSRequest =
     wsClient.url(s"http://localhost:$port$appRouteContext$path")
-      .withHeaders(HeaderNames.COOKIE -> SessionCookieBaker.bakeSessionCookie(additionalCookies), "Csrf-Token" -> "nocheck")
+      .withHeaders(
+        HeaderNames.COOKIE -> SessionCookieBaker.bakeSessionCookie(additionalCookies),
+        "Csrf-Token" -> "nocheck",
+      "Authorization" -> "Bearer 1234"
+      )
       .withFollowRedirects(false)
 
   def formatSessionMandationStatus: Option[String] => Map[String, String] =_.fold(Map.empty[String, String])(x => Map(SessionKeys.mandationStatus -> x))

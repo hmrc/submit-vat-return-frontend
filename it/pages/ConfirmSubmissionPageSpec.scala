@@ -184,6 +184,7 @@ class ConfirmSubmissionPageSpec extends NrsAssets with GivenWhenThen {
         }
       }
 
+      //TODO: Refactor order of these tests to be: matchi obligation when feature is on/off should etc..
       "valid nine box session data exists and the NRS Feature Switch is on" when {
 
         "matching obligation end date is in the past" when {

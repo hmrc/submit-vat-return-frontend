@@ -23,7 +23,7 @@ trait NrsAssets extends BaseISpec {
   lazy val businessId = "vat"
   lazy val notableEvent = "vat-return"
   lazy val payloadContentType = "text\\/html"
-  
+
   lazy val nrsFullSubmissionJson: String =
     """\{"payload":".*?","metadata":\{"businessId":"""" + businessId + """","notableEvent":"""" + notableEvent +
       """","payloadContentType":"""" + payloadContentType + """","payloadSha256Checksum":".*?"
@@ -51,7 +51,7 @@ trait NrsAssets extends BaseISpec {
       |"credentialStrength":".*?",
       |"loginTimes":\{"currentLogin":"\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}\.\d{3}Z",
       |"previousLogin":"\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}\.\d{3}Z"\}\},
-      |"userAuthToken":"authToken",
+      |"userAuthToken":"Bearer 1234",
       |"headerData":\{"Csrf-Token":"nocheck","X-Request-ID":"govuk-tax-.*?","X-Request-Timestamp":"\d*","Content-Length":"2","Accept":
       |"\*\/\*","Content-Type":"application\/json","Cookie":".*?","User-Agent":"AHC\/2\.0","Host":"localhost:19001"\},"searchKeys":\{"vrn":"999999999",
       |"periodKey":"18AA"\},"receiptData":\{"language":"en","checkYourAnswersSections":\[\],"declaration":\{"declarationText":"","declarationName":"",
