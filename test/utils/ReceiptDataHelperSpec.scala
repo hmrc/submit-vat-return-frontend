@@ -21,7 +21,7 @@ import java.time.LocalDate
 import base.BaseSpec
 import connectors.VatSubscriptionConnector
 import models.auth.User
-import models.errors.BadRequestError
+import models.errors.{BadRequestError, UnknownError}
 import models.nrs._
 import models.{CustomerDetails, SubmitVatReturnModel}
 import play.api.mvc.{AnyContentAsEmpty, Cookie}
@@ -37,9 +37,22 @@ class ReceiptDataHelperSpec extends BaseSpec {
 
   val dateToUse: LocalDate = LocalDate.now()
 
-  def createReturnModel(flatRateScheme: Boolean): SubmitVatReturnModel = SubmitVatReturnModel(
-    10, 25.55, 33, 74, 95.06, 1006, 1006.66, 889.9, 900.0, flatRateScheme, dateToUse, dateToUse, dateToUse
-  )
+  def createReturnModel(flatRateScheme: Boolean): SubmitVatReturnModel =
+    SubmitVatReturnModel(
+      10.00,
+      25.55,
+      33.00,
+      74.00,
+      95.06,
+      1006,
+      1006.66,
+      889.9,
+      900.0,
+      flatRateScheme,
+      dateToUse,
+      dateToUse,
+      dateToUse
+    )
 
   def expectedAnswers(frs: Boolean, language: Language): Seq[Answers] = {
     def ifEnglishElse(ifEnglish: String, ifWelsh: String): String = if (language == EN) ifEnglish else ifWelsh
@@ -118,21 +131,21 @@ class ReceiptDataHelperSpec extends BaseSpec {
         "ac yn gyflawn hyd eithaf eich gwybodaeth a’ch cred. Gall datganiad ffug arwain at erlyniad."
     }
 
-    Declaration(declarationText, "Scarlett Flamberg", None, declarationConsent = true)
+    Declaration(declarationText, "Test Name", None, declarationConsent = true)
   }
 
   private def mockOutboundCall(frs: Boolean, noName: Boolean = false) = {
     (mockConnector.getCustomerDetails(_: String)(_: HeaderCarrier, _: ExecutionContext))
       .expects(*, *, *)
       .returning(Future.successful(Right(CustomerDetails(
-        if (noName) None else Some("Scarlett"), if (noName) None else Some("Flamberg"), None, None, frs
+        if (noName) None else Some("Test"), if (noName) None else Some("Name"), None, None, frs
       ))))
   }
 
   private def mockFailedOutboundCall() = {
     (mockConnector.getCustomerDetails(_: String)(_: HeaderCarrier, _: ExecutionContext))
       .expects(*, *, *)
-      .returning(Future.successful(Left(BadRequestError("UH_OH", "WE'RE IN TROUBLE"))))
+      .returning(Future.successful(Left(BadRequestError("Bad Request", "There has been a bad request"))))
   }
 
   def userWithCookie(cookieString: String): User[AnyContentAsEmpty.type] = User[AnyContentAsEmpty.type](vrn)(fakeRequest
@@ -178,20 +191,22 @@ class ReceiptDataHelperSpec extends BaseSpec {
       }
     }
     "return an error" when {
-      "there is an error from vat subscription" in {
-        val implicitUser: User[AnyContentAsEmpty.type] = userWithCookie(EN.languageCode)
 
-        val expectedResult = BadRequestError("UH_OH", "WE'RE IN TROUBLE")
+      val implicitUser: User[AnyContentAsEmpty.type] = userWithCookie(EN.languageCode)
+
+      "there is an error from vat subscription" in {
+
+        val expectedResult = BadRequestError("Bad Request", "There has been a bad request")
         mockFailedOutboundCall()
 
         val result = await(service.extractReceiptData(createReturnModel(true))(user = implicitUser, hc, ec))
 
         result shouldBe Left(expectedResult)
       }
-      "the user has no name" in {
-        val implicitUser: User[AnyContentAsEmpty.type] = userWithCookie(EN.languageCode)
 
-        val expectedResult = BadRequestError("UNEXPECTED_ERROR", "None.get")
+      "the user has no name" in {
+
+        val expectedResult = UnknownError
         mockOutboundCall(frs = true, noName = true)
 
         val result = await(service.extractReceiptData(createReturnModel(true))(user = implicitUser, hc, ec))

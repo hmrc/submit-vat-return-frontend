@@ -48,7 +48,6 @@ class VatReturnsService @Inject()(vatReturnsConnector: VatReturnsConnector) {
       Declaration("", "", None, declarationConsent = false)
     )
 
-    //TODO: Change userAuthToken to do it properly
     val metaData = Metadata(
       payloadSha256Checksum = payloadCheckSum,
       userSubmissionTimestamp = LocalDateTime.now(ZoneOffset.UTC),

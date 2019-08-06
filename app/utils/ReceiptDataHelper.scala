@@ -20,16 +20,14 @@ import connectors.VatSubscriptionConnector
 import javax.inject.{Inject, Singleton}
 import models.SubmitVatReturnModel
 import models.auth.User
-import models.errors.{BadRequestError, HttpError}
+import models.errors.{HttpError, UnknownError}
 import models.nrs.{Declaration, _}
-import play.api.{Logger, Play}
 import play.api.i18n.{Lang, MessagesApi}
-import play.api.mvc.AnyContent
+import play.api.{Logger, Play}
 import uk.gov.hmrc.http.HeaderCarrier
 import uk.gov.hmrc.play.views.helpers.MoneyPounds
 
 import scala.concurrent.{ExecutionContext, Future}
-import scala.util.Try
 
 @Singleton
 class ReceiptDataHelper @Inject()(
@@ -85,23 +83,20 @@ class ReceiptDataHelper @Inject()(
     val declarationAgentOrNonAgent = if (user.isAgent) "agentDeclaration" else "nonAgentDeclaration"
 
     vatSubscriptionConnector.getCustomerDetails(user.vrn).map {
-      case Right(result) =>
-        try {
+      case Right(result) => result.clientName match {
+
+        case Some(name) =>
           Right(Declaration(
             messages(s"confirm_submission.$declarationAgentOrNonAgent")(lang),
-            result.clientName.get,
+            name,
             None,
             declarationConsent = true
           ))
-        } catch {
-          case t: Throwable =>
-            Logger.debug("[ReceiptDataHelper][extractDeclaration] Client name missing", t)
-            Logger.warn("[ReceiptDataHelper][extractDeclaration] Client name missing")
-            Left(BadRequestError(
-              "UNEXPECTED_ERROR",
-              t.getMessage
-            ))
-        }
+
+        case _ =>
+          Logger.warn("[ReceiptDataHelper][extractDeclaration] Client name missing")
+          Left(UnknownError)
+      }
       case Left(error) =>
         Logger.debug("[ReceiptDataHelper][extractDeclaration] Failed to retrieve customer details from vat-subscription\n" + error.message)
         Logger.warn("[ReceiptDataHelper][extractDeclaration] Failed to retrieve customer details from vat-subscription")
