@@ -151,9 +151,6 @@ class ConfirmSubmissionPageSpec extends NrsAssets with GivenWhenThen {
                 And("The auth call for full information is successful")
                 AuthStub.stubResponse(OK, fullNRSAuthResponse)
 
-                And("The auth call for extract receipt data is successful")
-                VatSubscriptionStub.stubResponse("customer-details", OK, customerDetails)
-
                 And("The POST to NRS is successful")
                 VatReturnsStub.stubResponse(nrsSubmissionUri)(ACCEPTED, Json.obj("nrSubmissionId" -> "nrsIDExample"))
 
@@ -214,9 +211,6 @@ class ConfirmSubmissionPageSpec extends NrsAssets with GivenWhenThen {
 
                 And("The auth call for full information is successful")
                 AuthStub.stubResponse(OK, fullNRSAuthResponse)
-
-                And("The customer-details call for extract receipt data is successful")
-                VatSubscriptionStub.stubResponse("customer-details", OK, customerDetails)
 
                 And("The POST to NRS returns an internal server error")
                 VatReturnsStub.stubResponse(nrsSubmissionUri)(INTERNAL_SERVER_ERROR, Json.obj())

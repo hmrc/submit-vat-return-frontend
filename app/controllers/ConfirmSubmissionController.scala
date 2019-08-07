@@ -27,10 +27,10 @@ import config.{AppConfig, ErrorHandler}
 import controllers.predicates.{AuthPredicate, MandationStatusPredicate}
 import javax.inject.{Inject, Singleton}
 import models.auth.User
-import models.errors.BadRequestError
+import models.errors.{BadRequestError, HttpError}
 import models.nrs.{IdentityData, IdentityLoginTimes}
 import models.vatReturnSubmission.SubmissionModel
-import models.{ConfirmSubmissionViewModel, SubmitVatReturnModel}
+import models.{ConfirmSubmissionViewModel, CustomerDetails, SubmitVatReturnModel}
 import play.api.Logger
 import play.api.i18n.{I18nSupport, MessagesApi}
 import play.api.libs.json.Json
@@ -67,23 +67,24 @@ class ConfirmSubmissionController @Inject()(val messagesApi: MessagesApi,
     user.session.get(SessionKeys.returnData) match {
       case Some(model) =>
         val sessionData = Json.parse(model).as[SubmitVatReturnModel]
-        renderConfirmSubmissionView(periodKey, sessionData).map(view => Ok(view))
+        vatSubscriptionService.getCustomerDetails(user.vrn) map { model =>
+          Ok(renderConfirmSubmissionView(periodKey, sessionData, model))
+        }
       case _ => Future.successful(Redirect(controllers.routes.SubmitFormController.show(periodKey)))
     }
   }
 
   private def renderConfirmSubmissionView[A](periodKey: String,
-                                             sessionData: SubmitVatReturnModel)(implicit user: User[A]): Future[Html] = {
+                                             sessionData: SubmitVatReturnModel,
+                                             customerDetails: Either[HttpError, CustomerDetails])(implicit user: User[A]): Html = {
 
-    val clientName: Future[Option[String]] = vatSubscriptionService.getCustomerDetails(user.vrn) map {
-      case (Right(customerDetails)) => customerDetails.clientName
+    val clientName = customerDetails match {
+      case (Right(model)) => model.clientName
       case _ => None
     }
 
-    clientName map { name =>
-      val viewModel = ConfirmSubmissionViewModel(sessionData, periodKey, name)
-      views.html.confirm_submission(viewModel, user.isAgent)
-    }
+    val viewModel = ConfirmSubmissionViewModel(sessionData, periodKey, clientName)
+    views.html.confirm_submission(viewModel, user.isAgent)
   }
 
   def submit(periodKey: String): Action[AnyContent] = (authPredicate andThen mandationStatusCheck) async {
@@ -156,8 +157,9 @@ class ConfirmSubmissionController @Inject()(val messagesApi: MessagesApi,
   private[controllers] def submitToNrs[A](periodKey: String,
                                           sessionData: SubmitVatReturnModel)(implicit user: User[A]): Future[Result] = {
     for {
-      html <- renderConfirmSubmissionView(periodKey, sessionData)
-      receiptData <- receiptDataHelper.extractReceiptData(sessionData)
+      customerDetails <- vatSubscriptionService.getCustomerDetails(user.vrn)
+      html = renderConfirmSubmissionView(periodKey, sessionData, customerDetails)
+      receiptData = receiptDataHelper.extractReceiptData(sessionData, customerDetails)
       htmlPayload = HashUtil.encode(html.body)
       sha256Checksum = HashUtil.getHash(html.body)
       identity <- buildIdentityData()

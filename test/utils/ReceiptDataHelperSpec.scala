@@ -19,21 +19,16 @@ package utils
 import java.time.LocalDate
 
 import base.BaseSpec
-import connectors.VatSubscriptionConnector
 import models.auth.User
 import models.errors.{BadRequestError, UnknownError}
 import models.nrs._
 import models.{CustomerDetails, SubmitVatReturnModel}
 import play.api.mvc.{AnyContentAsEmpty, Cookie}
-import uk.gov.hmrc.http.HeaderCarrier
 
-import scala.concurrent.{ExecutionContext, Future}
 
 class ReceiptDataHelperSpec extends BaseSpec {
 
-  val mockConnector: VatSubscriptionConnector = mock[VatSubscriptionConnector]
-
-  val service = new ReceiptDataHelper(mockConnector, messagesApi)
+  val service = new ReceiptDataHelper()
 
   val dateToUse: LocalDate = LocalDate.now()
 
@@ -134,18 +129,12 @@ class ReceiptDataHelperSpec extends BaseSpec {
     Declaration(declarationText, "Test Name", None, declarationConsent = true)
   }
 
-  private def mockOutboundCall(frs: Boolean, noName: Boolean = false) = {
-    (mockConnector.getCustomerDetails(_: String)(_: HeaderCarrier, _: ExecutionContext))
-      .expects(*, *, *)
-      .returning(Future.successful(Right(CustomerDetails(
-        if (noName) None else Some("Test"), if (noName) None else Some("Name"), None, None, frs
-      ))))
-  }
+  val errorResponse = Left(BadRequestError("Bad Request", "There has been a bad request"))
 
-  private def mockFailedOutboundCall() = {
-    (mockConnector.getCustomerDetails(_: String)(_: HeaderCarrier, _: ExecutionContext))
-      .expects(*, *, *)
-      .returning(Future.successful(Left(BadRequestError("Bad Request", "There has been a bad request"))))
+  private def successResponse(frs: Boolean, noName: Boolean = false) = {
+    Right(CustomerDetails(
+      if(noName) None else Some("Test"), if(noName) None else Some("Name"), None, None, frs
+    ))
   }
 
   def userWithCookie(cookieString: String): User[AnyContentAsEmpty.type] = User[AnyContentAsEmpty.type](vrn)(fakeRequest
@@ -162,9 +151,8 @@ class ReceiptDataHelperSpec extends BaseSpec {
     "return a receipt" when {
       "the user is an agent, with frs" in {
         val userToUse = agentUserWithCookie(EN.languageCode)
-        mockOutboundCall(frs = true)
 
-        val result = await(service.extractReceiptData(createReturnModel(true))(userToUse, hc, ec))
+        val result = await(service.extractReceiptData(createReturnModel(true), successResponse(frs = true))(userToUse, hc, ec))
 
         result shouldBe Right(
           ReceiptData(EN, expectedAnswers(frs = true, EN), expectedDeclaration(isAgent = true, EN))
@@ -172,18 +160,15 @@ class ReceiptDataHelperSpec extends BaseSpec {
       }
       "the user is an individual, without frs" in {
         val userToUse = userWithCookie(CY.languageCode)
-        mockOutboundCall(frs = false)
 
-        val result = await(service.extractReceiptData(createReturnModel(false))(userToUse, hc, ec))
+        val result = await(service.extractReceiptData(createReturnModel(false), successResponse(frs = false))(userToUse, hc, ec))
 
         result shouldBe Right(
           ReceiptData(CY, expectedAnswers(frs = false, CY), expectedDeclaration(isAgent = false, CY))
         )
       }
       "the user has no language cookie" in {
-        mockOutboundCall(frs = false)
-
-        val result = await(service.extractReceiptData(createReturnModel(false))(user, hc, ec))
+        val result = await(service.extractReceiptData(createReturnModel(false), successResponse(frs = false))(user, hc, ec))
 
         result shouldBe Right(
           ReceiptData(EN, expectedAnswers(frs = false, EN), expectedDeclaration(isAgent = false, EN))
@@ -195,21 +180,17 @@ class ReceiptDataHelperSpec extends BaseSpec {
       val implicitUser: User[AnyContentAsEmpty.type] = userWithCookie(EN.languageCode)
 
       "there is an error from vat subscription" in {
-
         val expectedResult = BadRequestError("Bad Request", "There has been a bad request")
-        mockFailedOutboundCall()
 
-        val result = await(service.extractReceiptData(createReturnModel(true))(user = implicitUser, hc, ec))
+        val result = await(service.extractReceiptData(createReturnModel(true), errorResponse)(user = implicitUser, hc, ec))
 
         result shouldBe Left(expectedResult)
       }
 
       "the user has no name" in {
-
         val expectedResult = UnknownError
-        mockOutboundCall(frs = true, noName = true)
 
-        val result = await(service.extractReceiptData(createReturnModel(true))(user = implicitUser, hc, ec))
+        val result = await(service.extractReceiptData(createReturnModel(true), successResponse(frs = true, noName = true))(user = implicitUser, hc, ec))
 
         result shouldBe Left(expectedResult)
       }

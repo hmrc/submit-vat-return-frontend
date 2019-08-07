@@ -16,7 +16,7 @@
 
 package mocks
 
-import models.SubmitVatReturnModel
+import models.{CustomerDetails, SubmitVatReturnModel}
 import models.auth.User
 import models.errors.HttpError
 import models.nrs.ReceiptData
@@ -33,8 +33,9 @@ trait MockReceiptDataService extends UnitSpec with MockFactory {
   val mockReceiptDataService: ReceiptDataHelper = mock[ReceiptDataHelper]
 
   def mockExtractReceiptData[A](response: Future[Either[HttpError, ReceiptData]])(implicit user: User[A], hc: HeaderCarrier, ec: ExecutionContext): Unit = {
-    (mockReceiptDataService.extractReceiptData(_: SubmitVatReturnModel)(_: User[A], _: HeaderCarrier, _: ExecutionContext))
-      .expects(*, *, *, *)
+    (mockReceiptDataService
+      .extractReceiptData(_: SubmitVatReturnModel, _: Either[HttpError, CustomerDetails])(_: User[A], _: HeaderCarrier, _: ExecutionContext))
+      .expects(*, *, *, *, *)
       .returns(response)
   }
 

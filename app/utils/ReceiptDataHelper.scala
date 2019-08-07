@@ -16,34 +16,30 @@
 
 package utils
 
-import connectors.VatSubscriptionConnector
 import javax.inject.{Inject, Singleton}
-import models.SubmitVatReturnModel
 import models.auth.User
 import models.errors.{HttpError, UnknownError}
 import models.nrs.{Declaration, _}
+import models.{CustomerDetails, SubmitVatReturnModel}
 import play.api.i18n.{Lang, MessagesApi}
 import play.api.{Logger, Play}
 import uk.gov.hmrc.http.HeaderCarrier
 import uk.gov.hmrc.play.views.helpers.MoneyPounds
 
-import scala.concurrent.{ExecutionContext, Future}
+import scala.concurrent.ExecutionContext
 
 @Singleton
-class ReceiptDataHelper @Inject()(
-                                   vatSubscriptionConnector: VatSubscriptionConnector,
-                                   implicit val messages: MessagesApi
-                                 ) {
+class ReceiptDataHelper @Inject()(implicit val messages: MessagesApi) {
 
-  def extractReceiptData(submitModel: SubmitVatReturnModel)
-                        (implicit user: User[_], hc: HeaderCarrier, ec: ExecutionContext): Future[Either[HttpError, ReceiptData]] = {
+  def extractReceiptData(submitModel: SubmitVatReturnModel, customerDetails: Either[HttpError, CustomerDetails])
+                        (implicit user: User[_], hc: HeaderCarrier, ec: ExecutionContext): Either[HttpError, ReceiptData] = {
 
     val language: Language = user.cookies.get(Play.langCookieName) match {
       case Some(cookieValue) => Language.fromString(cookieValue.value)
       case None => EN
     }
-
-    extractDeclaration(submitModel, Lang.apply(language.languageCode)).map {
+    
+    extractDeclaration(submitModel, customerDetails, Lang.apply(language.languageCode)) match {
       case Right(declaration) =>
         Right(ReceiptData(
           language,
@@ -77,23 +73,22 @@ class ReceiptDataHelper @Inject()(
     ))
   }
 
-  private def extractDeclaration(submitModel: SubmitVatReturnModel, lang: Lang)
-                                (implicit user: User[_], hc: HeaderCarrier, ec: ExecutionContext): Future[Either[HttpError, Declaration]] = {
+  private def extractDeclaration(submitModel: SubmitVatReturnModel, customerDetails: Either[HttpError, CustomerDetails], lang: Lang)
+                                (implicit user: User[_], hc: HeaderCarrier, ec: ExecutionContext): Either[HttpError, Declaration] = {
 
     val declarationAgentOrNonAgent = if (user.isAgent) "agentDeclaration" else "nonAgentDeclaration"
 
-    vatSubscriptionConnector.getCustomerDetails(user.vrn).map {
-      case Right(result) => result.clientName match {
-
-        case Some(name) =>
-          Right(Declaration(
+    customerDetails match {
+      case Right(model) => model.clientName match {
+        case Some(name) => Right(
+          Declaration(
             messages(s"confirm_submission.$declarationAgentOrNonAgent")(lang),
             name,
             None,
             declarationConsent = true
-          ))
-
-        case _ =>
+          )
+        )
+        case None =>
           Logger.warn("[ReceiptDataHelper][extractDeclaration] Client name missing")
           Left(UnknownError)
       }
