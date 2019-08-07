@@ -54,7 +54,19 @@ trait NrsAssets extends BaseISpec {
       |"userAuthToken":"Bearer 1234",
       |"headerData":\{"Csrf-Token":"nocheck","X-Request-ID":"govuk-tax-.*?","X-Request-Timestamp":"\d*","Content-Length":"2","Accept":
       |"\*\/\*","Content-Type":"application\/json","Cookie":".*?","User-Agent":"AHC\/2\.0","Host":"localhost:19001"\},"searchKeys":\{"vrn":"999999999",
-      |"periodKey":"18AA"\},"receiptData":\{"language":"en","checkYourAnswersSections":\[\],"declaration":\{"declarationText":"","declarationName":"",
-      |"declarationConsent":false\}\}\}\}""".stripMargin.replace("\n", "")
+      |"periodKey":"18AA"\},
+      |"receiptData":\{"language":"en","checkYourAnswersSections":\[\{"title":"Your VAT Return",
+      |"data":\[
+      |\{"questionId":"box1","question":"VAT you charged on sales and other supplies","answer":".*?"\},
+      |\{"questionId":"box2","question":"VAT you owe on goods purchased from EC countries and brought into the UK","answer":".*?"\},
+      |\{"questionId":"box3","question":"VAT you owe before deductions \(this is the total of box 1 and 2\)","answer":".*?"\},
+      |\{"questionId":"box4","question":"VAT you have claimed back","answer":".*?"\},
+      |\{"questionId":"box5","question":"Return total","answer":".*?"\},
+      |\{"questionId":"box6","question":"Total value of sales and other supplies, excluding VAT","answer":".*?"\},
+      |\{"questionId":"box7","question":"Total value of purchases and other expenses, excluding VAT","answer":".*?"\},
+      |\{"questionId":"box8","question":"Total value of supplied goods to EC countries and related costs \(excluding VAT\)","answer":".*?"\},
+      |\{"questionId":"box9","question":"Total value of goods purchased from EC countries and brought into the UK, as well as any related costs \(excluding VAT\)","answer":".*?"\}\]\}\],
+      |"declaration":\{"declarationText":".*?","declarationName":".*?",
+      |"declarationConsent":true\}\}\}\}""".stripMargin.replace("\n", "")
 
 }

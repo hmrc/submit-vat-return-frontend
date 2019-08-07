@@ -42,7 +42,7 @@ import uk.gov.hmrc.auth.core.AuthorisationException
 import uk.gov.hmrc.auth.core.retrieve.v2.Retrievals
 import uk.gov.hmrc.auth.core.retrieve.{ItmpAddress, ItmpName, ~}
 import uk.gov.hmrc.play.bootstrap.controller.FrontendController
-import utils.HashUtil
+import utils.{HashUtil, ReceiptDataHelper}
 
 import scala.concurrent.{ExecutionContext, Future}
 import scala.util.{Failure, Success, Try}
@@ -58,7 +58,9 @@ class ConfirmSubmissionController @Inject()(val messagesApi: MessagesApi,
                                             implicit val executionContext: ExecutionContext,
                                             implicit val appConfig: AppConfig,
                                             val dateService: DateService,
-                                            authService: EnrolmentsAuthService) extends FrontendController with I18nSupport {
+                                            authService: EnrolmentsAuthService,
+                                            receiptDataHelper: ReceiptDataHelper
+                                           ) extends FrontendController with I18nSupport {
 
   def show(periodKey: String): Action[AnyContent] = (authPredicate andThen mandationStatusCheck).async { implicit user =>
 
@@ -155,18 +157,23 @@ class ConfirmSubmissionController @Inject()(val messagesApi: MessagesApi,
                                           sessionData: SubmitVatReturnModel)(implicit user: User[A]): Future[Result] = {
     for {
       html <- renderConfirmSubmissionView(periodKey, sessionData)
+      receiptData <- receiptDataHelper.extractReceiptData(sessionData)
       htmlPayload = HashUtil.encode(html.body)
       sha256Checksum = HashUtil.getHash(html.body)
       identity <- buildIdentityData()
-      result <- identity match {
-        case Right(id) => vatReturnsService.nrsSubmission(periodKey, htmlPayload, sha256Checksum, id) flatMap {
+      result <- (identity, receiptData) match {
+        case (Right(id), Right(receipt)) => vatReturnsService.nrsSubmission(periodKey, htmlPayload, sha256Checksum, id, receipt) flatMap {
           case Left(error: BadRequestError) =>
             Logger.debug(s"[ConfirmSubmissionController][submitToNRS] - NRS returned BAD_REQUEST: $error")
             Logger.warn("[ConfirmSubmissionController][submitToNRS] - NRS returned BAD_REQUEST")
             Future.successful(InternalServerError(views.html.errors.submission_error()))
           case _ => submitVatReturn(periodKey, sessionData)
         }
-        case Left(errorResult) => Future(errorResult)
+        case (Left(errorResult), _) => Future(errorResult)
+        case (_, Left(error)) =>
+          Logger.debug(s"[ConfirmSubmissionController][submitToNRS] - extractReceiptData helper returned error of: $error")
+          Logger.warn("[ConfirmSubmissionController][submitToNRS] - extractReceiptData helper returned error")
+          Future.successful(InternalServerError(views.html.errors.submission_error()))
       }
     } yield result
   }

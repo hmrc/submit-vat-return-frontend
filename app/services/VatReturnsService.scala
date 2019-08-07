@@ -39,14 +39,9 @@ class VatReturnsService @Inject()(vatReturnsConnector: VatReturnsConnector) {
   def nrsSubmission[A](periodKey: String,
                        payload: String,
                        payloadCheckSum: String,
-                       identityData: IdentityData)
-                   (implicit hc: HeaderCarrier, ec: ExecutionContext, user: User[A]): Future[HttpGetResult[SuccessModel]] = {
-
-    val receiptDataModel = ReceiptData(
-      EN,
-      Seq(),
-      Declaration("", "", None, declarationConsent = false)
-    )
+                       identityData: IdentityData,
+                       receiptData: ReceiptData)
+                      (implicit hc: HeaderCarrier, ec: ExecutionContext, user: User[A]): Future[HttpGetResult[SuccessModel]] = {
 
     val metaData = Metadata(
       payloadSha256Checksum = payloadCheckSum,
@@ -55,7 +50,7 @@ class VatReturnsService @Inject()(vatReturnsConnector: VatReturnsConnector) {
       searchKeys = searchKeys(user.vrn, periodKey),
       userAuthToken = user.headers.get("Authorization").get,
       headerData = user.headers.toMap.map { h => h._1 -> h._2.head },
-      receiptData = receiptDataModel
+      receiptData = receiptData
     )
 
     val submissionModel = RequestModel(

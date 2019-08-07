@@ -18,7 +18,7 @@ package mocks.service
 
 import connectors.httpParsers.ResponseHttpParsers.HttpGetResult
 import models.auth.User
-import models.nrs.{IdentityData, SuccessModel}
+import models.nrs.{IdentityData, ReceiptData, SuccessModel}
 import models.vatReturnSubmission.{SubmissionModel, SubmissionSuccessModel}
 import org.scalamock.scalatest.MockFactory
 import services.VatReturnsService
@@ -38,8 +38,8 @@ trait MockVatReturnsService extends UnitSpec with MockFactory {
   }
 
   def mockNrsSubmission[A](response: Future[HttpGetResult[SuccessModel]])(implicit hc: HeaderCarrier, ec: ExecutionContext): Unit = {
-    (mockVatReturnsService.nrsSubmission(_: String, _: String, _: String, _: IdentityData)(_: HeaderCarrier, _: ExecutionContext, _: User[A]))
-      .expects(*, *, *, *, *, *, *)
+    (mockVatReturnsService.nrsSubmission(_: String, _: String, _: String, _: IdentityData, _: ReceiptData)(_: HeaderCarrier, _: ExecutionContext, _: User[A]))
+      .expects(*, *, *, *, *, *, *, *)
       .returns(response)
   }
 }

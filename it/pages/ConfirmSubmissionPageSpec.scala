@@ -127,6 +127,14 @@ class ConfirmSubmissionPageSpec extends NrsAssets with GivenWhenThen {
 
           "the nrs feature switch is enabled" when {
 
+            val customerDetails: JsObject = Json.obj(
+              "firstName" -> "Test",
+              "lastName" -> "Name",
+              "tradingName" -> "",
+              "organisationName" -> "",
+              "hasFlatRateScheme" -> false
+            )
+
             appConfig.features.nrsSubmissionEnabled(true)
 
             "NRS returns successful response and backend submission returns 200" should {
@@ -137,19 +145,14 @@ class ConfirmSubmissionPageSpec extends NrsAssets with GivenWhenThen {
                 When("The user is authenticated and authorised")
                 AuthStub.stubResponse(OK, mtdVatAuthResponse)
 
-                val customerDetails: JsObject = Json.obj(
-                  "firstName" -> "Test",
-                  "lastName" -> "Name",
-                  "tradingName" -> "",
-                  "organisationName" -> "",
-                  "hasFlatRateScheme" -> false
-                )
-
                 And("The customer-details call is successful")
                 VatSubscriptionStub.stubResponse("customer-details", OK, customerDetails)
 
                 And("The auth call for full information is successful")
                 AuthStub.stubResponse(OK, fullNRSAuthResponse)
+
+                And("The auth call for extract receipt data is successful")
+                VatSubscriptionStub.stubResponse("customer-details", OK, customerDetails)
 
                 And("The POST to NRS is successful")
                 VatReturnsStub.stubResponse(nrsSubmissionUri)(ACCEPTED, Json.obj("nrSubmissionId" -> "nrsIDExample"))
@@ -212,6 +215,9 @@ class ConfirmSubmissionPageSpec extends NrsAssets with GivenWhenThen {
                 And("The auth call for full information is successful")
                 AuthStub.stubResponse(OK, fullNRSAuthResponse)
 
+                And("The auth call for extract receipt data is successful")
+                VatSubscriptionStub.stubResponse("customer-details", OK, customerDetails)
+
                 And("The POST to NRS is successful")
                 VatReturnsStub.stubResponse(nrsSubmissionUri)(INTERNAL_SERVER_ERROR, Json.obj())
 
@@ -230,7 +236,6 @@ class ConfirmSubmissionPageSpec extends NrsAssets with GivenWhenThen {
                 response.header("Location") shouldBe Some(controllers.routes.ConfirmationController.show().url)
               }
             }
-
           }
         }
 
@@ -243,7 +248,7 @@ class ConfirmSubmissionPageSpec extends NrsAssets with GivenWhenThen {
 
             val response: WSResponse = request(
               Map("mtdNineBoxReturnData" -> nineBoxSessionData(LocalDate.now().plusDays(1).toString)) ++
-              mandationStatusSessionValue
+                mandationStatusSessionValue
             )
 
             Then("The response should be 400")
@@ -260,18 +265,18 @@ class ConfirmSubmissionPageSpec extends NrsAssets with GivenWhenThen {
 
             val postRequestJsonBody: JsValue = Json.parse(
               s"""
-                |{
-                |  "periodKey" : "$decodedPeriodKey",
-                |  "vatDueSales" : 10.01,
-                |  "vatDueAcquisitions" : 10.02,
-                |  "vatDueTotal" : 10.03,
-                |  "vatReclaimedCurrPeriod" : 10.04,
-                |  "vatDueNet" : 10.05,
-                |  "totalValueSalesExVAT" : 10.06,
-                |  "totalValuePurchasesExVAT" : 10.07,
-                |  "totalValueGoodsSuppliedExVAT" : 10.08,
-                |  "totalAllAcquisitionsExVAT" : 10.09
-                |}
+                 |{
+                 |  "periodKey" : "$decodedPeriodKey",
+                 |  "vatDueSales" : 10.01,
+                 |  "vatDueAcquisitions" : 10.02,
+                 |  "vatDueTotal" : 10.03,
+                 |  "vatReclaimedCurrPeriod" : 10.04,
+                 |  "vatDueNet" : 10.05,
+                 |  "totalValueSalesExVAT" : 10.06,
+                 |  "totalValuePurchasesExVAT" : 10.07,
+                 |  "totalValueGoodsSuppliedExVAT" : 10.08,
+                 |  "totalAllAcquisitionsExVAT" : 10.09
+                 |}
               """.stripMargin
             )
 

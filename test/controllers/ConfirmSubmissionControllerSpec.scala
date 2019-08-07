@@ -25,9 +25,9 @@ import base.BaseSpec
 import common.{MandationStatuses, SessionKeys}
 import connectors.httpParsers.ResponseHttpParsers.HttpGetResult
 import mocks.service.{MockDateService, MockVatReturnsService, MockVatSubscriptionService}
-import mocks.{MockAuth, MockMandationPredicate}
+import mocks.{MockAuth, MockMandationPredicate, MockReceiptDataService}
 import models.auth.User
-import models.errors.{BadRequestError, UnexpectedJsonFormat}
+import models.errors.{BadRequestError, UnexpectedJsonFormat, UnknownError}
 import models.nrs.SuccessModel
 import models.vatReturnSubmission.SubmissionSuccessModel
 import models.{CustomerDetails, SubmitVatReturnModel}
@@ -48,7 +48,8 @@ class ConfirmSubmissionControllerSpec extends BaseSpec
   with MockVatSubscriptionService
   with MockVatReturnsService
   with MockDateService
-  with MockAuditingService {
+  with MockAuditingService
+  with MockReceiptDataService {
 
   object TestConfirmSubmissionController extends ConfirmSubmissionController(
     messagesApi,
@@ -61,7 +62,8 @@ class ConfirmSubmissionControllerSpec extends BaseSpec
     ec,
     mockAppConfig,
     mockDateService,
-    mockEnrolmentsAuthService
+    mockEnrolmentsAuthService,
+    mockReceiptDataService
   )
 
   mockAppConfig.features.nrsSubmissionEnabled(false)
@@ -311,6 +313,7 @@ class ConfirmSubmissionControllerSpec extends BaseSpec
         mockFullAuthResponse(agentFullInformationResponse)
         mockNrsSubmission(Future.successful(Right(SuccessModel("1234567890"))))
         mockVatReturnSubmission(Future.successful(Right(SubmissionSuccessModel("12345"))))
+        mockExtractReceiptData(successReceiptDataResponse)
         setupAuditExtendedEvent
         setupAuditExtendedEvent
 
@@ -328,6 +331,7 @@ class ConfirmSubmissionControllerSpec extends BaseSpec
 
       "return an ISE" in {
         setupVatSubscriptionService(successCustomerInfoResponse)
+        mockExtractReceiptData(successReceiptDataResponse)
         mockFullAuthResponse(Future.failed(BearerTokenExpired()))
 
         status(result) shouldBe Status.INTERNAL_SERVER_ERROR
@@ -338,6 +342,24 @@ class ConfirmSubmissionControllerSpec extends BaseSpec
       }
     }
 
+    "a Left is returned from extractReceiptData" should {
+
+      lazy val result = TestConfirmSubmissionController.submitToNrs("18AA", submitVatReturnModel)
+
+      "return an ISE" in {
+          setupVatSubscriptionService(successCustomerInfoResponse)
+          mockFullAuthResponse(agentFullInformationResponse)
+          mockExtractReceiptData(Future.successful(Left(UnknownError)))
+
+          status(result) shouldBe Status.INTERNAL_SERVER_ERROR
+      }
+
+      "render the submission error page" in {
+        Jsoup.parse(bodyOf(result)).title shouldBe "Sorry, there is a problem with the service"
+      }
+
+    }
+
     "a BAD_REQUEST is returned from Nrs Submission" should {
 
       lazy val result = TestConfirmSubmissionController.submitToNrs("18AA", submitVatReturnModel)
@@ -345,6 +367,7 @@ class ConfirmSubmissionControllerSpec extends BaseSpec
       "return an ISE" in {
         setupVatSubscriptionService(successCustomerInfoResponse)
         mockFullAuthResponse(agentFullInformationResponse)
+        mockExtractReceiptData(successReceiptDataResponse)
         mockNrsSubmission(Future.successful(Left(BadRequestError("400", "error message"))))
 
         status(result) shouldBe Status.INTERNAL_SERVER_ERROR
