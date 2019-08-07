@@ -86,7 +86,7 @@ class ReceiptDataHelperSpec extends BaseSpec {
       case (true, EN) => "Total value of sales and other supplies, including VAT"
       case (false, EN) => "Total value of sales and other supplies, excluding VAT"
       case (true, CY) => "Cyfanswm gwerth gwerthiannau a chyflenwadau eraill, gan gynnwys TAW"
-      case (false, CY) => "Cyfanswm gwerth y gwerthiannau a chyflenwadau eraill, ac eithrio TAW"
+      case (_, _) => "Cyfanswm gwerth y gwerthiannau a chyflenwadau eraill, ac eithrio TAW"
     }
 
     val box7Expected = ifEnglishElse(
