@@ -219,6 +219,7 @@ class ConfirmSubmissionControllerSpec extends BaseSpec
               mockExtractReceiptData(successReceiptDataResponse)
               setupAuditExtendedEvent
               setupAuditExtendedEvent
+              setupAuditExtendedEvent
 
               status(result) shouldBe Status.SEE_OTHER
             }
@@ -344,6 +345,7 @@ class ConfirmSubmissionControllerSpec extends BaseSpec
         mockNrsSubmission(Future.successful(Right(SuccessModel("1234567890"))))
         mockVatReturnSubmission(Future.successful(Right(SubmissionSuccessModel("12345"))))
         mockExtractReceiptData(successReceiptDataResponse)
+        setupAuditExtendedEvent
         setupAuditExtendedEvent
         setupAuditExtendedEvent
 
