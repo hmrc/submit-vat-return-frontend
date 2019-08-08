@@ -42,48 +42,90 @@ class ReceiptDataHelperSpec extends BaseSpec {
   )
 
   def expectedAnswers(frs: Boolean, language: Language): Seq[Answers] = {
+    def ifEnglishElse(ifEnglish: String, ifWelsh: String): String = if (language == EN) ifEnglish else ifWelsh
 
-    val box1Expected = if(language == EN) {
-      "VAT you charged on sales and other supplies"
-    } else {
-      "I`M WELSH INIT BRUH"
-    }
+    val box1Expected = ifEnglishElse(
+      "VAT you charged on sales and other supplies",
+      "TAW a godwyd gennych ar werthiannau a chyflenwadau eraill"
+    )
 
-    val boxSixExpected = (frs, language) match {
+    val box2Expected = ifEnglishElse(
+      "VAT you owe on goods purchased from EC countries and brought into the UK",
+      "TAW sydd arnoch ar nwyddau a brynwyd o wledydd y GE ac y daethpwyd â nhw i mewn i’r DU"
+    )
+
+    val box3Expected = ifEnglishElse(
+      "VAT you owe before deductions (this is the total of box 1 and 2)",
+      "TAW sydd arnoch cyn didyniadau (dyma gyfanswm blwch 1 a 2)"
+    )
+
+    val box4Expected = ifEnglishElse(
+      "VAT you have claimed back",
+      "TAW yr ydych wedi’i hawlio’n ôl"
+    )
+
+    val box5Expected = ifEnglishElse(
+      "Return total",
+      "Cyfanswm y Ffurflen TAW"
+    )
+
+    val box6Expected = (frs, language) match {
       case (true, EN) => "Total value of sales and other supplies, including VAT"
       case (false, EN) => "Total value of sales and other supplies, excluding VAT"
-      case (true, CY) => "Total value of sales and other supplies, including VAT"
-      case (false, CY) => "Total value of sales and other supplies, excluding VAT"
+      case (true, CY) => "Cyfanswm gwerth gwerthiannau a chyflenwadau eraill, gan gynnwys TAW"
+      case (false, CY) => "Cyfanswm gwerth y gwerthiannau a chyflenwadau eraill, ac eithrio TAW"
     }
+
+    val box7Expected = ifEnglishElse(
+      "Total value of purchases and other expenses, excluding VAT",
+      "Cyfanswm gwerth y pryniannau a threuliau eraill, ac eithrio TAW"
+    )
+
+    val box8Expected = ifEnglishElse(
+      "Total value of supplied goods to EC countries and related costs (excluding VAT)",
+      "Cyfanswm gwerth y nwyddau a gyflenwyd i wledydd y GE a chostau perthynol (ac eithrio TAW)"
+    )
+
+    val box9Expected = ifEnglishElse(
+      "Total value of goods purchased from EC countries and brought into the UK, as well as any related costs (excluding VAT)",
+      "Cyfanswm gwerth y nwyddau a brynwyd o wledydd y GE ac y daethpwyd â nhw i mewn i’r DU, yn ogystal ag unrhyw gostau perthynol (ac eithrio TAW)"
+    )
 
     Seq(Answers(
       "Your VAT Return",
       Seq(
         ("box1", box1Expected, Some("£10.00"), None),
-        ("box2", "VAT you owe on goods purchased from EC countries and brought into the UK", Some("£25.55"), None),
-        ("box3", "VAT you owe before deductions (this is the total of box 1 and 2)", Some("£33.00"), None),
-        ("box4", "VAT you have claimed back", Some("£74.00"), None),
-        ("box5", "Return total", Some("£95.06"), None),
-        ("box6", boxSixExpected, Some("£1,006.00"), None),
-        ("box7", "Total value of purchases and other expenses, excluding VAT", Some("£1,006.66"), None),
-        ("box8", "Total value of supplied goods to EC countries and related costs (excluding VAT)", Some("£889.90"), None),
-        ("box9", "Total value of goods purchased from EC countries and brought into the UK, as well as any related costs (excluding VAT)", Some("£900.00"), None)
+        ("box2", box2Expected, Some("£25.55"), None),
+        ("box3", box3Expected, Some("£33.00"), None),
+        ("box4", box4Expected, Some("£74.00"), None),
+        ("box5", box5Expected, Some("£95.06"), None),
+        ("box6", box6Expected, Some("£1,006.00"), None),
+        ("box7", box7Expected, Some("£1,006.66"), None),
+        ("box8", box8Expected, Some("£889.90"), None),
+        ("box9", box9Expected, Some("£900.00"), None)
       ).map((Answer.apply _).tupled(_))))
   }
 
-  def expectedDeclaration(isAgent: Boolean): Declaration = {
-    Declaration(
-      if (isAgent) "I confirm that my client has received a copy of the information contained in this return and approved the information as being correct and complete to the best of their knowledge and belief."
-      else "By submitting this return, you are making a legal declaration that the information is correct and complete to the best of your knowledge and belief. A false declaration can result in prosecution.",
-      "Scarlett Flamberg", None, declarationConsent = true
-    )
+  def expectedDeclaration(isAgent: Boolean, language: Language): Declaration = {
+    val declarationText: String = (isAgent, language) match {
+      case (true, EN) => "I confirm that my client has received a copy of the information contained in this return and approved " +
+        "the information as being correct and complete to the best of their knowledge and belief."
+      case (false, EN) => "By submitting this return, you are making a legal declaration that the information is " +
+        "correct and complete to the best of your knowledge and belief. A false declaration can result in prosecution."
+      case (true, CY) => "Rwy’n cadarnhau bod fy nghleient wedi cael copi o’r wybodaeth sydd ar y Ffurflen TAW hon, ac " +
+        "wedi cytuno bod yr wybodaeth yn gywir ac yn gyflawn hyd eithaf ei wybodaeth a’i gred."
+      case (false, CY) => "Drwy gyflwyno’r Ffurflen TAW hon, rydych yn gwneud datganiad cyfreithiol bod yr wybodaeth yn gywir " +
+        "ac yn gyflawn hyd eithaf eich gwybodaeth a’ch cred. Gall datganiad ffug arwain at erlyniad."
+    }
+
+    Declaration(declarationText, "Scarlett Flamberg", None, declarationConsent = true)
   }
 
   private def mockOutboundCall(frs: Boolean, noName: Boolean = false) = {
     (mockConnector.getCustomerDetails(_: String)(_: HeaderCarrier, _: ExecutionContext))
       .expects(*, *, *)
       .returning(Future.successful(Right(CustomerDetails(
-        if(noName) None else Some("Scarlett"), if(noName) None else Some("Flamberg"), None, None, frs
+        if (noName) None else Some("Scarlett"), if (noName) None else Some("Flamberg"), None, None, frs
       ))))
   }
 
@@ -112,7 +154,7 @@ class ReceiptDataHelperSpec extends BaseSpec {
         val result = await(service.extractReceiptData(createReturnModel(true))(userToUse, hc, ec))
 
         result shouldBe Right(
-          ReceiptData(EN, expectedAnswers(frs = true, EN), expectedDeclaration(true))
+          ReceiptData(EN, expectedAnswers(frs = true, EN), expectedDeclaration(isAgent = true, EN))
         )
       }
       "the user is an individual, without frs" in {
@@ -122,7 +164,7 @@ class ReceiptDataHelperSpec extends BaseSpec {
         val result = await(service.extractReceiptData(createReturnModel(false))(userToUse, hc, ec))
 
         result shouldBe Right(
-          ReceiptData(CY, expectedAnswers(frs = false, CY), expectedDeclaration(false))
+          ReceiptData(CY, expectedAnswers(frs = false, CY), expectedDeclaration(isAgent = false, CY))
         )
       }
       "the user has no language cookie" in {
@@ -131,7 +173,7 @@ class ReceiptDataHelperSpec extends BaseSpec {
         val result = await(service.extractReceiptData(createReturnModel(false))(user, hc, ec))
 
         result shouldBe Right(
-          ReceiptData(EN, expectedAnswers(frs = false, EN), expectedDeclaration(false))
+          ReceiptData(EN, expectedAnswers(frs = false, EN), expectedDeclaration(isAgent = false, EN))
         )
       }
     }

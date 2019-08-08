@@ -45,7 +45,7 @@ class ReceiptDataHelper @Inject()(
       case None => EN
     }
 
-    extractDeclaration(submitModel).map {
+    extractDeclaration(submitModel, Lang.apply(language.languageCode)).map {
       case Right(declaration) =>
         Right(ReceiptData(
           language,
@@ -79,7 +79,7 @@ class ReceiptDataHelper @Inject()(
     ))
   }
 
-  private def extractDeclaration(submitModel: SubmitVatReturnModel)
+  private def extractDeclaration(submitModel: SubmitVatReturnModel, lang: Lang)
                                 (implicit user: User[_], hc: HeaderCarrier, ec: ExecutionContext): Future[Either[HttpError, Declaration]] = {
 
     val declarationAgentOrNonAgent = if (user.isAgent) "agentDeclaration" else "nonAgentDeclaration"
@@ -88,7 +88,7 @@ class ReceiptDataHelper @Inject()(
       case Right(result) =>
         try {
           Right(Declaration(
-            messages(s"confirm_submission.$declarationAgentOrNonAgent"),
+            messages(s"confirm_submission.$declarationAgentOrNonAgent")(lang),
             result.clientName.get,
             None,
             declarationConsent = true
