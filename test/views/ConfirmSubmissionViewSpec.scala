@@ -19,13 +19,12 @@ package views
 
 import java.time.LocalDate
 
-import org.jsoup.Jsoup
-import org.jsoup.nodes.Document
+import assets.CustomerDetailsTestAssets._
 import assets.messages.{ConfirmSubmissionMessages => viewMessages}
 import models._
-import assets.CustomerDetailsTestAssets._
-import models.auth.User
-import play.api.mvc.AnyContentAsEmpty
+import org.jsoup.Jsoup
+import org.jsoup.nodes.Document
+import play.api.i18n.Lang
 
 class ConfirmSubmissionViewSpec extends ViewBaseSpec {
 
@@ -96,7 +95,7 @@ class ConfirmSubmissionViewSpec extends ViewBaseSpec {
           userName = customerDetailsWithFRS.clientName
         )
 
-        lazy val view = views.html.confirm_submission(viewModel, isAgent = false)(fakeRequest, messages, mockAppConfig, user)
+        lazy val view = views.html.confirm_submission(viewModel, isAgent = false)(fakeRequest, messages, mockAppConfig, user, Lang.apply("en"))
         lazy implicit val document: Document = Jsoup.parse(view.body)
 
         s"the title is displayed as ${viewMessages.title}" in {
@@ -253,7 +252,7 @@ class ConfirmSubmissionViewSpec extends ViewBaseSpec {
         userName = customerDetailsWithFRS.clientName
       )
 
-      lazy val view = views.html.confirm_submission(viewModel, isAgent = false)(fakeRequest, messages, mockAppConfig, user)
+      lazy val view = views.html.confirm_submission(viewModel, isAgent = false)(fakeRequest, messages, mockAppConfig, user, Lang.apply("en"))
       lazy implicit val document: Document = Jsoup.parse(view.body)
 
       s"box 6 description displays as ${viewMessages.box6DescriptionNoFRS}" in {
@@ -270,7 +269,7 @@ class ConfirmSubmissionViewSpec extends ViewBaseSpec {
         userName = customerDetailsModel.clientName
       )
 
-      lazy val view = views.html.confirm_submission(viewModel, isAgent = true)(fakeRequest, messages, mockAppConfig, user)
+      lazy val view = views.html.confirm_submission(viewModel, isAgent = true)(fakeRequest, messages, mockAppConfig, user, Lang.apply("en"))
       lazy implicit val document: Document = Jsoup.parse(view.body)
 
       "not render breadcrumbs" in {

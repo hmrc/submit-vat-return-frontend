@@ -24,6 +24,7 @@ import models.VatObligation
 import models.auth.User
 import org.jsoup.Jsoup
 import org.jsoup.nodes.Document
+import play.api.i18n.Lang
 import play.api.mvc.AnyContentAsEmpty
 
 class SubmitFormViewSpec extends ViewBaseSpec {
@@ -53,7 +54,14 @@ class SubmitFormViewSpec extends ViewBaseSpec {
 
     "the user is on the flat rate scheme" should {
 
-      lazy val view = views.html.submit_form("18AA", Some("ABC Studios"), flatRateScheme = true, obligation, SubmitVatReturnForm.nineBoxForm, isAgent = false) (fakeRequest, messages, mockAppConfig, user)
+      lazy val view = views.html.submit_form(
+        "18AA",
+        Some("ABC Studios"),
+        flatRateScheme = true,
+        obligation,
+        SubmitVatReturnForm.nineBoxForm,
+        isAgent = false
+      )(fakeRequest, messages, mockAppConfig, user, Lang.apply("en"))
       lazy implicit val document: Document = Jsoup.parse(view.body)
 
       "render breadcrumbs" which {
@@ -138,7 +146,14 @@ class SubmitFormViewSpec extends ViewBaseSpec {
     }
 
     "the user is not on the flat rate scheme" should {
-      lazy val view = views.html.submit_form("18AA", Some("ABC Studios"), flatRateScheme = false, obligation, SubmitVatReturnForm.nineBoxForm, isAgent = false) (fakeRequest, messages, mockAppConfig, user)
+      lazy val view = views.html.submit_form(
+        "18AA",
+        Some("ABC Studios"),
+        flatRateScheme = false,
+        obligation,
+        SubmitVatReturnForm.nineBoxForm,
+        isAgent = false
+      ) (fakeRequest, messages, mockAppConfig, user, Lang.apply("en"))
       lazy implicit val document: Document = Jsoup.parse(view.body)
 
       "display the non flat rate scheme text ofr box 6" in {
