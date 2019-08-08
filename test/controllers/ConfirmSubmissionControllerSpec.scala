@@ -413,58 +413,15 @@ class ConfirmSubmissionControllerSpec extends BaseSpec
 
     "a successful call to the auth service is made" when {
 
-      "all of the information is returned from the auth service" should {
+      val expectedResponse = Right(IdentityDataTestData.correctModel)
 
-        val expectedResponse = Right(IdentityDataTestData.correctModel)
-
-        lazy val result = {
-          mockFullAuthResponse(agentFullInformationResponse)
-          TestConfirmSubmissionController.buildIdentityData()(user)
-        }
-
-        "return a full IdentityData model" in {
-          await(result) shouldBe expectedResponse
-        }
+      lazy val result = {
+        mockFullAuthResponse(agentFullInformationResponse)
+        TestConfirmSubmissionController.buildIdentityData()(user)
       }
 
-      "none of the mandatory fields are returned from the auth service" should {
-
-        val invalidAuthResponse =
-          new ~(new ~(new ~(new ~(new ~(new ~(new ~(new ~(new ~(new ~(new ~(new ~(new ~(new ~(new ~(new ~(new ~(new ~(new ~(
-            Some(AffinityGroup.Agent),
-            IdentityDataTestData.correctModel.internalId),
-            IdentityDataTestData.correctModel.externalId),
-            IdentityDataTestData.correctModel.agentCode),
-            None),
-            IdentityDataTestData.correctModel.confidenceLevel),
-            IdentityDataTestData.correctModel.nino),
-            IdentityDataTestData.correctModel.saUtr),
-            None),
-            IdentityDataTestData.correctModel.dateOfBirth),
-            IdentityDataTestData.correctModel.email),
-            IdentityDataTestData.correctModel.agentInformation),
-            IdentityDataTestData.correctModel.groupIdentifier),
-            IdentityDataTestData.correctModel.credentialRole),
-            IdentityDataTestData.correctModel.mdtpInformation),
-            Some(IdentityDataTestData.correctModel.itmpName)),
-            IdentityDataTestData.correctModel.itmpDateOfBirth),
-            Some(IdentityDataTestData.correctModel.itmpAddress)),
-            IdentityDataTestData.correctModel.credentialStrength),
-            LoginTimes(new DateTime("2016-11-27T09:00:00.000Z"), Some(new DateTime("2016-11-01T12:00:00.000Z")))
-          )
-
-        lazy val result = {
-          mockFullAuthResponse(invalidAuthResponse)
-          TestConfirmSubmissionController.buildIdentityData()(user)
-        }
-
-        "return an internal server error" in {
-          status(result.left.get) shouldBe 500
-        }
-
-        "render the submission error page" in {
-          Jsoup.parse(bodyOf(result.left.get)).title shouldBe "Sorry, there is a problem with the service"
-        }
+      "return a full IdentityData model" in {
+        await(result) shouldBe expectedResponse
       }
     }
 

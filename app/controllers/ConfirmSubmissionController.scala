@@ -196,9 +196,9 @@ class ConfirmSubmissionController @Inject()(val messagesApi: MessagesApi,
 
       case affinityGroup ~ internalId ~
         externalId ~ agentCode ~
-        Some(credentials) ~ confidenceLevel ~
+        credentials ~ confidenceLevel ~
         nino ~ saUtr ~
-        Some(name) ~ dateOfBirth ~
+        name ~ dateOfBirth ~
         email ~ agentInfo ~
         groupId ~ credentialRole ~
         mdtpInfo ~ itmpName ~
@@ -218,11 +218,6 @@ class ConfirmSubmissionController @Inject()(val messagesApi: MessagesApi,
         )
 
         Future.successful(Right(identityData))
-
-      case error =>
-        Logger.debug(s"[ConfirmSubmission][buildIdentityData] - Did not receive minimum data from Auth required for NRS Submission: $error")
-        Logger.warn(s"[ConfirmSubmission][buildIdentityData] - Did not receive minimum data from Auth required for NRS Submission")
-        Future.successful(Left(InternalServerError(views.html.errors.submission_error())))
 
     } recover {
       case exception: AuthorisationException =>
