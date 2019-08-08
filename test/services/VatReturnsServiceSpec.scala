@@ -28,6 +28,7 @@ import play.api.test.FakeRequest
 import assets.NrsTestData.IdentityDataTestData.{correctModel => testIdentityModel}
 import assets.NrsTestData.ReceiptTestData.{correctModel => testReceiptDataModel}
 import uk.gov.hmrc.http.HeaderCarrier
+import uk.gov.hmrc.http.logging.Authorization
 
 import scala.concurrent.{ExecutionContext, Future}
 
@@ -85,7 +86,8 @@ class VatReturnsServiceSpec extends BaseSpec {
 
   "Calling .nrsSubmission" when {
 
-    lazy val request: User[AnyContentAsEmpty.type] = User[AnyContentAsEmpty.type](vrn)(FakeRequest().withHeaders("Authorization" -> ""))
+    lazy val headerCarrierWithAuthorization: HeaderCarrier = HeaderCarrier(authorization = Some(Authorization("Bearer 1234")))
+    lazy val request: User[AnyContentAsEmpty.type] = User[AnyContentAsEmpty.type](vrn)(FakeRequest().withHeaders("Authorization" -> "Bearer 1234"))
 
     "submission is successful" should {
 
@@ -98,7 +100,7 @@ class VatReturnsServiceSpec extends BaseSpec {
           .returning(Future.successful(expectedResult))
 
         val result: HttpGetResult[SuccessModel] =
-          await(service.nrsSubmission("18AA", "payload", "checksum", testIdentityModel, testReceiptDataModel)(hc, ec,request))
+          await(service.nrsSubmission("18AA", "payload", "checksum", testIdentityModel, testReceiptDataModel)(headerCarrierWithAuthorization, ec,request))
 
         result shouldBe expectedResult
       }
@@ -115,7 +117,7 @@ class VatReturnsServiceSpec extends BaseSpec {
           .returning(Future.successful(expectedResult))
 
         val result: HttpGetResult[SuccessModel] =
-          await(service.nrsSubmission("18AA", "payload", "checksum", testIdentityModel, testReceiptDataModel)(hc, ec, request))
+          await(service.nrsSubmission("18AA", "payload", "checksum", testIdentityModel, testReceiptDataModel)(headerCarrierWithAuthorization, ec, request))
 
         result shouldBe expectedResult
       }

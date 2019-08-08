@@ -108,8 +108,7 @@ trait BaseISpec extends WordSpec with WireMockHelper with Matchers with
     wsClient.url(s"http://localhost:$port$appRouteContext$path")
       .withHeaders(
         HeaderNames.COOKIE -> SessionCookieBaker.bakeSessionCookie(additionalCookies),
-        "Csrf-Token" -> "nocheck",
-        "Authorization" -> "Bearer 1234"
+        "Csrf-Token" -> "nocheck"
       )
       .withFollowRedirects(false)
 

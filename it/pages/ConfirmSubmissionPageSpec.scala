@@ -135,8 +135,6 @@ class ConfirmSubmissionPageSpec extends NrsAssets with GivenWhenThen {
               "hasFlatRateScheme" -> false
             )
 
-            appConfig.features.nrsSubmissionEnabled(true)
-
             "NRS returns successful response and backend submission returns 200" should {
 
               "redirect to confirmation page" in {
