@@ -23,7 +23,7 @@ import config.{AppConfig, ErrorHandler}
 import mocks.MockConfig
 import models.auth.User
 import org.scalamock.scalatest.MockFactory
-import org.scalatest.{Matchers, WordSpec}
+import org.scalatest.{BeforeAndAfterEach, Matchers, WordSpec}
 import org.scalatestplus.play.guice._
 import play.api.Configuration
 import play.api.i18n.{Lang, Messages, MessagesApi}
@@ -35,7 +35,7 @@ import uk.gov.hmrc.play.test.UnitSpec
 
 import scala.concurrent.ExecutionContext
 
-trait BaseSpec extends WordSpec with Matchers with GuiceOneAppPerSuite with MockFactory with UnitSpec {
+trait BaseSpec extends WordSpec with Matchers with GuiceOneAppPerSuite with MockFactory with UnitSpec with BeforeAndAfterEach {
 
   lazy val injector: Injector = app.injector
 
@@ -63,5 +63,15 @@ trait BaseSpec extends WordSpec with Matchers with GuiceOneAppPerSuite with Mock
   implicit val materializer: Materializer = ActorMaterializer()
   implicit lazy val hc: HeaderCarrier = HeaderCarrier()
   implicit lazy val ec: ExecutionContext = injector.instanceOf[ExecutionContext]
+
+  override def beforeEach(): Unit = {
+    super.beforeEach()
+    mockAppConfig.features.nrsSubmissionEnabled(false)
+  }
+
+  override def afterEach(): Unit = {
+    super.afterEach()
+    mockAppConfig.features.nrsSubmissionEnabled(false)
+  }
 
 }

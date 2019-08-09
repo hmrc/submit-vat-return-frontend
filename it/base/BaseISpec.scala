@@ -18,13 +18,17 @@ package base
 
 import common.SessionKeys
 import config.AppConfig
-import org.scalatest.{BeforeAndAfterAll, Matchers, WordSpec}
+import models.auth.User
+import org.scalatest.{BeforeAndAfterAll, BeforeAndAfterEach, Matchers, WordSpec}
 import org.scalatestplus.play.guice.GuiceOneServerPerSuite
 import play.api.data.Form
 import play.api.http.HeaderNames
+import play.api.i18n.{Lang, Messages, MessagesApi}
 import play.api.inject.guice.GuiceApplicationBuilder
 import play.api.libs.json.{JsValue, Json}
 import play.api.libs.ws.{WSClient, WSRequest, WSResponse}
+import play.api.mvc.AnyContentAsEmpty
+import play.api.test.FakeRequest
 import play.api.{Application, Environment, Mode}
 import uk.gov.hmrc.play.bootstrap.http.HttpClient
 import utils.WireMockHelper
@@ -33,7 +37,7 @@ import scala.concurrent.duration.Duration
 import scala.concurrent.{Await, Awaitable}
 
 trait BaseISpec extends WordSpec with WireMockHelper with Matchers with
-  BeforeAndAfterAll with GuiceOneServerPerSuite {
+  BeforeAndAfterAll with BeforeAndAfterEach with GuiceOneServerPerSuite {
 
   def servicesConfig: Map[String, String] = Map(
     "play.filters.csrf.header.bypassHeaders.Csrf-Token" -> "nocheck",
@@ -56,7 +60,15 @@ trait BaseISpec extends WordSpec with WireMockHelper with Matchers with
   lazy val httpClient: HttpClient = app.injector.instanceOf[HttpClient]
   lazy val wsClient: WSClient = app.injector.instanceOf[WSClient]
   lazy val appConfig: AppConfig = app.injector.instanceOf[AppConfig]
+  lazy val messagesApi: MessagesApi = app.injector.instanceOf[MessagesApi]
+  implicit lazy val messages: Messages = Messages(Lang("en-GB"), messagesApi)
   val appRouteContext: String = "/vat-through-software/submit-vat-return"
+
+  implicit val fakeRequest: FakeRequest[AnyContentAsEmpty.type] = FakeRequest()
+
+  lazy val vrn = "999999999"
+
+  def user: User[AnyContentAsEmpty.type] = new User[AnyContentAsEmpty.type](vrn)
 
   override def beforeAll(): Unit = {
     super.beforeAll()
@@ -66,6 +78,16 @@ trait BaseISpec extends WordSpec with WireMockHelper with Matchers with
   override def afterAll(): Unit = {
     stopServer()
     super.afterAll()
+  }
+
+  override def beforeEach(): Unit = {
+    super.beforeEach()
+    appConfig.features.nrsSubmissionEnabled(false)
+  }
+
+  override def afterEach(): Unit = {
+    super.afterEach()
+    appConfig.features.nrsSubmissionEnabled(false)
   }
 
   def await[T](awaitable: Awaitable[T]): T = Await.result(awaitable, Duration.Inf)
@@ -84,7 +106,10 @@ trait BaseISpec extends WordSpec with WireMockHelper with Matchers with
 
   def buildRequest(path: String, additionalCookies: Map[String, String] = Map.empty): WSRequest =
     wsClient.url(s"http://localhost:$port$appRouteContext$path")
-      .withHeaders(HeaderNames.COOKIE -> SessionCookieBaker.bakeSessionCookie(additionalCookies), "Csrf-Token" -> "nocheck")
+      .withHeaders(
+        HeaderNames.COOKIE -> SessionCookieBaker.bakeSessionCookie(additionalCookies),
+        "Csrf-Token" -> "nocheck"
+      )
       .withFollowRedirects(false)
 
   def formatSessionMandationStatus: Option[String] => Map[String, String] =_.fold(Map.empty[String, String])(x => Map(SessionKeys.mandationStatus -> x))

@@ -18,7 +18,6 @@ package controllers
 
 import java.time.LocalDate
 
-import assets.CustomerDetailsTestAssets._
 import assets.NrsTestData.IdentityDataTestData
 import assets.messages.SubmissionErrorMessages
 import audit.mocks.MockAuditingService
@@ -26,9 +25,10 @@ import base.BaseSpec
 import common.{MandationStatuses, SessionKeys}
 import connectors.httpParsers.ResponseHttpParsers.HttpGetResult
 import mocks.service.{MockDateService, MockVatReturnsService, MockVatSubscriptionService}
-import mocks.{MockAuth, MockMandationPredicate}
+import mocks.{MockAuth, MockMandationPredicate, MockReceiptDataService}
 import models.auth.User
-import models.errors.UnexpectedJsonFormat
+import models.errors.{BadRequestError, UnexpectedJsonFormat, UnknownError}
+import models.nrs.SuccessModel
 import models.vatReturnSubmission.SubmissionSuccessModel
 import models.{CustomerDetails, SubmitVatReturnModel}
 import org.joda.time.DateTime
@@ -37,12 +37,10 @@ import play.api.http.Status
 import play.api.libs.json.Json
 import play.api.mvc.{AnyContentAsEmpty, Result}
 import play.api.test.Helpers._
-import uk.gov.hmrc.auth.core.authorise.Predicate
 import uk.gov.hmrc.auth.core.retrieve._
 import uk.gov.hmrc.auth.core.{AffinityGroup, BearerTokenExpired}
-import uk.gov.hmrc.http.HeaderCarrier
 
-import scala.concurrent.{ExecutionContext, Future}
+import scala.concurrent.Future
 
 class ConfirmSubmissionControllerSpec extends BaseSpec
   with MockAuth
@@ -50,7 +48,8 @@ class ConfirmSubmissionControllerSpec extends BaseSpec
   with MockVatSubscriptionService
   with MockVatReturnsService
   with MockDateService
-  with MockAuditingService {
+  with MockAuditingService
+  with MockReceiptDataService {
 
   object TestConfirmSubmissionController extends ConfirmSubmissionController(
     messagesApi,
@@ -63,7 +62,24 @@ class ConfirmSubmissionControllerSpec extends BaseSpec
     ec,
     mockAppConfig,
     mockDateService,
-    mockEnrolmentsAuthService
+    mockEnrolmentsAuthService,
+    mockReceiptDataService
+  )
+  
+  val submitVatReturnModel = SubmitVatReturnModel(
+    1000.00,
+    1000.00,
+    1000.00,
+    1000.00,
+    1000.00,
+    1000.00,
+    1000.00,
+    1000.00,
+    1000.00,
+    flatRateScheme = true,
+    LocalDate.now(),
+    LocalDate.now(),
+    LocalDate.now()
   )
 
   "ConfirmSubmissionController .show" when {
@@ -71,28 +87,12 @@ class ConfirmSubmissionControllerSpec extends BaseSpec
     "user is authorised" when {
 
       val nineBoxModel: String = Json.stringify(Json.toJson(
-        SubmitVatReturnModel(
-          1000.00,
-          1000.00,
-          1000.00,
-          1000.00,
-          1000.00,
-          1000.00,
-          1000.00,
-          1000.00,
-          1000.00,
-          flatRateScheme = true,
-          LocalDate.now(),
-          LocalDate.now(),
-          LocalDate.now()
-        )
+        submitVatReturnModel
       ))
 
       "there is session data" when {
 
         "a successful response is returned from the vat subscription service" should {
-
-          val vatSubscriptionResponse: Future[HttpGetResult[CustomerDetails]] = Future.successful(Right(customerDetailsWithFRS))
 
           lazy val requestWithSessionData: User[AnyContentAsEmpty.type] =
             User[AnyContentAsEmpty.type]("123456789")(fakeRequest.withSession(
@@ -102,7 +102,7 @@ class ConfirmSubmissionControllerSpec extends BaseSpec
             )
 
           lazy val result: Future[Result] = {
-            setupVatSubscriptionService(vatSubscriptionResponse)
+            setupVatSubscriptionService(successCustomerInfoResponse)
             TestConfirmSubmissionController.show("18AA")(requestWithSessionData)
           }
 
@@ -197,6 +197,37 @@ class ConfirmSubmissionControllerSpec extends BaseSpec
 
         "obligation end date is in the past" when {
 
+          "when the nrs feature switch is enabled and a submission to the back is successful" should {
+
+            implicit lazy val nrsUser: User[AnyContentAsEmpty.type] = User[AnyContentAsEmpty.type](vrn)(fakeRequest)
+
+            lazy val result: Future[Result] = {
+              mockAppConfig.features.nrsSubmissionEnabled(true)
+              TestConfirmSubmissionController.submit("18AA")(fakeRequest.withSession(
+                "mtdNineBoxReturnData" -> nineBoxData,
+                SessionKeys.mandationStatus -> MandationStatuses.nonMTDfB
+              ))
+            }
+
+            "return 303" in {
+              mockAuthorise(mtdVatAuthorisedResponse)
+              mockDateHasPassed(response = true)
+              mockVatReturnSubmission(Future.successful(Right(SubmissionSuccessModel("12345"))))
+              setupVatSubscriptionService(successCustomerInfoResponse)
+              mockFullAuthResponse(agentFullInformationResponse)
+              mockNrsSubmission(Future.successful(Right(SuccessModel("1234567890"))))
+              mockExtractReceiptData(successReceiptDataResponse)
+              setupAuditExtendedEvent
+              setupAuditExtendedEvent
+
+              status(result) shouldBe Status.SEE_OTHER
+            }
+
+            s"redirect to ${controllers.routes.ConfirmationController.show()}" in {
+              redirectLocation(result) shouldBe Some(controllers.routes.ConfirmationController.show().url)
+            }
+          }
+
           "submission to backend is successful" should {
 
             lazy val result: Future[Result] = TestConfirmSubmissionController.submit("18AA")(fakeRequest.withSession(
@@ -207,9 +238,10 @@ class ConfirmSubmissionControllerSpec extends BaseSpec
             "return 303" in {
               mockAuthorise(mtdVatAuthorisedResponse)
               mockDateHasPassed(response = true)
-              mockVatReturnsService(Future.successful(Right(SubmissionSuccessModel("12345"))))
+              mockVatReturnSubmission(Future.successful(Right(SubmissionSuccessModel("12345"))))
               setupAuditExtendedEvent
               setupAuditExtendedEvent
+
               status(result) shouldBe Status.SEE_OTHER
             }
 
@@ -228,14 +260,14 @@ class ConfirmSubmissionControllerSpec extends BaseSpec
             "return 500" in {
               mockAuthorise(mtdVatAuthorisedResponse)
               mockDateHasPassed(response = true)
-              mockVatReturnsService(Future.successful(Left(UnexpectedJsonFormat)))
+              mockVatReturnSubmission(Future.successful(Left(UnexpectedJsonFormat)))
               setupAuditExtendedEvent
 
               status(result) shouldBe Status.INTERNAL_SERVER_ERROR
             }
 
             "show the Submission error page" in {
-              Jsoup.parse(bodyOf(result)).title() shouldBe SubmissionErrorMessages.title
+              Jsoup.parse(bodyOf(result)).title() shouldBe SubmissionErrorMessages.heading
             }
           }
         }
@@ -297,100 +329,115 @@ class ConfirmSubmissionControllerSpec extends BaseSpec
     authControllerChecks(TestConfirmSubmissionController.submit("18AA"), fakeRequest)
   }
 
-  "ConfirmSubmissionController .buildIdentityData" when {
+  "ConfirmSubmissionController .submitToNrs" when {
 
-    def mockAuthResponse[A](authResponse: Future[A]): Unit = {
-      (mockAuthConnector.authorise(_: Predicate, _: Retrieval[_])(_: HeaderCarrier, _: ExecutionContext))
-        .expects(*, *, *, *)
-        .returns(authResponse)
+    implicit lazy val nrsUser: User[AnyContentAsEmpty.type] = User[AnyContentAsEmpty.type](vrn)(fakeRequest)
+
+    "a Right is returned from buildIdentityData and the submission is successful" should {
+
+      lazy val result = TestConfirmSubmissionController.submitToNrs("18AA", submitVatReturnModel)
+
+      "return a SEE_OTHER" in {
+
+        setupVatSubscriptionService(successCustomerInfoResponse)
+        mockFullAuthResponse(agentFullInformationResponse)
+        mockNrsSubmission(Future.successful(Right(SuccessModel("1234567890"))))
+        mockVatReturnSubmission(Future.successful(Right(SubmissionSuccessModel("12345"))))
+        mockExtractReceiptData(successReceiptDataResponse)
+        setupAuditExtendedEvent
+        setupAuditExtendedEvent
+
+        status(result) shouldBe Status.SEE_OTHER
+      }
+
+      "redirect to Confirmation page" in {
+        redirectLocation(result) shouldBe Some(controllers.routes.ConfirmationController.show().url)
+      }
     }
+
+    "a Left is returned from buildIdentityData" should {
+
+      lazy val result = TestConfirmSubmissionController.submitToNrs("18AA", submitVatReturnModel)
+
+      "return an ISE" in {
+        setupVatSubscriptionService(successCustomerInfoResponse)
+        mockExtractReceiptData(successReceiptDataResponse)
+        mockFullAuthResponse(Future.failed(BearerTokenExpired()))
+
+        status(result) shouldBe Status.INTERNAL_SERVER_ERROR
+      }
+
+      "render the submission error page" in {
+        Jsoup.parse(bodyOf(result)).title shouldBe "Sorry, there is a problem with the service"
+      }
+    }
+
+    "a Left is returned from extractReceiptData" should {
+
+      lazy val result = TestConfirmSubmissionController.submitToNrs("18AA", submitVatReturnModel)
+
+      "return an ISE" in {
+        setupVatSubscriptionService(successCustomerInfoResponse)
+        mockFullAuthResponse(agentFullInformationResponse)
+        mockExtractReceiptData(Future.successful(Left(UnknownError)))
+
+        status(result) shouldBe Status.INTERNAL_SERVER_ERROR
+      }
+
+      "render the submission error page" in {
+        Jsoup.parse(bodyOf(result)).title shouldBe "Sorry, there is a problem with the service"
+      }
+
+    }
+
+    "a BAD_REQUEST is returned from Nrs Submission" should {
+
+      lazy val result = TestConfirmSubmissionController.submitToNrs("18AA", submitVatReturnModel)
+
+      "return an ISE" in {
+        setupVatSubscriptionService(successCustomerInfoResponse)
+        mockFullAuthResponse(agentFullInformationResponse)
+        mockExtractReceiptData(successReceiptDataResponse)
+        mockNrsSubmission(Future.successful(Left(BadRequestError("400", "error message"))))
+
+        status(result) shouldBe Status.INTERNAL_SERVER_ERROR
+      }
+
+      "render the submission error page" in {
+        Jsoup.parse(bodyOf(result)).title shouldBe "Sorry, there is a problem with the service"
+      }
+    }
+  }
+
+  "ConfirmSubmissionController .buildIdentityData" when {
 
     "a successful call to the auth service is made" when {
 
-      "all of the information is returned from the auth service" should {
+      val expectedResponse = Right(IdentityDataTestData.correctModel)
 
-        val authResponse =
-          new ~(new ~(new ~(new ~(new ~(new ~(new ~(new ~(new ~(new ~(new ~(new ~(new ~(new ~(new ~(new ~(new ~(new ~(new ~(
-            Some(AffinityGroup.Agent),
-            IdentityDataTestData.correctModel.internalId),
-            IdentityDataTestData.correctModel.externalId),
-            IdentityDataTestData.correctModel.agentCode),
-            Some(IdentityDataTestData.correctModel.credentials)),
-            IdentityDataTestData.correctModel.confidenceLevel),
-            IdentityDataTestData.correctModel.nino),
-            IdentityDataTestData.correctModel.saUtr),
-            Some(IdentityDataTestData.correctModel.name)),
-            IdentityDataTestData.correctModel.dateOfBirth),
-            IdentityDataTestData.correctModel.email),
-            IdentityDataTestData.correctModel.agentInformation),
-            IdentityDataTestData.correctModel.groupIdentifier),
-            IdentityDataTestData.correctModel.credentialRole),
-            IdentityDataTestData.correctModel.mdtpInformation),
-            Some(IdentityDataTestData.correctModel.itmpName)),
-            IdentityDataTestData.correctModel.itmpDateOfBirth),
-            Some(IdentityDataTestData.correctModel.itmpAddress)),
-            IdentityDataTestData.correctModel.credentialStrength),
-            LoginTimes(new DateTime("2016-11-27T09:00:00.000Z"), Some(new DateTime("2016-11-01T12:00:00.000Z")))
-          )
-
-        val expectedResponse = Right(IdentityDataTestData.correctModel)
-
-        lazy val result = {
-          mockAuthResponse(authResponse)
-          TestConfirmSubmissionController.buildIdentityData()(user)
-        }
-
-        "return a full IdentityData model" in {
-          await(result) shouldBe expectedResponse
-        }
+      lazy val result = {
+        mockFullAuthResponse(agentFullInformationResponse)
+        TestConfirmSubmissionController.buildIdentityData()(user)
       }
 
-      "none of the mandatory fields are returned from the auth service" should {
-
-        val authResponse =
-          new ~(new ~(new ~(new ~(new ~(new ~(new ~(new ~(new ~(new ~(new ~(new ~(new ~(new ~(new ~(new ~(new ~(new ~(new ~(
-            Some(AffinityGroup.Agent),
-            IdentityDataTestData.correctModel.internalId),
-            IdentityDataTestData.correctModel.externalId),
-            IdentityDataTestData.correctModel.agentCode),
-            None),
-            IdentityDataTestData.correctModel.confidenceLevel),
-            IdentityDataTestData.correctModel.nino),
-            IdentityDataTestData.correctModel.saUtr),
-            None),
-            IdentityDataTestData.correctModel.dateOfBirth),
-            IdentityDataTestData.correctModel.email),
-            IdentityDataTestData.correctModel.agentInformation),
-            IdentityDataTestData.correctModel.groupIdentifier),
-            IdentityDataTestData.correctModel.credentialRole),
-            IdentityDataTestData.correctModel.mdtpInformation),
-            Some(IdentityDataTestData.correctModel.itmpName)),
-            IdentityDataTestData.correctModel.itmpDateOfBirth),
-            Some(IdentityDataTestData.correctModel.itmpAddress)),
-            IdentityDataTestData.correctModel.credentialStrength),
-            LoginTimes(new DateTime("2016-11-27T09:00:00.000Z"), Some(new DateTime("2016-11-01T12:00:00.000Z")))
-          )
-
-        lazy val result = {
-          mockAuthResponse(authResponse)
-          TestConfirmSubmissionController.buildIdentityData()(user)
-        }
-
-        "return an internal server error" in {
-          status(result.left.get) shouldBe 500
-        }
+      "return a full IdentityData model" in {
+        await(result) shouldBe expectedResponse
       }
     }
 
     "an exception is returned from the auth service" should {
 
       lazy val result = {
-        mockAuthResponse(Future.failed(BearerTokenExpired()))
+        mockFullAuthResponse(Future.failed(BearerTokenExpired()))
         TestConfirmSubmissionController.buildIdentityData()(user)
       }
 
       "return an internal server error" in {
         status(result.left.get) shouldBe 500
+      }
+
+      "render the submission error page" in {
+        Jsoup.parse(bodyOf(result.left.get)).title shouldBe "Sorry, there is a problem with the service"
       }
     }
   }

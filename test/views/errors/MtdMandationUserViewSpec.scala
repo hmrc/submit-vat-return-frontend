@@ -21,13 +21,13 @@ import org.jsoup.Jsoup
 import org.jsoup.nodes.Document
 import play.api.mvc.AnyContentAsEmpty
 import views.ViewBaseSpec
-import assets.messages.IncorrectMandationMessages
+import assets.messages.MtdMandationMessages
 import auth.AuthKeys
 import play.api.test.FakeRequest
 
-class IncorrectMandationUserViewSpec extends ViewBaseSpec {
+class MtdMandationUserViewSpec extends ViewBaseSpec {
 
-  "Rendering the incorrect mandation view" when {
+  "Rendering the mtd mandation user view" when {
 
     object Selectors {
       val serviceName = ".header__menu__proposition-name"
@@ -38,23 +38,23 @@ class IncorrectMandationUserViewSpec extends ViewBaseSpec {
 
     "the user is a non agent" should {
 
-      lazy val view = views.html.errors.incorrect_mandation_user()(fakeRequest, mockAppConfig, messages, user)
+      lazy val view = views.html.errors.mtd_mandated_user()(fakeRequest, mockAppConfig, messages, user)
       lazy implicit val document: Document = Jsoup.parse(view.body)
 
       "have the correct document title" in {
-        document.title shouldBe IncorrectMandationMessages.title
+        document.title shouldBe MtdMandationMessages.heading
       }
 
       "have a the correct page heading" in {
-        elementText(Selectors.pageHeading) shouldBe IncorrectMandationMessages.heading
+        elementText(Selectors.pageHeading) shouldBe MtdMandationMessages.heading
       }
 
       "have the correct instructions on the page" in {
-        elementText(Selectors.instructions) shouldBe IncorrectMandationMessages.nonAgentParagraph
+        elementText(Selectors.instructions) shouldBe MtdMandationMessages.nonAgentParagraph
       }
 
-      s"have the correct link text of ${IncorrectMandationMessages.nonAgentLinkText}" in {
-        elementText(Selectors.instructionsLink) shouldBe IncorrectMandationMessages.nonAgentLinkText
+      s"have the correct link text of ${MtdMandationMessages.nonAgentLinkText}" in {
+        elementText(Selectors.instructionsLink) shouldBe MtdMandationMessages.nonAgentLinkText
       }
 
       "have a link to the return deadlines page" in {
@@ -68,15 +68,15 @@ class IncorrectMandationUserViewSpec extends ViewBaseSpec {
         FakeRequest().withSession(AuthKeys.agentSessionVrn -> "999999999")
 
       lazy val agentUser: User[AnyContentAsEmpty.type] = User[AnyContentAsEmpty.type]("999999999", Some("XAIT012345678"))(fakeRequestWithClientsVRN)
-      lazy val view = views.html.errors.incorrect_mandation_user()(fakeRequestWithClientsVRN, mockAppConfig, messages, user = agentUser)
+      lazy val view = views.html.errors.mtd_mandated_user()(fakeRequestWithClientsVRN, mockAppConfig, messages, user = agentUser)
       lazy implicit val document: Document = Jsoup.parse(view.body)
 
       "have the correct instructions on the page" in {
-        elementText(Selectors.instructions) shouldBe IncorrectMandationMessages.agentParagraph
+        elementText(Selectors.instructions) shouldBe MtdMandationMessages.agentParagraph
       }
 
-      s"have the correct link text of ${IncorrectMandationMessages.agentLinkText}" in {
-        elementText(Selectors.instructionsLink) shouldBe IncorrectMandationMessages.agentLinkText
+      s"have the correct link text of ${MtdMandationMessages.agentLinkText}" in {
+        elementText(Selectors.instructionsLink) shouldBe MtdMandationMessages.agentLinkText
       }
 
       "have a link to the agent action page" in {

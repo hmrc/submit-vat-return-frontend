@@ -103,8 +103,8 @@ incorrect_mandation.heading = Mae’r busnes yn cyflwyno Ffurflenni TAW drwy dde
 incorrect_mandation.paragraph = Mae’r busnes wedi cofrestru ar gyfer y gwasanaeth Troi Treth yn Ddigidol.
 incorrect_mandation.agent.text = Mae’n rhaid i chi gyflwyno Ffurflenni TAW eich cleient i CThEM gan ddefnyddio meddalwedd gyfrifyddu sy’n cydweddu.
 incorrect_mandation.nonAgent.text =  Mae’n rhaid i chi gyflwyno’ch Ffurflenni TAW i CThEM gan ddefnyddio meddalwedd gyfrifyddu sy’n cydweddu.
-incorrect_mandation_nonAgent.link = Bwrw golwg dros y dyddiadau cau ar gyfer eich Ffurflenni TAW
-incorrect_mandation_agent_client.link = Bwrw golwg dros opsiynau eich cleient
+incorrect_mandation.nonAgent.link = Bwrw golwg dros y dyddiadau cau ar gyfer eich Ffurflenni TAW
+incorrect_mandation.agent.client.link = Bwrw golwg dros opsiynau eich cleient
 
 submissionError.title = Gwall wrth gyflwyno Ffurflen TAW
 submissionError.heading = Mae’n ddrwg gennym – mae problem gyda’r gwasanaeth

@@ -53,5 +53,8 @@ class IdentityLoginTimesSpec extends BaseSpec {
     "parse correctly to json" in {
       Json.toJson(correctModel) shouldBe correctJson
     }
+    "parse correct to json with minimum objects" in {
+      Json.toJson(minCorrectModel) shouldBe minCorrectJson
+    }
   }
 }

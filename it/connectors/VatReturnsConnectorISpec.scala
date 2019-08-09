@@ -129,7 +129,7 @@ class VatReturnsConnectorISpec extends BaseISpec {
 
           VatReturnsStub.stubResponse(nrsSubmissionUri)(Status.ACCEPTED, Json.obj("nrSubmissionId" -> "12345"))
 
-          private val result = await(connector.nrsSubmission(postRequestModel))
+          private val result = await(connector.nrsSubmission(postRequestModel, vrn))
           VatReturnsStub.verifyNrsSubmission(postRequestJsonBody)
 
           result shouldBe Right(SuccessModel(nrSubmissionId = "12345"))
@@ -142,7 +142,7 @@ class VatReturnsConnectorISpec extends BaseISpec {
 
           VatReturnsStub.stubResponse(nrsSubmissionUri)(Status.ACCEPTED, Json.obj("nope" -> "nope"))
 
-          private val result = await(connector.nrsSubmission(postRequestModel))
+          private val result = await(connector.nrsSubmission(postRequestModel, vrn))
           VatReturnsStub.verifyNrsSubmission(postRequestJsonBody)
 
           result shouldBe Left(UnexpectedJsonFormat)
@@ -159,7 +159,7 @@ class VatReturnsConnectorISpec extends BaseISpec {
           Json.obj("code" -> "500", "reason" -> "oh no")
         )
 
-        private val result = await(connector.nrsSubmission(postRequestModel))
+        private val result = await(connector.nrsSubmission(postRequestModel, vrn))
         VatReturnsStub.verifyNrsSubmission(postRequestJsonBody)
 
         result shouldBe Left(ServerSideError("500", "Received downstream error when submitting to NRS"))

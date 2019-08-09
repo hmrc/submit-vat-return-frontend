@@ -20,21 +20,21 @@
 
 @()(implicit request: Request[_], appConfig: AppConfig, messages: Messages, user: User[_])
 
-@views.html.main_template(title = messages("incorrect_mandation.title"), bodyClasses = None, appConfig = appConfig, user = Some(user)) {
+@views.html.main_template(title = messages("incorrect_mandation.heading"), bodyClasses = None, appConfig = appConfig, user = Some(user)) {
 
   @heading(messages("incorrect_mandation.heading"))
 
   <p>@messages("incorrect_mandation.paragraph")
-    @if(user.isAgent) {
-      @messages("incorrect_mandation.agent.text")
-    } else {
-      @messages("incorrect_mandation.nonAgent.text")
-    }
+      @if(user.isAgent) {
+          @messages("incorrect_mandation.agent.text")
+      } else {
+          @messages("incorrect_mandation.nonAgent.text")
+      }
   </p>
 
   @if(user.isAgent) {
-   <a href="@appConfig.agentActionUrl">@messages("incorrect_mandation_agent_client.link")</a>
+      <a href="@appConfig.agentActionUrl">@messages("incorrect_mandation.agent.client.link")</a>
   } else {
-   <a href="@appConfig.returnDeadlinesUrl">@messages("incorrect_mandation_nonAgent.link")</a>
+      <a href="@appConfig.returnDeadlinesUrl">@messages("incorrect_mandation.nonAgent.link")</a>
   }
 }

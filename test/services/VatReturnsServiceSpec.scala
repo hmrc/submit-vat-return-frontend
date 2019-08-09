@@ -26,7 +26,9 @@ import models.vatReturnSubmission.{SubmissionModel, SubmissionSuccessModel}
 import play.api.mvc.AnyContentAsEmpty
 import play.api.test.FakeRequest
 import assets.NrsTestData.IdentityDataTestData.{correctModel => testIdentityModel}
+import assets.NrsTestData.ReceiptTestData.{correctModel => testReceiptDataModel}
 import uk.gov.hmrc.http.HeaderCarrier
+import uk.gov.hmrc.http.logging.Authorization
 
 import scala.concurrent.{ExecutionContext, Future}
 
@@ -84,7 +86,8 @@ class VatReturnsServiceSpec extends BaseSpec {
 
   "Calling .nrsSubmission" when {
 
-    lazy val request: User[AnyContentAsEmpty.type] = User[AnyContentAsEmpty.type](vrn)(FakeRequest().withHeaders("Authorization" -> ""))
+    lazy val headerCarrierWithAuthorization: HeaderCarrier = HeaderCarrier(authorization = Some(Authorization("Bearer 1234")))
+    lazy val request: User[AnyContentAsEmpty.type] = User[AnyContentAsEmpty.type](vrn)(FakeRequest().withHeaders("Authorization" -> "Bearer 1234"))
 
     "submission is successful" should {
 
@@ -92,11 +95,12 @@ class VatReturnsServiceSpec extends BaseSpec {
 
       "return a SuccessModel" in {
 
-        (mockConnector.nrsSubmission(_: RequestModel)(_: HeaderCarrier, _: ExecutionContext))
-          .expects(*, *, *)
+        (mockConnector.nrsSubmission(_: RequestModel, _: String)(_: HeaderCarrier, _: ExecutionContext))
+          .expects(*, *, *, *)
           .returning(Future.successful(expectedResult))
 
-        val result: HttpGetResult[SuccessModel] = await(service.nrsSubmission("18AA", "payload", "checksum", testIdentityModel)(hc, ec,request))
+        val result: HttpGetResult[SuccessModel] =
+          await(service.nrsSubmission("18AA", "payload", "checksum", testIdentityModel, testReceiptDataModel)(headerCarrierWithAuthorization, ec,request))
 
         result shouldBe expectedResult
       }
@@ -108,11 +112,12 @@ class VatReturnsServiceSpec extends BaseSpec {
 
       "return a HttpError" in {
 
-        (mockConnector.nrsSubmission(_: RequestModel)(_: HeaderCarrier, _: ExecutionContext))
-          .expects(*, *, *)
+        (mockConnector.nrsSubmission(_: RequestModel, _: String)(_: HeaderCarrier, _: ExecutionContext))
+          .expects(*, *, *, *)
           .returning(Future.successful(expectedResult))
 
-        val result: HttpGetResult[SuccessModel] = await(service.nrsSubmission("18AA", "payload", "checksum", testIdentityModel)(hc, ec, request))
+        val result: HttpGetResult[SuccessModel] =
+          await(service.nrsSubmission("18AA", "payload", "checksum", testIdentityModel, testReceiptDataModel)(headerCarrierWithAuthorization, ec, request))
 
         result shouldBe expectedResult
       }

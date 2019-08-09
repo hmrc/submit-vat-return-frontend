@@ -18,6 +18,7 @@ package services
 
 import java.net.URLDecoder
 import java.time.{LocalDateTime, ZoneOffset}
+
 import connectors.VatReturnsConnector
 import connectors.httpParsers.ResponseHttpParsers.HttpGetResult
 import javax.inject.{Inject, Singleton}
@@ -39,23 +40,18 @@ class VatReturnsService @Inject()(vatReturnsConnector: VatReturnsConnector) {
   def nrsSubmission[A](periodKey: String,
                        payload: String,
                        payloadCheckSum: String,
-                       identityData: IdentityData)
-                   (implicit hc: HeaderCarrier, ec: ExecutionContext, user: User[A]): Future[HttpGetResult[SuccessModel]] = {
-
-    val receiptDataModel = ReceiptData(
-      EN,
-      Seq(),
-      Declaration("", "", None, declarationConsent = false)
-    )
+                       identityData: IdentityData,
+                       receiptData: ReceiptData)
+                      (implicit hc: HeaderCarrier, ec: ExecutionContext, user: User[A]): Future[HttpGetResult[SuccessModel]] = {
 
     val metaData = Metadata(
       payloadSha256Checksum = payloadCheckSum,
       userSubmissionTimestamp = LocalDateTime.now(ZoneOffset.UTC),
       identityData = identityData,
       searchKeys = searchKeys(user.vrn, periodKey),
-      userAuthToken = user.headers.get("Authorization").get,
+      userAuthToken = hc.authorization.get.value,
       headerData = user.headers.toMap.map { h => h._1 -> h._2.head },
-      receiptData = receiptDataModel
+      receiptData = receiptData
     )
 
     val submissionModel = RequestModel(
@@ -63,7 +59,7 @@ class VatReturnsService @Inject()(vatReturnsConnector: VatReturnsConnector) {
       metadata = metaData
     )
 
-    vatReturnsConnector.nrsSubmission(submissionModel)
+    vatReturnsConnector.nrsSubmission(submissionModel, user.vrn)
   }
 
   private[services] def searchKeys(vrn: String, periodKey: String): SearchKeys = SearchKeys(

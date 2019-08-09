@@ -16,6 +16,7 @@
 
 package mocks.service
 
+import assets.CustomerDetailsTestAssets.customerDetailsWithFRS
 import connectors.httpParsers.ResponseHttpParsers.HttpGetResult
 import models.CustomerDetails
 import org.scalamock.scalatest.MockFactory
@@ -34,5 +35,7 @@ trait MockVatSubscriptionService extends UnitSpec with MockFactory {
       .expects(*, *, *)
       .returns(response)
   }
+
+  val successCustomerInfoResponse: Future[HttpGetResult[CustomerDetails]] = Future.successful(Right(customerDetailsWithFRS))
 
 }
