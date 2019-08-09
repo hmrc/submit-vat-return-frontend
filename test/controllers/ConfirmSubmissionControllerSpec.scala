@@ -401,6 +401,7 @@ class ConfirmSubmissionControllerSpec extends BaseSpec
         mockFullAuthResponse(agentFullInformationResponse)
         mockExtractReceiptData(successReceiptDataResponse)
         mockNrsSubmission(Future.successful(Left(BadRequestError("400", "error message"))))
+        setupAuditExtendedEvent
 
         status(result) shouldBe Status.INTERNAL_SERVER_ERROR
       }

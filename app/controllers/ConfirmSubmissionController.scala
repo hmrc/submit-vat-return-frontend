@@ -20,7 +20,7 @@ import java.net.URLDecoder
 import java.time.{Instant, LocalDateTime, ZoneId}
 
 import audit.AuditService
-import audit.models.{NrsErrorAuditModel, SubmitNrsModel, SubmitVatReturnAuditModel}
+import audit.models.{NrsErrorAuditModel, NrsSuccessAuditModel, SubmitVatReturnAuditModel}
 import audit.models.journey.{FailureAuditModel, SuccessAuditModel}
 import common.SessionKeys
 import config.{AppConfig, ErrorHandler}
@@ -175,7 +175,7 @@ class ConfirmSubmissionController @Inject()(val messagesApi: MessagesApi,
             Future.successful(InternalServerError(views.html.errors.submission_error()))
           case Right(success) =>
             auditService.audit(
-              SubmitNrsModel(user.vrn, sessionData.start, sessionData.end, sessionData.due, success.nrSubmissionId),
+              NrsSuccessAuditModel(user.vrn, sessionData.start, sessionData.end, sessionData.due, success.nrSubmissionId),
               Some(controllers.routes.ConfirmSubmissionController.submit(periodKey).url)
             )
             submitVatReturn(periodKey, sessionData)

@@ -20,17 +20,17 @@ import java.time.LocalDate
 
 import play.api.libs.json.{Format, JsValue, Json}
 
-case class SubmitNrsModel(vrn: String,
-                          periodDateFrom: LocalDate,
-                          periodDateTo: LocalDate,
-                          dueDate: LocalDate,
-                          nrSubmissionId: String) extends ExtendedAuditModel {
+case class NrsSuccessAuditModel(vrn: String,
+                                periodDateFrom: LocalDate,
+                                periodDateTo: LocalDate,
+                                dueDate: LocalDate,
+                                nrSubmissionId: String) extends ExtendedAuditModel {
 
   override val transactionName: String = "submit-vat-to-nrs"
   override val auditType: String = "SubmitVATToNRS"
   override val detail: JsValue = Json.toJson(this)
 }
 
-object SubmitNrsModel {
-  implicit val format: Format[SubmitNrsModel] = Json.format[SubmitNrsModel]
+object NrsSuccessAuditModel {
+  implicit val format: Format[NrsSuccessAuditModel] = Json.format[NrsSuccessAuditModel]
 }
