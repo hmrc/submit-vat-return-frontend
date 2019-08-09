@@ -145,7 +145,7 @@ class VatReturnsConnectorISpec extends BaseISpec {
           private val result = await(connector.nrsSubmission(postRequestModel, vrn))
           VatReturnsStub.verifyNrsSubmission(postRequestJsonBody)
 
-          result shouldBe Left(UnexpectedJsonFormat)
+          result shouldBe Right(SuccessModel(""))
         }
       }
     }

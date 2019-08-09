@@ -20,14 +20,14 @@ import java.net.URLDecoder
 import java.time.{Instant, LocalDateTime, ZoneId}
 
 import audit.AuditService
-import audit.models.SubmitVatReturnAuditModel
+import audit.models.{NrsErrorAuditModel, NrsSuccessAuditModel, SubmitVatReturnAuditModel}
 import audit.models.journey.{FailureAuditModel, SuccessAuditModel}
 import common.SessionKeys
 import config.{AppConfig, ErrorHandler}
 import controllers.predicates.{AuthPredicate, MandationStatusPredicate}
 import javax.inject.{Inject, Singleton}
 import models.auth.User
-import models.errors.{BadRequestError, HttpError}
+import models.errors.{BadRequestError, HttpError, ServerSideError}
 import models.nrs.{IdentityData, IdentityLoginTimes}
 import models.vatReturnSubmission.SubmissionModel
 import models.{ConfirmSubmissionViewModel, CustomerDetails, SubmitVatReturnModel}
@@ -168,8 +168,23 @@ class ConfirmSubmissionController @Inject()(val messagesApi: MessagesApi,
           case Left(error: BadRequestError) =>
             Logger.debug(s"[ConfirmSubmissionController][submitToNRS] - NRS returned BAD_REQUEST: $error")
             Logger.warn("[ConfirmSubmissionController][submitToNRS] - NRS returned BAD_REQUEST")
+            auditService.audit(
+              NrsErrorAuditModel(user.vrn, sessionData.start, sessionData.end, sessionData.due, error.code),
+              Some(controllers.routes.ConfirmSubmissionController.submit(periodKey).url)
+            )
             Future.successful(InternalServerError(views.html.errors.submission_error()))
-          case _ => submitVatReturn(periodKey, sessionData)
+          case Right(success) =>
+            auditService.audit(
+              NrsSuccessAuditModel(user.vrn, sessionData.start, sessionData.end, sessionData.due, success.nrSubmissionId),
+              Some(controllers.routes.ConfirmSubmissionController.submit(periodKey).url)
+            )
+            submitVatReturn(periodKey, sessionData)
+          case Left(other: ServerSideError) =>
+            auditService.audit(
+              NrsErrorAuditModel(user.vrn, sessionData.start, sessionData.end, sessionData.due, other.code),
+              Some(controllers.routes.ConfirmSubmissionController.submit(periodKey).url)
+            )
+            submitVatReturn(periodKey, sessionData)
         }
         case (Left(errorResult), _) => Future(errorResult)
         case (_, Left(error)) =>

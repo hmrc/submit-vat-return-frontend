@@ -37,7 +37,7 @@ object NrsSubmissionHttpParser extends ResponseHttpParsers {
             Right(model)
           case Failure(_) =>
             Logger.warn("[NrsSubmissionHttpParser][NrsSubmissionReads]: Successful NRS submission but nrSubmissionId not returned in body")
-            Left(UnexpectedJsonFormat)
+            Right(SuccessModel(""))
         }
         case BAD_REQUEST =>
           Logger.debug(s"[NrsSubmissionHttpParser][NrsSubmissionReads]: Bad Request response when submitting to NRS. Body: ${response.body}")
