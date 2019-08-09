@@ -22,7 +22,7 @@ import play.api.libs.json.Json
 class StartAuditModelSpec extends BaseSpec {
 
   val transactionName = "journey-start"
-  val auditEvent = "SubmitVATReturn"
+  val auditEvent = "SubmitVATReturnJourneyStart"
 
   "JourneyStartAuditModel" when {
 

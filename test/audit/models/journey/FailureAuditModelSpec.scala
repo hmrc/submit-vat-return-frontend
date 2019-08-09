@@ -23,7 +23,7 @@ import play.api.libs.json.Json
 class FailureAuditModelSpec extends BaseSpec {
 
   val transactionName = "journey-failure"
-  val auditEvent = "SubmitVATReturn"
+  val auditEvent = "SubmitVATReturnJourneyFailure"
 
   "FailureAuditModel" when {
 
