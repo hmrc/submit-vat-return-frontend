@@ -22,7 +22,7 @@ import play.api.libs.json.{Format, JsValue, Json}
 
 case class NrsErrorAuditModel(vrn: String,
                               periodDateFrom: LocalDate,
-                              periodDateTo: String,
+                              periodDateTo: LocalDate,
                               dueDate: LocalDate,
                               status: String) extends ExtendedAuditModel {
 

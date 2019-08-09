@@ -20,7 +20,7 @@ import java.net.URLDecoder
 import java.time.{Instant, LocalDateTime, ZoneId}
 
 import audit.AuditService
-import audit.models.{SubmitNrsModel, SubmitVatReturnAuditModel}
+import audit.models.{NrsErrorAuditModel, SubmitNrsModel, SubmitVatReturnAuditModel}
 import audit.models.journey.{FailureAuditModel, SuccessAuditModel}
 import common.SessionKeys
 import config.{AppConfig, ErrorHandler}
@@ -168,6 +168,10 @@ class ConfirmSubmissionController @Inject()(val messagesApi: MessagesApi,
           case Left(error: BadRequestError) =>
             Logger.debug(s"[ConfirmSubmissionController][submitToNRS] - NRS returned BAD_REQUEST: $error")
             Logger.warn("[ConfirmSubmissionController][submitToNRS] - NRS returned BAD_REQUEST")
+            auditService.audit(
+              NrsErrorAuditModel(user.vrn, sessionData.start, sessionData.end, sessionData.due, error.code),
+              Some(controllers.routes.ConfirmSubmissionController.submit(periodKey).url)
+            )
             Future.successful(InternalServerError(views.html.errors.submission_error()))
           case Right(success) =>
             auditService.audit(
@@ -177,13 +181,7 @@ class ConfirmSubmissionController @Inject()(val messagesApi: MessagesApi,
             submitVatReturn(periodKey, sessionData)
           case Left(other: ServerSideError) =>
             auditService.audit(
-              SubmitNrsModel(user.vrn, sessionData.start, sessionData.end, sessionData.due, other.code),
-              Some(controllers.routes.ConfirmSubmissionController.submit(periodKey).url)
-            )
-            submitVatReturn(periodKey, sessionData)
-          case _ =>
-            auditService.audit(
-              SubmitNrsModel(user.vrn, sessionData.start, sessionData.end, sessionData.due, Accepted.toString()),
+              NrsErrorAuditModel(user.vrn, sessionData.start, sessionData.end, sessionData.due, other.code),
               Some(controllers.routes.ConfirmSubmissionController.submit(periodKey).url)
             )
             submitVatReturn(periodKey, sessionData)
