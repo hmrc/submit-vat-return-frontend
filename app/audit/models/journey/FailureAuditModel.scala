@@ -25,7 +25,7 @@ case class FailureAuditModel(vrn: String,
                              errorMessage: String) extends ExtendedAuditModel {
 
   override val transactionName: String = "journey-failure"
-  override val auditType: String = "SubmitVATReturn"
+  override val auditType: String = "SubmitVATReturnJourneyFailure"
   override val detail: JsValue = Json.toJson(this)
 }
 

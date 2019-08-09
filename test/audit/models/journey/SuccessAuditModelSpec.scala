@@ -22,7 +22,7 @@ import play.api.libs.json.Json
 class SuccessAuditModelSpec extends BaseSpec {
 
   val transactionName = "journey-success"
-  val auditEvent = "SubmitVATReturn"
+  val auditEvent = "SubmitVATReturnJourneySuccess"
 
   "JourneySuccessAuditModel" when {
 

@@ -24,7 +24,7 @@ case class StartAuditModel(vrn: String,
                            agentReferenceNumber: Option[String]) extends ExtendedAuditModel {
 
   override val transactionName: String = "journey-start"
-  override val auditType: String = "SubmitVATReturn"
+  override val auditType: String = "SubmitVATReturnJourneyStart"
   override val detail: JsValue = Json.toJson(this)
 }
 
