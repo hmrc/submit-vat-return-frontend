@@ -35,9 +35,9 @@ class ConfirmSubmissionViewSpec extends ViewBaseSpec {
       "#box-seven", "#box-eight", "#box-nine"
     )
     val backLink = "#content > article > a"
-    val returnTotalHeading = "#content > article > section > section:nth-child(6) > div > h3"
-    val returnDueDate = "#content > article > section > section:nth-child(6) > div > p"
-    val changeReturnLink = "#content > article > section > section:nth-child(6) > div > a"
+    val returnTotalHeading = "#content > article > section > section > div > h3"
+    val returnDueDate = "#content > article > section > section > div > p"
+    val changeReturnLink = "#content > article > section > section > div > a"
     val submitVatReturnHeading = "#content > article > section > h3.bold-medium"
     val submitReturnInformation = "#content > article > section > p"
     val submitButton = "#content > article > section > form > button"
@@ -47,7 +47,7 @@ class ConfirmSubmissionViewSpec extends ViewBaseSpec {
     val breadcrumbTwo = "div.breadcrumbs li:nth-of-type(2)"
     val breadcrumbTwoLink = "div.breadcrumbs li:nth-of-type(2) a"
     val breadcrumbCurrentPage = "div.breadcrumbs li:nth-of-type(3)"
-    val declarationHeader = "#content > article > section > div:nth-child(7) > h3"
+    val declarationHeader = "#content > article > section > div > h3"
     val nonAgentDeclarationText = "#content > article > section > div.notice.form-group > strong"
     val agentDeclarationText = "#content > article > section > p"
     val noticeImage = "#content > article > section > div.notice.form-group > i"
@@ -55,7 +55,12 @@ class ConfirmSubmissionViewSpec extends ViewBaseSpec {
   }
 
   def boxElement(box: String, column: Int): String = {
-    s"$box > div:nth-child($column)"
+    if(column == 1) {
+      s"$box > dt:nth-child(1)"
+    }
+    else {
+      s"$box > dd:nth-of-type(${column-1})"
+    }
   }
 
   val periodKey = "17AA"
