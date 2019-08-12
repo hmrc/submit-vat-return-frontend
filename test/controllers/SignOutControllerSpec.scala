@@ -17,54 +17,90 @@
 package controllers
 
 import base.BaseSpec
+import play.api.http.Status
 import play.api.mvc.Result
 import play.api.test.Helpers._
-import scala.concurrent.Future
+import services.EnrolmentsAuthService
+import uk.gov.hmrc.auth.core.{AffinityGroup, AuthConnector}
+import uk.gov.hmrc.auth.core.authorise.Predicate
+import uk.gov.hmrc.auth.core.retrieve.Retrieval
+import uk.gov.hmrc.http.HeaderCarrier
+
+import scala.concurrent.{ExecutionContext, Future}
 
 class SignOutControllerSpec extends BaseSpec {
 
-  private trait SignOutControllerTest {
-    def target: SignOutController = {
-      new SignOutController(messagesApi, mockAppConfig)
+  val mockAuthConnector: AuthConnector = mock[AuthConnector]
+  val mockEnrolmentsAuthService: EnrolmentsAuthService = new EnrolmentsAuthService(mockAuthConnector)
+  val controller: SignOutController = new SignOutController(messagesApi, mockEnrolmentsAuthService)
+
+  def mockAuth(authResult: Option[AffinityGroup]): Any =
+    (mockAuthConnector.authorise(_: Predicate, _: Retrieval[Option[AffinityGroup]])(_: HeaderCarrier, _: ExecutionContext))
+      .expects(*, *, *, *)
+      .returns(Future.successful(authResult))
+
+  "The .signOut action" when {
+
+    "the user is authorised" when {
+
+      "the user is an agent" should {
+
+        lazy val result: Future[Result] = {
+          mockAuth(Some(AffinityGroup.Agent))
+          controller.signOut(feedbackOnSignOut = true)(fakeRequest)
+        }
+
+        "return 303" in {
+          status(result) shouldBe Status.SEE_OTHER
+        }
+
+        "redirect to the correct survey url" in {
+          redirectLocation(result) shouldBe Some(mockAppConfig.signOutUrl("VATCA"))
+        }
+      }
+
+      "the user is a principal entity" should {
+
+        lazy val result: Future[Result] = {
+          mockAuth(Some(AffinityGroup.Individual))
+          controller.signOut(feedbackOnSignOut = true)(fakeRequest)
+        }
+
+        "return 303" in {
+          status(result) shouldBe Status.SEE_OTHER
+        }
+
+        "redirect to the correct survey url" in {
+          redirectLocation(result) shouldBe Some(mockAppConfig.signOutUrl("VATC"))
+        }
+      }
+    }
+
+    "the user is unauthorised" should {
+
+      lazy val result: Future[Result] = controller.signOut(feedbackOnSignOut = false)(fakeRequest)
+
+      "return 303" in {
+        status(result) shouldBe Status.SEE_OTHER
+      }
+
+      "redirect to the unauthorised sign out URL" in {
+        redirectLocation(result) shouldBe Some(mockAppConfig.unauthorisedSignOutUrl)
+      }
     }
   }
 
-  "navigating to sign-out page" when {
+  "The .timeout action" should {
 
-    "show Exit Survey is true" should {
-      "return 303 and navigate to the survey url" in new SignOutControllerTest {
-        lazy val result: Future[Result] = target.signOut(feedbackOnSignOut = true)(fakeRequest)
+    lazy val result: Future[Result] = controller.timeout(fakeRequest)
 
-        status(result) shouldBe SEE_OTHER
-        redirectLocation(result) shouldBe Some(mockAppConfig.signOutUrl)
-      }
+
+    "return 303" in {
+      status(result) shouldBe Status.SEE_OTHER
     }
 
-    "show Exit Survey is false" should {
-      "return 303 and navigate to sign out url" in new SignOutControllerTest {
-        lazy val result: Future[Result] = target.signOut(feedbackOnSignOut = false)(fakeRequest)
-
-        status(result) shouldBe SEE_OTHER
-        redirectLocation(result) shouldBe Some(mockAppConfig.signInUrl)
-      }
-    }
-
-    "timeout is true" should {
-      "return 303 and navigate to timeout url" in new SignOutControllerTest {
-        lazy val result: Future[Result] = target.signOut(feedbackOnSignOut = true, timeout = true)(fakeRequest)
-
-        status(result) shouldBe SEE_OTHER
-        redirectLocation(result) shouldBe Some(mockAppConfig.timeoutSignOutUrl)
-      }
-    }
-  }
-
-  "navigating to time-out" should {
-
-    "return 401 unauthorised and render session timeout view" in new SignOutControllerTest {
-      lazy val result: Future[Result] = target.timeout(fakeRequest)
-
-      status(result) shouldBe UNAUTHORIZED
+    "redirect to the unauthorised sign out URL" in {
+      redirectLocation(result) shouldBe Some(mockAppConfig.unauthorisedSignOutUrl)
     }
   }
 }

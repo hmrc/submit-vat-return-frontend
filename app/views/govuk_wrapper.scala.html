@@ -44,7 +44,7 @@
           timeout: @appConfig.timeoutPeriod,
           countdown: @appConfig.timeoutCountdown,
           keepAliveUrl: '@{controllers.routes.ConfirmationController.show()}',
-          signOutUrl: '@{controllers.routes.SignOutController.signOut(feedbackOnSignOut = false, timeout = true).url}'
+          signOutUrl: '@{controllers.routes.SignOutController.signOut(feedbackOnSignOut = false).url}'
         });
         var dialogOpen;
       }

@@ -37,11 +37,11 @@ class MockConfig(implicit val runModeConfiguration: Configuration) extends AppCo
   override val whitelistExcludedPaths: Seq[Call] = Nil
   override val shutterPage: String = "https://www.tax.service.gov.uk/shutter/vat-through-software"
   override val signInUrl: String = "sign-in-url"
-  override val signOutUrl: String = "/some-gg-signout-url"
-  override val feedbackSurveyUrl: String = "/some-survey-url"
+  override def signOutUrl(identifier: String): String = s"/some-gg-signout-url/$identifier"
+  override def exitSurveyUrl(identifier: String): String = s"/some-survey-url/$identifier"
   override val timeoutCountdown: Int = 20
   override val timeoutPeriod: Int = 1800
-  override val timeoutSignOutUrl: String = "/timeout-url"
+  override val unauthorisedSignOutUrl: String = "/unauth-signout-url"
   override val agentClientLookupStartUrl: String => String = uri => s"agent-client-lookup-start-url/$uri"
   override val agentClientUnauthorisedUrl: String => String = uri => s"agent-client-unauthorised-url/$uri"
   override val govUkGuidanceMtdVat: String = "mtd-vat"
@@ -56,7 +56,8 @@ class MockConfig(implicit val runModeConfiguration: Configuration) extends AppCo
   override val changeClientUrl: String = "/change-client"
   override val agentActionUrl: String = "/agent-action"
   override def feedbackUrl(redirectUrl: String): String = s"feedback-url/$redirectUrl"
-  override def routeToSwitchLanguage: String => Call = (lang: String) => controllers.routes.LanguageController.switchToLanguage(lang)
+  override def routeToSwitchLanguage: String => Call =
+    (lang: String) => controllers.routes.LanguageController.switchToLanguage(lang)
   override def languageMap: Map[String, Lang] = Map(
     "english" -> Lang("en"),
     "cymraeg" -> Lang("cy")
