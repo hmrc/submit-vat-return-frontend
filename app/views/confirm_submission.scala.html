@@ -25,9 +25,9 @@
 
 @boxRow(divID: String, formID: String, boxTitle: String, boxDescription: String, boxAmount: BigDecimal) = {
   <div class="grid-row" id=@divID>
-    <div class="column-one-quarter form-hint">@messages(boxTitle)</div>
-    <div class="column-one-half form-hint">@messages(boxDescription)</div>
-    <div class="column-one-quarter form-hint text--right">@displayMoney(boxAmount)</div>
+    <dt class="column-one-quarter form-hint">@messages(boxTitle)</dt>
+    <dd class="column-one-half form-hint">@messages(boxDescription)</dd>
+    <dd class="column-one-quarter form-hint text--right">@displayMoney(boxAmount)</dd>
   </div>
 }
 
@@ -72,7 +72,7 @@
 
     <h2 class="heading-large">@viewModel.userName</h2>
     <h3 class="bold-small form-group">@messages("confirm_submission.vatDetails")</h3>
-    <section class="form-group divider--bottom">
+    <dl class="form-group divider--bottom">
       <div class="form-group">
         @boxRow("box-one", "box1", "confirm_submission.boxOne", "confirm_submission.boxOneDescription", viewModel.returnDetail.box1)
         @boxRow("box-two", "box2", "confirm_submission.boxTwo", "confirm_submission.boxTwoDescription", viewModel.returnDetail.box2)
@@ -83,21 +83,21 @@
       </div>
       <div class="form-group">
         <div class="grid-row" id="box-five">
-          <div class="column-one-quarter">
+          <dt class="column-one-quarter">
             <strong class="bold-small">@messages("confirm_submission.boxFive")</strong>
-          </div>
-          <div class="column-one-half">
+          </dt>
+          <dd class="column-one-half">
             <strong class="bold-small">@messages("confirm_submission.boxFiveDescription")</strong>
-          </div>
-          <div class="column-one-quarter text--right">
+          </dd>
+          <dd class="column-one-quarter text--right">
             <strong class="bold-small">@displayMoney(viewModel.returnDetail.box5)</strong>
-          </div>
+          </dd>
         </div>
       </div>
-    </section>
+    </dl>
 
-    <section class="form-group divider--bottom">
-      <h3 class="bold-small form-group">@messages("confirm_submission.additionalInfo")</h3>
+    <h3 class="bold-small form-group">@messages("confirm_submission.additionalInfo")</h3>
+    <dl class="form-group divider--bottom">
 
       <div class="form-group">
       @if(viewModel.returnDetail.flatRateScheme){
@@ -110,7 +110,7 @@
         @boxRow("box-nine", "box9", "confirm_submission.boxNine", "confirm_submission.boxNineDescription", viewModel.returnDetail.box9)
       </div>
 
-    </section>
+    </dl>
 
     <section class="form-group divider--bottom">
       <div class="form-group">
