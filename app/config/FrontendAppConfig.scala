@@ -50,9 +50,9 @@ trait AppConfig extends ServicesConfig {
   val manageClientUrl: String
   val changeClientUrl: String
   val returnDeadlinesUrl: String
-  val signOutUrl: String
-  val timeoutSignOutUrl: String
-  val feedbackSurveyUrl: String
+  def signOutUrl(identifier: String): String
+  val unauthorisedSignOutUrl: String
+  def exitSurveyUrl(identifier: String): String
   val features: Features
   val staticDateValue: String
   def submitReturnUrl(vrn: String): String
@@ -109,8 +109,8 @@ class FrontendAppConfig @Inject()(val runModeConfiguration: Configuration, envir
   override lazy val signInUrl: String = s"$signInBaseUrl?continue=$signInContinueUrl&origin=$signInOrigin"
 
   //Sign-out
-  private lazy val feedbackSurveyBaseUrl = getString(ConfigKeys.feedbackSurveyHost) + getString(ConfigKeys.feedbackSurveyUrl)
-  override lazy val feedbackSurveyUrl = s"$feedbackSurveyBaseUrl/$contactFormServiceIdentifier"
+  private lazy val feedbackSurveyBaseUrl =getString(ConfigKeys.feedbackSurveyHost) + getString(ConfigKeys.feedbackSurveyUrl)
+  override def exitSurveyUrl(identifier: String): String = s"$feedbackSurveyBaseUrl/$identifier"
 
   //Session timeout countdown
   override lazy val timeoutCountdown: Int = getInt(ConfigKeys.timeoutCountdown)
@@ -118,9 +118,9 @@ class FrontendAppConfig @Inject()(val runModeConfiguration: Configuration, envir
 
   private lazy val governmentGatewayHost: String = getString(ConfigKeys.governmentGatewayHost)
 
-  private lazy val timeoutUrl = platformHost + controllers.routes.SignOutController.timeout().url
-  override lazy val timeoutSignOutUrl: String = s"$governmentGatewayHost/gg/sign-out?continue=$timeoutUrl"
-  override lazy val signOutUrl = s"$governmentGatewayHost/gg/sign-out?continue=$feedbackSurveyUrl"
+  override lazy val unauthorisedSignOutUrl: String = s"$governmentGatewayHost/gg/sign-out?continue=$signInContinueUrl"
+  override def signOutUrl(identifier: String): String =
+    s"$governmentGatewayHost/gg/sign-out?continue=${exitSurveyUrl(identifier)}"
 
   override lazy val vatSummaryUrl: String = getString(ConfigKeys.vatSummaryHost) + getString(ConfigKeys.vatSummaryUrl)
   override lazy val returnDeadlinesUrl: String = getString(ConfigKeys.viewVatReturnsHost) + getString(ConfigKeys.returnDeadlinesUrl)
