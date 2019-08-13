@@ -274,8 +274,12 @@ class ConfirmSubmissionViewSpec extends ViewBaseSpec {
         userName = customerDetailsModel.clientName
       )
 
-      lazy val view = views.html.confirm_submission(viewModel, isAgent = true)(fakeRequest, messages, mockAppConfig, user, Lang.apply("en"))
+      lazy val view = views.html.confirm_submission(viewModel, isAgent = true)(fakeRequest, messages, mockAppConfig, agentUser, Lang.apply("en"))
       lazy implicit val document: Document = Jsoup.parse(view.body)
+
+      s"display the pageTitle as ${viewMessages.agentTitle}" in {
+        document.title() shouldBe viewMessages.agentTitle
+      }
 
       "not render breadcrumbs" in {
         document.select(Selectors.breadcrumbOne) shouldBe empty
