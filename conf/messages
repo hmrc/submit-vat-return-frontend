@@ -1,6 +1,7 @@
 base.sign-out = Sign out
 navTitle.nonAgent = Business tax account
 navTitle.agent = Client’s VAT details
+navTitle.mtdfv = Making Tax Digital for VAT
 common.fullStop = .
 common.signOut = Sign out
 common.finish = Finish
@@ -10,6 +11,7 @@ common.continue = Continue
 common.back = Back
 common.errorSummary.heading = You have one or more errors
 common.warning = Warning
+common.pageTitle = {0} - {1} - GOV.UK
 
 error.required = Please enter a value
 error.summary.title = There is a problem

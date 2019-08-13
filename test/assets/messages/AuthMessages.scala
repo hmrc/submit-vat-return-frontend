@@ -16,13 +16,13 @@
 
 package assets.messages
 
-object SubmissionErrorMessages extends BaseMessages {
+object AuthMessages extends BaseMessages {
 
-  val title = "Sorry, there is a problem with the service" + mtdfvTitleSuffix
-  val heading = "Sorry, there is a problem with the service"
-  val p1 = "We have been unable to submit the VAT Return."
-  val p2 = "We have not saved your answers. When the service is available, you will have to start again."
-  val agentLink = "View your client options"
-  val userLink = "View your VAT Account"
+  val unauthorisedTitle = "You can’t use this service yet" + mtdfvTitleSuffix
+  val unauthorisedHeading = "You can’t use this service yet"
+
+  val setupAccount = "To use this service, you need to set up an agent services account."
+
+  val signup = "You need to sign up to use software to submit your VAT returns."
 
 }

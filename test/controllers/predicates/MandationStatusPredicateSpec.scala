@@ -64,7 +64,7 @@ class MandationStatusPredicateSpec extends BaseSpec with MockMandationPredicate 
         }
 
         "show unsupported mandation status error view" in {
-          Jsoup.parse(bodyOf(result)).title shouldBe MtdMandationMessages.heading
+          Jsoup.parse(bodyOf(result)).title shouldBe MtdMandationMessages.title
         }
       }
 

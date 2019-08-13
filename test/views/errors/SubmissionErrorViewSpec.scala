@@ -42,7 +42,7 @@ class SubmissionErrorViewSpec extends ViewBaseSpec {
       lazy implicit val document: Document = Jsoup.parse(view.body)
 
       "have the correct document title" in {
-        document.title shouldBe SubmissionErrorMessages.heading
+        document.title shouldBe SubmissionErrorMessages.title
       }
 
       "have a the correct page heading" in {

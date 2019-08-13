@@ -16,6 +16,7 @@
 
 package views.errors
 
+import assets.messages.SessionExpiredMessages
 import org.jsoup.Jsoup
 import org.jsoup.nodes.Document
 import views.ViewBaseSpec
@@ -33,15 +34,15 @@ class SessionExpiredViewSpec extends ViewBaseSpec {
     lazy implicit val document: Document = Jsoup.parse(view.body)
 
     "have the correct document title" in {
-      document.title shouldBe "Your session has timed out"
+      document.title shouldBe SessionExpiredMessages.title
     }
 
     "have a the correct page heading" in {
-      elementText(Selectors.pageHeading) shouldBe "Your session has timed out"
+      elementText(Selectors.pageHeading) shouldBe SessionExpiredMessages.heading
     }
 
     "have the correct instructions on the page" in {
-      elementText(Selectors.instructions) shouldBe "You'll have to sign in using your Government Gateway ID."
+      elementText(Selectors.instructions) shouldBe SessionExpiredMessages.signin
     }
 
   }
