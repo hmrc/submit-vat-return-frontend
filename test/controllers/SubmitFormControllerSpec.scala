@@ -21,6 +21,7 @@ import java.time.LocalDate
 import base.BaseSpec
 import common.{MandationStatuses, SessionKeys}
 import assets.CustomerDetailsTestAssets._
+import assets.messages.SubmitFormPageMessages
 import audit.mocks.MockAuditingService
 import connectors.httpParsers.ResponseHttpParsers.HttpGetResult
 import mocks.MockAuth
@@ -489,7 +490,7 @@ class SubmitFormControllerSpec extends BaseSpec
           }
 
           "contains common header" in {
-            contentAsString(result) should include("You have one or more errors")
+            contentAsString(result) should include(SubmitFormPageMessages.errorHeading)
           }
 
           "contains missing number error" in {
@@ -529,7 +530,7 @@ class SubmitFormControllerSpec extends BaseSpec
           }
 
           "contains common header" in {
-            contentAsString(result) should include("You have one or more errors")
+            contentAsString(result) should include(SubmitFormPageMessages.errorHeading)
           }
 
           "contains the too many numbers error" in {
@@ -570,7 +571,7 @@ class SubmitFormControllerSpec extends BaseSpec
           }
 
           "contains common header" in {
-            contentAsString(result) should include("You have one or more errors")
+            contentAsString(result) should include(SubmitFormPageMessages.errorHeading)
           }
 
           "has the correct form error shown" in {
@@ -609,7 +610,7 @@ class SubmitFormControllerSpec extends BaseSpec
           }
 
           "contains common header" in {
-            contentAsString(result) should include("You have one or more errors")
+            contentAsString(result) should include(SubmitFormPageMessages.errorHeading)
           }
 
           "contains negative number error" in {
@@ -650,7 +651,7 @@ class SubmitFormControllerSpec extends BaseSpec
           }
 
           "contains common header" in {
-            contentAsString(result) should include("You have one or more errors")
+            contentAsString(result) should include(SubmitFormPageMessages.errorHeading)
           }
 
           "contains box 3 error" in {

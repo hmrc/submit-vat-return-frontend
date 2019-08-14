@@ -9,7 +9,7 @@ common.submit = Submit
 common.dateRangeSeparator = to
 common.continue = Continue
 common.back = Back
-common.errorSummary.heading = You have one or more errors
+common.errorSummary.heading = There is a problem
 common.warning = Warning
 common.pageTitle = {0} - {1} - GOV.UK
 
