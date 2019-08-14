@@ -16,9 +16,9 @@
 
 package assets.messages
 
-object MtdMandationMessages {
+object MtdMandationMessages extends BaseMessages {
 
-  val title = "Submit VAT Return"
+  val title = "The business submits VAT Returns using Making Tax Digital" + titleSuffix
   val heading = "The business submits VAT Returns using Making Tax Digital"
   val nonAgentParagraph: String = "The business has signed up to the Making Tax Digital service." +
     " You must submit your VAT Returns to HMRC using compatible accounting software."

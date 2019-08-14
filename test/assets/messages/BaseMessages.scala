@@ -16,13 +16,12 @@
 
 package assets.messages
 
-object SubmissionErrorMessages extends BaseMessages {
+trait BaseMessages {
 
-  val title = "Sorry, there is a problem with the service" + mtdfvTitleSuffix
-  val heading = "Sorry, there is a problem with the service"
-  val p1 = "We have been unable to submit the VAT Return."
-  val p2 = "We have not saved your answers. When the service is available, you will have to start again."
-  val agentLink = "View your client options"
-  val userLink = "View your VAT Account"
+  val titleSuffix = " - Business tax account - GOV.UK"
+  val agentTitleSuffix = " - Client’s VAT details - GOV.UK"
+  val mtdfvTitleSuffix = " - Making Tax Digital for VAT - GOV.UK"
+
+  val problemWithService = "Sorry, there is a problem with the service"
 
 }

@@ -268,7 +268,7 @@ class ConfirmSubmissionControllerSpec extends BaseSpec
             }
 
             "show the Submission error page" in {
-              Jsoup.parse(bodyOf(result)).title() shouldBe SubmissionErrorMessages.heading
+              Jsoup.parse(bodyOf(result)).title() shouldBe SubmissionErrorMessages.title
             }
           }
         }
@@ -370,7 +370,7 @@ class ConfirmSubmissionControllerSpec extends BaseSpec
       }
 
       "render the submission error page" in {
-        Jsoup.parse(bodyOf(result)).title shouldBe "Sorry, there is a problem with the service"
+        Jsoup.parse(bodyOf(result)).title shouldBe SubmissionErrorMessages.title
       }
     }
 
@@ -387,7 +387,7 @@ class ConfirmSubmissionControllerSpec extends BaseSpec
       }
 
       "render the submission error page" in {
-        Jsoup.parse(bodyOf(result)).title shouldBe "Sorry, there is a problem with the service"
+        Jsoup.parse(bodyOf(result)).title shouldBe SubmissionErrorMessages.title
       }
 
     }
@@ -407,7 +407,7 @@ class ConfirmSubmissionControllerSpec extends BaseSpec
       }
 
       "render the submission error page" in {
-        Jsoup.parse(bodyOf(result)).title shouldBe "Sorry, there is a problem with the service"
+        Jsoup.parse(bodyOf(result)).title shouldBe SubmissionErrorMessages.title
       }
     }
   }
@@ -440,7 +440,7 @@ class ConfirmSubmissionControllerSpec extends BaseSpec
       }
 
       "render the submission error page" in {
-        Jsoup.parse(bodyOf(result.left.get)).title shouldBe "Sorry, there is a problem with the service"
+        Jsoup.parse(bodyOf(result.left.get)).title shouldBe SubmissionErrorMessages.title
       }
     }
   }

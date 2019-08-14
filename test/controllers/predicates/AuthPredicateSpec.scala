@@ -16,6 +16,7 @@
 
 package controllers.predicates
 
+import assets.messages.AuthMessages
 import mocks.MockAuth
 import org.jsoup.Jsoup
 import play.api.http.Status
@@ -67,7 +68,7 @@ class AuthPredicateSpec extends MockAuth {
             }
 
             "render Agent unauthorised view" in {
-              Jsoup.parse(bodyOf(result)).title() shouldBe "You can’t use this service yet"
+              Jsoup.parse(bodyOf(result)).title() shouldBe AuthMessages.unauthorisedTitle
             }
           }
         }
@@ -152,7 +153,7 @@ class AuthPredicateSpec extends MockAuth {
         }
 
         "render the unauthorised view" in {
-          Jsoup.parse(bodyOf(result)).title() shouldBe "You can’t use this service yet"
+          Jsoup.parse(bodyOf(result)).title() shouldBe AuthMessages.unauthorisedTitle
         }
       }
     }

@@ -16,6 +16,7 @@
 
 package views.errors
 
+import assets.messages.AuthMessages
 import models.auth.User
 import org.jsoup.Jsoup
 import org.jsoup.nodes.Document
@@ -38,15 +39,15 @@ class UnauthorisedAgentViewSpec extends ViewBaseSpec {
     lazy implicit val document: Document = Jsoup.parse(view.body)
 
     "have the correct document title" in {
-      document.title shouldBe "You can’t use this service yet"
+      document.title shouldBe AuthMessages.unauthorisedTitle
     }
 
     "have a the correct page heading" in {
-      elementText(Selectors.pageHeading) shouldBe "You can’t use this service yet"
+      elementText(Selectors.pageHeading) shouldBe AuthMessages.unauthorisedHeading
     }
 
     "have the correct instructions on the page" in {
-      elementText(Selectors.instructions) shouldBe "To use this service, you need to set up an agent services account."
+      elementText(Selectors.instructions) shouldBe AuthMessages.setupAccount
     }
 
     "have a link to GOV.UK guidance" in {

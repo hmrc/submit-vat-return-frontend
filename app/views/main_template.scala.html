@@ -52,8 +52,10 @@ user: Option[User[_]] = None)(mainContent: Html)(implicit request : Request[_], 
 @scriptElem.fold(HtmlFormat.empty)(x => x)
 }
 
+@titleServiceName = {@{user.fold(messages("navTitle.mtdfv"))(u => if(u.isAgent) messages("navTitle.agent") else messages("navTitle.nonAgent"))}}
+
 @govuk_wrapper(appConfig = appConfig,
-  title = title,
+  title = messages("common.pageTitle", title, titleServiceName),
   mainClass = mainClass,
   bodyClasses = bodyClasses,
   sidebar = sidebar,
