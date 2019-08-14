@@ -86,7 +86,7 @@ user: User[_], lang: Lang)
         </h1>
 
         @if(form.errors.nonEmpty) {
-            @summary(messages("common.errorSummary.heading"), form)
+            @summary(messages("error.summary.title"), form)
         }
 
         <h2 class="heading-large">@clientName</h2>
