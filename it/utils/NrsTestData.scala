@@ -114,8 +114,8 @@ object NrsTestData {
          | {
          |   "payload" : "XXX-base64-CheckYourAnswersHTML-XXX",
          |   "metadata" : {
-         |     "businessId": "vat",
-         |     "notableEvent": "vat-return",
+         |     "businessId": "vat-ui",
+         |     "notableEvent": "vat-return-ui",
          |     "payloadContentType": "text/html",
          |     "payloadSha256Checksum": "426a1c28<snip>d6d363",
          |     "userSubmissionTimestamp": "2018-04-07T12:13:25.156Z",
