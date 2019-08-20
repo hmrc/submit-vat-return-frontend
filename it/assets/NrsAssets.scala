@@ -20,8 +20,8 @@ import base.BaseISpec
 
 trait NrsAssets extends BaseISpec {
 
-  val businessId = "vat"
-  val notableEvent = "vat-return"
+  val businessId = "vat-ui"
+  val notableEvent = "vat-return-ui"
   val payloadContentType = "text\\/html"
 
   val nrsFullSubmissionJson: String =
