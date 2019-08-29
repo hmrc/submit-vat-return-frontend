@@ -1,6 +1,7 @@
 base.sign-out = Allgofnodi
 navTitle.nonAgent = Cyfrif treth busnes
 navTitle.agent = Manylion TAW y cleient
+navTitle.vat = TAW
 common.fullStop = .
 common.signOut = Allgofnodi
 common.finish = Gorffen
