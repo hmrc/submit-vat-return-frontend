@@ -44,6 +44,7 @@ confirm_submission.returnDueDate = Dyddiad cau ar gyfer cyflwyno’r Ffurflen TA
 confirm_submission.vatDetails = Manylion TAW
 confirm_submission.returnTotal = Cyfanswm y Ffurflen TAW:
 
+confirm_submission.amount = swm
 confirm_submission.additionalInfo = Gwybodaeth ychwanegol
 confirm_submission.boxOne = Blwch 1
 confirm_submission.boxOneDescription = TAW a godwyd gennych ar werthiannau a chyflenwadau eraill

@@ -46,6 +46,7 @@ confirm_submission.returnDueDate = Return due date: {0}
 confirm_submission.vatDetails = VAT details
 confirm_submission.returnTotal = Return total:
 
+confirm_submission.amount = amount
 confirm_submission.additionalInfo = Additional information
 confirm_submission.boxOne = Box 1
 confirm_submission.boxOneDescription = VAT you charged on sales and other supplies
