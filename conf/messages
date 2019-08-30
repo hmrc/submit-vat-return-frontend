@@ -1,6 +1,6 @@
 base.sign-out = Sign out
 navTitle.nonAgent = Business tax account
-navTitle.agent = Client’s VAT details
+navTitle.agent = Your client’s VAT details
 navTitle.mtdfv = Making Tax Digital for VAT
 navTitle.vat = VAT
 common.fullStop = .
