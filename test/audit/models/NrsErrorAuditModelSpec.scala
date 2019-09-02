@@ -26,7 +26,7 @@ class NrsErrorAuditModelSpec extends BaseSpec {
   val transactionName = "submit-vat-to-nrs"
   val auditEvent = "SubmitVATToNRS"
 
-  "NrsSuccessAuditModel" when {
+  "NrsErrorAuditModel" when {
 
     "user is not an agent" should {
 
