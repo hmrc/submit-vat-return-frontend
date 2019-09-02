@@ -33,7 +33,8 @@ class FeatureSwitchController @Inject()(val messagesApi: MessagesApi,
       FeatureSwitchModel(
         staticDateEnabled = appConfig.features.staticDateEnabled(),
         languageToggle = appConfig.features.languageToggleEnabled(),
-        nrsSubmissionEnabled = appConfig.features.nrsSubmissionEnabled()
+        nrsSubmissionEnabled = appConfig.features.nrsSubmissionEnabled(),
+        accessibilityLinkEnabled = appConfig.features.accessibilityLinkEnabled()
       )
     )))
   }
@@ -49,6 +50,7 @@ class FeatureSwitchController @Inject()(val messagesApi: MessagesApi,
     appConfig.features.staticDateEnabled(model.staticDateEnabled)
     appConfig.features.languageToggleEnabled(model.languageToggle)
     appConfig.features.nrsSubmissionEnabled(model.nrsSubmissionEnabled)
+    appConfig.features.accessibilityLinkEnabled(model.accessibilityLinkEnabled)
     Redirect(routes.FeatureSwitchController.featureSwitch())
   }
 }

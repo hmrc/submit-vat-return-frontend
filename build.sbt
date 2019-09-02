@@ -1,3 +1,19 @@
+/*
+ * Copyright 2019 HM Revenue & Customs
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
 import play.core.PlayVersion
 import sbt.Tests.{Group, SubProcess}
 import uk.gov.hmrc.DefaultBuildSettings.{addTestReportOption, defaultSettings, scalaSettings}
@@ -38,8 +54,8 @@ lazy val coverageSettings: Seq[Setting[_]] = {
 
 val compile = Seq(
   play.sbt.PlayImport.ws,
-  "uk.gov.hmrc" %% "govuk-template" % "5.37.0-play-25",
-  "uk.gov.hmrc" %% "play-ui" % "7.40.0-play-25",
+  "uk.gov.hmrc" %% "govuk-template" % "5.38.0-play-25",
+  "uk.gov.hmrc" %% "play-ui" % "8.0.0-play-25",
   "uk.gov.hmrc" %% "bootstrap-play-25" % "4.16.0",
   "uk.gov.hmrc" %% "play-whitelist-filter" % "3.1.0-play-25",
   "uk.gov.hmrc" %% "play-language" % "3.4.0",

@@ -58,6 +58,7 @@ trait AppConfig extends ServicesConfig {
   def submitReturnUrl(vrn: String): String
   val submitNrsUrl: String
   val agentActionUrl: String
+  val accessibilityLinkUrl: String
   def feedbackUrl(redirectUrl: String): String
   def routeToSwitchLanguage: String => Call
   def languageMap: Map[String, Lang]
@@ -153,5 +154,7 @@ class FrontendAppConfig @Inject()(val runModeConfiguration: Configuration, envir
 
   override def feedbackUrl(redirectUrl: String): String = {s"$contactHost/contact/beta-feedback?service=$contactFormServiceIdentifier" +
     s"&backUrl=${ContinueUrl(platformHost + redirectUrl).encodedUrl}"}
+
+  override val accessibilityLinkUrl: String = getString(ConfigKeys.vatSummaryHost) + getString(ConfigKeys.vatSummaryAccessibilityUrl)
 
 }
