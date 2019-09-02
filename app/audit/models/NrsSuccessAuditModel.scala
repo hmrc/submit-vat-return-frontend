@@ -21,6 +21,8 @@ import java.time.LocalDate
 import play.api.libs.json.{Format, JsValue, Json}
 
 case class NrsSuccessAuditModel(vrn: String,
+                                isAgent: Boolean,
+                                agentReferenceNumber: Option[String],
                                 periodDateFrom: LocalDate,
                                 periodDateTo: LocalDate,
                                 dueDate: LocalDate,

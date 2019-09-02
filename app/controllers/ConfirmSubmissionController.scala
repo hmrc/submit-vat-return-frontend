@@ -169,19 +169,19 @@ class ConfirmSubmissionController @Inject()(val messagesApi: MessagesApi,
             Logger.debug(s"[ConfirmSubmissionController][submitToNRS] - NRS returned BAD_REQUEST: $error")
             Logger.warn("[ConfirmSubmissionController][submitToNRS] - NRS returned BAD_REQUEST")
             auditService.audit(
-              NrsErrorAuditModel(user.vrn, sessionData.start, sessionData.end, sessionData.due, error.code),
+              NrsErrorAuditModel(user.vrn, user.arn.isDefined, user.arn, sessionData.start, sessionData.end, sessionData.due, error.code),
               Some(controllers.routes.ConfirmSubmissionController.submit(periodKey).url)
             )
             Future.successful(InternalServerError(views.html.errors.submission_error()))
           case Right(success) =>
             auditService.audit(
-              NrsSuccessAuditModel(user.vrn, sessionData.start, sessionData.end, sessionData.due, success.nrSubmissionId),
+              NrsSuccessAuditModel(user.vrn, user.arn.isDefined, user.arn, sessionData.start, sessionData.end, sessionData.due, success.nrSubmissionId),
               Some(controllers.routes.ConfirmSubmissionController.submit(periodKey).url)
             )
             submitVatReturn(periodKey, sessionData)
           case Left(other: ServerSideError) =>
             auditService.audit(
-              NrsErrorAuditModel(user.vrn, sessionData.start, sessionData.end, sessionData.due, other.code),
+              NrsErrorAuditModel(user.vrn, user.arn.isDefined, user.arn, sessionData.start, sessionData.end, sessionData.due, other.code),
               Some(controllers.routes.ConfirmSubmissionController.submit(periodKey).url)
             )
             submitVatReturn(periodKey, sessionData)
