@@ -24,7 +24,7 @@ import play.api.libs.json.Json
 class NrsErrorAuditModelSpec extends BaseSpec {
 
   val transactionName = "submit-vat-to-nrs"
-  val auditEvent = "SubmitVATToNRS"
+  val auditEvent = "SubmitVATToNRSError"
 
   "NrsErrorAuditModel" when {
 

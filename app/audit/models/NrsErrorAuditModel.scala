@@ -29,7 +29,7 @@ case class NrsErrorAuditModel(vrn: String,
                               status: String) extends ExtendedAuditModel {
 
   override val transactionName: String = "submit-vat-to-nrs"
-  override val auditType: String = "SubmitVATToNRS"
+  override val auditType: String = "SubmitVATToNRSError"
   override val detail: JsValue = Json.toJson(this)
 
 }
