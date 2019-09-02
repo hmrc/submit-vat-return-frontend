@@ -40,7 +40,7 @@ user: User[_], lang: Lang)
             <div class="form-group">
             @moneyInput(
                 field = form(formID),
-                label = messages(boxAmount),
+                label = messages(boxTitle) + " " + messages(boxDescription) + " " + messages("confirm_submission.amount"),
                 decimalPlace = true
             )
             </div>

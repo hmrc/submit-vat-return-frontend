@@ -93,6 +93,13 @@ class SubmitFormViewSpec extends ViewBaseSpec {
         elementText("h1 > span:nth-of-type(3)") shouldBe returnDue("12 May 2019")
       }
 
+      "have the correct hidden label for box 1" in {
+        elementText("label[for=box1]") shouldBe "Box 1 VAT you charged on sales and other supplies amount"
+      }
+
+      "have the correct hidden label for box 2" in {
+        elementText("label[for=box2]") shouldBe "Box 2 VAT you owe on goods purchased from EC countries and brought into the UK amount"
+      }
 
       "display the business name" in {
         elementText("h2") shouldBe "ABC Studios"
