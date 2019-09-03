@@ -28,7 +28,7 @@ session_expired.helpOne = You''ll have to
 session_expired.helpTwo = sign in
 session_expired.helpThree = using your Government Gateway ID.
 
-submit_form.title = Submit return
+submit_form.title = Your VAT Return
 submit_form.heading = Submit return
 submit_form.additionalInformation = Additional information
 submit_form.submitReturn = You can submit your return on the next screen.
@@ -41,7 +41,7 @@ submit_form.error.negativeError = Enter a maximum of 11 digits for pounds.\nEnte
 submit_form.error.box3Error = Add the number from box 1 to the number from box 2 and write it here
 submit_form.error.box5Error = Subtract the number in box 4 away from the number in box 3 and write it here
 
-confirm_submission.title = Your VAT return
+confirm_submission.title = Confirm your VAT Return
 confirm_submission.heading = Submit return
 confirm_submission.returnDueDate = Return due date: {0}
 confirm_submission.vatDetails = VAT details
@@ -93,7 +93,7 @@ unauthorised_non_agent.heading = You can’t use this service yet
 unauthorised_non_agent.text = You need to
 unauthorised_non_agent.link = sign up to use software to submit your VAT returns
 
-confirmation_view.title = Your VAT Return
+confirmation_view.title = VAT Return submission complete
 confirmation_view.heading = VAT Return submission complete
 confirmation_view.subHeading = What happens next
 confirmation_view.paragraph = We have received your VAT Return.

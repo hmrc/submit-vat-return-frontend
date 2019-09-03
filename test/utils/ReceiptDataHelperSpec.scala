@@ -100,7 +100,7 @@ class ReceiptDataHelperSpec extends BaseSpec {
     )
 
     Seq(Answers(
-      "Your VAT Return",
+      "VAT Return submission complete",
       Seq(
         ("box1", box1Expected, Some("£10.00"), None),
         ("box2", box2Expected, Some("£25.55"), None),

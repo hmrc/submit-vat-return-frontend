@@ -18,7 +18,7 @@ package assets.messages
 
 object ConfirmationPageMessages extends BaseMessages {
 
-  val title = "Your VAT Return" + titleSuffix
+  val title = "VAT Return submission complete" + titleSuffix
   val heading = "VAT Return submission complete"
   val subHeading = "What happens next"
   val paragraph = "We have received your VAT Return."
