@@ -13,6 +13,7 @@ common.back = Back
 common.errorSummary.heading = You have one or more errors
 common.warning = Warning
 common.pageTitle = {0} - {1} - GOV.UK
+common.error.titlePrefix = Error:
 
 error.required = Please enter a value
 error.summary.title = There is a problem

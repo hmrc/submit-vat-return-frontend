@@ -58,7 +58,7 @@ user: User[_], lang: Lang)
 
 @pageTitle = @{
     if(form.errors.nonEmpty) {
-        "Error: " + messages("submit_form.title")
+        messages("common.error.titlePrefix") + messages("submit_form.title")
     } else {
         messages("submit_form.title")
     }
