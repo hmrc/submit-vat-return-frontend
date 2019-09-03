@@ -16,6 +16,10 @@
 
 @import config.AppConfig
 @import models.auth.User
+@import layouts.{govuk_template => hmrcGovUkTemplate}
+@import uk.gov.hmrc.play.views.html.{layouts => uiLayouts}
+@import uk.gov.hmrc.play.views.html.{helpers => uiHelpers}
+
 @(appConfig: AppConfig,
   title: String,
   mainClass: Option[String] = None,
@@ -28,10 +32,6 @@
   feedbackOnSignOut: Boolean = true,
   showSignOut: Boolean = true,
   scriptElem: Option[Html] = None, user: Option[User[_]] = None)(implicit request: Request[_], messages: Messages)
-
-@import layouts.{govuk_template => hmrcGovUkTemplate}
-@import uk.gov.hmrc.play.views.html.{layouts => uiLayouts}
-@import uk.gov.hmrc.play.views.html.{helpers => uiHelpers}
 
 @linkElement = {
     <link rel="stylesheet" type="text/css" href='@routes.Assets.at("css/submitVat.css")'>
@@ -93,7 +93,15 @@
 }
 
 @footerTop = {}
-@footerLinks = {}
+
+@footerLinks = {
+  @uiLayouts.footer_links(
+    additionalLinks = None,
+    euExitLinks = None,
+    accessibilityFooterUrl = if(appConfig.features.accessibilityLinkEnabled()) Some(appConfig.accessibilityLinkUrl) else None
+  )
+}
+
 
 @phaseBanner = {
   <div class="beta-banner">
@@ -130,4 +138,4 @@
       sidebar = sidebar)
 }
 
-@hmrcGovUkTemplate(Some(title), bodyClasses)(head, bodyEnd, insideHeader, afterHeader, footerTop, Some(uiLayouts.footer_links()), true)(content)
+@hmrcGovUkTemplate(Some(title), bodyClasses)(head, bodyEnd, insideHeader, afterHeader, footerTop, Some(footerLinks), nav = true)(content)

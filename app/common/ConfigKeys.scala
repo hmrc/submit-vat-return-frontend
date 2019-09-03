@@ -49,6 +49,7 @@ object ConfigKeys {
   val platformHost: String = "platform.host"
   val vatSummaryHost: String = "vat-summary-frontend.host"
   val vatSummaryUrl: String = "vat-summary-frontend.url"
+  val vatSummaryAccessibilityUrl: String = "vat-summary-frontend.accessibilityUrl"
   val viewVatReturnsHost: String = "view-vat-returns-frontend.host"
   val returnDeadlinesUrl: String = "view-vat-returns-frontend.url"
   val feedbackSurveyHost: String = "feedback-frontend.host"
@@ -65,4 +66,5 @@ object ConfigKeys {
   val staticDateEnabledFeature: String = "features.staticDate.enabled"
   val nrsSubmissionEnabled: String = "features.nrsSubmission.enabled"
   val staticDateValue: String = "date-service.staticDate.value"
+  val accessibilityLinkFeature: String = "features.accessibilityLink.enabled"
 }

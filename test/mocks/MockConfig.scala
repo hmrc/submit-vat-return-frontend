@@ -55,6 +55,7 @@ class MockConfig(implicit val runModeConfiguration: Configuration) extends AppCo
   override val manageClientUrl: String = "/agent-action"
   override val changeClientUrl: String = "/change-client"
   override val agentActionUrl: String = "/agent-action"
+  override val accessibilityLinkUrl: String = "/accessibility"
   override def feedbackUrl(redirectUrl: String): String = s"feedback-url/$redirectUrl"
   override def routeToSwitchLanguage: String => Call =
     (lang: String) => controllers.routes.LanguageController.switchToLanguage(lang)
