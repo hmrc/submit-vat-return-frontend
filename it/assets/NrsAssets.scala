@@ -56,7 +56,7 @@ trait NrsAssets extends BaseISpec {
         |"headerData":\{"Csrf-Token":"nocheck","X-Request-ID":"govuk-tax-.*?","X-Request-Timestamp":"\d*","Content-Length":"2","Accept":
         |"\*\/\*","Content-Type":"application\/json","Cookie":".*?","User-Agent":"AHC\/2\.0","Host":"localhost:19001"\},
         |"searchKeys":\{"vrn":"999999999","periodKey":"18AA"\},
-        |"receiptData":\{"language":"en","checkYourAnswersSections":\[\{"title":"Your VAT Return",
+        |"receiptData":\{"language":"en","checkYourAnswersSections":\[\{"title":"VAT Return submission complete",
         |"data":\[
         |\{"questionId":"box1","question":".*?","answer":".*?"\},
         |\{"questionId":"box2","question":".*?","answer":".*?"\},
