@@ -27,7 +27,8 @@ object FeatureSwitchForm {
     mapping(
       ConfigKeys.staticDateEnabledFeature -> boolean,
       ConfigKeys.languageToggleFeature -> boolean,
-      ConfigKeys.nrsSubmissionEnabled -> boolean
+      ConfigKeys.nrsSubmissionEnabled -> boolean,
+      ConfigKeys.accessibilityLinkFeature -> boolean
   )(FeatureSwitchModel.apply)(FeatureSwitchModel.unapply)
   )
 }

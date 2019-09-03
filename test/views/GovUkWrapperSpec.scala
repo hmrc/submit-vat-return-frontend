@@ -24,6 +24,7 @@ import play.api.mvc.AnyContentAsEmpty
 class GovUkWrapperSpec extends ViewBaseSpec {
 
   val navTitleSelector = ".header__menu__proposition-name"
+  val accessibilityLinkSelector = "#footer > div > div > div.footer-meta-inner > ul > li:nth-child(2) > a"
 
   "Calling .govuk_wrapper" when {
 
@@ -41,17 +42,26 @@ class GovUkWrapperSpec extends ViewBaseSpec {
 
       "user is an agent" should {
 
-        lazy val view = views.html.govuk_wrapper(mockAppConfig, "title", user = Some(User[AnyContentAsEmpty.type]("999999999", arn = Some("XARN1234567")))) (fakeRequest, messages)
+        lazy val view = views.html.govuk_wrapper(mockAppConfig, "title", user = Some(User[AnyContentAsEmpty.type]
+          ("999999999", arn = Some("XARN1234567")))) (fakeRequest, messages)
         lazy implicit val document: Document = Jsoup.parse(view.body)
 
         "have a nav title of 'Your client’s VAT details'" in {
           elementText(navTitleSelector) shouldBe "Your client’s VAT details"
         }
+
+        "display the accessibility link" should {
+
+          s"have the correct link to ${mockAppConfig.accessibilityLinkUrl}" in {
+            element(accessibilityLinkSelector).attr("href") shouldBe "/accessibility"
+          }
+        }
       }
 
       "user is not an agent" should {
 
-        lazy val view = views.html.govuk_wrapper(mockAppConfig, "title", user = Some(User[AnyContentAsEmpty.type]("999999999", arn = None))) (fakeRequest, messages)
+        lazy val view = views.html.govuk_wrapper(mockAppConfig, "title", user = Some(User[AnyContentAsEmpty.type]
+          ("999999999", arn = None))) (fakeRequest, messages)
         lazy implicit val document: Document = Jsoup.parse(view.body)
 
         "have a nav title of 'Business tax account'" in {
