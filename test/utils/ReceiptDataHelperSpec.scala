@@ -73,8 +73,8 @@ class ReceiptDataHelperSpec extends BaseSpec {
     )
 
     val box5Expected = ifEnglishElse(
-      "Return total",
-      "Cyfanswm y Ffurflen TAW"
+      "Net VAT you owe HMRC or HMRC owes you (this is the difference between box 3 and 4)",
+      "TAW net sydd arnoch i CThEM neu sydd ar CThEM i chi (dyma’r gwahaniaeth rhwng Blychau 3 a 4)"
     )
 
     val box6Expected = (frs, language) match {
