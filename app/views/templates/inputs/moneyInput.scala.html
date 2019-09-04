@@ -15,14 +15,14 @@
  *@
 
 @(field: Field,
-        label: String,
-        labelHidden: Boolean = true,
-        decimalPlace: Boolean,
-        hint: Option[String] = None)(implicit messages: Messages)
+  label: String,
+  labelHidden: Boolean = true,
+  decimalPlace: Boolean,
+  hint: Option[String] = None)(implicit messages: Messages)
 
 <div class="form-group @if(field.hasErrors){form-field--error}">
 
-    <label for="@field.id" class="form-label @if(labelHidden) {visuallyhidden}">
+    <label for="@field.id" class="form-label @if(labelHidden){visuallyhidden}">
         @label
     </label>
 
@@ -32,13 +32,14 @@
         </span>
     }
 
-    <span class="input-currency"></span>
-
-    <input type="tel"
-    class="form-control moneyField input--no-spinner @if(field.hasErrors) {error-field}"
-    name="@field.name"
-    id="@field.id"
-    value="@field.value"
-    step="@if(decimalPlace) {0.01} else {1}"/>
+    <div class="input-icon">
+        <span>&pound;</span>
+        <input type="tel"
+            class="form-control @if(field.hasErrors){error-field}"
+            name="@field.name"
+            id="@field.id"
+            value="@field.value"
+            step="@if(decimalPlace) {0.01} else {1}"/>
+    </div>
 
 </div>

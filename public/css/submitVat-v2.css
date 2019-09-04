@@ -1,0 +1,16 @@
+.input-icon {
+    position: relative;
+}
+
+.input-icon > span {
+    position: absolute;
+    transform: translate(0, -50%);
+    top: 51%;
+    width: 25px;
+    text-align: center;
+}
+
+.input-icon > input {
+    padding-left: 20px;
+    width: 100%;
+}
