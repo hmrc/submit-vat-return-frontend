@@ -34,7 +34,7 @@ submit_form.heading = Submit return
 submit_form.additionalInformation = Additional information
 submit_form.submitReturn = You can submit your return on the next screen.
 
-submit_form.error.emptyError = Enter a number
+submit_form.error.emptyError = Enter a number in box {0}
 submit_form.error.tooManyCharacters = Enter a maximum of 13 digits for pounds.\nEnter a maximum of 2 decimal places for pence.\nYou can use a negative amount eg -13.2
 submit_form.error.tooManyCharactersNoDecimal = Enter a maximum of 13 digits for pounds.\nYou can use a negative amount eg -13
 submit_form.error.formatCheckError = Enter a number in the correct format

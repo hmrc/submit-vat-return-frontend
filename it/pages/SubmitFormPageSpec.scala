@@ -181,7 +181,7 @@ class SubmitFormPageSpec extends BaseISpec {
       def postRequest(data: NineBoxModel): WSResponse = postForm(
         "/18AA/submit-form",
         formatSessionMandationStatus(Some(MandationStatuses.nonMTDfB)),
-        toFormData(SubmitVatReturnForm.nineBoxForm, data)
+        toFormData(SubmitVatReturnForm().nineBoxForm, data)
       )
 
       "user is authorised" when {
@@ -225,7 +225,7 @@ class SubmitFormPageSpec extends BaseISpec {
             def postRequest(data: NineBoxModel): WSResponse =
               postForm("/18AA/submit-form",
                 formatSessionMandationStatus(Some(MandationStatuses.nonMTDfB))
-                  ++ formatViewModel(Some(viewModel)), toFormData(SubmitVatReturnForm.nineBoxForm, data))
+                  ++ formatViewModel(Some(viewModel)), toFormData(SubmitVatReturnForm().nineBoxForm, data))
 
             "return 200" in {
 
@@ -244,7 +244,7 @@ class SubmitFormPageSpec extends BaseISpec {
             def postRequest(data: NineBoxModel): WSResponse = postForm(
               "/18AA/submit-form",
               formatSessionMandationStatus(Some(MandationStatuses.nonMTDfB)),
-              toFormData(SubmitVatReturnForm.nineBoxForm, data)
+              toFormData(SubmitVatReturnForm().nineBoxForm, data)
             )
 
             "return 200" in {
@@ -278,7 +278,7 @@ class SubmitFormPageSpec extends BaseISpec {
         def postRequest(data: NineBoxModel): WSResponse = postForm(
           "/18AA/submit-form",
           formatSessionMandationStatus(Some("unsupportedMandationStatus")),
-          toFormData(SubmitVatReturnForm.nineBoxForm, data)
+          toFormData(SubmitVatReturnForm().nineBoxForm, data)
         )
 
         "return 403" in {

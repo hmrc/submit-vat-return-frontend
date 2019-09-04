@@ -19,7 +19,6 @@ package forms
 import java.time.LocalDate
 
 import base.BaseSpec
-import forms.SubmitVatReturnForm.nineBoxForm
 import models.{NineBoxModel, SubmitVatReturnModel}
 
 class SubmitVatReturnFormSpec extends BaseSpec {
@@ -29,17 +28,19 @@ class SubmitVatReturnFormSpec extends BaseSpec {
     val tooManyCharactersNonDecimal: String = "Enter a maximum of 13 digits for pounds.\nYou can use a negative amount eg -13"
     val tooManyCharactersNonNegative: String = "Enter a maximum of 11 digits for pounds.\nEnter a maximum of 2 decimal places for pence.\n" +
       "Do not use a negative amount eg -13.2"
-    val enterANumber: String = "Enter a number"
+    def enterANumber(boxId : Int): String = s"Enter a number in box $boxId"
     val invalidNumber: String = "Enter a number in the correct format"
     val box3Sum: String = "Add the number from box 1 to the number from box 2 and write it here"
     val box5Sum: String = "Subtract the number in box 4 away from the number in box 3 and write it here"
   }
 
+  val form =  SubmitVatReturnForm()
+
   "Binding a NineBoxForm" when {
 
     "values are valid" should {
 
-      val form = nineBoxForm.bind(
+      val formWithValues = form.nineBoxForm.bind(
         Map(
           "box1" -> "1.01",
           "box2" -> "2.02",
@@ -54,7 +55,7 @@ class SubmitVatReturnFormSpec extends BaseSpec {
       )
 
       "produce a NineBoxModel" in {
-        form.value shouldBe Some(NineBoxModel(
+        formWithValues.value shouldBe Some(NineBoxModel(
           box1 = 1.01,
           box2 = 2.02,
           box3 = 3.03,
@@ -74,7 +75,7 @@ class SubmitVatReturnFormSpec extends BaseSpec {
 
         "is not a number" should {
 
-          val form = nineBoxForm.bind(
+          val formWithValues = form.nineBoxForm.bind(
             Map(
               "box1" -> "x!",
               "box2" -> "1",
@@ -89,14 +90,14 @@ class SubmitVatReturnFormSpec extends BaseSpec {
           )
 
           s"return a form field error with message ${MessageLookup.invalidNumber}" in {
-            val messageKey = form.error("box1").get.message
+            val messageKey = formWithValues.error("box1").get.message
             messages(messageKey) shouldBe MessageLookup.invalidNumber
           }
         }
 
         "has more than 2 decimals" should {
 
-          val form = nineBoxForm.bind(
+          val formWithValues = form.nineBoxForm.bind(
             Map(
               "box1" -> "1.001",
               "box2" -> "1",
@@ -111,14 +112,14 @@ class SubmitVatReturnFormSpec extends BaseSpec {
           )
 
           s"return a form field error with message ${MessageLookup.tooManyCharacters}" in {
-            val messageKey = form.error("box1").get.message
+            val messageKey = formWithValues.error("box1").get.message
             messages(messageKey) shouldBe MessageLookup.tooManyCharacters
           }
         }
 
         "is empty" should {
 
-          val form = nineBoxForm.bind(
+          val formWithValues = form.nineBoxForm.bind(
             Map(
               "box1" -> "",
               "box2" -> "1",
@@ -132,15 +133,15 @@ class SubmitVatReturnFormSpec extends BaseSpec {
             )
           )
 
-          s"return a form field error with message ${MessageLookup.enterANumber}" in {
-            val messageKey = form.error("box1").get.message
-            messages(messageKey) shouldBe MessageLookup.enterANumber
+          s"return a form field error with message ${MessageLookup.enterANumber(1)}" in {
+            val messageKey = formWithValues.error("box1").get.message
+            messages(messageKey) shouldBe MessageLookup.enterANumber(1)
           }
         }
 
         "is less than -9999999999999.99" should {
 
-          val form = nineBoxForm.bind(
+          val formWithValues = form.nineBoxForm.bind(
             Map(
               "box1" -> "-10000000000000",
               "box2" -> "1",
@@ -155,14 +156,14 @@ class SubmitVatReturnFormSpec extends BaseSpec {
           )
 
           s"return a form field error with message ${MessageLookup.tooManyCharacters}" in {
-            val messageKey = form.error("box1").get.message
+            val messageKey = formWithValues.error("box1").get.message
             messages(messageKey) shouldBe MessageLookup.tooManyCharacters
           }
         }
 
         "is more than 9999999999999.99" should {
 
-          val form = nineBoxForm.bind(
+          val formWithValues = form.nineBoxForm.bind(
             Map(
               "box1" -> "10000000000000",
               "box2" -> "1",
@@ -177,7 +178,7 @@ class SubmitVatReturnFormSpec extends BaseSpec {
           )
 
           s"return a form field error with message ${MessageLookup.tooManyCharacters}" in {
-            val messageKey = form.error("box1").get.message
+            val messageKey = formWithValues.error("box1").get.message
             messages(messageKey) shouldBe MessageLookup.tooManyCharacters
           }
         }
@@ -187,7 +188,7 @@ class SubmitVatReturnFormSpec extends BaseSpec {
 
         "is not a number" should {
 
-          val form = nineBoxForm.bind(
+          val formWithValues = form.nineBoxForm.bind(
             Map(
               "box1" -> "1",
               "box2" -> "x!",
@@ -202,14 +203,14 @@ class SubmitVatReturnFormSpec extends BaseSpec {
           )
 
           s"return a form field error with message ${MessageLookup.invalidNumber}" in {
-            val messageKey = form.error("box2").get.message
+            val messageKey = formWithValues.error("box2").get.message
             messages(messageKey) shouldBe MessageLookup.invalidNumber
           }
         }
 
         "has more than 2 decimals" should {
 
-          val form = nineBoxForm.bind(
+          val formWithValues = form.nineBoxForm.bind(
             Map(
               "box1" -> "1",
               "box2" -> "1.001",
@@ -224,14 +225,14 @@ class SubmitVatReturnFormSpec extends BaseSpec {
           )
 
           s"return a form field error with message ${MessageLookup.tooManyCharacters}" in {
-            val messageKey = form.error("box2").get.message
+            val messageKey = formWithValues.error("box2").get.message
             messages(messageKey) shouldBe MessageLookup.tooManyCharacters
           }
         }
 
         "is empty" should {
 
-          val form = nineBoxForm.bind(
+          val formWithValues = form.nineBoxForm.bind(
             Map(
               "box1" -> "1",
               "box2" -> "",
@@ -245,15 +246,15 @@ class SubmitVatReturnFormSpec extends BaseSpec {
             )
           )
 
-          s"return a form field error with message ${MessageLookup.enterANumber}" in {
-            val messageKey = form.error("box2").get.message
-            messages(messageKey) shouldBe MessageLookup.enterANumber
+          s"return a form field error with message ${MessageLookup.enterANumber(2)}" in {
+            val messageKey = formWithValues.error("box2").get.message
+            messages(messageKey) shouldBe MessageLookup.enterANumber(2)
           }
         }
 
         "is less than -9999999999999.99" should {
 
-          val form = nineBoxForm.bind(
+          val formWithValues = form.nineBoxForm.bind(
             Map(
               "box1" -> "1",
               "box2" -> "-10000000000000",
@@ -268,14 +269,14 @@ class SubmitVatReturnFormSpec extends BaseSpec {
           )
 
           s"return a form field error with message ${MessageLookup.tooManyCharacters}" in {
-            val messageKey = form.error("box2").get.message
+            val messageKey = formWithValues.error("box2").get.message
             messages(messageKey) shouldBe MessageLookup.tooManyCharacters
           }
         }
 
         "is more than 9999999999999.99" should {
 
-          val form = nineBoxForm.bind(
+          val formWithValues = form.nineBoxForm.bind(
             Map(
               "box1" -> "1",
               "box2" -> "10000000000000",
@@ -290,7 +291,7 @@ class SubmitVatReturnFormSpec extends BaseSpec {
           )
 
           s"return a form field error with message ${MessageLookup.tooManyCharacters}" in {
-            val messageKey = form.error("box2").get.message
+            val messageKey = formWithValues.error("box2").get.message
             messages(messageKey) shouldBe MessageLookup.tooManyCharacters
           }
         }
@@ -300,7 +301,7 @@ class SubmitVatReturnFormSpec extends BaseSpec {
 
         "is not a number" should {
 
-          val form = nineBoxForm.bind(
+          val formWithValues =form.nineBoxForm.bind(
             Map(
               "box1" -> "1",
               "box2" -> "1",
@@ -315,14 +316,14 @@ class SubmitVatReturnFormSpec extends BaseSpec {
           )
 
           s"return a form field error with message ${MessageLookup.invalidNumber}" in {
-            val messageKey = form.error("box3").get.message
+            val messageKey = formWithValues.error("box3").get.message
             messages(messageKey) shouldBe MessageLookup.invalidNumber
           }
         }
 
         "has more than 2 decimals" should {
 
-          val form = nineBoxForm.bind(
+          val formWithValues = form.nineBoxForm.bind(
             Map(
               "box1" -> "1",
               "box2" -> "1",
@@ -337,14 +338,14 @@ class SubmitVatReturnFormSpec extends BaseSpec {
           )
 
           s"return a form field error with message ${MessageLookup.tooManyCharacters}" in {
-            val messageKey = form.error("box3").get.message
+            val messageKey = formWithValues.error("box3").get.message
             messages(messageKey) shouldBe MessageLookup.tooManyCharacters
           }
         }
 
         "is empty" should {
 
-          val form = nineBoxForm.bind(
+          val formWithValues = form.nineBoxForm.bind(
             Map(
               "box1" -> "1",
               "box2" -> "1",
@@ -358,15 +359,15 @@ class SubmitVatReturnFormSpec extends BaseSpec {
             )
           )
 
-          s"return a form field error with message ${MessageLookup.enterANumber}" in {
-            val messageKey = form.error("box3").get.message
-            messages(messageKey) shouldBe MessageLookup.enterANumber
+          s"return a form field error with message ${MessageLookup.enterANumber(3)}" in {
+            val messageKey = formWithValues.error("box3").get.message
+            messages(messageKey) shouldBe MessageLookup.enterANumber(3)
           }
         }
 
         "is less than -9999999999999.99" should {
 
-          val form = nineBoxForm.bind(
+          val formWithValues = form.nineBoxForm.bind(
             Map(
               "box1" -> "1",
               "box2" -> "1",
@@ -381,14 +382,14 @@ class SubmitVatReturnFormSpec extends BaseSpec {
           )
 
           s"return a form field error with message ${MessageLookup.tooManyCharacters}" in {
-            val messageKey = form.error("box3").get.message
+            val messageKey = formWithValues.error("box3").get.message
             messages(messageKey) shouldBe MessageLookup.tooManyCharacters
           }
         }
 
         "is more than 9999999999999.99" should {
 
-          val form = nineBoxForm.bind(
+          val formWithValues = form.nineBoxForm.bind(
             Map(
               "box1" -> "1",
               "box2" -> "1",
@@ -403,7 +404,7 @@ class SubmitVatReturnFormSpec extends BaseSpec {
           )
 
           s"return a form field error with message ${MessageLookup.tooManyCharacters}" in {
-            val messageKey = form.error("box3").get.message
+            val messageKey = formWithValues.error("box3").get.message
             messages(messageKey) shouldBe MessageLookup.tooManyCharacters
           }
         }
@@ -413,7 +414,7 @@ class SubmitVatReturnFormSpec extends BaseSpec {
 
         "is not a number" should {
 
-          val form = nineBoxForm.bind(
+          val formWithValues = form.nineBoxForm.bind(
             Map(
               "box1" -> "1",
               "box2" -> "1",
@@ -428,14 +429,14 @@ class SubmitVatReturnFormSpec extends BaseSpec {
           )
 
           s"return a form field error with message ${MessageLookup.invalidNumber}" in {
-            val messageKey = form.error("box4").get.message
+            val messageKey = formWithValues.error("box4").get.message
             messages(messageKey) shouldBe MessageLookup.invalidNumber
           }
         }
 
         "has more than 2 decimals" should {
 
-          val form = nineBoxForm.bind(
+          val formWithValues =form.nineBoxForm.bind(
             Map(
               "box1" -> "1",
               "box2" -> "1",
@@ -450,14 +451,14 @@ class SubmitVatReturnFormSpec extends BaseSpec {
           )
 
           s"return a form field error with message ${MessageLookup.tooManyCharacters}" in {
-            val messageKey = form.error("box4").get.message
+            val messageKey = formWithValues.error("box4").get.message
             messages(messageKey) shouldBe MessageLookup.tooManyCharacters
           }
         }
 
         "is empty" should {
 
-          val form = nineBoxForm.bind(
+          val formWithValues = form.nineBoxForm.bind(
             Map(
               "box1" -> "1",
               "box2" -> "1",
@@ -471,15 +472,15 @@ class SubmitVatReturnFormSpec extends BaseSpec {
             )
           )
 
-          s"return a form field error with message ${MessageLookup.enterANumber}" in {
-            val messageKey = form.error("box4").get.message
-            messages(messageKey) shouldBe MessageLookup.enterANumber
+          s"return a form field error with message ${MessageLookup.enterANumber(4)}" in {
+            val messageKey = formWithValues.error("box4").get.message
+            messages(messageKey) shouldBe MessageLookup.enterANumber(4)
           }
         }
 
         "is less than -9999999999999.99" should {
 
-          val form = nineBoxForm.bind(
+          val formWithValues = form.nineBoxForm.bind(
             Map(
               "box1" -> "1",
               "box2" -> "1",
@@ -494,14 +495,14 @@ class SubmitVatReturnFormSpec extends BaseSpec {
           )
 
           s"return a form field error with message ${MessageLookup.tooManyCharacters}" in {
-            val messageKey = form.error("box4").get.message
+            val messageKey = formWithValues.error("box4").get.message
             messages(messageKey) shouldBe MessageLookup.tooManyCharacters
           }
         }
 
         "is more than 9999999999999.99" should {
 
-          val form = nineBoxForm.bind(
+          val formWithValues = form.nineBoxForm.bind(
             Map(
               "box1" -> "1",
               "box2" -> "1",
@@ -516,7 +517,7 @@ class SubmitVatReturnFormSpec extends BaseSpec {
           )
 
           s"return a form field error with message ${MessageLookup.tooManyCharacters}" in {
-            val messageKey = form.error("box4").get.message
+            val messageKey = formWithValues.error("box4").get.message
             messages(messageKey) shouldBe MessageLookup.tooManyCharacters
           }
         }
@@ -526,7 +527,7 @@ class SubmitVatReturnFormSpec extends BaseSpec {
 
         "is not a number" should {
 
-          val form = nineBoxForm.bind(
+          val formWithValues = form.nineBoxForm.bind(
             Map(
               "box1" -> "1",
               "box2" -> "1",
@@ -541,14 +542,14 @@ class SubmitVatReturnFormSpec extends BaseSpec {
           )
 
           s"return a form field error with message ${MessageLookup.invalidNumber}" in {
-            val messageKey = form.error("box5").get.message
+            val messageKey = formWithValues.error("box5").get.message
             messages(messageKey) shouldBe MessageLookup.invalidNumber
           }
         }
 
         "has more than 2 decimals" should {
 
-          val form = nineBoxForm.bind(
+          val formWithValues = form.nineBoxForm.bind(
             Map(
               "box1" -> "1",
               "box2" -> "1",
@@ -563,14 +564,14 @@ class SubmitVatReturnFormSpec extends BaseSpec {
           )
 
           s"return a form field error with message ${MessageLookup.tooManyCharactersNonNegative}" in {
-            val messageKey = form.error("box5").get.message
+            val messageKey = formWithValues.error("box5").get.message
             messages(messageKey) shouldBe MessageLookup.tooManyCharactersNonNegative
           }
         }
 
         "is empty" should {
 
-          val form = nineBoxForm.bind(
+          val formWithValues = form.nineBoxForm.bind(
             Map(
               "box1" -> "1",
               "box2" -> "1",
@@ -584,15 +585,15 @@ class SubmitVatReturnFormSpec extends BaseSpec {
             )
           )
 
-          s"return a form field error with message ${MessageLookup.enterANumber}" in {
-            val messageKey = form.error("box5").get.message
-            messages(messageKey) shouldBe MessageLookup.enterANumber
+          s"return a form field error with message ${MessageLookup.enterANumber(5)}" in {
+            val messageKey = formWithValues.error("box5").get.message
+            messages(messageKey) shouldBe MessageLookup.enterANumber(5)
           }
         }
 
         "is less than 0.00" should {
 
-          val form = nineBoxForm.bind(
+          val formWithValues = form.nineBoxForm.bind(
             Map(
               "box1" -> "1",
               "box2" -> "1",
@@ -607,14 +608,14 @@ class SubmitVatReturnFormSpec extends BaseSpec {
           )
 
           s"return a form field error with message ${MessageLookup.tooManyCharactersNonNegative}" in {
-            val messageKey = form.error("box5").get.message
+            val messageKey = formWithValues.error("box5").get.message
             messages(messageKey) shouldBe MessageLookup.tooManyCharactersNonNegative
           }
         }
 
         "is more than 99999999999.99" should {
 
-          val form = nineBoxForm.bind(
+          val formWithValues = form.nineBoxForm.bind(
             Map(
               "box1" -> "1",
               "box2" -> "1",
@@ -629,14 +630,14 @@ class SubmitVatReturnFormSpec extends BaseSpec {
           )
 
           s"return a form field error with message ${MessageLookup.tooManyCharactersNonNegative}" in {
-            val messageKey = form.error("box5").get.message
+            val messageKey = formWithValues.error("box5").get.message
             messages(messageKey) shouldBe MessageLookup.tooManyCharactersNonNegative
           }
         }
 
         "is negative" should {
 
-          val form = nineBoxForm.bind(
+          val formWithValues = form.nineBoxForm.bind(
             Map(
               "box1" -> "1",
               "box2" -> "1",
@@ -651,7 +652,7 @@ class SubmitVatReturnFormSpec extends BaseSpec {
           )
 
           s"return a form field error with message ${MessageLookup.tooManyCharactersNonNegative}" in {
-            val messageKey = form.error("box5").get.message
+            val messageKey = formWithValues.error("box5").get.message
             messages(messageKey) shouldBe MessageLookup.tooManyCharactersNonNegative
           }
         }
@@ -661,7 +662,7 @@ class SubmitVatReturnFormSpec extends BaseSpec {
 
         "is not a number" should {
 
-          val form = nineBoxForm.bind(
+          val formWithValues = form.nineBoxForm.bind(
             Map(
               "box1" -> "1",
               "box2" -> "1",
@@ -676,14 +677,14 @@ class SubmitVatReturnFormSpec extends BaseSpec {
           )
 
           s"return a form field error with message ${MessageLookup.invalidNumber}" in {
-            val messageKey = form.error("box6").get.message
+            val messageKey = formWithValues.error("box6").get.message
             messages(messageKey) shouldBe MessageLookup.invalidNumber
           }
         }
 
         "has decimals other than 0.00" should {
 
-          val form = nineBoxForm.bind(
+          val formWithValues = form.nineBoxForm.bind(
             Map(
               "box1" -> "1",
               "box2" -> "1",
@@ -698,14 +699,14 @@ class SubmitVatReturnFormSpec extends BaseSpec {
           )
 
           s"return a form field error with message ${MessageLookup.tooManyCharactersNonDecimal}" in {
-            val messageKey = form.error("box6").get.message
+            val messageKey = formWithValues.error("box6").get.message
             messages(messageKey) shouldBe MessageLookup.tooManyCharactersNonDecimal
           }
         }
 
         "is empty" should {
 
-          val form = nineBoxForm.bind(
+          val formWithValues = form.nineBoxForm.bind(
             Map(
               "box1" -> "1",
               "box2" -> "1",
@@ -719,15 +720,15 @@ class SubmitVatReturnFormSpec extends BaseSpec {
             )
           )
 
-          s"return a form field error with message ${MessageLookup.enterANumber}" in {
-            val messageKey = form.error("box6").get.message
-            messages(messageKey) shouldBe MessageLookup.enterANumber
+          s"return a form field error with message ${MessageLookup.enterANumber(6)}" in {
+            val messageKey = formWithValues.error("box6").get.message
+            messages(messageKey) shouldBe MessageLookup.enterANumber(6)
           }
         }
 
         "is less than -9999999999999" should {
 
-          val form = nineBoxForm.bind(
+          val formWithValues = form.nineBoxForm.bind(
             Map(
               "box1" -> "1",
               "box2" -> "1",
@@ -742,14 +743,14 @@ class SubmitVatReturnFormSpec extends BaseSpec {
           )
 
           s"return a form field error with message ${MessageLookup.tooManyCharactersNonDecimal}" in {
-            val messageKey = form.error("box6").get.message
+            val messageKey = formWithValues.error("box6").get.message
             messages(messageKey) shouldBe MessageLookup.tooManyCharactersNonDecimal
           }
         }
 
         "is more than 9999999999999" should {
 
-          val form = nineBoxForm.bind(
+          val formWithValues =form.nineBoxForm.bind(
             Map(
               "box1" -> "1",
               "box2" -> "1",
@@ -764,7 +765,7 @@ class SubmitVatReturnFormSpec extends BaseSpec {
           )
 
           s"return a form field error with message ${MessageLookup.tooManyCharactersNonDecimal}" in {
-            val messageKey = form.error("box6").get.message
+            val messageKey = formWithValues.error("box6").get.message
             messages(messageKey) shouldBe MessageLookup.tooManyCharactersNonDecimal
           }
         }
@@ -774,7 +775,7 @@ class SubmitVatReturnFormSpec extends BaseSpec {
 
         "is not a number" should {
 
-          val form = nineBoxForm.bind(
+          val formWithValues = form.nineBoxForm.bind(
             Map(
               "box1" -> "1",
               "box2" -> "1",
@@ -789,14 +790,14 @@ class SubmitVatReturnFormSpec extends BaseSpec {
           )
 
           s"return a form field error with message ${MessageLookup.invalidNumber}" in {
-            val messageKey = form.error("box7").get.message
+            val messageKey = formWithValues.error("box7").get.message
             messages(messageKey) shouldBe MessageLookup.invalidNumber
           }
         }
 
         "has decimals other than 0.00" should {
 
-          val form = nineBoxForm.bind(
+          val formWithValues = form.nineBoxForm.bind(
             Map(
               "box1" -> "1",
               "box2" -> "1",
@@ -811,14 +812,14 @@ class SubmitVatReturnFormSpec extends BaseSpec {
           )
 
           s"return a form field error with message ${MessageLookup.tooManyCharactersNonDecimal}" in {
-            val messageKey = form.error("box7").get.message
+            val messageKey = formWithValues.error("box7").get.message
             messages(messageKey) shouldBe MessageLookup.tooManyCharactersNonDecimal
           }
         }
 
         "is empty" should {
 
-          val form = nineBoxForm.bind(
+          val formWithValues = form.nineBoxForm.bind(
             Map(
               "box1" -> "1",
               "box2" -> "1",
@@ -832,15 +833,15 @@ class SubmitVatReturnFormSpec extends BaseSpec {
             )
           )
 
-          s"return a form field error with message ${MessageLookup.enterANumber}" in {
-            val messageKey = form.error("box7").get.message
-            messages(messageKey) shouldBe MessageLookup.enterANumber
+          s"return a form field error with message ${MessageLookup.enterANumber(7)}" in {
+            val messageKey = formWithValues.error("box7").get.message
+            messages(messageKey) shouldBe MessageLookup.enterANumber(7)
           }
         }
 
         "is less than -9999999999999" should {
 
-          val form = nineBoxForm.bind(
+          val formWithValues = form.nineBoxForm.bind(
             Map(
               "box1" -> "1",
               "box2" -> "1",
@@ -855,14 +856,14 @@ class SubmitVatReturnFormSpec extends BaseSpec {
           )
 
           s"return a form field error with message ${MessageLookup.tooManyCharactersNonDecimal}" in {
-            val messageKey = form.error("box7").get.message
+            val messageKey = formWithValues.error("box7").get.message
             messages(messageKey) shouldBe MessageLookup.tooManyCharactersNonDecimal
           }
         }
 
         "is more than 9999999999999" should {
 
-          val form = nineBoxForm.bind(
+          val formWithValues = form.nineBoxForm.bind(
             Map(
               "box1" -> "1",
               "box2" -> "1",
@@ -877,7 +878,7 @@ class SubmitVatReturnFormSpec extends BaseSpec {
           )
 
           s"return a form field error with message ${MessageLookup.tooManyCharactersNonDecimal}" in {
-            val messageKey = form.error("box7").get.message
+            val messageKey = formWithValues.error("box7").get.message
             messages(messageKey) shouldBe MessageLookup.tooManyCharactersNonDecimal
           }
         }
@@ -887,7 +888,7 @@ class SubmitVatReturnFormSpec extends BaseSpec {
 
         "is not a number" should {
 
-          val form = nineBoxForm.bind(
+          val formWithValues = form.nineBoxForm.bind(
             Map(
               "box1" -> "1",
               "box2" -> "1",
@@ -902,14 +903,14 @@ class SubmitVatReturnFormSpec extends BaseSpec {
           )
 
           s"return a form field error with message ${MessageLookup.invalidNumber}" in {
-            val messageKey = form.error("box8").get.message
+            val messageKey = formWithValues.error("box8").get.message
             messages(messageKey) shouldBe MessageLookup.invalidNumber
           }
         }
 
         "has decimals other than 0.00" should {
 
-          val form = nineBoxForm.bind(
+          val formWithValues = form.nineBoxForm.bind(
             Map(
               "box1" -> "1",
               "box2" -> "1",
@@ -924,14 +925,14 @@ class SubmitVatReturnFormSpec extends BaseSpec {
           )
 
           s"return a form field error with message ${MessageLookup.tooManyCharactersNonDecimal}" in {
-            val messageKey = form.error("box8").get.message
+            val messageKey = formWithValues.error("box8").get.message
             messages(messageKey) shouldBe MessageLookup.tooManyCharactersNonDecimal
           }
         }
 
         "is empty" should {
 
-          val form = nineBoxForm.bind(
+          val formWithValues = form.nineBoxForm.bind(
             Map(
               "box1" -> "1",
               "box2" -> "1",
@@ -945,15 +946,15 @@ class SubmitVatReturnFormSpec extends BaseSpec {
             )
           )
 
-          s"return a form field error with message ${MessageLookup.enterANumber}" in {
-            val messageKey = form.error("box8").get.message
-            messages(messageKey) shouldBe MessageLookup.enterANumber
+          s"return a form field error with message ${MessageLookup.enterANumber(8)}" in {
+            val messageKey = formWithValues.error("box8").get.message
+            messages(messageKey) shouldBe MessageLookup.enterANumber(8)
           }
         }
 
         "is less than -9999999999999" should {
 
-          val form = nineBoxForm.bind(
+          val formWithValues = form.nineBoxForm.bind(
             Map(
               "box1" -> "1",
               "box2" -> "1",
@@ -968,14 +969,14 @@ class SubmitVatReturnFormSpec extends BaseSpec {
           )
 
           s"return a form field error with message ${MessageLookup.tooManyCharactersNonDecimal}" in {
-            val messageKey = form.error("box8").get.message
+            val messageKey = formWithValues.error("box8").get.message
             messages(messageKey) shouldBe MessageLookup.tooManyCharactersNonDecimal
           }
         }
 
         "is more than 9999999999999" should {
 
-          val form = nineBoxForm.bind(
+          val formWithValues = form.nineBoxForm.bind(
             Map(
               "box1" -> "1",
               "box2" -> "1",
@@ -990,7 +991,7 @@ class SubmitVatReturnFormSpec extends BaseSpec {
           )
 
           s"return a form field error with message ${MessageLookup.tooManyCharactersNonDecimal}" in {
-            val messageKey = form.error("box8").get.message
+            val messageKey = formWithValues.error("box8").get.message
             messages(messageKey) shouldBe MessageLookup.tooManyCharactersNonDecimal
           }
         }
@@ -1000,7 +1001,7 @@ class SubmitVatReturnFormSpec extends BaseSpec {
 
         "is not a number" should {
 
-          val form = nineBoxForm.bind(
+          val formWithValues = form.nineBoxForm.bind(
             Map(
               "box1" -> "1",
               "box2" -> "1",
@@ -1015,14 +1016,14 @@ class SubmitVatReturnFormSpec extends BaseSpec {
           )
 
           s"return a form field error with message ${MessageLookup.invalidNumber}" in {
-            val messageKey = form.error("box9").get.message
+            val messageKey = formWithValues.error("box9").get.message
             messages(messageKey) shouldBe MessageLookup.invalidNumber
           }
         }
 
         "has decimals other than 0.00" should {
 
-          val form = nineBoxForm.bind(
+          val formWithValues = form.nineBoxForm.bind(
             Map(
               "box1" -> "1",
               "box2" -> "1",
@@ -1037,14 +1038,14 @@ class SubmitVatReturnFormSpec extends BaseSpec {
           )
 
           s"return a form field error with message ${MessageLookup.tooManyCharactersNonDecimal}" in {
-            val messageKey = form.error("box9").get.message
+            val messageKey = formWithValues.error("box9").get.message
             messages(messageKey) shouldBe MessageLookup.tooManyCharactersNonDecimal
           }
         }
 
         "is empty" should {
 
-          val form = nineBoxForm.bind(
+          val formWithValues = form.nineBoxForm.bind(
             Map(
               "box1" -> "1",
               "box2" -> "1",
@@ -1058,15 +1059,15 @@ class SubmitVatReturnFormSpec extends BaseSpec {
             )
           )
 
-          s"return a form field error with message ${MessageLookup.enterANumber}" in {
-            val messageKey = form.error("box9").get.message
-            messages(messageKey) shouldBe MessageLookup.enterANumber
+          s"return a form field error with message ${MessageLookup.enterANumber(9)}" in {
+            val messageKey = formWithValues.error("box9").get.message
+            messages(messageKey) shouldBe MessageLookup.enterANumber(9)
           }
         }
 
         "is less than -9999999999999" should {
 
-          val form = nineBoxForm.bind(
+          val formWithValues = form.nineBoxForm.bind(
             Map(
               "box1" -> "1",
               "box2" -> "1",
@@ -1081,14 +1082,14 @@ class SubmitVatReturnFormSpec extends BaseSpec {
           )
 
           s"return a form field error with message ${MessageLookup.tooManyCharactersNonDecimal}" in {
-            val messageKey = form.error("box9").get.message
+            val messageKey = formWithValues.error("box9").get.message
             messages(messageKey) shouldBe MessageLookup.tooManyCharactersNonDecimal
           }
         }
 
         "is more than 9999999999999" should {
 
-          val form = nineBoxForm.bind(
+          val formWithValues = form.nineBoxForm.bind(
             Map(
               "box1" -> "1",
               "box2" -> "1",
@@ -1103,7 +1104,7 @@ class SubmitVatReturnFormSpec extends BaseSpec {
           )
 
           s"return a form field error with message ${MessageLookup.tooManyCharactersNonDecimal}" in {
-            val messageKey = form.error("box9").get.message
+            val messageKey = formWithValues.error("box9").get.message
             messages(messageKey) shouldBe MessageLookup.tooManyCharactersNonDecimal
           }
         }
@@ -1115,7 +1116,7 @@ class SubmitVatReturnFormSpec extends BaseSpec {
 
     "form already has errors" should {
 
-      val form = nineBoxForm.bind(
+      val formWithValues = form.nineBoxForm.bind(
         Map(
           "box1" -> "x!",
           "box2" -> "1",
@@ -1130,8 +1131,8 @@ class SubmitVatReturnFormSpec extends BaseSpec {
       )
 
       "return the form with errors" in {
-        form.hasErrors shouldBe true
-        SubmitVatReturnForm.validateBoxCalculations(form) shouldBe form
+        formWithValues.hasErrors shouldBe true
+        SubmitVatReturnForm().validateBoxCalculations(formWithValues) shouldBe formWithValues
       }
     }
 
@@ -1139,7 +1140,7 @@ class SubmitVatReturnFormSpec extends BaseSpec {
 
       "box 3 and 5 are valid calculations" should {
 
-        val form = nineBoxForm.bind(
+        val formWithValues = form.nineBoxForm.bind(
           Map(
             "box1" -> "1",
             "box2" -> "2",
@@ -1154,13 +1155,13 @@ class SubmitVatReturnFormSpec extends BaseSpec {
         )
 
         "return the form with no errors" in {
-          SubmitVatReturnForm.validateBoxCalculations(form).hasErrors shouldBe false
+          SubmitVatReturnForm().validateBoxCalculations(formWithValues).hasErrors shouldBe false
         }
       }
 
       "box 3 is not the sum of box 1 and 2" should {
 
-        val form = nineBoxForm.bind(
+        val formWithValues = form.nineBoxForm.bind(
           Map(
             "box1" -> "1",
             "box2" -> "2",
@@ -1175,14 +1176,14 @@ class SubmitVatReturnFormSpec extends BaseSpec {
         )
 
         "return the form with a field error for box 3" in {
-          val messageKey = SubmitVatReturnForm.validateBoxCalculations(form).error("box3").get.message
+          val messageKey = SubmitVatReturnForm().validateBoxCalculations(formWithValues).error("box3").get.message
           messages(messageKey) shouldBe MessageLookup.box3Sum
         }
       }
 
       "box 5 is not box 3 minus box 4" should {
 
-        val form = nineBoxForm.bind(
+        val formWithValues = form.nineBoxForm.bind(
           Map(
             "box1" -> "1",
             "box2" -> "2",
@@ -1197,14 +1198,14 @@ class SubmitVatReturnFormSpec extends BaseSpec {
         )
 
         "return the form with a field error for box 5" in {
-          val messageKey = SubmitVatReturnForm.validateBoxCalculations(form).error("box5").get.message
+          val messageKey = SubmitVatReturnForm().validateBoxCalculations(formWithValues).error("box5").get.message
           messages(messageKey) shouldBe MessageLookup.box5Sum
         }
       }
 
       "multiple calculations are invalid" should {
 
-        val form = nineBoxForm.bind(
+        val formWithValues = form.nineBoxForm.bind(
           Map(
             "box1" -> "1",
             "box2" -> "1",
@@ -1218,7 +1219,7 @@ class SubmitVatReturnFormSpec extends BaseSpec {
           )
         )
 
-        val validatedForm = SubmitVatReturnForm.validateBoxCalculations(form)
+        val validatedForm = SubmitVatReturnForm().validateBoxCalculations(formWithValues)
 
         "return both field errors" in {
           messages(validatedForm.error("box5").get.message) shouldBe MessageLookup.box5Sum

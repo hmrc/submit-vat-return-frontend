@@ -60,7 +60,7 @@ class SubmitFormController @Inject()(val messagesApi: MessagesApi,
 
     user.session.get(SessionKeys.returnData) match {
       case Some(model) => renderViewWithSessionData(periodKey, model)
-      case _ => renderViewWithoutSessionData(periodKey, SubmitVatReturnForm.nineBoxForm)
+      case _ => renderViewWithoutSessionData(periodKey, SubmitVatReturnForm().nineBoxForm)
     }
   }
 
@@ -87,7 +87,7 @@ class SubmitFormController @Inject()(val messagesApi: MessagesApi,
           customerDetails.clientName,
           sessionData.flatRateScheme,
           VatObligation(sessionData.start, sessionData.end, sessionData.due, periodKey),
-          SubmitVatReturnForm.nineBoxForm.fill(nineBoxModel),
+          SubmitVatReturnForm().nineBoxForm.fill(nineBoxModel),
           isAgent = user.isAgent)
         )
       case _ =>
@@ -96,7 +96,7 @@ class SubmitFormController @Inject()(val messagesApi: MessagesApi,
           None,
           sessionData.flatRateScheme,
           VatObligation(sessionData.start, sessionData.end, sessionData.due, periodKey),
-          SubmitVatReturnForm.nineBoxForm.fill(nineBoxModel),
+          SubmitVatReturnForm().nineBoxForm.fill(nineBoxModel),
           isAgent = user.isAgent)
         )
     }
@@ -147,7 +147,9 @@ class SubmitFormController @Inject()(val messagesApi: MessagesApi,
 
   def submit(periodKey: String): Action[AnyContent] = (authPredicate andThen mandationStatusCheck).async { implicit user =>
 
-    validateBoxCalculations(SubmitVatReturnForm.nineBoxForm.bindFromRequest()).fold(
+    val form = SubmitVatReturnForm()
+
+   form.validateBoxCalculations(form.nineBoxForm.bindFromRequest()).fold(
       failure => {
 
         user.session.get(SessionKeys.viewModel) match {

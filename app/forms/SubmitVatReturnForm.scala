@@ -22,9 +22,10 @@ import models.NineBoxModel
 import play.api.data.Forms._
 import play.api.data.validation.Constraint
 import play.api.data.{Form, FormError, Mapping}
+import play.api.i18n.Messages
 
 @Singleton
-object SubmitVatReturnForm {
+case class SubmitVatReturnForm (implicit messages: Messages){
 
   val minDecimalValue: BigDecimal   = -9999999999999.99
   val minNoDecimalValue: BigDecimal = -9999999999999.00
@@ -35,10 +36,10 @@ object SubmitVatReturnForm {
 
   private def toBigDecimal: String => BigDecimal = (text: String) => BigDecimal.apply(text)
   private def fromBigDecimal: BigDecimal => String = (bd: BigDecimal) => bd.toString()
-  private def validNumber: Constraint[String] = validBigDecimal("submit_form.error.emptyError", "submit_form.error.formatCheckError")
+  private def validNumber(boxId : Int): Constraint[String] = validBigDecimal(messages("submit_form.error.emptyError", boxId),  "submit_form.error.formatCheckError")
 
-  private def box1To4Validation: (Mapping[BigDecimal]) = {
-    text.verifying(validNumber)
+  private def box1To4Validation(boxId: Int): (Mapping[BigDecimal]) = {
+    text.verifying(validNumber(boxId))
       .transform(toBigDecimal, fromBigDecimal)
       .verifying(
         max(maxDecimalValue, "submit_form.error.tooManyCharacters"),
@@ -47,8 +48,8 @@ object SubmitVatReturnForm {
       )
   }
 
-  private def box5Validation: (Mapping[BigDecimal]) = {
-    text.verifying(validNumber)
+  private def box5Validation(boxId: Int): (Mapping[BigDecimal]) = {
+    text.verifying(validNumber(boxId))
       .transform(toBigDecimal, fromBigDecimal)
       .verifying(
         max(maxBox5Value, "submit_form.error.negativeError"),
@@ -57,8 +58,8 @@ object SubmitVatReturnForm {
       )
   }
 
-  private def box6To9Validation: (Mapping[BigDecimal]) = {
-    text.verifying(validNumber)
+  private def box6To9Validation(boxId: Int): (Mapping[BigDecimal]) = {
+    text.verifying(validNumber(boxId))
       .transform(toBigDecimal, fromBigDecimal)
       .verifying(
         max(maxNoDecimalValue, "submit_form.error.tooManyCharactersNoDecimal"),
@@ -77,15 +78,15 @@ object SubmitVatReturnForm {
 
   val nineBoxForm: Form[NineBoxModel] = Form(
     mapping(
-      "box1" -> box1To4Validation,
-      "box2" -> box1To4Validation,
-      "box3" -> box1To4Validation,
-      "box4" -> box1To4Validation,
-      "box5" -> box5Validation,
-      "box6" -> box6To9Validation,
-      "box7" -> box6To9Validation,
-      "box8" -> box6To9Validation,
-      "box9" -> box6To9Validation
+      "box1" -> box1To4Validation(1),
+      "box2" -> box1To4Validation(2),
+      "box3" -> box1To4Validation(3),
+      "box4" -> box1To4Validation(4),
+      "box5" -> box5Validation(5),
+      "box6" -> box6To9Validation(6),
+      "box7" -> box6To9Validation(7),
+      "box8" -> box6To9Validation(8),
+      "box9" -> box6To9Validation(9)
     )(NineBoxModel.apply)(NineBoxModel.unapply)
   )
 

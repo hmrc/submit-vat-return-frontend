@@ -59,7 +59,7 @@ class SubmitFormViewSpec extends ViewBaseSpec {
         Some("ABC Studios"),
         flatRateScheme = true,
         obligation,
-        SubmitVatReturnForm.nineBoxForm,
+        SubmitVatReturnForm().nineBoxForm,
         isAgent = false
       )(fakeRequest, messages, mockAppConfig, user, Lang.apply("en"))
       lazy implicit val document: Document = Jsoup.parse(view.body)
@@ -158,7 +158,7 @@ class SubmitFormViewSpec extends ViewBaseSpec {
         Some("ABC Studios"),
         flatRateScheme = false,
         obligation,
-        SubmitVatReturnForm.nineBoxForm,
+        SubmitVatReturnForm().nineBoxForm,
         isAgent = false
       ) (fakeRequest, messages, mockAppConfig, user, Lang.apply("en"))
       lazy implicit val document: Document = Jsoup.parse(view.body)
