@@ -11,6 +11,7 @@ common.continue = Yn eich blaen
 common.back = Yn ôl
 common.errorSummary.heading = Mae gennych un neu fwy o wallau
 common.warning = Rhybudd
+common.error.titlePrefix = Gwall:
 
 error.required = Nodwch werth
 error.summary.title = Mae problem wedi codi
@@ -26,7 +27,7 @@ session_expired.helpOne = Bydd yn rhaid i chi
 session_expired.helpTwo = fewngofnodi
 session_expired.helpThree = gan ddefnyddio’ch Dynodydd Defnyddiwr (ID) ar gyfer Porth y Llywodraeth.
 
-submit_form.title = Cyflwyno Ffurflen TAW
+submit_form.title = Eich Ffurflen TAW
 submit_form.heading = Cyflwyno Ffurflen TAW
 submit_form.additionalInformation = Gwybodaeth ychwanegol
 submit_form.submitReturn = Gallwch gyflwyno’ch Ffurflen TAW ar y sgrin nesaf.
@@ -39,7 +40,7 @@ submit_form.error.negativeError = Nodwch uchafswm o 11 digid ar gyfer punnoedd.\
 submit_form.error.box3Error = Ychwanegwch y rhif o flwch 1 at y rhif o flwch 2, a rhowch y canlyniad fan hyn
 submit_form.error.box5Error = Tynnwch y rhif ym mlwch 4 o’r rhif ym mlwch 3, a rhowch y canlyniad fan hyn
 
-confirm_submission.title = Eich Ffurflen TAW
+confirm_submission.title = Cadarnhau’ch Ffurflen TAW
 confirm_submission.heading = Cyflwyno Ffurflen TAW
 confirm_submission.returnDueDate = Dyddiad cau ar gyfer cyflwyno’r Ffurflen TAW: {0}
 confirm_submission.vatDetails = Manylion TAW
@@ -90,7 +91,7 @@ unauthorised_non_agent.heading = Ni allwch ddefnyddio’r gwasanaeth hwn eto
 unauthorised_non_agent.text = Mae angen i chi
 unauthorised_non_agent.link = sgofrestru i ddefnyddio meddalwedd er mwyn cyflwyno’ch Ffurflenni TAW
 
-confirmation_view.title = Eich Ffurflen TAW
+confirmation_view.title = Mae’r Ffurflen TAW wedi’i chyflwyno
 confirmation_view.heading = Mae’r Ffurflen TAW wedi’i chyflwyno
 confirmation_view.subHeading = Yr hyn sy’n digwydd nesaf
 confirmation_view.paragraph = Rydym wedi cael eich Ffurflen TAW.
