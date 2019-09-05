@@ -18,8 +18,8 @@ package assets.messages
 
 object ConfirmSubmissionMessages extends BaseMessages {
 
-  val title = "Confirm your VAT Return" + titleSuffix
-  val agentTitle = "Confirm your VAT Return" + agentTitleSuffix
+  val title: String = "Confirm your VAT Return" + titleSuffix
+  val agentTitle: String = "Confirm your VAT Return" + agentTitleSuffix
   val heading = "Submit return"
   val subHeadingVatDetails = "VAT details"
   val box1Heading = "Box 1"
@@ -31,7 +31,7 @@ object ConfirmSubmissionMessages extends BaseMessages {
   val box4Heading = "Box 4"
   val box4Description = "VAT you have claimed back"
   val box5Heading = "Box 5"
-  val box5Description = "Return total"
+  val box5Description = "Net VAT you owe HMRC or HMRC owes you (this is the difference between box 3 and 4)"
   val box6Heading = "Box 6"
   val box6DescriptionHasFRS = "Total value of sales and other supplies, including VAT"
   val box6DescriptionNoFRS = "Total value of sales and other supplies, excluding VAT"

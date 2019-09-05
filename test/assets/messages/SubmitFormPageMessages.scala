@@ -36,7 +36,7 @@ object SubmitFormPageMessages {
   val box4Text = "VAT you have claimed back"
 
   val box5 = "Box 5"
-  val box5Text = "Return total"
+  val box5Text = "Net VAT you owe HMRC or HMRC owes you (this is the difference between box 3 and 4)"
 
   val additionalInformation = "Additional information"
 
