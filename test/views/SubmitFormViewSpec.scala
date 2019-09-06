@@ -21,11 +21,10 @@ import java.time.LocalDate
 import assets.messages.SubmitFormPageMessages._
 import forms.SubmitVatReturnForm
 import models.VatObligation
-import models.auth.User
+import models.nrs.CY
 import org.jsoup.Jsoup
 import org.jsoup.nodes.Document
 import play.api.i18n.Lang
-import play.api.mvc.AnyContentAsEmpty
 
 class SubmitFormViewSpec extends ViewBaseSpec {
 
@@ -66,6 +65,10 @@ class SubmitFormViewSpec extends ViewBaseSpec {
 
       "render breadcrumbs" which {
 
+        "have the correct hidden label for box 1" in {
+          elementText("label[for=box1]") shouldBe "Box 1 VAT you charged on sales and other supplies amount"
+        }
+
         "has the 'Your VAT details' title" in {
           elementText("div.breadcrumbs li:nth-of-type(1)") shouldBe "Your VAT details"
         }
@@ -91,14 +94,6 @@ class SubmitFormViewSpec extends ViewBaseSpec {
         elementText("h1 > span:nth-of-type(1)") shouldBe submitReturn
         elementText("h1 > span:nth-of-type(2)") shouldBe "12 Jan to 12 Apr 2019"
         elementText("h1 > span:nth-of-type(3)") shouldBe returnDue("12 May 2019")
-      }
-
-      "have the correct hidden label for box 1" in {
-        elementText("label[for=box1]") shouldBe "Box 1 VAT you charged on sales and other supplies amount"
-      }
-
-      "have the correct hidden label for box 2" in {
-        elementText("label[for=box2]") shouldBe "Box 2 VAT you owe on goods purchased from EC countries and brought into the UK amount"
       }
 
       "display the business name" in {
@@ -160,11 +155,37 @@ class SubmitFormViewSpec extends ViewBaseSpec {
         obligation,
         SubmitVatReturnForm.nineBoxForm,
         isAgent = false
-      ) (fakeRequest, messages, mockAppConfig, user, Lang.apply("en"))
+      )(fakeRequest, messages, mockAppConfig, user, Lang.apply("en"))
       lazy implicit val document: Document = Jsoup.parse(view.body)
 
       "display the non flat rate scheme text ofr box 6" in {
         elementText("#box-six > div:nth-of-type(2)") shouldBe box6NonFlatRateSchemeText
+      }
+    }
+
+    "rendering the submit_form page in welsh" should {
+      val languageOption: Lang = Lang.apply(CY.languageCode)
+
+      "have the language set as welsh" in {
+        languageOption.language shouldBe "cy"
+      }
+
+      lazy val view = views.html.submit_form(
+        "18AA",
+        Some("ABC Studios"),
+        flatRateScheme = true,
+        obligation,
+        SubmitVatReturnForm.nineBoxForm,
+        isAgent = false
+      )(fakeRequest, welshMessages, mockAppConfig, user, languageOption)
+      lazy implicit val document: Document = Jsoup.parse(view.body)
+
+      "have the welsh messages file" in {
+        welshMessages.lang.toString shouldBe "Lang(cy)"
+      }
+
+      "have the correct hidden label for box 1" in {
+        elementText("label[for=box1]") shouldBe "Swm Blwch 1 TAW a godwyd gennych ar werthiannau a chyflenwadau eraill"
       }
     }
   }
