@@ -29,7 +29,7 @@ class SubmitVatReturnFormSpec extends BaseSpec {
     val tooManyCharactersNonNegative: String = "Enter a maximum of 11 digits for pounds.\nEnter a maximum of 2 decimal places for pence.\n" +
       "Do not use a negative amount eg -13.2"
     def enterANumber(boxId : Int): String = s"Enter a number in box $boxId"
-    val invalidNumber: String = "Enter a number in the correct format"
+    def invalidNumber(boxId : Int): String = s"Enter a number in the correct format in box $boxId"
     val box3Sum: String = "Add the number from box 1 to the number from box 2 and write it here"
     val box5Sum: String = "Subtract the number in box 4 away from the number in box 3 and write it here"
   }
@@ -89,9 +89,9 @@ class SubmitVatReturnFormSpec extends BaseSpec {
             )
           )
 
-          s"return a form field error with message ${MessageLookup.invalidNumber}" in {
+          s"return a form field error with message ${MessageLookup.invalidNumber(1)}" in {
             val messageKey = formWithValues.error("box1").get.message
-            messages(messageKey) shouldBe MessageLookup.invalidNumber
+            messages(messageKey) shouldBe MessageLookup.invalidNumber(1)
           }
         }
 
@@ -202,9 +202,9 @@ class SubmitVatReturnFormSpec extends BaseSpec {
             )
           )
 
-          s"return a form field error with message ${MessageLookup.invalidNumber}" in {
+          s"return a form field error with message ${MessageLookup.invalidNumber(2)}" in {
             val messageKey = formWithValues.error("box2").get.message
-            messages(messageKey) shouldBe MessageLookup.invalidNumber
+            messages(messageKey) shouldBe MessageLookup.invalidNumber(2)
           }
         }
 
@@ -315,9 +315,9 @@ class SubmitVatReturnFormSpec extends BaseSpec {
             )
           )
 
-          s"return a form field error with message ${MessageLookup.invalidNumber}" in {
+          s"return a form field error with message ${MessageLookup.invalidNumber(3)}" in {
             val messageKey = formWithValues.error("box3").get.message
-            messages(messageKey) shouldBe MessageLookup.invalidNumber
+            messages(messageKey) shouldBe MessageLookup.invalidNumber(3)
           }
         }
 
@@ -428,9 +428,9 @@ class SubmitVatReturnFormSpec extends BaseSpec {
             )
           )
 
-          s"return a form field error with message ${MessageLookup.invalidNumber}" in {
+          s"return a form field error with message ${MessageLookup.invalidNumber(4)}" in {
             val messageKey = formWithValues.error("box4").get.message
-            messages(messageKey) shouldBe MessageLookup.invalidNumber
+            messages(messageKey) shouldBe MessageLookup.invalidNumber(4)
           }
         }
 
@@ -541,9 +541,9 @@ class SubmitVatReturnFormSpec extends BaseSpec {
             )
           )
 
-          s"return a form field error with message ${MessageLookup.invalidNumber}" in {
+          s"return a form field error with message ${MessageLookup.invalidNumber(5)}" in {
             val messageKey = formWithValues.error("box5").get.message
-            messages(messageKey) shouldBe MessageLookup.invalidNumber
+            messages(messageKey) shouldBe MessageLookup.invalidNumber(5)
           }
         }
 
@@ -676,9 +676,9 @@ class SubmitVatReturnFormSpec extends BaseSpec {
             )
           )
 
-          s"return a form field error with message ${MessageLookup.invalidNumber}" in {
+          s"return a form field error with message ${MessageLookup.invalidNumber(6)}" in {
             val messageKey = formWithValues.error("box6").get.message
-            messages(messageKey) shouldBe MessageLookup.invalidNumber
+            messages(messageKey) shouldBe MessageLookup.invalidNumber(6)
           }
         }
 
@@ -789,9 +789,9 @@ class SubmitVatReturnFormSpec extends BaseSpec {
             )
           )
 
-          s"return a form field error with message ${MessageLookup.invalidNumber}" in {
+          s"return a form field error with message ${MessageLookup.invalidNumber(7)}" in {
             val messageKey = formWithValues.error("box7").get.message
-            messages(messageKey) shouldBe MessageLookup.invalidNumber
+            messages(messageKey) shouldBe MessageLookup.invalidNumber(7)
           }
         }
 
@@ -902,9 +902,9 @@ class SubmitVatReturnFormSpec extends BaseSpec {
             )
           )
 
-          s"return a form field error with message ${MessageLookup.invalidNumber}" in {
+          s"return a form field error with message ${MessageLookup.invalidNumber(8)}" in {
             val messageKey = formWithValues.error("box8").get.message
-            messages(messageKey) shouldBe MessageLookup.invalidNumber
+            messages(messageKey) shouldBe MessageLookup.invalidNumber(8)
           }
         }
 
@@ -1015,9 +1015,9 @@ class SubmitVatReturnFormSpec extends BaseSpec {
             )
           )
 
-          s"return a form field error with message ${MessageLookup.invalidNumber}" in {
+          s"return a form field error with message ${MessageLookup.invalidNumber(9)}" in {
             val messageKey = formWithValues.error("box9").get.message
-            messages(messageKey) shouldBe MessageLookup.invalidNumber
+            messages(messageKey) shouldBe MessageLookup.invalidNumber(9)
           }
         }
 

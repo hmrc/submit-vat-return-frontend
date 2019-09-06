@@ -36,7 +36,7 @@ case class SubmitVatReturnForm (implicit messages: Messages){
 
   private def toBigDecimal: String => BigDecimal = (text: String) => BigDecimal.apply(text)
   private def fromBigDecimal: BigDecimal => String = (bd: BigDecimal) => bd.toString()
-  private def validNumber(boxId : Int): Constraint[String] = validBigDecimal(messages("submit_form.error.emptyError", boxId),  "submit_form.error.formatCheckError")
+  private def validNumber(boxId : Int): Constraint[String] = validBigDecimal(messages("submit_form.error.emptyError", boxId),  messages("submit_form.error.formatCheckError", boxId))
 
   private def box1To4Validation(boxId: Int): (Mapping[BigDecimal]) = {
     text.verifying(validNumber(boxId))
