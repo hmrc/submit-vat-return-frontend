@@ -35,10 +35,10 @@ submit_form.additionalInformation = Additional information
 submit_form.submitReturn = You can submit your return on the next screen.
 
 submit_form.error.emptyError = Enter a number in box {0}
-submit_form.error.tooManyCharacters = Enter a maximum of 13 digits for pounds.\nEnter a maximum of 2 decimal places for pence.\nYou can use a negative amount eg -13.2
-submit_form.error.tooManyCharactersNoDecimal = Enter a maximum of 13 digits for pounds.\nYou can use a negative amount eg -13
+submit_form.error.tooManyCharacters = Enter a maximum of 13 digits for pounds in box {0}.\nEnter a maximum of 2 decimal places for pence.\nYou can use a negative amount eg -13.2
+submit_form.error.tooManyCharactersNoDecimal = Enter a maximum of 13 digits for pounds in box {0}.\nYou can use a negative amount eg -13
 submit_form.error.formatCheckError = Enter a number in the correct format in box {0}
-submit_form.error.negativeError = Enter a maximum of 11 digits for pounds.\nEnter a maximum of 2 decimal places for pence.\nDo not use a negative amount eg -13.2
+submit_form.error.negativeError = Enter a maximum of 11 digits for pounds in box {0}.\nEnter a maximum of 2 decimal places for pence.\nDo not use a negative amount eg -13.2
 submit_form.error.box3Error = Add the number from box 1 to the number from box 2 and write it here
 submit_form.error.box5Error = Subtract the number in box 4 away from the number in box 3 and write it here
 
@@ -46,7 +46,7 @@ confirm_submission.title = Confirm your VAT Return
 confirm_submission.heading = Submit return
 confirm_submission.returnDueDate = Return due date: {0}
 confirm_submission.vatDetails = VAT details
-confirm_submission.returnTotal = Return total:  F
+confirm_submission.returnTotal = Return total:
 
 confirm_submission.amount = amount
 confirm_submission.additionalInfo = Additional information

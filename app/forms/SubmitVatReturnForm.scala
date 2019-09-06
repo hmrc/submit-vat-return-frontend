@@ -34,37 +34,37 @@ case class SubmitVatReturnForm (implicit messages: Messages){
   val minBox5Value: BigDecimal      = 0.00
   val maxBox5Value: BigDecimal      = 99999999999.99
 
-  private def toBigDecimal: String => BigDecimal = (text: String) => BigDecimal.apply(text)
-  private def fromBigDecimal: BigDecimal => String = (bd: BigDecimal) => bd.toString()
+  private def toBigDecimal(boxId : Int): String => BigDecimal = (text: String) => BigDecimal.apply(text)
+  private def fromBigDecimal(boxId : Int): BigDecimal => String = (bd: BigDecimal) => bd.toString()
   private def validNumber(boxId : Int): Constraint[String] = validBigDecimal(messages("submit_form.error.emptyError", boxId),  messages("submit_form.error.formatCheckError", boxId))
 
   private def box1To4Validation(boxId: Int): (Mapping[BigDecimal]) = {
     text.verifying(validNumber(boxId))
-      .transform(toBigDecimal, fromBigDecimal)
+      .transform(toBigDecimal(boxId), fromBigDecimal(boxId))
       .verifying(
-        max(maxDecimalValue, "submit_form.error.tooManyCharacters"),
-        min(minDecimalValue, "submit_form.error.tooManyCharacters"),
-        twoDecimalPlaces("submit_form.error.tooManyCharacters")
+        max(maxDecimalValue, messages("submit_form.error.tooManyCharacters", boxId)),
+        min(minDecimalValue, messages("submit_form.error.tooManyCharacters", boxId)),
+        twoDecimalPlaces(messages("submit_form.error.tooManyCharacters", boxId))
       )
   }
 
   private def box5Validation(boxId: Int): (Mapping[BigDecimal]) = {
     text.verifying(validNumber(boxId))
-      .transform(toBigDecimal, fromBigDecimal)
+      .transform(toBigDecimal(boxId), fromBigDecimal(boxId))
       .verifying(
-        max(maxBox5Value, "submit_form.error.negativeError"),
-        min(minBox5Value, "submit_form.error.negativeError"),
-        twoDecimalPlaces("submit_form.error.negativeError")
+        max(maxBox5Value, messages("submit_form.error.negativeError", boxId)),
+        min(minBox5Value, messages("submit_form.error.negativeError", boxId)),
+        twoDecimalPlaces(messages("submit_form.error.negativeError", boxId))
       )
   }
 
   private def box6To9Validation(boxId: Int): (Mapping[BigDecimal]) = {
     text.verifying(validNumber(boxId))
-      .transform(toBigDecimal, fromBigDecimal)
+      .transform(toBigDecimal(boxId), fromBigDecimal(boxId))
       .verifying(
-        max(maxNoDecimalValue, "submit_form.error.tooManyCharactersNoDecimal"),
-        min(minNoDecimalValue, "submit_form.error.tooManyCharactersNoDecimal"),
-        noDecimalPlaces("submit_form.error.tooManyCharactersNoDecimal")
+        max(maxNoDecimalValue, messages("submit_form.error.tooManyCharactersNoDecimal", boxId)),
+        min(minNoDecimalValue, messages("submit_form.error.tooManyCharactersNoDecimal", boxId)),
+        noDecimalPlaces(messages("submit_form.error.tooManyCharactersNoDecimal", boxId))
       )
   }
 

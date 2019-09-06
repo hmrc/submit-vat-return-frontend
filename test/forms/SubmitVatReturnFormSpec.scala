@@ -24,9 +24,9 @@ import models.{NineBoxModel, SubmitVatReturnModel}
 class SubmitVatReturnFormSpec extends BaseSpec {
 
   object MessageLookup {
-    val tooManyCharacters: String = "Enter a maximum of 13 digits for pounds.\nEnter a maximum of 2 decimal places for pence.\nYou can use a negative amount eg -13.2"
-    val tooManyCharactersNonDecimal: String = "Enter a maximum of 13 digits for pounds.\nYou can use a negative amount eg -13"
-    val tooManyCharactersNonNegative: String = "Enter a maximum of 11 digits for pounds.\nEnter a maximum of 2 decimal places for pence.\n" +
+    def tooManyCharacters(boxId : Int): String = s"Enter a maximum of 13 digits for pounds in box $boxId.\nEnter a maximum of 2 decimal places for pence.\nYou can use a negative amount eg -13.2"
+    def tooManyCharactersNonDecimal(boxId : Int): String = s"Enter a maximum of 13 digits for pounds in box $boxId.\nYou can use a negative amount eg -13"
+    def tooManyCharactersNonNegative(boxId : Int): String = s"Enter a maximum of 11 digits for pounds in box $boxId.\nEnter a maximum of 2 decimal places for pence.\n" +
       "Do not use a negative amount eg -13.2"
     def enterANumber(boxId : Int): String = s"Enter a number in box $boxId"
     def invalidNumber(boxId : Int): String = s"Enter a number in the correct format in box $boxId"
@@ -111,9 +111,9 @@ class SubmitVatReturnFormSpec extends BaseSpec {
             )
           )
 
-          s"return a form field error with message ${MessageLookup.tooManyCharacters}" in {
+          s"return a form field error with message ${MessageLookup.tooManyCharacters(1)}" in {
             val messageKey = formWithValues.error("box1").get.message
-            messages(messageKey) shouldBe MessageLookup.tooManyCharacters
+            messages(messageKey) shouldBe MessageLookup.tooManyCharacters(1)
           }
         }
 
@@ -155,9 +155,9 @@ class SubmitVatReturnFormSpec extends BaseSpec {
             )
           )
 
-          s"return a form field error with message ${MessageLookup.tooManyCharacters}" in {
+          s"return a form field error with message ${MessageLookup.tooManyCharacters(1)}" in {
             val messageKey = formWithValues.error("box1").get.message
-            messages(messageKey) shouldBe MessageLookup.tooManyCharacters
+            messages(messageKey) shouldBe MessageLookup.tooManyCharacters(1)
           }
         }
 
@@ -177,9 +177,9 @@ class SubmitVatReturnFormSpec extends BaseSpec {
             )
           )
 
-          s"return a form field error with message ${MessageLookup.tooManyCharacters}" in {
+          s"return a form field error with message ${MessageLookup.tooManyCharacters(1)}" in {
             val messageKey = formWithValues.error("box1").get.message
-            messages(messageKey) shouldBe MessageLookup.tooManyCharacters
+            messages(messageKey) shouldBe MessageLookup.tooManyCharacters(1)
           }
         }
       }
@@ -224,9 +224,9 @@ class SubmitVatReturnFormSpec extends BaseSpec {
             )
           )
 
-          s"return a form field error with message ${MessageLookup.tooManyCharacters}" in {
+          s"return a form field error with message ${MessageLookup.tooManyCharacters(2)}" in {
             val messageKey = formWithValues.error("box2").get.message
-            messages(messageKey) shouldBe MessageLookup.tooManyCharacters
+            messages(messageKey) shouldBe MessageLookup.tooManyCharacters(2)
           }
         }
 
@@ -268,9 +268,9 @@ class SubmitVatReturnFormSpec extends BaseSpec {
             )
           )
 
-          s"return a form field error with message ${MessageLookup.tooManyCharacters}" in {
+          s"return a form field error with message ${MessageLookup.tooManyCharacters(2)}" in {
             val messageKey = formWithValues.error("box2").get.message
-            messages(messageKey) shouldBe MessageLookup.tooManyCharacters
+            messages(messageKey) shouldBe MessageLookup.tooManyCharacters(2)
           }
         }
 
@@ -290,9 +290,9 @@ class SubmitVatReturnFormSpec extends BaseSpec {
             )
           )
 
-          s"return a form field error with message ${MessageLookup.tooManyCharacters}" in {
+          s"return a form field error with message ${MessageLookup.tooManyCharacters(2)}" in {
             val messageKey = formWithValues.error("box2").get.message
-            messages(messageKey) shouldBe MessageLookup.tooManyCharacters
+            messages(messageKey) shouldBe MessageLookup.tooManyCharacters(2)
           }
         }
       }
@@ -337,9 +337,9 @@ class SubmitVatReturnFormSpec extends BaseSpec {
             )
           )
 
-          s"return a form field error with message ${MessageLookup.tooManyCharacters}" in {
+          s"return a form field error with message ${MessageLookup.tooManyCharacters(3)}" in {
             val messageKey = formWithValues.error("box3").get.message
-            messages(messageKey) shouldBe MessageLookup.tooManyCharacters
+            messages(messageKey) shouldBe MessageLookup.tooManyCharacters(3)
           }
         }
 
@@ -381,9 +381,9 @@ class SubmitVatReturnFormSpec extends BaseSpec {
             )
           )
 
-          s"return a form field error with message ${MessageLookup.tooManyCharacters}" in {
+          s"return a form field error with message ${MessageLookup.tooManyCharacters(3)}" in {
             val messageKey = formWithValues.error("box3").get.message
-            messages(messageKey) shouldBe MessageLookup.tooManyCharacters
+            messages(messageKey) shouldBe MessageLookup.tooManyCharacters(3)
           }
         }
 
@@ -403,9 +403,9 @@ class SubmitVatReturnFormSpec extends BaseSpec {
             )
           )
 
-          s"return a form field error with message ${MessageLookup.tooManyCharacters}" in {
+          s"return a form field error with message ${MessageLookup.tooManyCharacters(3)}" in {
             val messageKey = formWithValues.error("box3").get.message
-            messages(messageKey) shouldBe MessageLookup.tooManyCharacters
+            messages(messageKey) shouldBe MessageLookup.tooManyCharacters(3)
           }
         }
       }
@@ -450,9 +450,9 @@ class SubmitVatReturnFormSpec extends BaseSpec {
             )
           )
 
-          s"return a form field error with message ${MessageLookup.tooManyCharacters}" in {
+          s"return a form field error with message ${MessageLookup.tooManyCharacters(4)}" in {
             val messageKey = formWithValues.error("box4").get.message
-            messages(messageKey) shouldBe MessageLookup.tooManyCharacters
+            messages(messageKey) shouldBe MessageLookup.tooManyCharacters(4)
           }
         }
 
@@ -494,9 +494,9 @@ class SubmitVatReturnFormSpec extends BaseSpec {
             )
           )
 
-          s"return a form field error with message ${MessageLookup.tooManyCharacters}" in {
+          s"return a form field error with message ${MessageLookup.tooManyCharacters(4)}" in {
             val messageKey = formWithValues.error("box4").get.message
-            messages(messageKey) shouldBe MessageLookup.tooManyCharacters
+            messages(messageKey) shouldBe MessageLookup.tooManyCharacters(4)
           }
         }
 
@@ -516,9 +516,9 @@ class SubmitVatReturnFormSpec extends BaseSpec {
             )
           )
 
-          s"return a form field error with message ${MessageLookup.tooManyCharacters}" in {
+          s"return a form field error with message ${MessageLookup.tooManyCharacters(4)}" in {
             val messageKey = formWithValues.error("box4").get.message
-            messages(messageKey) shouldBe MessageLookup.tooManyCharacters
+            messages(messageKey) shouldBe MessageLookup.tooManyCharacters(4)
           }
         }
       }
@@ -563,9 +563,9 @@ class SubmitVatReturnFormSpec extends BaseSpec {
             )
           )
 
-          s"return a form field error with message ${MessageLookup.tooManyCharactersNonNegative}" in {
+          s"return a form field error with message ${MessageLookup.tooManyCharactersNonNegative(5)}" in {
             val messageKey = formWithValues.error("box5").get.message
-            messages(messageKey) shouldBe MessageLookup.tooManyCharactersNonNegative
+            messages(messageKey) shouldBe MessageLookup.tooManyCharactersNonNegative(5)
           }
         }
 
@@ -607,9 +607,9 @@ class SubmitVatReturnFormSpec extends BaseSpec {
             )
           )
 
-          s"return a form field error with message ${MessageLookup.tooManyCharactersNonNegative}" in {
+          s"return a form field error with message ${MessageLookup.tooManyCharactersNonNegative(5)}" in {
             val messageKey = formWithValues.error("box5").get.message
-            messages(messageKey) shouldBe MessageLookup.tooManyCharactersNonNegative
+            messages(messageKey) shouldBe MessageLookup.tooManyCharactersNonNegative(5)
           }
         }
 
@@ -629,9 +629,9 @@ class SubmitVatReturnFormSpec extends BaseSpec {
             )
           )
 
-          s"return a form field error with message ${MessageLookup.tooManyCharactersNonNegative}" in {
+          s"return a form field error with message ${MessageLookup.tooManyCharactersNonNegative(5)}" in {
             val messageKey = formWithValues.error("box5").get.message
-            messages(messageKey) shouldBe MessageLookup.tooManyCharactersNonNegative
+            messages(messageKey) shouldBe MessageLookup.tooManyCharactersNonNegative(5)
           }
         }
 
@@ -651,9 +651,9 @@ class SubmitVatReturnFormSpec extends BaseSpec {
             )
           )
 
-          s"return a form field error with message ${MessageLookup.tooManyCharactersNonNegative}" in {
+          s"return a form field error with message ${MessageLookup.tooManyCharactersNonNegative(5)}" in {
             val messageKey = formWithValues.error("box5").get.message
-            messages(messageKey) shouldBe MessageLookup.tooManyCharactersNonNegative
+            messages(messageKey) shouldBe MessageLookup.tooManyCharactersNonNegative(5)
           }
         }
       }
@@ -698,9 +698,9 @@ class SubmitVatReturnFormSpec extends BaseSpec {
             )
           )
 
-          s"return a form field error with message ${MessageLookup.tooManyCharactersNonDecimal}" in {
+          s"return a form field error with message ${MessageLookup.tooManyCharactersNonDecimal(6)}" in {
             val messageKey = formWithValues.error("box6").get.message
-            messages(messageKey) shouldBe MessageLookup.tooManyCharactersNonDecimal
+            messages(messageKey) shouldBe MessageLookup.tooManyCharactersNonDecimal(6)
           }
         }
 
@@ -742,9 +742,9 @@ class SubmitVatReturnFormSpec extends BaseSpec {
             )
           )
 
-          s"return a form field error with message ${MessageLookup.tooManyCharactersNonDecimal}" in {
+          s"return a form field error with message ${MessageLookup.tooManyCharactersNonDecimal(6)}" in {
             val messageKey = formWithValues.error("box6").get.message
-            messages(messageKey) shouldBe MessageLookup.tooManyCharactersNonDecimal
+            messages(messageKey) shouldBe MessageLookup.tooManyCharactersNonDecimal(6)
           }
         }
 
@@ -764,9 +764,9 @@ class SubmitVatReturnFormSpec extends BaseSpec {
             )
           )
 
-          s"return a form field error with message ${MessageLookup.tooManyCharactersNonDecimal}" in {
+          s"return a form field error with message ${MessageLookup.tooManyCharactersNonDecimal(6)}" in {
             val messageKey = formWithValues.error("box6").get.message
-            messages(messageKey) shouldBe MessageLookup.tooManyCharactersNonDecimal
+            messages(messageKey) shouldBe MessageLookup.tooManyCharactersNonDecimal(6)
           }
         }
       }
@@ -811,9 +811,9 @@ class SubmitVatReturnFormSpec extends BaseSpec {
             )
           )
 
-          s"return a form field error with message ${MessageLookup.tooManyCharactersNonDecimal}" in {
+          s"return a form field error with message ${MessageLookup.tooManyCharactersNonDecimal(7)}" in {
             val messageKey = formWithValues.error("box7").get.message
-            messages(messageKey) shouldBe MessageLookup.tooManyCharactersNonDecimal
+            messages(messageKey) shouldBe MessageLookup.tooManyCharactersNonDecimal(7)
           }
         }
 
@@ -855,9 +855,9 @@ class SubmitVatReturnFormSpec extends BaseSpec {
             )
           )
 
-          s"return a form field error with message ${MessageLookup.tooManyCharactersNonDecimal}" in {
+          s"return a form field error with message ${MessageLookup.tooManyCharactersNonDecimal(7)}" in {
             val messageKey = formWithValues.error("box7").get.message
-            messages(messageKey) shouldBe MessageLookup.tooManyCharactersNonDecimal
+            messages(messageKey) shouldBe MessageLookup.tooManyCharactersNonDecimal(7)
           }
         }
 
@@ -877,9 +877,9 @@ class SubmitVatReturnFormSpec extends BaseSpec {
             )
           )
 
-          s"return a form field error with message ${MessageLookup.tooManyCharactersNonDecimal}" in {
+          s"return a form field error with message ${MessageLookup.tooManyCharactersNonDecimal(7)}" in {
             val messageKey = formWithValues.error("box7").get.message
-            messages(messageKey) shouldBe MessageLookup.tooManyCharactersNonDecimal
+            messages(messageKey) shouldBe MessageLookup.tooManyCharactersNonDecimal(7)
           }
         }
       }
@@ -924,9 +924,9 @@ class SubmitVatReturnFormSpec extends BaseSpec {
             )
           )
 
-          s"return a form field error with message ${MessageLookup.tooManyCharactersNonDecimal}" in {
+          s"return a form field error with message ${MessageLookup.tooManyCharactersNonDecimal(8)}" in {
             val messageKey = formWithValues.error("box8").get.message
-            messages(messageKey) shouldBe MessageLookup.tooManyCharactersNonDecimal
+            messages(messageKey) shouldBe MessageLookup.tooManyCharactersNonDecimal(8)
           }
         }
 
@@ -968,9 +968,9 @@ class SubmitVatReturnFormSpec extends BaseSpec {
             )
           )
 
-          s"return a form field error with message ${MessageLookup.tooManyCharactersNonDecimal}" in {
+          s"return a form field error with message ${MessageLookup.tooManyCharactersNonDecimal(8)}" in {
             val messageKey = formWithValues.error("box8").get.message
-            messages(messageKey) shouldBe MessageLookup.tooManyCharactersNonDecimal
+            messages(messageKey) shouldBe MessageLookup.tooManyCharactersNonDecimal(8)
           }
         }
 
@@ -990,9 +990,9 @@ class SubmitVatReturnFormSpec extends BaseSpec {
             )
           )
 
-          s"return a form field error with message ${MessageLookup.tooManyCharactersNonDecimal}" in {
+          s"return a form field error with message ${MessageLookup.tooManyCharactersNonDecimal(8)}" in {
             val messageKey = formWithValues.error("box8").get.message
-            messages(messageKey) shouldBe MessageLookup.tooManyCharactersNonDecimal
+            messages(messageKey) shouldBe MessageLookup.tooManyCharactersNonDecimal(8)
           }
         }
       }
@@ -1037,9 +1037,9 @@ class SubmitVatReturnFormSpec extends BaseSpec {
             )
           )
 
-          s"return a form field error with message ${MessageLookup.tooManyCharactersNonDecimal}" in {
+          s"return a form field error with message ${MessageLookup.tooManyCharactersNonDecimal(9)}" in {
             val messageKey = formWithValues.error("box9").get.message
-            messages(messageKey) shouldBe MessageLookup.tooManyCharactersNonDecimal
+            messages(messageKey) shouldBe MessageLookup.tooManyCharactersNonDecimal(9)
           }
         }
 
@@ -1081,9 +1081,9 @@ class SubmitVatReturnFormSpec extends BaseSpec {
             )
           )
 
-          s"return a form field error with message ${MessageLookup.tooManyCharactersNonDecimal}" in {
+          s"return a form field error with message ${MessageLookup.tooManyCharactersNonDecimal(9)}" in {
             val messageKey = formWithValues.error("box9").get.message
-            messages(messageKey) shouldBe MessageLookup.tooManyCharactersNonDecimal
+            messages(messageKey) shouldBe MessageLookup.tooManyCharactersNonDecimal(9)
           }
         }
 
@@ -1103,9 +1103,9 @@ class SubmitVatReturnFormSpec extends BaseSpec {
             )
           )
 
-          s"return a form field error with message ${MessageLookup.tooManyCharactersNonDecimal}" in {
+          s"return a form field error with message ${MessageLookup.tooManyCharactersNonDecimal(9)}" in {
             val messageKey = formWithValues.error("box9").get.message
-            messages(messageKey) shouldBe MessageLookup.tooManyCharactersNonDecimal
+            messages(messageKey) shouldBe MessageLookup.tooManyCharactersNonDecimal(9)
           }
         }
       }
