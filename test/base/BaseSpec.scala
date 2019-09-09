@@ -58,6 +58,7 @@ trait BaseSpec extends WordSpec with Matchers with GuiceOneAppPerSuite with Mock
   lazy val agentUser: User[AnyContentAsEmpty.type] = User[AnyContentAsEmpty.type](vrn, Some(arn))(fakeRequestWithClientsVRN)
 
   implicit lazy val messages: Messages = messagesApi.preferred(fakeRequest)
+  lazy val welshMessages: Messages = Messages(Lang("cy"), messagesApi)
 
   implicit val system: ActorSystem = ActorSystem()
   implicit val materializer: Materializer = ActorMaterializer()
