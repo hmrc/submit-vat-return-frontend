@@ -32,11 +32,11 @@ submit_form.heading = Cyflwyno Ffurflen TAW
 submit_form.additionalInformation = Gwybodaeth ychwanegol
 submit_form.submitReturn = Gallwch gyflwyno’ch Ffurflen TAW ar y sgrin nesaf.
 
-submit_form.error.emptyError = Nodwch rif
-submit_form.error.tooManyCharacters = Nodwch uchafswm o 13 digid ar gyfer punnoedd.\nNodwch uchafswm o 2 le degol ar gyfer ceiniogau.\nGallwch ddefnyddio swm negyddol e.e. -13.2
-submit_form.error.tooManyCharactersNoDecimal = Nodwch uchafswm o 13 digid ar gyfer punnoedd.\nGallwch ddefnyddio swm negyddol e.e. -13
-submit_form.error.formatCheckError = Nodwch rif yn y fformat cywir
-submit_form.error.negativeError = Nodwch uchafswm o 11 digid ar gyfer punnoedd.\nNodwch uchafswm o 2 le degol ar gyfer ceiniogau.\nPeidiwch â defnyddio swm negyddol e.e. -13.2
+submit_form.error.emptyError = Nodwch rif ym mwlch {0}
+submit_form.error.tooManyCharacters = Nodwch uchafswm o 13 digid ar gyfer punnoedd ym mwlch {0}.\nNodwch uchafswm o 2 le degol ar gyfer ceiniogau.\nGallwch ddefnyddio swm negyddol e.e. -13.2
+submit_form.error.tooManyCharactersNoDecimal = Nodwch uchafswm o 13 digid ar gyfer punnoedd ym mwlch {0}.\nGallwch ddefnyddio swm negyddol e.e. -13
+submit_form.error.formatCheckError = Nodwch rif yn y fformat cywir ym mwlch {0}
+submit_form.error.negativeError = Nodwch uchafswm o 11 digid ar gyfer punnoedd ym mwlch {0}.\nNodwch uchafswm o 2 le degol ar gyfer ceiniogau.\nPeidiwch â defnyddio swm negyddol e.e. -13.2
 submit_form.error.box3Error = Ychwanegwch y rhif o flwch 1 at y rhif o flwch 2, a rhowch y canlyniad fan hyn
 submit_form.error.box5Error = Tynnwch y rhif ym mlwch 4 o’r rhif ym mlwch 3, a rhowch y canlyniad fan hyn
 

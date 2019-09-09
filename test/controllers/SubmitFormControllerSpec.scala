@@ -534,7 +534,7 @@ class SubmitFormControllerSpec extends BaseSpec
           }
 
           "contains the too many numbers error" in {
-            contentAsString(result) should include("Enter a maximum of 13 digits for pounds." +
+            contentAsString(result) should include("Enter a maximum of 13 digits for pounds in box 4." +
               "\nEnter a maximum of 2 decimal places for pence.\nYou can use a negative amount eg -13.2")
           }
         }
@@ -614,7 +614,7 @@ class SubmitFormControllerSpec extends BaseSpec
           }
 
           "contains negative number error" in {
-            contentAsString(result) should include("Enter a maximum of 11 digits for pounds." +
+            contentAsString(result) should include("Enter a maximum of 11 digits for pounds in box 5." +
               "\nEnter a maximum of 2 decimal places for pence.\nDo not use a negative amount eg -13.2")
           }
         }
