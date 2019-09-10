@@ -22,9 +22,10 @@ import models.NineBoxModel
 import play.api.data.Forms._
 import play.api.data.validation.Constraint
 import play.api.data.{Form, FormError, Mapping}
+import play.api.i18n.Messages
 
 @Singleton
-object SubmitVatReturnForm {
+case class SubmitVatReturnForm (implicit messages: Messages){
 
   val minDecimalValue: BigDecimal   = -9999999999999.99
   val minNoDecimalValue: BigDecimal = -9999999999999.00
@@ -33,37 +34,37 @@ object SubmitVatReturnForm {
   val minBox5Value: BigDecimal      = 0.00
   val maxBox5Value: BigDecimal      = 99999999999.99
 
-  private def toBigDecimal: String => BigDecimal = (text: String) => BigDecimal.apply(text)
-  private def fromBigDecimal: BigDecimal => String = (bd: BigDecimal) => bd.toString()
-  private def validNumber: Constraint[String] = validBigDecimal("submit_form.error.emptyError", "submit_form.error.formatCheckError")
+  private def toBigDecimal(boxId : Int): String => BigDecimal = (text: String) => BigDecimal.apply(text)
+  private def fromBigDecimal(boxId : Int): BigDecimal => String = (bd: BigDecimal) => bd.toString()
+  private def validNumber(boxId : Int): Constraint[String] = validBigDecimal(messages("submit_form.error.emptyError", boxId),  messages("submit_form.error.formatCheckError", boxId))
 
-  private def box1To4Validation: (Mapping[BigDecimal]) = {
-    text.verifying(validNumber)
-      .transform(toBigDecimal, fromBigDecimal)
+  private def box1To4Validation(boxId: Int): (Mapping[BigDecimal]) = {
+    text.verifying(validNumber(boxId))
+      .transform(toBigDecimal(boxId), fromBigDecimal(boxId))
       .verifying(
-        max(maxDecimalValue, "submit_form.error.tooManyCharacters"),
-        min(minDecimalValue, "submit_form.error.tooManyCharacters"),
-        twoDecimalPlaces("submit_form.error.tooManyCharacters")
+        max(maxDecimalValue, messages("submit_form.error.tooManyCharacters", boxId)),
+        min(minDecimalValue, messages("submit_form.error.tooManyCharacters", boxId)),
+        twoDecimalPlaces(messages("submit_form.error.tooManyCharacters", boxId))
       )
   }
 
-  private def box5Validation: (Mapping[BigDecimal]) = {
-    text.verifying(validNumber)
-      .transform(toBigDecimal, fromBigDecimal)
+  private def box5Validation(boxId: Int): (Mapping[BigDecimal]) = {
+    text.verifying(validNumber(boxId))
+      .transform(toBigDecimal(boxId), fromBigDecimal(boxId))
       .verifying(
-        max(maxBox5Value, "submit_form.error.negativeError"),
-        min(minBox5Value, "submit_form.error.negativeError"),
-        twoDecimalPlaces("submit_form.error.negativeError")
+        max(maxBox5Value, messages("submit_form.error.negativeError", boxId)),
+        min(minBox5Value, messages("submit_form.error.negativeError", boxId)),
+        twoDecimalPlaces(messages("submit_form.error.negativeError", boxId))
       )
   }
 
-  private def box6To9Validation: (Mapping[BigDecimal]) = {
-    text.verifying(validNumber)
-      .transform(toBigDecimal, fromBigDecimal)
+  private def box6To9Validation(boxId: Int): (Mapping[BigDecimal]) = {
+    text.verifying(validNumber(boxId))
+      .transform(toBigDecimal(boxId), fromBigDecimal(boxId))
       .verifying(
-        max(maxNoDecimalValue, "submit_form.error.tooManyCharactersNoDecimal"),
-        min(minNoDecimalValue, "submit_form.error.tooManyCharactersNoDecimal"),
-        noDecimalPlaces("submit_form.error.tooManyCharactersNoDecimal")
+        max(maxNoDecimalValue, messages("submit_form.error.tooManyCharactersNoDecimal", boxId)),
+        min(minNoDecimalValue, messages("submit_form.error.tooManyCharactersNoDecimal", boxId)),
+        noDecimalPlaces(messages("submit_form.error.tooManyCharactersNoDecimal", boxId))
       )
   }
 
@@ -77,15 +78,15 @@ object SubmitVatReturnForm {
 
   val nineBoxForm: Form[NineBoxModel] = Form(
     mapping(
-      "box1" -> box1To4Validation,
-      "box2" -> box1To4Validation,
-      "box3" -> box1To4Validation,
-      "box4" -> box1To4Validation,
-      "box5" -> box5Validation,
-      "box6" -> box6To9Validation,
-      "box7" -> box6To9Validation,
-      "box8" -> box6To9Validation,
-      "box9" -> box6To9Validation
+      "box1" -> box1To4Validation(1),
+      "box2" -> box1To4Validation(2),
+      "box3" -> box1To4Validation(3),
+      "box4" -> box1To4Validation(4),
+      "box5" -> box5Validation(5),
+      "box6" -> box6To9Validation(6),
+      "box7" -> box6To9Validation(7),
+      "box8" -> box6To9Validation(8),
+      "box9" -> box6To9Validation(9)
     )(NineBoxModel.apply)(NineBoxModel.unapply)
   )
 
