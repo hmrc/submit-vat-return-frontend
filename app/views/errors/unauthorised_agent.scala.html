@@ -27,8 +27,7 @@
         <a href="@appConfig.govUkGuidanceAgentServices">@messages("unauthorised_agent.setUpAccount")</a>@messages("common.fullStop")
     </p>
 
-    @*TODO: Add sign out link*@
-    <a class="button" role="button" href="">
+    <a class="button" role="button" href="@controllers.routes.SignOutController.signOut(feedbackOnSignOut = false)">
         @messages("common.signOut")
     </a>
 

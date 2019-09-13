@@ -62,7 +62,7 @@ class AuthPredicateSpec extends MockAuth {
             lazy val result = target()(FakeRequest().withSession("CLIENT_VRN" -> "999999999"))
 
             "return 403" in {
-              mockAuthoriseAsAgent(authResponse, authResponse.b)
+              mockAuthorise(authResponse)
 
               status(result) shouldBe Status.FORBIDDEN
             }
@@ -75,7 +75,7 @@ class AuthPredicateSpec extends MockAuth {
 
         "agent does not have delegated authority for the VRN" when {
 
-          val authResponse = Future.successful(new ~(Some(Agent), otherEnrolment))
+          val authResponse = Future.successful(new ~(Some(Agent), agentServicesEnrolmentWithoutDelegatedAuth))
           lazy val result = target()(FakeRequest().withSession("CLIENT_VRN" -> "999999999"))
 
           val redirectUrl = mockAppConfig.agentClientUnauthorisedUrl("/")
@@ -93,7 +93,7 @@ class AuthPredicateSpec extends MockAuth {
 
         "auth returns a NoActiveSession exception" should {
 
-          val authResponse = Future.successful(new ~(Some(Agent), otherEnrolment))
+          val authResponse = Future.successful(new ~(Some(Agent), agentServicesEnrolmentWithoutDelegatedAuth))
           lazy val result = target()(FakeRequest().withSession("CLIENT_VRN" -> "999999999"))
 
           "return 303" in {

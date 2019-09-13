@@ -17,10 +17,8 @@
 package views.errors
 
 import assets.messages.AuthMessages
-import models.auth.User
 import org.jsoup.Jsoup
 import org.jsoup.nodes.Document
-import play.api.mvc.AnyContentAsEmpty
 import views.ViewBaseSpec
 
 class UnauthorisedAgentViewSpec extends ViewBaseSpec {
@@ -59,8 +57,7 @@ class UnauthorisedAgentViewSpec extends ViewBaseSpec {
     }
 
     "have a link to sign out" in {
-      //TODO: add sign out link
-      element(Selectors.button).attr("href") shouldBe ""
+      element(Selectors.button).attr("href") shouldBe controllers.routes.SignOutController.signOut(false).url
     }
   }
 }
