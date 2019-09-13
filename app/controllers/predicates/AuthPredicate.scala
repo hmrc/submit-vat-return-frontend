@@ -49,7 +49,14 @@ class AuthPredicate @Inject()(authService: EnrolmentsAuthService,
     authService
       .authorised()
       .retrieve(affinityGroup and allEnrolments) {
-        case Some(Agent) ~ _ => authoriseAsAgent(block)
+        case Some(Agent) ~ enrolments =>
+          if (enrolments.enrolments.exists(_.key == AuthKeys.agentEnrolmentId)){
+            authoriseAsAgent(block)
+          } else {
+            Logger.debug("[AuthPredicate][invokeBlock] - Agent does not have correct agent enrolment ID")
+            Future.successful(Forbidden(views.html.errors.unauthorised_agent()))
+          }
+
         case Some(_) ~ enrolments => authoriseAsNonAgent(enrolments, block)
         case None ~ _ =>
           Logger.warn("[AuthPredicate][invokeBlock] - Missing affinity group")
