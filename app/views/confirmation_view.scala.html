@@ -42,14 +42,12 @@
     @if(user.isAgent) {
         <p>
             <a
-              onClick="sendGAEvent('submit-vat', 'change-client', 'nine-box-confirmation', @user.isAgent)"
               href="@{appConfig.changeClientUrl}?redirectUrl=@{appConfig.agentActionUrl}">@messages("confirmation_view.changeClient")</a>
         </p>
     }
 
     <p>
       <a
-        onClick="sendGAEvent('submit-vat', 'finish', 'nine-box-confirmation', @user.isAgent)"
         class="button"
         role="button"
         id="submit-confirmation-finish-button"

@@ -117,7 +117,6 @@
         <h3 class="bold-large">@messages("confirm_submission.returnTotal")@displayMoney(viewModel.returnDetail.box5)</h3>
         <p>@messages("confirm_submission.returnDueDate", displayDate(viewModel.returnDetail.due))</p>
         <a
-          onClick="sendGAEvent('submit-vat', 'change', 'nine-box-change' @user.isAgent)"
           href=@controllers.routes.SubmitFormController.show(viewModel.periodKey)>
           @messages("confirm_submission.changeDetail")
         </a>
@@ -128,7 +127,6 @@
 
     @helpers.form(action = controllers.routes.ConfirmSubmissionController.submit(viewModel.periodKey)) {
       <button
-        onClick="sendGAEvent('submit-vat', 'confirm', 'nine-box-confirm', @user.isAgent)"
         class="button"
         type ="submit">
         @messages("confirm_submission.acceptAndSend")
