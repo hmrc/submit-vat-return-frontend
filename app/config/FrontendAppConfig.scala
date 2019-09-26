@@ -29,8 +29,6 @@ import play.api.mvc.Call
 import uk.gov.hmrc.play.binders.ContinueUrl
 
 trait AppConfig extends ServicesConfig {
-  val analyticsToken: String
-  val analyticsHost: String
   val reportAProblemPartialUrl: String
   val reportAProblemNonJSUrl: String
   val betaFeedbackUrl: String
@@ -73,8 +71,6 @@ class FrontendAppConfig @Inject()(val runModeConfiguration: Configuration, envir
   private val contactHost = getString(ConfigKeys.contactFrontendService)
   private val contactFormServiceIdentifier = "VATC"
 
-  override lazy val analyticsToken: String = getString(ConfigKeys.googleAnalyticsToken)
-  override lazy val analyticsHost: String = getString(ConfigKeys.googleAnalyticsHost)
   lazy val reportAProblemPartialUrl = s"$contactHost/contact/problem_reports_ajax?service=$contactFormServiceIdentifier"
   lazy val reportAProblemNonJSUrl = s"$contactHost/contact/problem_reports_nonjs?service=$contactFormServiceIdentifier"
   override lazy val betaFeedbackUrl = s"$contactHost/contact/beta-feedback"

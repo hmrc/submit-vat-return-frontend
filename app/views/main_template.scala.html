@@ -48,7 +48,6 @@ user: Option[User[_]] = None)(mainContent: Html)(implicit request : Request[_], 
 }
 
 @defaultScriptElem = {
-    <script type="text/javascript" src=@routes.Assets.at("javascripts/ga.js")></script>
 @scriptElem.fold(HtmlFormat.empty)(x => x)
 }
 

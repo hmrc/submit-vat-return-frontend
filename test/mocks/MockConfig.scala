@@ -26,8 +26,6 @@ import play.api.{Configuration, Mode}
 class MockConfig(implicit val runModeConfiguration: Configuration) extends AppConfig {
 
   override val mode: Mode = Mode.Test
-  override val analyticsToken: String = ""
-  override val analyticsHost: String = ""
   override val reportAProblemPartialUrl: String = ""
   override val reportAProblemNonJSUrl: String = ""
   override val betaFeedbackUrl: String = ""
