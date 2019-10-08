@@ -25,7 +25,8 @@ import uk.gov.hmrc.http.{HttpReads, HttpResponse}
 
 import scala.util.{Failure, Success, Try}
 
-object SubmitVatReturnHttpParser extends ResponseHttpParsers {
+case class SubmitVatReturnHttpParser(vrn: String,
+                                     periodKey: String) extends ResponseHttpParsers {
 
   implicit object SubmitVatReturnReads extends HttpReads[HttpGetResult[SubmissionSuccessModel]] {
 
@@ -39,7 +40,8 @@ object SubmitVatReturnHttpParser extends ResponseHttpParsers {
             Left(UnexpectedJsonFormat)
         }
         case status =>
-          Logger.warn(s"[SubmitVatReturnHttpParser][SubmitVatReturnReads]: Unexpected response. Status $status. Body: ${response.body}")
+          Logger.warn(s"[SubmitVatReturnHttpParser][SubmitVatReturnReads]: Unexpected response for VRN: $vrn with " +
+            s"period key: $periodKey. Status: $status. Body: ${response.body}")
           Left(ServerSideError(s"$status", "Received downstream error when submitting VAT return."))
       }
     }
