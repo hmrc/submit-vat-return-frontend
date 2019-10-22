@@ -100,7 +100,7 @@
   @uiLayouts.footer_links(
     additionalLinks = None,
     euExitLinks = None,
-    accessibilityFooterUrl = if(appConfig.features.accessibilityLinkEnabled()) Some(appConfig.accessibilityLinkUrl) else None
+    accessibilityFooterUrl = Some(appConfig.accessibilityLinkUrl)
   )
 }
 
