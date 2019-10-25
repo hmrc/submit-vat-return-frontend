@@ -16,6 +16,7 @@
 
 package controllers
 
+import common.SessionKeys
 import config.AppConfig
 import controllers.predicates.{AuthPredicate, MandationStatusPredicate}
 import javax.inject.{Inject, Singleton}
@@ -34,4 +35,17 @@ class ConfirmationController @Inject()(val messagesApi: MessagesApi,
   val show: Action[AnyContent] = (authPredicate andThen mandationStatusCheck).async { implicit user =>
     Future.successful(Ok(views.html.confirmation_view()))
   }
+
+  //TODO
+  val submit: Action[AnyContent] = (authPredicate).async { implicit user =>
+    if(user.isAgent) {
+      Future.successful(SeeOther(appConfig.manageClientUrl)).removeSessionKey(SessionKeys.inSessionPeriodKey).removeSessionKey(SessionKeys.submissionYear)
+    } else {
+      Future.successful(SeeOther(appConfig.vatSummaryUrl)).removeSessionKey(SessionKeys.inSessionPeriodKey).removeSessionKey(SessionKeys.submissionYear)
+    }
+  }
+
+
+
+
 }

@@ -17,21 +17,22 @@
 @import config.AppConfig
 @import models.auth.User
 @import views.html.templates.heading
-
+@import common.SessionKeys
+@import uk.gov.hmrc.play.views.html.helpers
 
 @()(implicit request: Request[_], messages: Messages, appConfig: AppConfig, user: User[_])
 
-@agentOrIndividualUrl = @{
-    if(user.isAgent) {
-        appConfig.manageClientUrl
+@viewSubmittedReturnUrl = @{
+    if(user.session.get(SessionKeys.submissionYear).getOrElse("") == "" || user.session.get(SessionKeys.inSessionPeriodKey).getOrElse("") == "") {
+        appConfig.viewSubmittedReturnUrl+"/2018"
     } else {
-        appConfig.vatSummaryUrl
+        {appConfig.viewSubmittedReturnUrl}+"/"+user.session.get(SessionKeys.submissionYear).getOrElse("")+"/"+user.session.get(SessionKeys.inSessionPeriodKey).getOrElse("")
     }
 }
 
 @main_template(messages("confirmation_view.title"), appConfig = appConfig, bodyClasses = None, user = Some(user)) {
 
-    <div class="govuk-box-highlight">
+<div class="govuk-box-highlight" xmlns="http://www.w3.org/1999/html">
     <h1 class="heading-xlarge">@messages("confirmation_view.heading")</h1>
     </div>
 
@@ -46,11 +47,20 @@
         </p>
     }
 
-    <p>
-      <a
-        class="button"
-        role="button"
-        id="submit-confirmation-finish-button"
-        href="@agentOrIndividualUrl">@messages("common.finish")</a>
+<p>
+    <a
+       class="button"
+       role="button"
+       id="view-vat-return-button"
+       href=@viewSubmittedReturnUrl>
+       @messages("confirmation_view.viewVATReturn")</a>
+
+    @helpers.form(action = controllers.routes.ConfirmationController.submit) {
+      <button
+            class="button--secondary"
+            type="submit"
+            id="submit-confirmation-finish-button">
+        @messages("confirmation_view.viewAccount")</button>
+    }
     </p>
 }

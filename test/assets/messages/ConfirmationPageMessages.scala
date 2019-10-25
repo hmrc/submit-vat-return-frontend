@@ -22,6 +22,6 @@ object ConfirmationPageMessages extends BaseMessages {
   val heading = "VAT Return submission complete"
   val subHeading = "What happens next"
   val paragraph = "We have received your VAT Return."
-  val button = "Finish"
-
+  val button = "View VAT Return"
+  val button2 = "View your VAT account"
 }

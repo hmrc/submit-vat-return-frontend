@@ -17,6 +17,7 @@
 package controllers
 
 import java.net.URLDecoder
+import java.time.format.DateTimeFormatter
 import java.time.{Instant, LocalDateTime, ZoneId}
 
 import audit.AuditService
@@ -62,6 +63,7 @@ class ConfirmSubmissionController @Inject()(val messagesApi: MessagesApi,
                                             receiptDataHelper: ReceiptDataHelper
                                            ) extends FrontendController with I18nSupport {
 
+  val dateTimeFormatter = DateTimeFormatter.ofPattern("YYYY")
   def show(periodKey: String): Action[AnyContent] = (authPredicate andThen mandationStatusCheck).async { implicit user =>
 
     user.session.get(SessionKeys.returnData) match {
@@ -69,6 +71,8 @@ class ConfirmSubmissionController @Inject()(val messagesApi: MessagesApi,
         val sessionData = Json.parse(model).as[SubmitVatReturnModel]
         vatSubscriptionService.getCustomerDetails(user.vrn) map { model =>
           Ok(renderConfirmSubmissionView(periodKey, sessionData, model))
+            .addingToSession(SessionKeys.submissionYear -> sessionData.due.format(dateTimeFormatter))
+            .addingToSession(SessionKeys.inSessionPeriodKey -> periodKey)
         }
       case _ => Future.successful(Redirect(controllers.routes.SubmitFormController.show(periodKey)))
     }

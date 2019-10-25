@@ -61,4 +61,6 @@ class MockConfig(implicit val runModeConfiguration: Configuration) extends AppCo
     "english" -> Lang("en"),
     "cymraeg" -> Lang("cy")
   )
+
+  override val viewSubmittedReturnUrl: String = "/submittedreturns/year/periodkey"
 }
