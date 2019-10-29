@@ -47,20 +47,35 @@
         </p>
     }
 
+@if(!appConfig.features.viewVatReturnEnabled()) {
 <p>
-    <a
-       class="button"
-       role="button"
-       id="view-vat-return-button"
-       href=@viewSubmittedReturnUrl>
-       @messages("confirmation_view.viewVATReturn")</a>
-
     @helpers.form(action = controllers.routes.ConfirmationController.submit) {
-      <button
-            class="button--secondary"
+    <button
+            class="button"
             type="submit"
             id="submit-confirmation-finish-button">
-        @messages("confirmation_view.viewAccount")</button>
+        @messages("confirmation_view.viewAccount")
+    </button>
     }
+</p>
+} else {
+    <p>
+        <a
+            class="button"
+            role="button"
+            id="view-vat-return-button"
+            href=@viewSubmittedReturnUrl>
+            @messages("confirmation_view.viewVATReturn")
+        </a>
+
+        @helpers.form(action = controllers.routes.ConfirmationController.submit) {
+        <button
+              class="button--secondary"
+              type="submit"
+              id="submit-confirmation-finish-button2">
+            @messages("confirmation_view.viewAccount")
+        </button>
+        }
     </p>
+    }
 }

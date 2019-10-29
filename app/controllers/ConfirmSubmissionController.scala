@@ -70,9 +70,15 @@ class ConfirmSubmissionController @Inject()(val messagesApi: MessagesApi,
       case Some(model) =>
         val sessionData = Json.parse(model).as[SubmitVatReturnModel]
         vatSubscriptionService.getCustomerDetails(user.vrn) map { model =>
+
+          if(appConfig.features.viewVatReturnEnabled.apply()){
           Ok(renderConfirmSubmissionView(periodKey, sessionData, model))
             .addingToSession(SessionKeys.submissionYear -> sessionData.due.format(dateTimeFormatter))
             .addingToSession(SessionKeys.inSessionPeriodKey -> periodKey)
+          }
+          else {
+            Ok(renderConfirmSubmissionView(periodKey, sessionData, model))
+          }
         }
       case _ => Future.successful(Redirect(controllers.routes.SubmitFormController.show(periodKey)))
     }

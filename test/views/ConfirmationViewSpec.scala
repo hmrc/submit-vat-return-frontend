@@ -26,16 +26,20 @@ import play.api.mvc.AnyContentAsEmpty
 
 class ConfirmationViewSpec extends ViewBaseSpec {
 
-  "The confirmation view with information in session" should {
+  "The confirmation view with information in session and with the feature switch on" should {
 
     val submitYear = "2019"
     val periodKey = "21BB"
+
     lazy val userWithSession: User[AnyContentAsEmpty.type] = User[AnyContentAsEmpty.type](vrn)(fakeRequest.withSession(
       SessionKeys.submissionYear -> submitYear,
       SessionKeys.inSessionPeriodKey -> periodKey)
     )
 
-    lazy val view = views.html.confirmation_view()(fakeRequest, messages, mockAppConfig, userWithSession)
+    lazy val view = {
+      mockAppConfig.features.viewVatReturnEnabled(true)
+      views.html.confirmation_view()(fakeRequest, messages, mockAppConfig, userWithSession)
+    }
     lazy implicit val document: Document = Jsoup.parse(view.body)
 
     "display a button" should {
@@ -52,14 +56,16 @@ class ConfirmationViewSpec extends ViewBaseSpec {
     "display a 2nd button" should {
 
       s"have the button text as ${viewMessages.button2}" in {
-        elementText("#submit-confirmation-finish-button") shouldBe viewMessages.button2
+        elementText("#submit-confirmation-finish-button2") shouldBe viewMessages.button2
       }
     }
   }
 
-  "The confirmation view without information in session" should {
+  "The confirmation view without information in session and the feature switch off" should {
 
-    lazy val view = views.html.confirmation_view()(fakeRequest, messages, mockAppConfig, user)
+    lazy val view = {
+      mockAppConfig.features.viewVatReturnEnabled(false)
+      views.html.confirmation_view()(fakeRequest, messages, mockAppConfig, user)}
     lazy implicit val document: Document = Jsoup.parse(view.body)
 
     s"display the title as ${viewMessages.title}" in {
@@ -80,20 +86,15 @@ class ConfirmationViewSpec extends ViewBaseSpec {
 
     "display a button" should {
 
-      s"have the button text as ${viewMessages.button}" in {
-        elementText("#view-vat-return-button") shouldBe viewMessages.button
-      }
-
-      "have the correct redirect link with a defaulted value of year 2018" in {
-        element("#view-vat-return-button")
-          .attr("href") shouldBe mockAppConfig.viewSubmittedReturnUrl +"/2018"
+      s"have the button text as ${viewMessages.button2}" in {
+        elementText("#submit-confirmation-finish-button") shouldBe viewMessages.button2
       }
     }
 
-    "display a 2nd button" should {
+    "not display a 2nd button" should {
 
-      s"have the button text as ${viewMessages.button2}" in {
-        elementText("#submit-confirmation-finish-button") shouldBe viewMessages.button2
+      s"have the button text as ${viewMessages.button}" in {
+        elementExists(("#view-vat-return-button")) shouldBe false
       }
     }
   }
@@ -126,6 +127,8 @@ class ConfirmationViewSpec extends ViewBaseSpec {
 
     "the user is not an agent" in {
       val changeClientLinkElem = element(changeClientLink)(feature_document)
+
+      //TODO elementExists(changeClientLink) shouldBe false
 
       changeClientLinkElem.text() shouldNot be("Change client")
     }

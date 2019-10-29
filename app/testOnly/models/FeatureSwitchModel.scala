@@ -19,5 +19,6 @@ package testOnly.models
 case class FeatureSwitchModel(
                                staticDateEnabled: Boolean,
                                languageToggle: Boolean,
-                               nrsSubmissionEnabled: Boolean
+                               nrsSubmissionEnabled: Boolean,
+                               viewVatReturnEnabled: Boolean
                              )

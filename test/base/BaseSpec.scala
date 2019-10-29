@@ -68,11 +68,13 @@ trait BaseSpec extends WordSpec with Matchers with GuiceOneAppPerSuite with Mock
   override def beforeEach(): Unit = {
     super.beforeEach()
     mockAppConfig.features.nrsSubmissionEnabled(false)
+    mockAppConfig.features.viewVatReturnEnabled(false)
   }
 
   override def afterEach(): Unit = {
     super.afterEach()
     mockAppConfig.features.nrsSubmissionEnabled(false)
+    mockAppConfig.features.viewVatReturnEnabled(false)
   }
 
 }

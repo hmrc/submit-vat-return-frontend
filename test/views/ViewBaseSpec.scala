@@ -31,6 +31,17 @@ trait ViewBaseSpec extends BaseSpec {
     document.select(cssSelector).first()
   }
 
+  def elementExists(cssSelector: String)(implicit document: Document): Boolean = {
+    val elements = document.select(cssSelector)
+
+    if (elements.size == 0) {
+      false
+    }
+    else {
+      true
+    }
+  }
+
   def elementText(selector: String)(implicit document: Document): String = {
     element(selector).text()
   }
