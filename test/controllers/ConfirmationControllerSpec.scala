@@ -20,8 +20,7 @@ import base.BaseSpec
 import common.{MandationStatuses, SessionKeys}
 import mocks.{MockAuth, MockMandationPredicate}
 import mocks.service.{MockVatObligationsService, MockVatSubscriptionService}
-import play.api.http.Status
-import play.api.test.Helpers._
+import play.api.mvc.AnyContentAsEmpty
 
 class ConfirmationControllerSpec extends BaseSpec with MockVatSubscriptionService with MockVatObligationsService with MockAuth with MockMandationPredicate {
 
@@ -31,26 +30,6 @@ class ConfirmationControllerSpec extends BaseSpec with MockVatSubscriptionServic
     mockAuthPredicate,
     mockAppConfig
   )
-
-  "SubmitFormController .show" when {
-
-    "user is authorised" should {
-
-      mockAuthorise(mtdVatAuthorisedResponse)
-
-      lazy val result = TestConfirmationController.show()(fakeRequest.withSession(SessionKeys.mandationStatus -> MandationStatuses.nonMTDfB))
-
-      "return a success response" in {
-        status(result) shouldBe Status.OK
-      }
-
-      "return HTML" in {
-        contentType(result) shouldBe Some("text/html")
-      }
-    }
-  }
-
-  authControllerChecks(TestConfirmationController.show(), fakeRequest)
 
 //  "SubmitFormController .show" when {
 //
@@ -71,5 +50,24 @@ class ConfirmationControllerSpec extends BaseSpec with MockVatSubscriptionServic
 //  }
 //
 //  authControllerChecks(TestConfirmationController.show(), fakeRequest)
+
+  "SubmitFormController .submit" when {
+
+    "user is authorised" should {
+
+      mockAuthorise(agentAuthorisedResponse)
+      lazy val result = TestConfirmationController.submit()(fakeRequest.withSession(SessionKeys.mandationStatus -> MandationStatuses.nonMTDfB))
+
+      "return a success response" in {
+        status(result) shouldBe Status.OK
+      }
+
+      "return HTML" in {
+        contentType(result) shouldBe Some("text/html")
+      }
+    }
+  }
+
+  authControllerChecks(TestConfirmationController.submit(), fakeRequest)
 
 }

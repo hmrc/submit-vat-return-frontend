@@ -59,7 +59,7 @@
     }
 </p>
 } else {
-    <p>
+    <div id="displayFlex">
         <a
             class="button"
             role="button"
@@ -70,12 +70,13 @@
 
         @helpers.form(action = controllers.routes.ConfirmationController.submit) {
         <button
-              class="button--secondary"
+              class="button-grey button--secondary"
               type="submit"
+              role="button"
               id="submit-confirmation-finish-button2">
             @messages("confirmation_view.viewAccount")
         </button>
         }
-    </p>
+    </div>
     }
 }

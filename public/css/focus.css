@@ -24,6 +24,10 @@ select:focus,
     border: 2px solid transparent;
 }
 
+.button-grey {
+    border: 2px solid transparent;
+}
+
 .button:focus:not(:active):not(:hover) {
     border-color: #fd0;
     color: #0b0c0c;

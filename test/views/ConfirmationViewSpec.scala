@@ -123,14 +123,11 @@ class ConfirmationViewSpec extends ViewBaseSpec {
     }
     lazy implicit val feature_document: Document = Jsoup.parse(feature_view.body)
 
-    val changeClientLink = "#content > article > p:nth-child(4) > a"
+    val changeClientLink = "#content > article > p:nth-child(4) > button"
 
     "the user is not an agent" in {
-      val changeClientLinkElem = element(changeClientLink)(feature_document)
 
-      //TODO elementExists(changeClientLink) shouldBe false
-
-      changeClientLinkElem.text() shouldNot be("Change client")
+      elementExists(changeClientLink) shouldBe false
     }
   }
 }
