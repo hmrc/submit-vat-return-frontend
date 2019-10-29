@@ -30,6 +30,14 @@
     }
 }
 
+@VatAccountText = @{
+    if(user.isAgent) {
+        messages("confirmation_view.viewClientAccount")
+    } else {
+        messages("confirmation_view.viewAccount")
+    }
+}
+
 @main_template(messages("confirmation_view.title"), appConfig = appConfig, bodyClasses = None, user = Some(user)) {
 
 <div class="govuk-box-highlight" xmlns="http://www.w3.org/1999/html">
@@ -53,8 +61,8 @@
     <button
             class="button"
             type="submit"
-            id="submit-confirmation-finish-button">
-        @messages("confirmation_view.viewAccount")
+            id="finish-button">
+        @messages("common.finish")
     </button>
     }
 </p>
@@ -73,8 +81,8 @@
               class="button-grey button--secondary"
               type="submit"
               role="button"
-              id="submit-confirmation-finish-button2">
-            @messages("confirmation_view.viewAccount")
+              id="finish-button2">
+            @VatAccountText
         </button>
         }
     </div>

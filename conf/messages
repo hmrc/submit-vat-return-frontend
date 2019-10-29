@@ -101,6 +101,7 @@ confirmation_view.paragraph = We have received your VAT Return.
 confirmation_view.changeClient = Change client
 confirmation_view.viewAccount = View your VAT account
 confirmation_view.viewVATReturn = View VAT Return
+confirmation_view.viewClientAccount = View client's VAT account
 
 breadcrumbs.yourVatDetails = Your VAT details
 breadcrumbs.submitVatReturn = Submit VAT Return

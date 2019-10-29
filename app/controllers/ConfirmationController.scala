@@ -36,16 +36,13 @@ class ConfirmationController @Inject()(val messagesApi: MessagesApi,
     Future.successful(Ok(views.html.confirmation_view()))
   }
 
-  //TODO
-  val submit: Action[AnyContent] = (authPredicate).async { implicit user =>
-    if(user.isAgent) {
-      Future.successful(SeeOther(appConfig.manageClientUrl)).removeSessionKey(SessionKeys.inSessionPeriodKey).removeSessionKey(SessionKeys.submissionYear)
+  val submit: Action[AnyContent] = (authPredicate andThen mandationStatusCheck).async { implicit user =>
+    if (user.isAgent) {
+      Future.successful(Redirect(appConfig.manageClientUrl)).removeSessionKey(SessionKeys.inSessionPeriodKey).removeSessionKey(SessionKeys.submissionYear)
     } else {
-      Future.successful(SeeOther(appConfig.vatSummaryUrl)).removeSessionKey(SessionKeys.inSessionPeriodKey).removeSessionKey(SessionKeys.submissionYear)
+      Future.successful(Redirect(appConfig.vatSummaryUrl)).removeSessionKey(SessionKeys.inSessionPeriodKey).removeSessionKey(SessionKeys.submissionYear)
     }
   }
-
-
 
 
 }

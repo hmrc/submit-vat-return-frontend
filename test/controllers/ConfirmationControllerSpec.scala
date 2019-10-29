@@ -16,11 +16,13 @@
 
 package controllers
 
+import auth.AuthKeys
 import base.BaseSpec
 import common.{MandationStatuses, SessionKeys}
 import mocks.{MockAuth, MockMandationPredicate}
 import mocks.service.{MockVatObligationsService, MockVatSubscriptionService}
-import play.api.mvc.AnyContentAsEmpty
+import play.api.http.Status
+import play.api.test.Helpers._
 
 class ConfirmationControllerSpec extends BaseSpec with MockVatSubscriptionService with MockVatObligationsService with MockAuth with MockMandationPredicate {
 
@@ -31,43 +33,64 @@ class ConfirmationControllerSpec extends BaseSpec with MockVatSubscriptionServic
     mockAppConfig
   )
 
-//  "SubmitFormController .show" when {
-//
-//    "user is authorised" should {
-//
-//      mockAuthorise(mtdVatAuthorisedResponse)
-//
-//      lazy val result = TestConfirmationController.show()(fakeRequest.withSession(SessionKeys.mandationStatus -> MandationStatuses.nonMTDfB))
-//
-//      "return a success response" in {
-//        status(result) shouldBe Status.OK
-//      }
-//
-//      "return HTML" in {
-//        contentType(result) shouldBe Some("text/html")
-//      }
-//    }
-//  }
-//
-//  authControllerChecks(TestConfirmationController.show(), fakeRequest)
-
-  "SubmitFormController .submit" when {
+  "SubmitFormController .show" when {
 
     "user is authorised" should {
 
-      mockAuthorise(agentAuthorisedResponse)
-      lazy val result = TestConfirmationController.submit()(fakeRequest.withSession(SessionKeys.mandationStatus -> MandationStatuses.nonMTDfB))
-
-      "return a success response" in {
+      lazy val result = {
+        mockAuthorise(mtdVatAuthorisedResponse)
+        TestConfirmationController.show()(fakeRequest.withSession(SessionKeys.mandationStatus -> MandationStatuses.nonMTDfB))
+      }
+      "return a success response for .show" in {
         status(result) shouldBe Status.OK
       }
 
-      "return HTML" in {
+      "return HTML for .show" in {
         contentType(result) shouldBe Some("text/html")
       }
     }
+    authControllerChecks(TestConfirmationController.show(), fakeRequest)
   }
 
-  authControllerChecks(TestConfirmationController.submit(), fakeRequest)
+  "SubmitFormController .submit as an agent" when {
+
+    "user is authorised" should {
+
+      lazy val result = {
+        mockAuthorise(agentAuthorisedResponse)
+        TestConfirmationController.submit()(fakeRequest
+          .withSession(SessionKeys.mandationStatus -> MandationStatuses.nonMTDfB)
+            .withSession(SessionKeys.inSessionPeriodKey -> "19AA")
+            .withSession(SessionKeys.submissionYear -> "2019")
+        )
+
+      }
+
+      "return a see other response for .submit" in {
+        status(result) shouldBe Status.SEE_OTHER
+      }
+    }
+    authControllerChecks(TestConfirmationController.submit(), fakeRequest)
+  }
+
+  "SubmitFormController .submit as a non agent" when {
+
+    "user is authorised" should {
+
+      lazy val result = {
+        mockAuthorise(mtdVatAuthorisedResponse)
+        TestConfirmationController.submit()(fakeRequest.withSession(SessionKeys.mandationStatus -> MandationStatuses.nonMTDfB))
+      }
+
+      "return a see other response for .submit" in {
+        status(result) shouldBe Status.SEE_OTHER
+      }
+
+      s"redirect to ${mockAppConfig.vatSummaryUrl}" in {
+        redirectLocation(result) shouldBe Some(mockAppConfig.vatSummaryUrl)
+      }
+    }
+    authControllerChecks(TestConfirmationController.submit(), fakeRequest)
+  }
 
 }

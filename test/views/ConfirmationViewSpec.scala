@@ -56,7 +56,7 @@ class ConfirmationViewSpec extends ViewBaseSpec {
     "display a 2nd button" should {
 
       s"have the button text as ${viewMessages.button2}" in {
-        elementText("#submit-confirmation-finish-button2") shouldBe viewMessages.button2
+        elementText("#finish-button2") shouldBe viewMessages.button2
       }
     }
   }
@@ -86,8 +86,8 @@ class ConfirmationViewSpec extends ViewBaseSpec {
 
     "display a button" should {
 
-      s"have the button text as ${viewMessages.button2}" in {
-        elementText("#submit-confirmation-finish-button") shouldBe viewMessages.button2
+      s"have the button text as Finish" in {
+        elementText("#finish-button") shouldBe "Finish"
       }
     }
 
