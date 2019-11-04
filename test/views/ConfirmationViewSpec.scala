@@ -87,14 +87,14 @@ class ConfirmationViewSpec extends ViewBaseSpec {
     "display a button" should {
 
       s"have the button text as Finish" in {
-        elementText("#finish-button") shouldBe "Finish"
+        elementText("#submit-confirmation-finish-button") shouldBe "Finish"
       }
     }
 
     "not display a 2nd button" should {
 
       s"have the button text as ${viewMessages.button}" in {
-        elementExists(("#view-vat-return-button")) shouldBe false
+        elementExists("#view-vat-return-button") shouldBe false
       }
     }
   }
