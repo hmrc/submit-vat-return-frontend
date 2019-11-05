@@ -103,14 +103,8 @@ class ConfirmSubmissionController @Inject()(val messagesApi: MessagesApi,
         case Some(data) =>
           Try(Json.parse(data).as[SubmitVatReturnModel]) match {
             case Success(model) =>
-              if(dateService.dateHasPassed(model.end)) {
-
-                if(appConfig.features.nrsSubmissionEnabled()){
-                  submitToNrs(periodKey, model)
-                } else {
-                  submitVatReturn(periodKey, model)
-                }
-
+              if (dateService.dateHasPassed(model.end)) {
+                submitToNrs(periodKey, model)
               } else {
                 Logger.debug(s"[ConfirmSubmissionController][submit] Obligation end date for period $periodKey has not yet passed.")
                 Future.successful(errorHandler.showBadRequestError)
@@ -253,6 +247,7 @@ class ConfirmSubmissionController @Inject()(val messagesApi: MessagesApi,
   }
 
   private[controllers] def handleItmpName(itmpName: Option[ItmpName]): ItmpName = itmpName.fold(ItmpName(None, None, None))(name => name)
+
   private[controllers] def handleItmpAddress(itmpAddress: Option[ItmpAddress]): ItmpAddress =
     itmpAddress.fold(ItmpAddress(None, None, None, None, None, None, None, None))(address => address)
 
