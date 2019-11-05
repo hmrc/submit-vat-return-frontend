@@ -48,6 +48,7 @@ trait AppConfig extends ServicesConfig {
   val manageClientUrl: String
   val changeClientUrl: String
   val returnDeadlinesUrl: String
+  val viewSubmittedReturnUrl: String
   def signOutUrl(identifier: String): String
   val unauthorisedSignOutUrl: String
   def exitSurveyUrl(identifier: String): String
@@ -121,6 +122,8 @@ class FrontendAppConfig @Inject()(val runModeConfiguration: Configuration, envir
 
   override lazy val vatSummaryUrl: String = getString(ConfigKeys.vatSummaryHost) + getString(ConfigKeys.vatSummaryUrl)
   override lazy val returnDeadlinesUrl: String = getString(ConfigKeys.viewVatReturnsHost) + getString(ConfigKeys.returnDeadlinesUrl)
+
+  override lazy val viewSubmittedReturnUrl: String = getString(ConfigKeys.viewVatReturnsHost) + getString(ConfigKeys.submittedReturnsUrl)
 
   // Agent Client Lookup
   private lazy val platformHost = getString(ConfigKeys.platformHost)

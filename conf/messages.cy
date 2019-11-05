@@ -96,6 +96,9 @@ confirmation_view.heading = Mae’r Ffurflen TAW wedi’i chyflwyno
 confirmation_view.subHeading = Yr hyn sy’n digwydd nesaf
 confirmation_view.paragraph = Rydym wedi cael eich Ffurflen TAW.
 confirmation_view.changeClient = Newid cleient
+confirmation_view.viewAccount = Bwrw golwg dros eich cyfrif TAW
+confirmation_view.viewVATReturn = Bwrw golwg dros y Ffurflen TAW
+confirmation_view.viewClientAccount = Bwrw golwg dros gyfrif TAW y cleient
 
 breadcrumbs.yourVatDetails = Eich manylion TAW
 breadcrumbs.submitVatReturn = Cyflwyno Ffurflen TAW

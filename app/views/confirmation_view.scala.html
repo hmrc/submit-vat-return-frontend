@@ -17,21 +17,32 @@
 @import config.AppConfig
 @import models.auth.User
 @import views.html.templates.heading
-
+@import common.SessionKeys
+@import uk.gov.hmrc.play.views.html.helpers
+@import java.time.Year
 
 @()(implicit request: Request[_], messages: Messages, appConfig: AppConfig, user: User[_])
 
-@agentOrIndividualUrl = @{
+@viewSubmittedReturnUrl = @{
+    (user.session.get(SessionKeys.submissionYear), user.session.get(SessionKeys.inSessionPeriodKey)) match {
+        case (Some(year), Some(periodKey)) if year.nonEmpty && periodKey.nonEmpty =>
+            s"${appConfig.viewSubmittedReturnUrl}/$year/$periodKey"
+        case _ =>
+            s"${appConfig.viewSubmittedReturnUrl}/${Year.now()}"
+    }
+}
+
+@VatAccountText = @{
     if(user.isAgent) {
-        appConfig.manageClientUrl
+        messages("confirmation_view.viewClientAccount")
     } else {
-        appConfig.vatSummaryUrl
+        messages("confirmation_view.viewAccount")
     }
 }
 
 @main_template(messages("confirmation_view.title"), appConfig = appConfig, bodyClasses = None, user = Some(user)) {
 
-    <div class="govuk-box-highlight">
+<div class="govuk-box-highlight" xmlns="http://www.w3.org/1999/html">
     <h1 class="heading-xlarge">@messages("confirmation_view.heading")</h1>
     </div>
 
@@ -46,11 +57,36 @@
         </p>
     }
 
-    <p>
-      <a
-        class="button"
-        role="button"
-        id="submit-confirmation-finish-button"
-        href="@agentOrIndividualUrl">@messages("common.finish")</a>
-    </p>
+@if(!appConfig.features.viewVatReturnEnabled()) {
+<p>
+    @helpers.form(action = controllers.routes.ConfirmationController.submit) {
+    <button
+            class="button"
+            type="submit"
+            id="submit-confirmation-finish-button">
+        @messages("common.finish")
+    </button>
+    }
+</p>
+} else {
+    <div id="displayFlex">
+        <a
+            class="button"
+            role="button"
+            id="view-vat-return-button"
+            href=@viewSubmittedReturnUrl>
+            @messages("confirmation_view.viewVATReturn")
+        </a>
+
+        @helpers.form(action = controllers.routes.ConfirmationController.submit) {
+        <button
+              class="button-grey button--secondary"
+              type="submit"
+              role="button"
+              id="finish-button2">
+            @VatAccountText
+        </button>
+        }
+    </div>
+    }
 }
