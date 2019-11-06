@@ -82,12 +82,10 @@ trait BaseISpec extends WordSpec with WireMockHelper with Matchers with
 
   override def beforeEach(): Unit = {
     super.beforeEach()
-    appConfig.features.nrsSubmissionEnabled(false)
   }
 
   override def afterEach(): Unit = {
     super.afterEach()
-    appConfig.features.nrsSubmissionEnabled(false)
   }
 
   def await[T](awaitable: Awaitable[T]): T = Await.result(awaitable, Duration.Inf)

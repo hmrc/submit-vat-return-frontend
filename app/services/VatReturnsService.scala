@@ -43,7 +43,6 @@ class VatReturnsService @Inject()(vatReturnsConnector: VatReturnsConnector) {
                        identityData: IdentityData,
                        receiptData: ReceiptData)
                       (implicit hc: HeaderCarrier, ec: ExecutionContext, user: User[A]): Future[HttpGetResult[SuccessModel]] = {
-
     val metaData = Metadata(
       payloadSha256Checksum = payloadCheckSum,
       userSubmissionTimestamp = LocalDateTime.now(ZoneOffset.UTC),

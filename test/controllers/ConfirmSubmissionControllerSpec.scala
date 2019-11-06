@@ -65,7 +65,7 @@ class ConfirmSubmissionControllerSpec extends BaseSpec
     mockEnrolmentsAuthService,
     mockReceiptDataService
   )
-  
+
   val submitVatReturnModel = SubmitVatReturnModel(
     1000.00,
     1000.00,
@@ -197,12 +197,11 @@ class ConfirmSubmissionControllerSpec extends BaseSpec
 
         "obligation end date is in the past" when {
 
-          "when the nrs feature switch is enabled and a submission to the back is successful" should {
+          "a submission to the backend is successful" should {
 
             implicit lazy val nrsUser: User[AnyContentAsEmpty.type] = User[AnyContentAsEmpty.type](vrn)(fakeRequest)
 
             lazy val result: Future[Result] = {
-              mockAppConfig.features.nrsSubmissionEnabled(true)
               TestConfirmSubmissionController.submit("18AA")(fakeRequest.withSession(
                 "mtdNineBoxReturnData" -> nineBoxData,
                 SessionKeys.mandationStatus -> MandationStatuses.nonMTDfB
@@ -229,29 +228,9 @@ class ConfirmSubmissionControllerSpec extends BaseSpec
             }
           }
 
-          "submission to backend is successful" should {
-
-            lazy val result: Future[Result] = TestConfirmSubmissionController.submit("18AA")(fakeRequest.withSession(
-              "mtdNineBoxReturnData" -> nineBoxData,
-              SessionKeys.mandationStatus -> MandationStatuses.nonMTDfB
-            ))
-
-            "return 303" in {
-              mockAuthorise(mtdVatAuthorisedResponse)
-              mockDateHasPassed(response = true)
-              mockVatReturnSubmission(Future.successful(Right(SubmissionSuccessModel("12345"))))
-              setupAuditExtendedEvent
-              setupAuditExtendedEvent
-
-              status(result) shouldBe Status.SEE_OTHER
-            }
-
-            s"redirect to ${controllers.routes.ConfirmationController.show()}" in {
-              redirectLocation(result) shouldBe Some(controllers.routes.ConfirmationController.show().url)
-            }
-          }
-
           "submission to backend is unsuccessful" should {
+
+            implicit lazy val nrsUser: User[AnyContentAsEmpty.type] = User[AnyContentAsEmpty.type](vrn)(fakeRequest)
 
             lazy val result: Future[Result] = TestConfirmSubmissionController.submit("18AA")(fakeRequest.withSession(
               "mtdNineBoxReturnData" -> nineBoxData,
@@ -260,8 +239,13 @@ class ConfirmSubmissionControllerSpec extends BaseSpec
 
             "return 500" in {
               mockAuthorise(mtdVatAuthorisedResponse)
-              mockDateHasPassed(response = true)
-              mockVatReturnSubmission(Future.successful(Left(UnexpectedJsonFormat)))
+              mockDateHasPassed(true)
+              setupVatSubscriptionService(successCustomerInfoResponse)
+              mockExtractReceiptData(successReceiptDataResponse)
+              mockFullAuthResponse(agentFullInformationResponse)
+              mockNrsSubmission(Future.successful(Right(SuccessModel("1234567890"))))
+              setupAuditExtendedEvent
+              mockVatReturnSubmission(Future.successful(Left(UnknownError)))
               setupAuditExtendedEvent
 
               status(result) shouldBe Status.INTERNAL_SERVER_ERROR

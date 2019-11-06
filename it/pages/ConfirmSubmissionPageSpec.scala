@@ -77,158 +77,102 @@ class ConfirmSubmissionPageSpec extends NrsAssets with GivenWhenThen {
             """.stripMargin
           )
 
-          "the nrs feature is disabled" when {
 
-            appConfig.features.nrsSubmissionEnabled(false)
+          val customerDetails: JsObject = Json.obj(
+            "firstName" -> "Test",
+            "lastName" -> "Name",
+            "tradingName" -> "",
+            "organisationName" -> "",
+            "hasFlatRateScheme" -> false
+          )
 
-            "backend vat submission returns 200" should {
+          "NRS returns successful response and backend submission returns 200" should {
 
-              "redirect to confirmation page" in {
+            "redirect to confirmation page" in {
+              When("The user is authenticated and authorised")
+              AuthStub.stubResponse(OK, mtdVatAuthResponse)
 
-                When("The user is authenticated and authorised")
-                AuthStub.stubResponse(OK, mtdVatAuthResponse)
+              And("The customer-details call is successful")
+              VatSubscriptionStub.stubResponse("customer-details", OK, customerDetails)
 
-                And("The POST to vat-returns is successful")
-                VatReturnsStub.stubResponse(vatReturnUri("999999999"))(OK, Json.obj("formBundleNumber" -> "12345"))
+              And("The auth call for full information is successful")
+              AuthStub.stubResponse(OK, fullNRSAuthResponse)
 
-                val response: WSResponse = request(fullSessionValues)
+              And("The POST to NRS is successful")
+              VatReturnsStub.stubResponse(nrsSubmissionUri)(ACCEPTED, Json.obj("nrSubmissionId" -> "nrsIDExample"))
 
-                And("The backend submission was made with the correct nine box value mappings and headers")
-                VatReturnsStub.verifyVatReturnSubmission("999999999", postRequestJsonBody)
+              And("The POST to vat-returns is successful")
+              VatReturnsStub.stubResponse(vatReturnUri("999999999"))(OK, Json.obj("formBundleNumber" -> "12345"))
 
-                Then("The response should be 303")
-                response.status shouldBe SEE_OTHER
+              val response: WSResponse = request(fullSessionValues)
 
-                And("The redirect location is correct")
-                response.header("Location") shouldBe Some(controllers.routes.ConfirmationController.show().url)
-              }
-            }
+              And("The NRS submission was made with the correct request body")
+              VatReturnsStub.nrsRegexMatcher(nrsFullSubmissionJson)
 
-            "backend vat submission returns an error" should {
+              And("The backend submission was made with the correct nine box value mappings and headers")
+              VatReturnsStub.verifyVatReturnSubmission("999999999", postRequestJsonBody)
 
-              "return ISE" in {
+              Then("The response should be 303")
+              response.status shouldBe SEE_OTHER
 
-                When("The user is authenticated and authorised")
-                AuthStub.stubResponse(OK, mtdVatAuthResponse)
-
-                And("The POST to vat-returns is unsuccessful")
-                VatReturnsStub.stubResponse(vatReturnUri("999999999"))(SERVICE_UNAVAILABLE, Json.obj("errorCode" -> "error response"))
-
-                val response: WSResponse = request(fullSessionValues)
-
-                And("The backend submission was made with the correct nine box values")
-                VatReturnsStub.verifyVatReturnSubmission("999999999", postRequestJsonBody)
-
-                Then("The response should be 500")
-                response.status shouldBe INTERNAL_SERVER_ERROR
-              }
+              And("The redirect location is correct")
+              response.header("Location") shouldBe Some(controllers.routes.ConfirmationController.show().url)
             }
           }
 
-          "the nrs feature switch is enabled" when {
+          "NRS returns a BAD_REQUEST" should {
 
-            val customerDetails: JsObject = Json.obj(
-              "firstName" -> "Test",
-              "lastName" -> "Name",
-              "tradingName" -> "",
-              "organisationName" -> "",
-              "hasFlatRateScheme" -> false
-            )
+            "return ISE" in {
+              When("The user is authenticated and authorised")
+              AuthStub.stubResponse(OK, mtdVatAuthResponse)
 
-            "NRS returns successful response and backend submission returns 200" should {
+              And("The customer-details call is successful")
+              VatSubscriptionStub.stubResponse("customer-details", OK, customerDetails)
 
-              "redirect to confirmation page" in {
-                appConfig.features.nrsSubmissionEnabled(true)
+              And("The auth call for full information is successful")
+              AuthStub.stubResponse(OK, fullNRSAuthResponse)
 
-                When("The user is authenticated and authorised")
-                AuthStub.stubResponse(OK, mtdVatAuthResponse)
+              And("The response from NRS is BAD_REQUEST")
+              VatReturnsStub.stubResponse(nrsSubmissionUri)(BAD_REQUEST, Json.obj())
 
-                And("The customer-details call is successful")
-                VatSubscriptionStub.stubResponse("customer-details", OK, customerDetails)
+              val response: WSResponse = request(fullSessionValues)
 
-                And("The auth call for full information is successful")
-                AuthStub.stubResponse(OK, fullNRSAuthResponse)
-
-                And("The POST to NRS is successful")
-                VatReturnsStub.stubResponse(nrsSubmissionUri)(ACCEPTED, Json.obj("nrSubmissionId" -> "nrsIDExample"))
-
-                And("The POST to vat-returns is successful")
-                VatReturnsStub.stubResponse(vatReturnUri("999999999"))(OK, Json.obj("formBundleNumber" -> "12345"))
-
-                val response: WSResponse = request(fullSessionValues)
-
-                And("The NRS submission was made with the correct request body")
-                VatReturnsStub.nrsRegexMatcher(nrsFullSubmissionJson)
-
-                And("The backend submission was made with the correct nine box value mappings and headers")
-                VatReturnsStub.verifyVatReturnSubmission("999999999", postRequestJsonBody)
-
-                Then("The response should be 303")
-                response.status shouldBe SEE_OTHER
-
-                And("The redirect location is correct")
-                response.header("Location") shouldBe Some(controllers.routes.ConfirmationController.show().url)
-              }
-            }
-
-            "NRS returns a BAD_REQUEST" should {
-
-              "return ISE" in {
-
-                appConfig.features.nrsSubmissionEnabled(true)
-
-                When("The user is authenticated and authorised")
-                AuthStub.stubResponse(OK, mtdVatAuthResponse)
-
-                And("The customer-details call is successful")
-                VatSubscriptionStub.stubResponse("customer-details", OK, customerDetails)
-
-                And("The auth call for full information is successful")
-                AuthStub.stubResponse(OK, fullNRSAuthResponse)
-
-                And("The response from NRS is BAD_REQUEST")
-                VatReturnsStub.stubResponse(nrsSubmissionUri)(BAD_REQUEST, Json.obj())
-
-                val response: WSResponse = request(fullSessionValues)
-
-                Then("The response should be 500")
-                response.status shouldBe INTERNAL_SERVER_ERROR
-              }
-            }
-
-            "NRS returns an error other than a BAD_REQUEST and the backend submission returns 200" should {
-
-              "redirect to confirmation page" in {
-                appConfig.features.nrsSubmissionEnabled(true)
-
-                When("The user is authenticated and authorised")
-                AuthStub.stubResponse(OK, mtdVatAuthResponse)
-
-                And("The customer-details call is successful")
-                VatSubscriptionStub.stubResponse("customer-details", OK, customerDetails)
-
-                And("The auth call for full information is successful")
-                AuthStub.stubResponse(OK, fullNRSAuthResponse)
-
-                And("The POST to NRS returns an internal server error")
-                VatReturnsStub.stubResponse(nrsSubmissionUri)(INTERNAL_SERVER_ERROR, Json.obj())
-
-                And("The POST to vat-returns is successful")
-                VatReturnsStub.stubResponse(vatReturnUri("999999999"))(OK, Json.obj("formBundleNumber" -> "12345"))
-
-                val response: WSResponse = request(fullSessionValues)
-
-                And("The backend submission was made with the correct nine box value mappings and headers")
-                VatReturnsStub.verifyVatReturnSubmission("999999999", postRequestJsonBody)
-
-                Then("The response should be 303")
-                response.status shouldBe SEE_OTHER
-
-                And("The redirect location is correct")
-                response.header("Location") shouldBe Some(controllers.routes.ConfirmationController.show().url)
-              }
+              Then("The response should be 500")
+              response.status shouldBe INTERNAL_SERVER_ERROR
             }
           }
+
+          "NRS returns an error other than a BAD_REQUEST and the backend submission returns 200" should {
+
+            "redirect to confirmation page" in {
+              When("The user is authenticated and authorised")
+              AuthStub.stubResponse(OK, mtdVatAuthResponse)
+
+              And("The customer-details call is successful")
+              VatSubscriptionStub.stubResponse("customer-details", OK, customerDetails)
+
+              And("The auth call for full information is successful")
+              AuthStub.stubResponse(OK, fullNRSAuthResponse)
+
+              And("The POST to NRS returns an internal server error")
+              VatReturnsStub.stubResponse(nrsSubmissionUri)(INTERNAL_SERVER_ERROR, Json.obj())
+
+              And("The POST to vat-returns is successful")
+              VatReturnsStub.stubResponse(vatReturnUri("999999999"))(OK, Json.obj("formBundleNumber" -> "12345"))
+
+              val response: WSResponse = request(fullSessionValues)
+
+              And("The backend submission was made with the correct nine box value mappings and headers")
+              VatReturnsStub.verifyVatReturnSubmission("999999999", postRequestJsonBody)
+
+              Then("The response should be 303")
+              response.status shouldBe SEE_OTHER
+
+              And("The redirect location is correct")
+              response.header("Location") shouldBe Some(controllers.routes.ConfirmationController.show().url)
+            }
+          }
+
         }
 
         "matching obligation end date is in the future" should {
@@ -273,7 +217,7 @@ class ConfirmSubmissionPageSpec extends NrsAssets with GivenWhenThen {
             )
 
             When("The user is authenticated and authorised")
-            AuthStub.stubResponse(OK, mtdVatAuthResponse)
+            AuthStub.stubResponse(OK, fullNRSAuthResponse)
 
             And("The POST to vat-returns is successful")
             VatReturnsStub.stubResponse(vatReturnUri("999999999"))(OK, Json.obj("formBundleNumber" -> "12345"))
