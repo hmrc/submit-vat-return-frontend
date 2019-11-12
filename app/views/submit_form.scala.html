@@ -22,6 +22,7 @@
 @import templates.formatters.dates.displayDate
 @import templates.formatters.navigationBreadcrumb
 @import templates.formatters.dates.displayDateRange
+@import templates.btaNavigationLinks
 
 @(periodKey: String,
         clientName: Option[String],
@@ -66,6 +67,10 @@ user: User[_], lang: Lang)
 }
 
 @main_template(pageTitle, appConfig = appConfig, bodyClasses = None, user = Some(user)) {
+
+@if(!isAgent) {
+    @btaNavigationLinks()
+    }
 
     @if(!isAgent) {
         @navigationBreadcrumb(
