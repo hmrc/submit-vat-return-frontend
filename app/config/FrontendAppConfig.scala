@@ -61,6 +61,11 @@ trait AppConfig extends ServicesConfig {
   def feedbackUrl(redirectUrl: String): String
   def routeToSwitchLanguage: String => Call
   def languageMap: Map[String, Lang]
+  val btaBaseUrl: String
+  val btaHomeUrl: String
+  val btaMessagesUrl: String
+  val btaManageAccountUrl: String
+  val btaHelpAndContactUrl: String
 }
 
 @Singleton
@@ -156,4 +161,12 @@ class FrontendAppConfig @Inject()(val runModeConfiguration: Configuration, envir
 
   override val accessibilityLinkUrl: String = getString(ConfigKeys.vatSummaryHost) + getString(ConfigKeys.vatSummaryAccessibilityUrl)
 
+
+  private lazy val helpAndContactFrontendUrl: String = getString(ConfigKeys.helpAndContactFrontendBase)
+
+  override lazy val btaBaseUrl: String = baseUrl(ConfigKeys.businessTaxAccountBase)
+  override lazy val btaHomeUrl: String = getString(ConfigKeys.businessTaxAccountHost) + getString(ConfigKeys.businessTaxAccountUrl)
+  override lazy val btaMessagesUrl: String = btaHomeUrl + getString(ConfigKeys.businessTaxAccountMessagesUrl)
+  override lazy val btaManageAccountUrl: String = btaHomeUrl + getString(ConfigKeys.businessTaxAccountManageAccountUrl)
+  override lazy val btaHelpAndContactUrl: String = helpAndContactFrontendUrl + getString(ConfigKeys.helpAndContactHelpUrl)
 }

@@ -21,6 +21,13 @@ banner.feedback = adborth
 banner.feedbackImprove = yn ein helpu i’w wella.
 banner.phaseName = BETA
 
+breadcrumbs.bta = Cyfrif Treth Busnes
+
+btaNavLinks.home = Hafan
+btaNavLinks.manageAccount = Rheoli''r cyfrif
+btaNavLinks.messages = Negeseuon
+btaNavLinks.helpAndContact = Cymorth a chysylltu
+
 session_expired.title = Mae’ch sesiwn wedi’i therfynu
 session_expired.heading = Mae’ch sesiwn wedi’i therfynu
 session_expired.helpOne = Bydd yn rhaid i chi
