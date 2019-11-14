@@ -16,8 +16,7 @@
 
 package services
 
-import common.SessionKeys
-import connectors.ServiceInfoPartialConnector
+import connectors.BtaLinksPartialConnector
 import models.auth.User
 import play.api.mvc.{AnyContentAsEmpty, Request}
 import play.api.test.FakeRequest
@@ -26,14 +25,14 @@ import views.templates.TemplateBaseSpec
 
 import scala.concurrent.{ExecutionContext, Future}
 
-class ServiceInfoServiceSpec extends TemplateBaseSpec {
+class BtaLinkServiceSpec extends TemplateBaseSpec {
 
   implicit lazy val fakeRequest: FakeRequest[AnyContentAsEmpty.type] = FakeRequest()
   implicit lazy val user: User[AnyContentAsEmpty.type] = User[AnyContentAsEmpty.type]("999999999")(fakeRequest)
   implicit lazy val agentUser: User[AnyContentAsEmpty.type] = User[AnyContentAsEmpty.type]("999999999", Some("ABCD12345678901"))(fakeRequest)
 
-  val mockConnector: ServiceInfoPartialConnector = mock[ServiceInfoPartialConnector]
-  val service: ServiceInfoService = new ServiceInfoService(mockConnector)
+  val mockConnector: BtaLinksPartialConnector = mock[BtaLinksPartialConnector]
+  val service: BtaLinkService = new BtaLinkService(mockConnector)
   val ec: ExecutionContext = injector.instanceOf[ExecutionContext]
 
   val validHtml = Html("<nav>btalink<nav>")
@@ -41,7 +40,7 @@ class ServiceInfoServiceSpec extends TemplateBaseSpec {
 
   "getServiceInfo Partial" should {
     "return bta Partial" in {
-      (mockConnector.getServiceInfoPartial()(_:Request[_], _:ExecutionContext))
+      (mockConnector.getBtaLinksPartial()(_:Request[_], _:ExecutionContext))
         .expects(*, *)
         .returning(Future.successful(validHtml))
 
@@ -51,7 +50,7 @@ class ServiceInfoServiceSpec extends TemplateBaseSpec {
       result shouldBe expectedResult
     }
     "return empty HTML for an agent" in {
-      (mockConnector.getServiceInfoPartial()(_:Request[_], _:ExecutionContext))
+      (mockConnector.getBtaLinksPartial()(_:Request[_], _:ExecutionContext))
         .expects(*, *)
         .never()
 

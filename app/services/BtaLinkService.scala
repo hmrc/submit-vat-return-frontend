@@ -16,7 +16,7 @@
 
 package services
 
-import connectors.ServiceInfoPartialConnector
+import connectors.BtaLinksPartialConnector
 import javax.inject.{Inject, Singleton}
 import models.auth.User
 import play.api.mvc._
@@ -25,13 +25,13 @@ import play.twirl.api.{Html, HtmlFormat}
 import scala.concurrent.{ExecutionContext, Future}
 
 @Singleton
-class ServiceInfoService @Inject()(serviceInfoPartialConnector: ServiceInfoPartialConnector){
+class BtaLinkService @Inject()(btaLinksPartialConnector: BtaLinksPartialConnector){
 
-  def getPartial(implicit request: Request[_], user: User[AnyContentAsEmpty.type], executionContext: ExecutionContext): Future[Html] = {
+  def getPartial(implicit request: Request[_], user: User[_], executionContext: ExecutionContext): Future[Html] = {
     if(user.isAgent){
       Future.successful(HtmlFormat.empty)
     } else {
-      serviceInfoPartialConnector.getServiceInfoPartial()
+      btaLinksPartialConnector.getBtaLinksPartial()
     }
   }
 }

@@ -66,6 +66,7 @@ trait AppConfig extends ServicesConfig {
   val btaMessagesUrl: String
   val btaManageAccountUrl: String
   val btaHelpAndContactUrl: String
+  val btaPartialUrl: String
 }
 
 @Singleton
@@ -164,9 +165,11 @@ class FrontendAppConfig @Inject()(val runModeConfiguration: Configuration, envir
 
   private lazy val helpAndContactFrontendUrl: String = getString(ConfigKeys.helpAndContactFrontendBase)
 
-  override lazy val btaBaseUrl: String = baseUrl(ConfigKeys.businessTaxAccountBase)
-  override lazy val btaHomeUrl: String = getString(ConfigKeys.businessTaxAccountHost) + getString(ConfigKeys.businessTaxAccountUrl)
+  override lazy val btaBaseUrl: String = getString(ConfigKeys.businessTaxAccountHost)
+  override lazy val btaHomeUrl: String = btaBaseUrl + getString(ConfigKeys.businessTaxAccountUrl)
   override lazy val btaMessagesUrl: String = btaHomeUrl + getString(ConfigKeys.businessTaxAccountMessagesUrl)
   override lazy val btaManageAccountUrl: String = btaHomeUrl + getString(ConfigKeys.businessTaxAccountManageAccountUrl)
   override lazy val btaHelpAndContactUrl: String = helpAndContactFrontendUrl + getString(ConfigKeys.helpAndContactHelpUrl)
+
+  override val btaPartialUrl: String = getString(ConfigKeys.businessTaxAccountPartialUrl)
 }

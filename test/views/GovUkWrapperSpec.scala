@@ -33,10 +33,6 @@ class GovUkWrapperSpec extends ViewBaseSpec {
       lazy val view = views.html.govuk_wrapper(mockAppConfig, "title", user = None)(fakeRequest, messages)
       lazy implicit val document: Document = Jsoup.parse(view.body)
 
-      "not contain a logo" in {
-        document.select(".organisation-logo") shouldBe empty
-      }
-
       "have the default nav title 'VAT" in {
         elementText(navTitleSelector) shouldBe "VAT"
       }
@@ -70,10 +66,6 @@ class GovUkWrapperSpec extends ViewBaseSpec {
         lazy val view = views.html.govuk_wrapper(mockAppConfig, "title", user = Some(User[AnyContentAsEmpty.type]
           ("999999999", arn = None)))(fakeRequest, messages)
         lazy implicit val document: Document = Jsoup.parse(view.body)
-
-        "not contain a logo" in {
-          document.select(".organisation-logo") shouldBe empty
-        }
 
         "have a nav title of 'Business tax account'" in {
           elementText(navTitleSelector) shouldBe "Business tax account"

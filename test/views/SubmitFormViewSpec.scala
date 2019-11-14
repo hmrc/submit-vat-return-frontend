@@ -18,6 +18,7 @@ package views
 
 import java.time.LocalDate
 
+import assets.messages.BtaLinkMessages
 import assets.messages.SubmitFormPageMessages._
 import forms.SubmitVatReturnForm
 import models.VatObligation
@@ -186,6 +187,75 @@ class SubmitFormViewSpec extends ViewBaseSpec {
 
       "have the correct hidden label for box 1" in {
         elementText("label[for=box1]") shouldBe "Swm Blwch 1 TAW a godwyd gennych ar werthiannau a chyflenwadau eraill"
+      }
+    }
+
+    "rendering the submit_form page with the bta links partial" should {
+
+      lazy val view = views.html.submit_form(
+        "18AA",
+        Some("ABC Studios"),
+        flatRateScheme = true,
+        obligation,
+        SubmitVatReturnForm().nineBoxForm,
+        isAgent = false,
+        views.html.templates.btaNavigationLinks()
+      )(fakeRequest, messages, mockAppConfig, user, Lang.apply("en"))
+      lazy implicit val document: Document = Jsoup.parse(view.body)
+
+      "have a link to BTA home" which {
+
+        lazy val homeLink = document.getElementById("service-info-home-link")
+
+        "should have the text home" in {
+          homeLink.text() shouldBe BtaLinkMessages.btaHome
+        }
+
+        "should have a link to home" in {
+          homeLink.attr("href") shouldBe mockAppConfig.btaHomeUrl
+        }
+
+      }
+
+      "have a link to BTA Manage Account" which {
+
+        lazy val manageAccountLink = document.getElementById("service-info-manage-account-link")
+
+        "should have the text Manage account" in {
+          manageAccountLink.text() shouldBe BtaLinkMessages.btaManageAccount
+        }
+
+        "should have a link to Manage account" in {
+          manageAccountLink.attr("href") shouldBe mockAppConfig.btaManageAccountUrl
+        }
+
+      }
+
+      "have a link to BTA Messages" which {
+
+        lazy val messagesLink = document.getElementById("service-info-messages-link")
+
+        "should have the text Messages" in {
+          messagesLink.text() shouldBe BtaLinkMessages.btaMessages
+        }
+
+        "should have a link to Messages" in {
+          messagesLink.attr("href") shouldBe mockAppConfig.btaMessagesUrl
+        }
+
+      }
+
+      "have a link to BTA Help and contact" which {
+
+        lazy val helpAndContactLink = document.getElementById("service-info-help-and-contact-link")
+
+        "should have the text Help and contact" in {
+          helpAndContactLink.text() shouldBe BtaLinkMessages.btaHelpAndContact
+        }
+
+        "should have a link to Help and contact" in {
+          helpAndContactLink.attr("href") shouldBe mockAppConfig.btaHelpAndContactUrl
+        }
       }
     }
   }

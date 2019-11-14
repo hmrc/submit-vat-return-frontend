@@ -20,7 +20,8 @@ package views
 import java.time.LocalDate
 
 import assets.CustomerDetailsTestAssets._
-import assets.messages.{ConfirmSubmissionMessages => viewMessages}
+import assets.messages.{BtaLinkMessages, ConfirmSubmissionMessages => viewMessages}
+import forms.SubmitVatReturnForm
 import models._
 import org.jsoup.Jsoup
 import org.jsoup.nodes.Document
@@ -55,11 +56,11 @@ class ConfirmSubmissionViewSpec extends ViewBaseSpec {
   }
 
   def boxElement(box: String, column: Int): String = {
-    if(column == 1) {
+    if (column == 1) {
       s"$box > dt:nth-child(1)"
     }
     else {
-      s"$box > dd:nth-of-type(${column-1})"
+      s"$box > dd:nth-of-type(${column - 1})"
     }
   }
 
@@ -293,6 +294,74 @@ class ConfirmSubmissionViewSpec extends ViewBaseSpec {
 
         "not display the text in bold" in {
           element(Selectors.agentDeclarationText).hasClass("bold-small") shouldBe false
+        }
+      }
+    }
+
+    "user is non-agent on the confirmSubmission page with the bta links partial" should {
+
+      val viewModel: ConfirmSubmissionViewModel = ConfirmSubmissionViewModel(
+        vatReturn(true),
+        periodKey,
+        userName = customerDetailsWithFRS.clientName
+      )
+
+      lazy val view = views.html.confirm_submission(
+        viewModel, isAgent = false, views.html.templates.btaNavigationLinks())(fakeRequest, messages, mockAppConfig, user, Lang.apply("en"))
+      lazy implicit val document: Document = Jsoup.parse(view.body)
+
+      "have a link to BTA home" which {
+
+        lazy val homeLink = document.getElementById("service-info-home-link")
+
+        "should have the text home" in {
+          homeLink.text() shouldBe BtaLinkMessages.btaHome
+        }
+
+        "should have a link to home" in {
+          homeLink.attr("href") shouldBe mockAppConfig.btaHomeUrl
+        }
+
+      }
+
+      "have a link to BTA Manage Account" which {
+
+        lazy val manageAccountLink = document.getElementById("service-info-manage-account-link")
+
+        "should have the text Manage account" in {
+          manageAccountLink.text() shouldBe BtaLinkMessages.btaManageAccount
+        }
+
+        "should have a link to Manage account" in {
+          manageAccountLink.attr("href") shouldBe mockAppConfig.btaManageAccountUrl
+        }
+
+      }
+
+      "have a link to BTA Messages" which {
+
+        lazy val messagesLink = document.getElementById("service-info-messages-link")
+
+        "should have the text Messages" in {
+          messagesLink.text() shouldBe BtaLinkMessages.btaMessages
+        }
+
+        "should have a link to Messages" in {
+          messagesLink.attr("href") shouldBe mockAppConfig.btaMessagesUrl
+        }
+
+      }
+
+      "have a link to BTA Help and contact" which {
+
+        lazy val helpAndContactLink = document.getElementById("service-info-help-and-contact-link")
+
+        "should have the text Help and contact" in {
+          helpAndContactLink.text() shouldBe BtaLinkMessages.btaHelpAndContact
+        }
+
+        "should have a link to Help and contact" in {
+          helpAndContactLink.attr("href") shouldBe mockAppConfig.btaHelpAndContactUrl
         }
       }
     }

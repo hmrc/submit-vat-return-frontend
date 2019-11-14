@@ -30,7 +30,6 @@ display: Flex
 }
 
 .bta-navigation li:first-child {
-      display: inline-block;
       margin: 0 0;
   }
 
@@ -48,4 +47,9 @@ display: Flex
 .bta-navigation {
     padding: 10px 0 8px 0;
     margin-block-start: 0px
+}
+
+.text--right {
+    margin-bottom:0em !important
+
 }

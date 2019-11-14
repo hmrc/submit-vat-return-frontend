@@ -19,13 +19,9 @@ package views.templates
 import org.jsoup.Jsoup
 import org.jsoup.nodes.Document
 import play.twirl.api.Html
+import assets.messages.BtaLinkMessages
 
 class BtaNavigationLinksTemplateSpec extends TemplateBaseSpec {
-
-  val btaHome = "Home"
-  val btaMessages = "Messages"
-  val btaManageAccount = "Manage account"
-  val btaHelpAndContact = "Help and contact"
 
   "btaNavigationLinks" should {
 
@@ -37,7 +33,7 @@ class BtaNavigationLinksTemplateSpec extends TemplateBaseSpec {
       lazy val homeLink = document.getElementById("service-info-home-link")
 
       "should have the text home" in {
-        homeLink.text() shouldBe btaHome
+        homeLink.text() shouldBe BtaLinkMessages.btaHome
       }
 
       "should have a link to home" in {
@@ -51,7 +47,7 @@ class BtaNavigationLinksTemplateSpec extends TemplateBaseSpec {
       lazy val manageAccountLink = document.getElementById("service-info-manage-account-link")
 
       "should have the text Manage account" in {
-        manageAccountLink.text() shouldBe btaManageAccount
+        manageAccountLink.text() shouldBe BtaLinkMessages.btaManageAccount
       }
 
       "should have a link to Manage account" in {
@@ -65,7 +61,7 @@ class BtaNavigationLinksTemplateSpec extends TemplateBaseSpec {
       lazy val messagesLink = document.getElementById("service-info-messages-link")
 
       "should have the text Messages" in {
-        messagesLink.text() shouldBe btaMessages
+        messagesLink.text() shouldBe BtaLinkMessages.btaMessages
       }
 
       "should have a link to Messages" in {
@@ -79,7 +75,7 @@ class BtaNavigationLinksTemplateSpec extends TemplateBaseSpec {
       lazy val helpAndContactLink = document.getElementById("service-info-help-and-contact-link")
 
       "should have the text Help and contact" in {
-        helpAndContactLink.text() shouldBe btaHelpAndContact
+        helpAndContactLink.text() shouldBe BtaLinkMessages.btaHelpAndContact
       }
 
       "should have a link to Help and contact" in {
