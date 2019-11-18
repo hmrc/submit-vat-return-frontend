@@ -73,7 +73,7 @@ class ConfirmSubmissionController @Inject()(val messagesApi: MessagesApi,
 
           if(appConfig.features.viewVatReturnEnabled.apply()){
           Ok(renderConfirmSubmissionView(periodKey, sessionData, model))
-            .addingToSession(SessionKeys.submissionYear -> sessionData.due.format(dateTimeFormatter))
+            .addingToSession(SessionKeys.submissionYear -> sessionData.end.format(dateTimeFormatter))
             .addingToSession(SessionKeys.inSessionPeriodKey -> periodKey)
           }
           else {
