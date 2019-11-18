@@ -103,6 +103,7 @@ class ConfirmSubmissionControllerSpec extends BaseSpec
 
           lazy val result: Future[Result] = {
             setupVatSubscriptionService(successCustomerInfoResponse)
+            mockAppConfig.features.viewVatReturnEnabled(true)
             TestConfirmSubmissionController.show("18AA")(requestWithSessionData)
           }
 
@@ -117,6 +118,10 @@ class ConfirmSubmissionControllerSpec extends BaseSpec
 
           "the user name should be displayed" in {
             Jsoup.parse(bodyOf(result)).select("#content > article > section > h2").text() shouldBe "ABC Solutions"
+          }
+
+          "add obligation data to session" in {
+            await(result).header.headers("Set-Cookie") should include("submissionYear=2019&inSessionPeriodKey=18AA")
           }
         }
 
