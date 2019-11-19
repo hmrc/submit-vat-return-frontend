@@ -36,7 +36,7 @@ class BtaLinksPartialConnector @Inject()(val http: HttpClient,
 
   import hcForPartials._
 
-  lazy val btaUrl: String = config.btaBaseUrl + config.btaPartialUrl
+  lazy val btaUrl: String = config.btaPartialUrl
 
   def getBtaLinksPartial()(implicit request: Request[_], executionContext: ExecutionContext): Future[Html] =
     http.GET[HtmlPartial](btaUrl) recover connectionExceptionsAsHtmlPartialFailure map {

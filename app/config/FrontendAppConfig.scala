@@ -171,5 +171,7 @@ class FrontendAppConfig @Inject()(val runModeConfiguration: Configuration, envir
   override lazy val btaManageAccountUrl: String = btaHomeUrl + getString(ConfigKeys.businessTaxAccountManageAccountUrl)
   override lazy val btaHelpAndContactUrl: String = helpAndContactFrontendUrl + getString(ConfigKeys.helpAndContactHelpUrl)
 
-  override val btaPartialUrl: String = getString(ConfigKeys.businessTaxAccountPartialUrl)
+  private lazy val btaMicroserviceUrl: String = baseUrl(ConfigKeys.businessTaxAccount)
+  override lazy val btaPartialUrl: String = btaMicroserviceUrl + getString(ConfigKeys.businessTaxAccountPartialUrl)
+
 }

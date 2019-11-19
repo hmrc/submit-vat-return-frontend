@@ -68,6 +68,7 @@ object ConfigKeys {
   val viewVatReturnEnabled: String = "features.viewVatReturn.enabled"
   val staticDateValue: String = "date-service.staticDate.value"
 
+  val businessTaxAccount: String = "business-tax-account"
   val businessTaxAccountHost: String = "business-tax-account.host"
   val businessTaxAccountUrl: String = "business-tax-account.homeUrl"
   val businessTaxAccountMessagesUrl: String = "business-tax-account.messagesUrl"
