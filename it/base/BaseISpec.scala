@@ -49,7 +49,8 @@ trait BaseISpec extends WordSpec with WireMockHelper with Matchers with
     "microservice.services.vat-returns.port" -> WireMockHelper.wireMockPort.toString,
     "microservice.services.auth.host" -> WireMockHelper.wireMockHost,
     "microservice.services.auth.port" -> WireMockHelper.wireMockPort.toString,
-    "features.staticDate.enabled" -> "false"
+    "features.staticDate.enabled" -> "false",
+    "business-tax-account.host" -> s"http://${WireMockHelper.wireMockHost}:${WireMockHelper.wireMockPort.toString}"
   )
 
   override implicit lazy val app: Application = new GuiceApplicationBuilder()

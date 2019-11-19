@@ -44,7 +44,7 @@ class BtaLinksPartialConnector @Inject()(val http: HttpClient,
         p.successfulContentOrElse(views.html.templates.btaNavigationLinks())
     } recover {
       case _ =>
-        Logger.warn(s"[ServiceInfoPartialConnector][getServiceInfoPartial] - Unexpected error retrieving BTA partial")
+        Logger.warn(s"[BtaLinksPartialConnector][getBtaLinksPartial] - Unexpected error retrieving BTA partial")
         views.html.templates.btaNavigationLinks()
     }
 }
