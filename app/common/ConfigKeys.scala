@@ -67,4 +67,15 @@ object ConfigKeys {
   val staticDateEnabledFeature: String = "features.staticDate.enabled"
   val viewVatReturnEnabled: String = "features.viewVatReturn.enabled"
   val staticDateValue: String = "date-service.staticDate.value"
+
+  val businessTaxAccount: String = "business-tax-account"
+  val businessTaxAccountHost: String = "business-tax-account.host"
+  val businessTaxAccountUrl: String = "business-tax-account.homeUrl"
+  val businessTaxAccountMessagesUrl: String = "business-tax-account.messagesUrl"
+  val businessTaxAccountManageAccountUrl: String = "business-tax-account.manageAccountUrl"
+
+  val businessTaxAccountPartialUrl: String = "business-tax-account.partialUrl"
+
+  val helpAndContactFrontendBase: String = "help-and-contact-frontend.host"
+  val helpAndContactHelpUrl: String = "help-and-contact-frontend.helpUrl"
 }

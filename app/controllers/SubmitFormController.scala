@@ -31,7 +31,7 @@ import play.api.Logger
 import play.api.data.Form
 import play.api.libs.json.Json
 import play.api.mvc.{Action, AnyContent}
-import services.{DateService, VatObligationsService, VatSubscriptionService}
+import services.{DateService, BtaLinkService, VatObligationsService, VatSubscriptionService}
 import uk.gov.hmrc.http.HeaderCarrier
 import uk.gov.hmrc.play.bootstrap.controller.FrontendController
 import forms.SubmitVatReturnForm._
@@ -45,6 +45,7 @@ class SubmitFormController @Inject()(val messagesApi: MessagesApi,
                                      val vatSubscriptionService: VatSubscriptionService,
                                      val vatObligationsService: VatObligationsService,
                                      val mandationStatusCheck: MandationStatusPredicate,
+                                     btaLinkService: BtaLinkService,
                                      val errorHandler: ErrorHandler,
                                      val auditService: AuditService,
                                      authPredicate: AuthPredicate,
@@ -64,7 +65,8 @@ class SubmitFormController @Inject()(val messagesApi: MessagesApi,
     }
   }
 
-  private def renderViewWithSessionData(periodKey: String, model: String)(implicit request: Request[_], user: User[_], hc: HeaderCarrier) = {
+  private def renderViewWithSessionData(periodKey: String, model: String)
+                                       (implicit request: Request[_], user: User[_], hc: HeaderCarrier, appConfig: AppConfig) = {
 
     val sessionData = Json.parse(model).as[SubmitVatReturnModel]
 
@@ -80,25 +82,31 @@ class SubmitFormController @Inject()(val messagesApi: MessagesApi,
       sessionData.box9
     )
 
-    vatSubscriptionService.getCustomerDetails(user.vrn) map {
+    vatSubscriptionService.getCustomerDetails(user.vrn).flatMap {
       case Right(customerDetails) =>
-        Ok(views.html.submit_form(
-          periodKey,
-          customerDetails.clientName,
-          sessionData.flatRateScheme,
-          VatObligation(sessionData.start, sessionData.end, sessionData.due, periodKey),
-          SubmitVatReturnForm().nineBoxForm.fill(nineBoxModel),
-          isAgent = user.isAgent)
-        )
+        btaLinkService.getPartial.map { partial =>
+          Ok(views.html.submit_form(
+            periodKey,
+            customerDetails.clientName,
+            sessionData.flatRateScheme,
+            VatObligation(sessionData.start, sessionData.end, sessionData.due, periodKey),
+            SubmitVatReturnForm().nineBoxForm.fill(nineBoxModel),
+            isAgent = user.isAgent,
+            partial)
+          )
+        }
       case _ =>
-        Ok(views.html.submit_form(
-          periodKey,
-          None,
-          sessionData.flatRateScheme,
-          VatObligation(sessionData.start, sessionData.end, sessionData.due, periodKey),
-          SubmitVatReturnForm().nineBoxForm.fill(nineBoxModel),
-          isAgent = user.isAgent)
-        )
+        btaLinkService.getPartial.map { partial =>
+          Ok(views.html.submit_form(
+            periodKey,
+            None,
+            sessionData.flatRateScheme,
+            VatObligation(sessionData.start, sessionData.end, sessionData.due, periodKey),
+            SubmitVatReturnForm().nineBoxForm.fill(nineBoxModel),
+            isAgent = user.isAgent,
+            partial)
+          )
+        }
     }
   }
 
@@ -107,6 +115,7 @@ class SubmitFormController @Inject()(val messagesApi: MessagesApi,
     for {
       customerInformation <- vatSubscriptionService.getCustomerDetails(user.vrn)
       obligations <- vatObligationsService.getObligations(user.vrn)
+      partial <- btaLinkService.getPartial
     } yield {
       (customerInformation, obligations) match {
         case (Right(customerDetails), Right(obs)) =>
@@ -129,7 +138,8 @@ class SubmitFormController @Inject()(val messagesApi: MessagesApi,
                   customerDetails.hasFlatRateScheme,
                   obligation,
                   form,
-                  user.isAgent
+                  user.isAgent,
+                  partial
                 )).addingToSession(SessionKeys.viewModel -> Json.toJson(viewModel).toString())
 
               } else {

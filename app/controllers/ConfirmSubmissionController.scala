@@ -37,7 +37,7 @@ import play.api.i18n.{I18nSupport, MessagesApi}
 import play.api.libs.json.Json
 import play.api.mvc.{Result, _}
 import play.twirl.api.Html
-import services.{DateService, EnrolmentsAuthService, VatReturnsService, VatSubscriptionService}
+import services.{DateService, EnrolmentsAuthService, BtaLinkService, VatReturnsService, VatSubscriptionService}
 import uk.gov.hmrc.auth.core.AffinityGroup._
 import uk.gov.hmrc.auth.core.AuthorisationException
 import uk.gov.hmrc.auth.core.retrieve.v2.Retrievals
@@ -59,42 +59,47 @@ class ConfirmSubmissionController @Inject()(val messagesApi: MessagesApi,
                                             implicit val executionContext: ExecutionContext,
                                             implicit val appConfig: AppConfig,
                                             val dateService: DateService,
+                                            btaLinkService: BtaLinkService,
                                             authService: EnrolmentsAuthService,
                                             receiptDataHelper: ReceiptDataHelper
                                            ) extends FrontendController with I18nSupport {
 
   val dateTimeFormatter = DateTimeFormatter.ofPattern("YYYY")
+
   def show(periodKey: String): Action[AnyContent] = (authPredicate andThen mandationStatusCheck).async { implicit user =>
 
     user.session.get(SessionKeys.returnData) match {
       case Some(model) =>
         val sessionData = Json.parse(model).as[SubmitVatReturnModel]
-        vatSubscriptionService.getCustomerDetails(user.vrn) map { model =>
 
-          if(appConfig.features.viewVatReturnEnabled.apply()){
-          Ok(renderConfirmSubmissionView(periodKey, sessionData, model))
-            .addingToSession(SessionKeys.submissionYear -> sessionData.end.format(dateTimeFormatter))
-            .addingToSession(SessionKeys.inSessionPeriodKey -> periodKey)
-          }
-          else {
-            Ok(renderConfirmSubmissionView(periodKey, sessionData, model))
+        vatSubscriptionService.getCustomerDetails(user.vrn) flatMap { model =>
+          renderConfirmSubmissionView(periodKey, sessionData, model) map { view =>
+            if (appConfig.features.viewVatReturnEnabled.apply()) {
+              Ok(view)
+                .addingToSession(SessionKeys.submissionYear -> sessionData.end.format(dateTimeFormatter))
+                .addingToSession(SessionKeys.inSessionPeriodKey -> periodKey)
+            } else {
+              Ok(view)
+            }
           }
         }
       case _ => Future.successful(Redirect(controllers.routes.SubmitFormController.show(periodKey)))
     }
   }
 
-  private def renderConfirmSubmissionView[A](periodKey: String,
+  private[controllers] def renderConfirmSubmissionView[A](periodKey: String,
                                              sessionData: SubmitVatReturnModel,
-                                             customerDetails: Either[HttpError, CustomerDetails])(implicit user: User[A]): Html = {
+                                             customerDetails: Either[HttpError, CustomerDetails])(implicit user: User[A]): Future[Html] = {
 
     val clientName = customerDetails match {
       case (Right(model)) => model.clientName
       case _ => None
     }
-
     val viewModel = ConfirmSubmissionViewModel(sessionData, periodKey, clientName)
-    views.html.confirm_submission(viewModel, user.isAgent)
+
+    btaLinkService.getPartial map { partial =>
+      views.html.confirm_submission(viewModel, user.isAgent, partial)
+    }
   }
 
   def submit(periodKey: String): Action[AnyContent] = (authPredicate andThen mandationStatusCheck) async {
@@ -162,7 +167,7 @@ class ConfirmSubmissionController @Inject()(val messagesApi: MessagesApi,
                                           sessionData: SubmitVatReturnModel)(implicit user: User[A]): Future[Result] = {
     for {
       customerDetails <- vatSubscriptionService.getCustomerDetails(user.vrn)
-      html = renderConfirmSubmissionView(periodKey, sessionData, customerDetails)
+      html <- renderConfirmSubmissionView(periodKey, sessionData, customerDetails)
       receiptData = receiptDataHelper.extractReceiptData(sessionData, customerDetails)
       htmlPayload = HashUtil.encode(html.body)
       sha256Checksum = HashUtil.getHash(html.body)

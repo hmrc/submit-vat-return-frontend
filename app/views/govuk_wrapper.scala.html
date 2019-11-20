@@ -34,7 +34,7 @@
   scriptElem: Option[Html] = None, user: Option[User[_]] = None)(implicit request: Request[_], messages: Messages)
 
 @linkElement = {
-    <link rel="stylesheet" type="text/css" href='@routes.Assets.at("css/submitVat-v2.css")'>
+    <link rel="stylesheet" type="text/css" href='@routes.Assets.at("css/submitVat-v3.css")'>
     <link rel="stylesheet" type="text/css" href='@routes.Assets.at("css/palette.css")'>
     <link rel="stylesheet" type="text/css" href='@routes.Assets.at("css/focus.css")'>
 }
@@ -118,6 +118,7 @@
     @uiLayouts.serviceInfo(
       betaBanner = phaseBanner,
       includeGridWrapper = false,
+      includeHMRCBranding = false,
       serviceInfoContent = Some(serviceInfoContent))
 }
 

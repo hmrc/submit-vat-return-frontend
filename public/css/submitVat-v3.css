@@ -1,0 +1,55 @@
+.input-icon {
+    position: relative;
+}
+
+.input-icon > span {
+    position: absolute;
+    transform: translate(0, -50%);
+    top: 51%;
+    width: 25px;
+    text-align: center;
+}
+
+.input-icon > input {
+    padding-left: 20px;
+    width: 100%;
+}
+
+#displayFlex {
+display: Flex
+}
+
+.bta-navigation ul{
+    margin-top: 0;
+    margin-block-start: 0px
+}
+
+.bta-navigation li{
+    display: inline-block;
+    margin: 0 0.5em;
+}
+
+.bta-navigation li:first-child {
+      margin: 0 0;
+  }
+
+.bta-navigation a{
+    font-size: 16px;
+}
+
+@media(max-width: 768px) {
+    .bta-navigation li{
+        display: block;
+        margin: 0.5em 0 0.5em 0.0em;
+    }
+}
+
+.bta-navigation {
+    padding: 10px 0 8px 0;
+    margin-block-start: 0px
+}
+
+.text--right {
+    margin-bottom:0em !important
+
+}

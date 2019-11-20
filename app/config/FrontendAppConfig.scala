@@ -61,6 +61,12 @@ trait AppConfig extends ServicesConfig {
   def feedbackUrl(redirectUrl: String): String
   def routeToSwitchLanguage: String => Call
   def languageMap: Map[String, Lang]
+  val btaBaseUrl: String
+  val btaHomeUrl: String
+  val btaMessagesUrl: String
+  val btaManageAccountUrl: String
+  val btaHelpAndContactUrl: String
+  val btaPartialUrl: String
 }
 
 @Singleton
@@ -155,5 +161,17 @@ class FrontendAppConfig @Inject()(val runModeConfiguration: Configuration, envir
     s"&backUrl=${ContinueUrl(platformHost + redirectUrl).encodedUrl}"}
 
   override val accessibilityLinkUrl: String = getString(ConfigKeys.vatSummaryHost) + getString(ConfigKeys.vatSummaryAccessibilityUrl)
+
+
+  private lazy val helpAndContactFrontendUrl: String = getString(ConfigKeys.helpAndContactFrontendBase)
+
+  override lazy val btaBaseUrl: String = getString(ConfigKeys.businessTaxAccountHost)
+  override lazy val btaHomeUrl: String = btaBaseUrl + getString(ConfigKeys.businessTaxAccountUrl)
+  override lazy val btaMessagesUrl: String = btaHomeUrl + getString(ConfigKeys.businessTaxAccountMessagesUrl)
+  override lazy val btaManageAccountUrl: String = btaHomeUrl + getString(ConfigKeys.businessTaxAccountManageAccountUrl)
+  override lazy val btaHelpAndContactUrl: String = helpAndContactFrontendUrl + getString(ConfigKeys.helpAndContactHelpUrl)
+
+  private lazy val btaMicroserviceUrl: String = baseUrl(ConfigKeys.businessTaxAccount)
+  override lazy val btaPartialUrl: String = btaMicroserviceUrl + getString(ConfigKeys.businessTaxAccountPartialUrl)
 
 }

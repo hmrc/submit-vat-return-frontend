@@ -23,6 +23,13 @@ banner.feedback = feedback
 banner.feedbackImprove = will help us to improve it.
 banner.phaseName = BETA
 
+breadcrumbs.bta = Business tax account
+
+btaNavLinks.home = Home
+btaNavLinks.manageAccount = Manage account
+btaNavLinks.messages = Messages
+btaNavLinks.helpAndContact = Help and contact
+
 session_expired.title = Your session has timed out
 session_expired.heading = Your session has timed out
 session_expired.helpOne = You''ll have to

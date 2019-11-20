@@ -21,7 +21,9 @@
 @import uk.gov.hmrc.play.views.html.helpers
 @import templates.formatters.navigationBreadcrumb
 
-@(viewModel: ConfirmSubmissionViewModel, isAgent: Boolean)(implicit request: Request[_], messages: Messages, appConfig: AppConfig, user: User[_], lang: Lang)
+@(viewModel: ConfirmSubmissionViewModel,
+        isAgent: Boolean ,
+        btaLinkContent: Html = HtmlFormat.empty)(implicit request: Request[_], messages: Messages, appConfig: AppConfig, user: User[_], lang: Lang)
 
 @boxRow(divID: String, formID: String, boxTitle: String, boxDescription: String, boxAmount: BigDecimal) = {
   <div class="grid-row" id=@divID>
@@ -52,6 +54,8 @@
 }
 
 @main_template(messages("confirm_submission.title"), appConfig = appConfig, bodyClasses = None, user = Some(user)) {
+
+  @btaLinkContent
 
   @if(!isAgent) {
     @navigationBreadcrumb(

@@ -18,6 +18,7 @@ package views
 
 import java.time.LocalDate
 
+import assets.messages.BtaLinkMessages
 import assets.messages.SubmitFormPageMessages._
 import forms.SubmitVatReturnForm
 import models.VatObligation
@@ -25,6 +26,7 @@ import models.nrs.CY
 import org.jsoup.Jsoup
 import org.jsoup.nodes.Document
 import play.api.i18n.Lang
+import play.twirl.api.Html
 
 class SubmitFormViewSpec extends ViewBaseSpec {
 
@@ -186,6 +188,24 @@ class SubmitFormViewSpec extends ViewBaseSpec {
 
       "have the correct hidden label for box 1" in {
         elementText("label[for=box1]") shouldBe "Swm Blwch 1 TAW a godwyd gennych ar werthiannau a chyflenwadau eraill"
+      }
+    }
+
+    "the btaLinkContent parameter is provided with html" should {
+
+      lazy val view = views.html.submit_form(
+        "18AA",
+        Some("ABC Studios"),
+        flatRateScheme = true,
+        obligation,
+        SubmitVatReturnForm().nineBoxForm,
+        isAgent = false,
+        Html("""<p id=example> Example Html""")
+      )(fakeRequest, messages, mockAppConfig, user, Lang.apply("en"))
+      lazy implicit val document: Document = Jsoup.parse(view.body)
+
+      "should have the text home" in {
+        document.getElementById("example").text() shouldBe "Example Html"
       }
     }
   }
