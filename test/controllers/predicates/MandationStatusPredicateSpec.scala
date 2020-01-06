@@ -1,5 +1,5 @@
 /*
- * Copyright 2019 HM Revenue & Customs
+ * Copyright 2020 HM Revenue & Customs
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -40,6 +40,20 @@ class MandationStatusPredicateSpec extends BaseSpec with MockMandationPredicate 
 
         lazy val userWithSession: User[AnyContentAsEmpty.type] =
           User[AnyContentAsEmpty.type]("123456789")(fakeRequest.withSession(SessionKeys.mandationStatus -> MandationStatuses.nonMTDfB))
+
+        lazy val result = {
+          await(mockMandationStatusPredicate.refine(userWithSession))
+        }
+
+        "allow the request to pass through the predicate" in {
+          result shouldBe Right(userWithSession)
+        }
+      }
+
+      "a non-Digital mandation status is retrieved" should {
+
+        lazy val userWithSession: User[AnyContentAsEmpty.type] =
+          User[AnyContentAsEmpty.type]("123456789")(fakeRequest.withSession(SessionKeys.mandationStatus -> MandationStatuses.nonDigital))
 
         lazy val result = {
           await(mockMandationStatusPredicate.refine(userWithSession))

@@ -1,5 +1,5 @@
 /*
- * Copyright 2019 HM Revenue & Customs
+ * Copyright 2020 HM Revenue & Customs
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -41,9 +41,10 @@ class MandationStatusPredicate @Inject()(mandationStatusService: MandationStatus
 
     implicit val hc: HeaderCarrier = HeaderCarrierConverter.fromHeadersAndSession(request.headers, Some(request.session))
     implicit val req: User[A] = request
+    val supportedMandationStatuses = List(MandationStatuses.nonMTDfB, MandationStatuses.nonDigital)
 
     req.session.get(SessionKeys.mandationStatus) match {
-      case Some(MandationStatuses.nonMTDfB) => Future.successful(Right(request))
+      case Some(status) if supportedMandationStatuses.contains(status) => Future.successful(Right(request))
       case Some(unsupportedMandationStatus) =>
           Logger.debug(s"[MandationStatusPredicate][refine] - User has a non 'non MTDfB' status received. Status returned was: $unsupportedMandationStatus")
           Future.successful(Left(Forbidden(views.html.errors.mtd_mandated_user())))

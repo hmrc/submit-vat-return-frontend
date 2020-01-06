@@ -1,5 +1,5 @@
 /*
- * Copyright 2019 HM Revenue & Customs
+ * Copyright 2020 HM Revenue & Customs
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -126,7 +126,7 @@ class ConfirmSubmissionControllerSpec extends BaseSpec
           }
 
           "add obligation data to session" in {
-            await(result).header.headers("Set-Cookie") should include("submissionYear=2019&inSessionPeriodKey=18AA")
+            await(result).header.headers("Set-Cookie") should include("submissionYear=" + LocalDate.now().getYear + "&inSessionPeriodKey=18AA")
           }
         }
 
