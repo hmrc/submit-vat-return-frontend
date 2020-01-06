@@ -13,6 +13,18 @@ common.errorSummary.heading = Mae gennych un neu fwy o wallau
 common.warning = Rhybudd
 common.error.titlePrefix = Gwall:
 
+global.error.InternalServerError500.title = Mae problem gyda’r gwasanaeth – TAW – GOV.UK
+global.error.InternalServerError500.heading = Mae’n ddrwg gennym – mae problem gyda’r gwasanaeth
+global.error.InternalServerError500.message = Rhowch gynnig arall arni yn nes ymlaen.
+
+global.error.badRequest400.title = Cais drwg – 400
+global.error.badRequest400.heading = Cais drwg
+global.error.badRequest400.message = Gwiriwch eich bod wedi nodi’r cyfeiriad gwe cywir.
+
+global.error.pageNotFound404.title = Heb ddod o hyd i’r dudalen – 404
+global.error.pageNotFound404.heading = Ni ellir dod o hyd i’r dudalen hon
+global.error.pageNotFound404.message = Gwiriwch eich bod wedi nodi’r cyfeiriad gwe cywir.
+
 error.required = Nodwch werth
 error.summary.title = Mae problem wedi codi
 

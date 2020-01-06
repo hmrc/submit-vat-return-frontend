@@ -15,6 +15,10 @@ common.warning = Warning
 common.pageTitle = {0} - {1} - GOV.UK
 common.error.titlePrefix = Error:
 
+global.error.InternalServerError500.title = There is a problem with the service - VAT - GOV.UK
+global.error.InternalServerError500.heading = Sorry, there is a problem with the service
+global.error.InternalServerError500.message = Try again later.
+
 error.required = Please enter a value
 error.summary.title = There is a problem
 
