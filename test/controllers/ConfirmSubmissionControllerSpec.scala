@@ -126,7 +126,7 @@ class ConfirmSubmissionControllerSpec extends BaseSpec
           }
 
           "add obligation data to session" in {
-            await(result).header.headers("Set-Cookie") should include("submissionYear=" + LocalDate.now().getYear + "&inSessionPeriodKey=18AA")
+            await(result).header.headers("Set-Cookie") should include(s"submissionYear=${LocalDate.now().getYear}&inSessionPeriodKey=18AA")
           }
         }
 

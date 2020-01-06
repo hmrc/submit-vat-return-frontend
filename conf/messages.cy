@@ -24,7 +24,7 @@ banner.phaseName = BETA
 breadcrumbs.bta = Cyfrif Treth Busnes
 
 btaNavLinks.home = Hafan
-btaNavLinks.manageAccount = Rheoli''r cyfrif
+btaNavLinks.manageAccount = Rheoli’r cyfrif
 btaNavLinks.messages = Negeseuon
 btaNavLinks.helpAndContact = Cymorth a chysylltu
 

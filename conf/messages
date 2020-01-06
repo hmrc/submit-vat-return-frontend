@@ -32,7 +32,7 @@ btaNavLinks.helpAndContact = Help and contact
 
 session_expired.title = Your session has timed out
 session_expired.heading = Your session has timed out
-session_expired.helpOne = You''ll have to
+session_expired.helpOne = You’ll have to
 session_expired.helpTwo = sign in
 session_expired.helpThree = using your Government Gateway ID.
 
@@ -108,7 +108,7 @@ confirmation_view.paragraph = We have received your VAT Return.
 confirmation_view.changeClient = Change client
 confirmation_view.viewAccount = View your VAT account
 confirmation_view.viewVATReturn = View VAT Return
-confirmation_view.viewClientAccount = View client's VAT account
+confirmation_view.viewClientAccount = View client’s VAT account
 
 breadcrumbs.yourVatDetails = Your VAT details
 breadcrumbs.submitVatReturn = Submit VAT Return
