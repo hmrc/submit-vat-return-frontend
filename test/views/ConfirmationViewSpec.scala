@@ -100,19 +100,28 @@ class ConfirmationViewSpec extends ViewBaseSpec {
   }
 
   "display the change client link" when {
+
     lazy val agent: User[AnyContentAsEmpty.type] = User[AnyContentAsEmpty.type]("999999999", Some("123456789"))
     lazy val feature_view = {
+      mockAppConfig.features.viewVatReturnEnabled(true)
       views.html.confirmation_view()(fakeRequest, messages, mockAppConfig, agent)
     }
     lazy implicit val feature_document: Document = Jsoup.parse(feature_view.body)
 
-    val changeClientLink = "#content > article > p:nth-child(4) > a"
+    "the user is an agent" should {
 
-    "the user is an agent" in {
-      val changeClientLinkElem = element(changeClientLink)(feature_document)
+      "have a link to change client" in {
+        val changeClientLink = "#content > article > p:nth-child(4) > a"
+        val changeClientLinkElem = element(changeClientLink)(feature_document)
 
-      changeClientLinkElem.text() shouldBe "Change client"
-      changeClientLinkElem.attributes().get("href") shouldBe "/change-client?redirectUrl=/agent-action"
+        changeClientLinkElem.text() shouldBe "Change client"
+        changeClientLinkElem.attributes().get("href") shouldBe "/change-client?redirectUrl=/agent-action"
+      }
+
+      "have an action to View client's VAT account" in {
+        elementText("#finish-button2") shouldBe "View client’s VAT account"
+        element("#finish-button2").attr("type") shouldBe "submit"
+      }
     }
   }
 
