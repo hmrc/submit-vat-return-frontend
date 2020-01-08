@@ -15,9 +15,17 @@ common.warning = Warning
 common.pageTitle = {0} - {1} - GOV.UK
 common.error.titlePrefix = Error:
 
-global.error.InternalServerError500.title = There is a problem with the service - VAT - GOV.UK
-global.error.InternalServerError500.heading = Sorry, there is a problem with the service
-global.error.InternalServerError500.message = Try again later.
+standardError.title = There is a problem with the service - VAT - GOV.UK
+standardError.heading = Sorry, there is a problem with the service
+standardError.message = Try again later.
+
+notFound.title = Page not found - VAT - GOV.UK
+notFound.heading = This page cannot be found
+notFound.message = Please check that you have entered the correct web address.
+
+badRequest.title = Bad request - VAT - GOV.UK
+badRequest.heading = Bad request
+badRequest.message = Please check that you have entered the correct web address.
 
 error.required = Please enter a value
 error.summary.title = There is a problem

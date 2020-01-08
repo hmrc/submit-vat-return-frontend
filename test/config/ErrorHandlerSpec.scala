@@ -19,9 +19,11 @@ package config
 import base.BaseSpec
 import org.jsoup.Jsoup
 import org.jsoup.nodes.Document
+import play.api.http.Status
 import play.api.http.Status._
 import play.api.mvc.Cookie
 import play.api.test.FakeRequest
+import play.twirl.api.Html
 import views.ViewBaseSpec
 
 class ErrorHandlerSpec extends ViewBaseSpec {
@@ -58,7 +60,7 @@ class ErrorHandlerSpec extends ViewBaseSpec {
         }
 
         "render page in Welsh" in {
-          document.title shouldBe "Mae problem gyda’r gwasanaeth – TAW – GOV.UK"
+          document.title shouldBe "Mae problem gyda’r gwasanaeth - TAW - GOV.UK"
         }
       }
     }
@@ -76,7 +78,7 @@ class ErrorHandlerSpec extends ViewBaseSpec {
         }
 
         "render page in English" in {
-          document.title shouldBe "Bad request - 400"
+          document.title shouldBe "Bad request - VAT - GOV.UK"
         }
       }
 
@@ -91,7 +93,40 @@ class ErrorHandlerSpec extends ViewBaseSpec {
         }
 
         "render page in Welsh" in {
-          document.title shouldBe "Cais drwg – 400"
+          document.title shouldBe "Cais drwg - TAW - GOV.UK"
+        }
+      }
+    }
+
+    "calling onClientError for a page not found" when {
+
+      "language is set to English" should {
+
+        lazy val fakeRequest = FakeRequest().withCookies(Cookie("PLAY_LANG", "en"))
+        lazy val result = service.onClientError(fakeRequest, NOT_FOUND)
+        implicit lazy val document: Document = Jsoup.parse(bodyOf(result))
+
+        "return 400" in {
+          status(result) shouldBe NOT_FOUND
+        }
+
+        "render page in English" in {
+          document.title shouldBe "Page not found - VAT - GOV.UK"
+        }
+      }
+
+      "language is set to Welsh" should {
+
+        lazy val fakeRequest = FakeRequest().withCookies(Cookie("PLAY_LANG", "cy"))
+        lazy val result = service.onClientError(fakeRequest, NOT_FOUND)
+        implicit lazy val document: Document = Jsoup.parse(bodyOf(result))
+
+        "return 400" in {
+          status(result) shouldBe NOT_FOUND
+        }
+
+        "render page in Welsh" in {
+          document.title shouldBe "Heb ddod o hyd i’r dudalen - TAW - GOV.UK"
         }
       }
     }
