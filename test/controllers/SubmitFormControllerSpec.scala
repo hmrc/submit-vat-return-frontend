@@ -222,7 +222,7 @@ class SubmitFormControllerSpec extends BaseSpec
             }
 
             "render generic Bad Request page" in {
-              Jsoup.parse(bodyOf(result)).title() shouldBe "Bad request - 400"
+              Jsoup.parse(bodyOf(result)).title() shouldBe "Bad request - VAT - GOV.UK"
             }
           }
         }
@@ -456,7 +456,7 @@ class SubmitFormControllerSpec extends BaseSpec
       }
 
       "render generic Bad Request page" in {
-        Jsoup.parse(bodyOf(result)).title() shouldBe "Bad request - 400"
+        Jsoup.parse(bodyOf(result)).title() shouldBe "Bad request - VAT - GOV.UK"
       }
     }
 

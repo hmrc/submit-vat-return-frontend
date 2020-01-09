@@ -42,7 +42,7 @@ class SessionExpiredViewSpec extends ViewBaseSpec {
     }
 
     "have the correct instructions on the page" in {
-      elementText(Selectors.instructions) shouldBe SessionExpiredMessages.signin
+      elementText(Selectors.instructions) shouldBe SessionExpiredMessages.signIn
     }
 
   }

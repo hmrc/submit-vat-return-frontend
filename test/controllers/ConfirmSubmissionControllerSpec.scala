@@ -126,7 +126,7 @@ class ConfirmSubmissionControllerSpec extends BaseSpec
           }
 
           "add obligation data to session" in {
-            await(result).header.headers("Set-Cookie") should include("submissionYear=" + LocalDate.now().getYear + "&inSessionPeriodKey=18AA")
+            await(result).header.headers("Set-Cookie") should include(s"submissionYear=${LocalDate.now().getYear}&inSessionPeriodKey=18AA")
           }
         }
 
@@ -284,7 +284,7 @@ class ConfirmSubmissionControllerSpec extends BaseSpec
           }
 
           "render generic Bad Request page" in {
-            Jsoup.parse(bodyOf(result)).title() shouldBe "Bad request - 400"
+            Jsoup.parse(bodyOf(result)).title() shouldBe "Bad request - VAT - GOV.UK"
           }
         }
       }

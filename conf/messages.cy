@@ -13,6 +13,18 @@ common.errorSummary.heading = Mae gennych un neu fwy o wallau
 common.warning = Rhybudd
 common.error.titlePrefix = Gwall:
 
+standardError.title = Mae problem gyda’r gwasanaeth - TAW - GOV.UK
+standardError.heading = Mae’n ddrwg gennym – mae problem gyda’r gwasanaeth
+standardError.message = Rhowch gynnig arall arni yn nes ymlaen.
+
+badRequest.title = Cais drwg - TAW - GOV.UK
+badRequest.heading = Cais drwg
+badRequest.message = Gwiriwch eich bod wedi nodi’r cyfeiriad gwe cywir.
+
+notFound.title = Heb ddod o hyd i’r dudalen - TAW - GOV.UK
+notFound.heading = Ni ellir dod o hyd i’r dudalen hon
+notFound.message = Gwiriwch eich bod wedi nodi’r cyfeiriad gwe cywir.
+
 error.required = Nodwch werth
 error.summary.title = Mae problem wedi codi
 
@@ -24,7 +36,7 @@ banner.phaseName = BETA
 breadcrumbs.bta = Cyfrif Treth Busnes
 
 btaNavLinks.home = Hafan
-btaNavLinks.manageAccount = Rheoli''r cyfrif
+btaNavLinks.manageAccount = Rheoli’r cyfrif
 btaNavLinks.messages = Negeseuon
 btaNavLinks.helpAndContact = Cymorth a chysylltu
 

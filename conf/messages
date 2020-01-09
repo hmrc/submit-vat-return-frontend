@@ -15,6 +15,18 @@ common.warning = Warning
 common.pageTitle = {0} - {1} - GOV.UK
 common.error.titlePrefix = Error:
 
+standardError.title = There is a problem with the service - VAT - GOV.UK
+standardError.heading = Sorry, there is a problem with the service
+standardError.message = Try again later.
+
+notFound.title = Page not found - VAT - GOV.UK
+notFound.heading = This page cannot be found
+notFound.message = Please check that you have entered the correct web address.
+
+badRequest.title = Bad request - VAT - GOV.UK
+badRequest.heading = Bad request
+badRequest.message = Please check that you have entered the correct web address.
+
 error.required = Please enter a value
 error.summary.title = There is a problem
 
@@ -32,7 +44,7 @@ btaNavLinks.helpAndContact = Help and contact
 
 session_expired.title = Your session has timed out
 session_expired.heading = Your session has timed out
-session_expired.helpOne = You''ll have to
+session_expired.helpOne = You’ll have to
 session_expired.helpTwo = sign in
 session_expired.helpThree = using your Government Gateway ID.
 
@@ -108,7 +120,7 @@ confirmation_view.paragraph = We have received your VAT Return.
 confirmation_view.changeClient = Change client
 confirmation_view.viewAccount = View your VAT account
 confirmation_view.viewVATReturn = View VAT Return
-confirmation_view.viewClientAccount = View client's VAT account
+confirmation_view.viewClientAccount = View client’s VAT account
 
 breadcrumbs.yourVatDetails = Your VAT details
 breadcrumbs.submitVatReturn = Submit VAT Return

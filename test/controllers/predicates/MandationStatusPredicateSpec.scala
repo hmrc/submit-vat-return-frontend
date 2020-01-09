@@ -124,7 +124,7 @@ class MandationStatusPredicateSpec extends BaseSpec with MockMandationPredicate 
         }
 
         "display the internal sever error page" in {
-          Jsoup.parse(bodyOf(result)).title shouldBe "Sorry, we are experiencing technical difficulties - 500"
+          Jsoup.parse(bodyOf(result)).title shouldBe "There is a problem with the service - VAT - GOV.UK"
         }
 
       }
