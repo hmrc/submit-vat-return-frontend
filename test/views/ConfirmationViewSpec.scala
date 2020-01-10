@@ -23,120 +23,111 @@ import org.jsoup.Jsoup
 import org.jsoup.nodes.Document
 import play.api.mvc.AnyContentAsEmpty
 
-
 class ConfirmationViewSpec extends ViewBaseSpec {
 
-  "The confirmation view with information in session and with the feature switch on" should {
+  "Confirmation view" when {
 
-    val submitYear = "2019"
-    val periodKey = "21BB"
+    "viewVatReturnEnabled feature switch is on" when {
 
-    lazy val userWithSession: User[AnyContentAsEmpty.type] = User[AnyContentAsEmpty.type](vrn)(fakeRequest.withSession(
-      SessionKeys.submissionYear -> submitYear,
-      SessionKeys.inSessionPeriodKey -> periodKey)
-    )
+      "year and period key are in session" should {
 
-    lazy val view = {
-      mockAppConfig.features.viewVatReturnEnabled(true)
-      views.html.confirmation_view()(fakeRequest, messages, mockAppConfig, userWithSession)
-    }
-    lazy implicit val document: Document = Jsoup.parse(view.body)
+        val submitYear = "2019"
+        val periodKey = "21BB"
 
-    "display a button" should {
+        lazy val userWithSession: User[AnyContentAsEmpty.type] = User[AnyContentAsEmpty.type](vrn)(fakeRequest.withSession(
+          SessionKeys.submissionYear -> submitYear,
+          SessionKeys.inSessionPeriodKey -> periodKey)
+        )
 
-      s"have the button text as ${viewMessages.button}" in {
-        elementText("#view-vat-return-button") shouldBe viewMessages.button
+        lazy val view = {
+          mockAppConfig.features.viewVatReturnEnabled(true)
+          views.html.confirmation_view()(fakeRequest, messages, mockAppConfig, userWithSession)
+        }
+
+        lazy implicit val document: Document = Jsoup.parse(view.body)
+
+        s"display the title as ${viewMessages.title}" in {
+          elementText("title") shouldBe viewMessages.title
+        }
+
+        s"display the h1 as ${viewMessages.heading}" in {
+          elementText("h1") shouldBe viewMessages.heading
+        }
+
+        s"display the h2 as ${viewMessages.subHeading}" in {
+          elementText("h2") shouldBe viewMessages.subHeading
+        }
+
+        s"display the paragraph text as ${viewMessages.paragraph}" in {
+          elementText("#content article p") shouldBe viewMessages.paragraph
+        }
+
+        "display a View Return button" should {
+
+          s"have the button text as ${viewMessages.button}" in {
+            elementText("#view-vat-return-button") shouldBe viewMessages.button
+          }
+
+          "have the correct redirect link" in {
+            element("#view-vat-return-button").attr("href") shouldBe mockAppConfig.viewSubmittedReturnUrl + s"/$submitYear/$periodKey"
+          }
+        }
+
+        "display a Finish button" should {
+
+          s"have the button text as ${viewMessages.button2}" in {
+            elementText("#finish-button2") shouldBe viewMessages.button2
+          }
+        }
       }
 
-      "have the correct redirect link" in {
-        element("#view-vat-return-button").attr("href") shouldBe mockAppConfig.viewSubmittedReturnUrl + s"/$submitYear/$periodKey"
+      "year and period key are not in session" should {
+
+        lazy val userWithSession: User[AnyContentAsEmpty.type] = User[AnyContentAsEmpty.type](vrn)(fakeRequest)
+
+        lazy val view = {
+          mockAppConfig.features.viewVatReturnEnabled(true)
+          views.html.confirmation_view()(fakeRequest, messages, mockAppConfig, userWithSession)
+        }
+
+        lazy implicit val document: Document = Jsoup.parse(view.body)
+
+        "display a View Return button" should {
+
+          "have the correct redirect link" in {
+            element("#view-vat-return-button").attr("href") shouldBe mockAppConfig.viewSubmittedReturnUrl
+          }
+        }
       }
     }
 
-    "display a 2nd button" should {
+    "viewVatReturnEnabled feature switch is off" when {
 
-      s"have the button text as ${viewMessages.button2}" in {
-        elementText("#finish-button2") shouldBe viewMessages.button2
+      lazy val view = {
+        mockAppConfig.features.viewVatReturnEnabled(false)
+        views.html.confirmation_view()(fakeRequest, messages, mockAppConfig, user)
       }
-    }
-  }
 
-  "The confirmation view without information in session and the feature switch off" should {
+      lazy implicit val document: Document = Jsoup.parse(view.body)
 
-    lazy val view = {
-      mockAppConfig.features.viewVatReturnEnabled(false)
-      views.html.confirmation_view()(fakeRequest, messages, mockAppConfig, user)}
-    lazy implicit val document: Document = Jsoup.parse(view.body)
-
-    s"display the title as ${viewMessages.title}" in {
-      elementText("title") shouldBe viewMessages.title
-    }
-
-    s"display the h1 as ${viewMessages.heading}" in {
-      elementText("h1") shouldBe viewMessages.heading
-    }
-
-    s"display the h2 as ${viewMessages.subHeading}" in {
-      elementText("h2") shouldBe viewMessages.subHeading
-    }
-
-    s"display the paragraph text as ${viewMessages.paragraph}" in {
-      elementText("#content article p") shouldBe viewMessages.paragraph
-    }
-
-    "display a button" should {
-
-      s"have the button text as Finish" in {
-        elementText("#submit-confirmation-finish-button") shouldBe "Finish"
-      }
-    }
-
-    "not display a 2nd button" should {
-
-      s"have the button text as ${viewMessages.button}" in {
+      "not display View return button" in {
         elementExists("#view-vat-return-button") shouldBe false
       }
     }
-  }
 
-  "display the change client link" when {
+    "user is an Agent" should {
 
-    lazy val agent: User[AnyContentAsEmpty.type] = User[AnyContentAsEmpty.type]("999999999", Some("123456789"))
-    lazy val feature_view = {
-      mockAppConfig.features.viewVatReturnEnabled(true)
-      views.html.confirmation_view()(fakeRequest, messages, mockAppConfig, agent)
-    }
-    lazy implicit val feature_document: Document = Jsoup.parse(feature_view.body)
+      lazy val agent: User[AnyContentAsEmpty.type] = User[AnyContentAsEmpty.type]("999999999", Some("123456789"))
+      lazy val feature_view = views.html.confirmation_view()(fakeRequest, messages, mockAppConfig, agent)
 
-    "the user is an agent" should {
+      lazy implicit val document: Document = Jsoup.parse(feature_view.body)
 
-      "have a link to change client" in {
-        val changeClientLink = "#content > article > p:nth-child(4) > a"
-        val changeClientLinkElem = element(changeClientLink)(feature_document)
+      "display a Change Client link" in {
+        val changeClientLinkElem = element("#content > article > p:nth-child(4) > a")(document)
 
         changeClientLinkElem.text() shouldBe "Change client"
         changeClientLinkElem.attributes().get("href") shouldBe "/change-client?redirectUrl=/agent-action"
       }
-
-      "have an action to View client's VAT account" in {
-        elementText("#finish-button2") shouldBe "View client’s VAT account"
-        element("#finish-button2").attr("type") shouldBe "submit"
-      }
-    }
-  }
-
-  "not display the change client link" when {
-    lazy val agent: User[AnyContentAsEmpty.type] = User[AnyContentAsEmpty.type]("999999999", None)
-    lazy val feature_view = {
-      views.html.confirmation_view()(fakeRequest, messages, mockAppConfig, agent)
-    }
-    lazy implicit val feature_document: Document = Jsoup.parse(feature_view.body)
-
-    val changeClientLink = "#content > article > p:nth-child(4) > button"
-
-    "the user is not an agent" in {
-
-      elementExists(changeClientLink) shouldBe false
     }
   }
 }
