@@ -5,6 +5,9 @@ GET         /assets/*file                 controllers.Assets.at(path="/public", 
 
 # Pages
 
+GET        /:periodKey/honesty-declaration      controllers.HonestyDeclarationController.show(periodKey: String)
+POST       /:periodKey/honesty-declaration      controllers.HonestyDeclarationController.submit(periodKey: String)
+
 GET        /:periodKey/submit-form        controllers.SubmitFormController.show(periodKey: String)
 POST       /:periodKey/submit-form        controllers.SubmitFormController.submit(periodKey: String)
 

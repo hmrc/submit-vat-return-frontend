@@ -175,7 +175,7 @@ class SubmitFormController @Inject()(val messagesApi: MessagesApi,
             val sessionData = Json.parse(model).as[SubmitFormViewModel]
 
             vatSubscriptionService.getCustomerDetails(user.vrn) map {
-              case (Right(customerDetails)) =>
+              case Right(customerDetails) =>
                 BadRequest(views.html.submit_form(
                   periodKey,
                   customerDetails.clientName,
@@ -184,7 +184,7 @@ class SubmitFormController @Inject()(val messagesApi: MessagesApi,
                   failure,
                   user.isAgent)
                 )
-              case (_) =>
+              case _ =>
                 BadRequest(views.html.submit_form(
                   periodKey,
                   None,
