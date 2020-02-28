@@ -46,6 +46,11 @@ session_expired.helpOne = Bydd yn rhaid i chi
 session_expired.helpTwo = fewngofnodi
 session_expired.helpThree = gan ddefnyddio’ch Dynodydd Defnyddiwr (ID) ar gyfer Porth y Llywodraeth.
 
+honesty_declaration.title = Datganiad gonestrwydd
+honesty_declaration.statement = Drwy roi tic yn y blwch hwn, rwy’n ymrwymo i ddarparu gwybodaeth onest a chywir.
+honesty_declaration.agentStatement = Drwy roi tic yn y blwch hwn, rwy’n ymrwymo i ddarparu gwybodaeth onest a chywir y mae fy nghleient wedi cadarnhau ei bod yn gywir a chyflawn.
+honesty_declaration.required = Mae’n rhaid i chi dicio’r blwch i fynd yn eich blaen.
+
 submit_form.title = Eich Ffurflen TAW
 submit_form.heading = Cyflwyno Ffurflen TAW
 submit_form.additionalInformation = Gwybodaeth ychwanegol
