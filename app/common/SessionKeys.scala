@@ -23,5 +23,6 @@ object SessionKeys {
   val viewModel = "mtdReturnInformation"
   val submissionYear = "submissionYear"
   val inSessionPeriodKey = "inSessionPeriodKey"
+  val honestyDeclarationPeriodKey = "mtdVatHonestyDeclarationPeriodKey"
 
 }

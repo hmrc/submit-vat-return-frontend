@@ -24,6 +24,7 @@ import assets.CustomerDetailsTestAssets._
 import assets.messages.SubmitFormPageMessages
 import audit.mocks.MockAuditingService
 import connectors.httpParsers.ResponseHttpParsers.HttpGetResult
+import controllers.predicates.HonestyDeclarationAction
 import mocks.MockAuth
 import mocks.service.{MockBtaLinkService, MockDateService, MockVatObligationsService, MockVatSubscriptionService}
 import mocks.MockMandationPredicate
@@ -50,6 +51,7 @@ class SubmitFormControllerSpec extends BaseSpec
   with MockBtaLinkService
 {
 
+  val honestyDeclarationAction: HonestyDeclarationAction = mock[HonestyDeclarationAction]
   val vatSubscriptionResponse: Future[HttpGetResult[CustomerDetails]] = Future.successful(Right(customerDetailsWithFRS))
   val vatSubscriptionFailureResponse: Future[HttpGetResult[CustomerDetails]] = Future.successful(Left(UnexpectedJsonFormat))
 
@@ -77,11 +79,13 @@ class SubmitFormControllerSpec extends BaseSpec
     mockVatObligationsService,
     mockMandationStatusPredicate,
     mockBtaLinkService,
-    errorHandler,
+    mockDateService,
     mockAuditService,
     mockAuthPredicate,
+    honestyDeclarationAction,
+    errorHandler,
     mockAppConfig,
-    mockDateService
+    ec
   )
 
   "SubmitFormController .show" when {

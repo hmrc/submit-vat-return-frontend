@@ -24,6 +24,7 @@ import audit.mocks.MockAuditingService
 import base.BaseSpec
 import common.{MandationStatuses, SessionKeys}
 import connectors.httpParsers.ResponseHttpParsers.HttpGetResult
+import controllers.predicates.HonestyDeclarationAction
 import mocks.service.{MockBtaLinkService, MockDateService, MockVatReturnsService, MockVatSubscriptionService}
 import mocks.{MockAuth, MockMandationPredicate, MockReceiptDataService}
 import models.auth.User
@@ -54,6 +55,8 @@ class ConfirmSubmissionControllerSpec extends BaseSpec
   with MockReceiptDataService
   with MockBtaLinkService {
 
+  val honestyDeclarationAction: HonestyDeclarationAction = mock[HonestyDeclarationAction]
+
   object TestConfirmSubmissionController extends ConfirmSubmissionController(
     messagesApi,
     mockMandationStatusPredicate,
@@ -62,12 +65,13 @@ class ConfirmSubmissionControllerSpec extends BaseSpec
     mockAuthPredicate,
     mockVatReturnsService,
     mockAuditService,
-    ec,
-    mockAppConfig,
+    honestyDeclarationAction,
     mockDateService,
     mockBtaLinkService,
     mockEnrolmentsAuthService,
-    mockReceiptDataService
+    mockReceiptDataService,
+    mockAppConfig,
+    ec
   )
 
   val submitVatReturnModel = SubmitVatReturnModel(

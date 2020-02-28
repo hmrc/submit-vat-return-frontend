@@ -25,7 +25,7 @@ import audit.models.{NrsErrorAuditModel, NrsSuccessAuditModel, SubmitVatReturnAu
 import audit.models.journey.{FailureAuditModel, SuccessAuditModel}
 import common.SessionKeys
 import config.{AppConfig, ErrorHandler}
-import controllers.predicates.{AuthPredicate, MandationStatusPredicate}
+import controllers.predicates.{AuthPredicate, HonestyDeclarationAction, MandationStatusPredicate}
 import javax.inject.{Inject, Singleton}
 import models.auth.User
 import models.errors.{BadRequestError, HttpError, ServerSideError}
@@ -37,7 +37,7 @@ import play.api.i18n.{I18nSupport, MessagesApi}
 import play.api.libs.json.Json
 import play.api.mvc.{Result, _}
 import play.twirl.api.Html
-import services.{DateService, EnrolmentsAuthService, BtaLinkService, VatReturnsService, VatSubscriptionService}
+import services.{BtaLinkService, DateService, EnrolmentsAuthService, VatReturnsService, VatSubscriptionService}
 import uk.gov.hmrc.auth.core.AffinityGroup._
 import uk.gov.hmrc.auth.core.AuthorisationException
 import uk.gov.hmrc.auth.core.retrieve.v2.Retrievals
@@ -50,23 +50,27 @@ import scala.util.{Failure, Success, Try}
 
 @Singleton
 class ConfirmSubmissionController @Inject()(val messagesApi: MessagesApi,
-                                            val mandationStatusCheck: MandationStatusPredicate,
-                                            val errorHandler: ErrorHandler,
-                                            val vatSubscriptionService: VatSubscriptionService,
+                                            mandationStatusCheck: MandationStatusPredicate,
+                                            errorHandler: ErrorHandler,
+                                            vatSubscriptionService: VatSubscriptionService,
                                             authPredicate: AuthPredicate,
                                             vatReturnsService: VatReturnsService,
-                                            val auditService: AuditService,
-                                            implicit val executionContext: ExecutionContext,
-                                            implicit val appConfig: AppConfig,
-                                            val dateService: DateService,
+                                            auditService: AuditService,
+                                            honestyDeclaration: HonestyDeclarationAction,
+                                            dateService: DateService,
                                             btaLinkService: BtaLinkService,
                                             authService: EnrolmentsAuthService,
-                                            receiptDataHelper: ReceiptDataHelper
-                                           ) extends FrontendController with I18nSupport {
+                                            receiptDataHelper: ReceiptDataHelper,
+                                            implicit val appConfig: AppConfig,
+                                            implicit val executionContext: ExecutionContext) extends FrontendController
+                                                                                             with I18nSupport {
 
-  val dateTimeFormatter = DateTimeFormatter.ofPattern("YYYY")
+  val dateTimeFormatter: DateTimeFormatter = DateTimeFormatter.ofPattern("YYYY")
 
-  def show(periodKey: String): Action[AnyContent] = (authPredicate andThen mandationStatusCheck).async { implicit user =>
+  def show(periodKey: String): Action[AnyContent] = (authPredicate
+    andThen mandationStatusCheck
+//  TODO: andThen honestyDeclaration.authoriseForPeriodKey(periodKey)
+  ).async { implicit user =>
 
     user.session.get(SessionKeys.returnData) match {
       case Some(model) =>
@@ -92,7 +96,7 @@ class ConfirmSubmissionController @Inject()(val messagesApi: MessagesApi,
                                              customerDetails: Either[HttpError, CustomerDetails])(implicit user: User[A]): Future[Html] = {
 
     val clientName = customerDetails match {
-      case (Right(model)) => model.clientName
+      case Right(model) => model.clientName
       case _ => None
     }
     val viewModel = ConfirmSubmissionViewModel(sessionData, periodKey, clientName)
@@ -102,7 +106,10 @@ class ConfirmSubmissionController @Inject()(val messagesApi: MessagesApi,
     }
   }
 
-  def submit(periodKey: String): Action[AnyContent] = (authPredicate andThen mandationStatusCheck) async {
+  def submit(periodKey: String): Action[AnyContent] = (authPredicate
+    andThen mandationStatusCheck
+//  TODO: andThen honestyDeclaration.authoriseForPeriodKey(periodKey)
+  ) async {
     implicit user =>
       user.session.get(SessionKeys.returnData) match {
         case Some(data) =>
