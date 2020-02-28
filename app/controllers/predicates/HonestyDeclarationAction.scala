@@ -23,13 +23,12 @@ import models.auth.User
 import play.api.Logger
 import play.api.mvc.Results._
 import play.api.mvc.{ActionRefiner, Result}
-import uk.gov.hmrc.http.HeaderCarrier
 
 import scala.concurrent.{ExecutionContext, Future}
 
 class HonestyDeclarationAction @Inject()(implicit ec: ExecutionContext, appConfig: AppConfig) {
 
-  def authoriseForPeriodKey(periodKey: String)(implicit hc: HeaderCarrier): ActionRefiner[User, User] = new ActionRefiner[User, User] {
+  def authoriseForPeriodKey(periodKey: String): ActionRefiner[User, User] = new ActionRefiner[User, User] {
 
     override protected def refine[A](request: User[A]): Future[Either[Result, User[A]]] = {
 
