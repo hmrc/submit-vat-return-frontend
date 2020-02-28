@@ -16,26 +16,30 @@
 
 package controllers.predicates
 
-import common.SessionKeys
+import common.SessionKeys.HonestyDeclaration
 import config.AppConfig
 import javax.inject.Inject
 import models.auth.User
 import play.api.Logger
 import play.api.mvc.Results._
 import play.api.mvc.{ActionRefiner, Result}
+import uk.gov.hmrc.http.HeaderCarrier
 
 import scala.concurrent.{ExecutionContext, Future}
 
 class HonestyDeclarationAction @Inject()(implicit ec: ExecutionContext, appConfig: AppConfig) {
 
-  def authoriseForPeriodKey(periodKey: String): ActionRefiner[User, User] = new ActionRefiner[User, User] {
+  def authoriseForPeriodKey(periodKey: String)(implicit hc: HeaderCarrier): ActionRefiner[User, User] = new ActionRefiner[User, User] {
 
     override protected def refine[A](request: User[A]): Future[Either[Result, User[A]]] = {
 
-      request.session.get(SessionKeys.honestyDeclarationPeriodKey) match {
-        case Some(sessionValue) if sessionValue.equals(periodKey) => Future(Right(request))
+      request.session.get(HonestyDeclaration.key) match {
+        case Some(sessionValue) if sessionValue.equals(HonestyDeclaration.format(request.vrn, periodKey)) => Future(Right(request))
+        case Some(_) =>
+          Logger.debug("[HonestyDeclarationAction][authoriseForPeriodKey] Honesty declaration invalid for request")
+          Future(Left(Redirect(appConfig.returnDeadlinesUrl).removingFromSession(HonestyDeclaration.key)(request)))
         case _ =>
-          Logger.debug("[HonestyDeclarationAction][authoriseForPeriodKey] Declaration period key in session is missing or invalid for request")
+          Logger.debug("[HonestyDeclarationAction][authoriseForPeriodKey] Honesty declaration is missing from session")
           Future(Left(Redirect(appConfig.returnDeadlinesUrl)))
       }
     }

@@ -23,6 +23,10 @@ object SessionKeys {
   val viewModel = "mtdReturnInformation"
   val submissionYear = "submissionYear"
   val inSessionPeriodKey = "inSessionPeriodKey"
-  val honestyDeclarationPeriodKey = "mtdVatHonestyDeclarationPeriodKey"
+
+  object HonestyDeclaration {
+    val key = "mtdVatHonestyDeclaration"
+    def format(vrn: String, periodKey: String): String = s"$vrn-$periodKey"
+  }
 
 }

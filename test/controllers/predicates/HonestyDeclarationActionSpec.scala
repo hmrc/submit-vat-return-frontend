@@ -30,12 +30,12 @@ class HonestyDeclarationActionSpec extends BaseSpec {
     val honestyDeclarationAction = new HonestyDeclarationAction()(ec, mockAppConfig)
     def block[A]: User[A] => Future[Result] = { implicit user => Future(Ok("Test")) }
 
-    "mtdVatHonestyDeclarationPeriodKey is in session" when {
+    "mtdVatHonestyDeclaration is in session" when {
 
-      "key matches period key of request" should {
+      "VRN and period key match those of request" should {
 
         lazy val request = User("123456789")(fakeRequest.withSession(
-          "mtdVatHonestyDeclarationPeriodKey" -> "19AA"
+          "mtdVatHonestyDeclaration" -> "123456789-19AA"
         ))
 
         lazy val result = await(honestyDeclarationAction.authoriseForPeriodKey("19AA").invokeBlock(
@@ -49,10 +49,10 @@ class HonestyDeclarationActionSpec extends BaseSpec {
         }
       }
 
-      "key does not match period key of request" should {
+      "VRN and period key do not match those of request" should {
 
         lazy val request = User("123456789")(fakeRequest.withSession(
-          "mtdVatHonestyDeclarationPeriodKey" -> "19AB"
+          "mtdVatHonestyDeclaration" -> "123456789-19AB"
         ))
 
         lazy val result = await(honestyDeclarationAction.authoriseForPeriodKey("19AA").invokeBlock(
@@ -64,10 +64,14 @@ class HonestyDeclarationActionSpec extends BaseSpec {
           status(result) shouldBe 303
           redirectLocation(result) shouldBe Some(mockAppConfig.returnDeadlinesUrl)
         }
+
+        "remove value of current mtdVatHonestyDeclaration session key" in {
+          result.header.headers("Set-Cookie") shouldNot include("mtdVatHonestyDeclaration")
+        }
       }
     }
 
-    "mtdVatHonestyDeclarationPeriodKey is not in session" should {
+    "mtdVatHonestyDeclaration is not in session" should {
 
       lazy val request = User("123456789")(fakeRequest.withSession(
         "someOtherKey" -> "abcd"
