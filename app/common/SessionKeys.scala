@@ -24,4 +24,9 @@ object SessionKeys {
   val submissionYear = "submissionYear"
   val inSessionPeriodKey = "inSessionPeriodKey"
 
+  object HonestyDeclaration {
+    val key = "mtdVatHonestyDeclaration"
+    def format(vrn: String, periodKey: String): String = s"$vrn-$periodKey"
+  }
+
 }

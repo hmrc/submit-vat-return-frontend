@@ -16,43 +16,47 @@
 
 package controllers
 
-import forms.SubmitVatReturnForm
-import common.SessionKeys
-import config.AppConfig
-import javax.inject.{Inject, Singleton}
-import play.api.i18n.{I18nSupport, MessagesApi}
-import play.api.mvc.Request
-import config.ErrorHandler
-import controllers.predicates.AuthPredicate
-import controllers.predicates.MandationStatusPredicate
-import models.auth.User
-import models.{NineBoxModel, SubmitFormViewModel, SubmitVatReturnModel, VatObligation}
-import play.api.Logger
-import play.api.data.Form
-import play.api.libs.json.Json
-import play.api.mvc.{Action, AnyContent}
-import services.{DateService, BtaLinkService, VatObligationsService, VatSubscriptionService}
-import uk.gov.hmrc.http.HeaderCarrier
-import uk.gov.hmrc.play.bootstrap.controller.FrontendController
-import forms.SubmitVatReturnForm._
 import java.net.URLDecoder
 
 import audit.AuditService
 import audit.models.journey.StartAuditModel
+import common.SessionKeys
+import config.{AppConfig, ErrorHandler}
+import controllers.predicates.{AuthPredicate, HonestyDeclarationAction, MandationStatusPredicate}
+import forms.SubmitVatReturnForm
+import javax.inject.{Inject, Singleton}
+import models.auth.User
+import models.{NineBoxModel, SubmitFormViewModel, SubmitVatReturnModel, VatObligation}
+import play.api.Logger
+import play.api.data.Form
+import play.api.i18n.{I18nSupport, MessagesApi}
+import play.api.libs.json.Json
+import play.api.mvc.{Action, AnyContent, Request}
+import services.{BtaLinkService, DateService, VatObligationsService, VatSubscriptionService}
+import uk.gov.hmrc.http.HeaderCarrier
+import uk.gov.hmrc.play.bootstrap.controller.FrontendController
+
+import scala.concurrent.ExecutionContext
 
 @Singleton
 class SubmitFormController @Inject()(val messagesApi: MessagesApi,
-                                     val vatSubscriptionService: VatSubscriptionService,
-                                     val vatObligationsService: VatObligationsService,
-                                     val mandationStatusCheck: MandationStatusPredicate,
+                                     vatSubscriptionService: VatSubscriptionService,
+                                     vatObligationsService: VatObligationsService,
+                                     mandationStatusCheck: MandationStatusPredicate,
                                      btaLinkService: BtaLinkService,
-                                     val errorHandler: ErrorHandler,
-                                     val auditService: AuditService,
+                                     dateService: DateService,
+                                     auditService: AuditService,
                                      authPredicate: AuthPredicate,
+                                     honestyDeclaration: HonestyDeclarationAction,
+                                     implicit val errorHandler: ErrorHandler,
                                      implicit val appConfig: AppConfig,
-                                     val dateService: DateService) extends FrontendController with I18nSupport {
+                                     implicit val executionContext: ExecutionContext) extends FrontendController
+                                                                                      with I18nSupport {
 
-  def show(periodKey: String): Action[AnyContent] = (authPredicate andThen mandationStatusCheck).async { implicit user =>
+  def show(periodKey: String): Action[AnyContent] = (authPredicate
+    andThen mandationStatusCheck
+//  TODO: andThen honestyDeclaration.authoriseForPeriodKey(periodKey)
+  ).async { implicit user =>
 
     auditService.audit(
       StartAuditModel(user.vrn, periodKey, user.arn),
@@ -155,11 +159,14 @@ class SubmitFormController @Inject()(val messagesApi: MessagesApi,
     }
   }
 
-  def submit(periodKey: String): Action[AnyContent] = (authPredicate andThen mandationStatusCheck).async { implicit user =>
+  def submit(periodKey: String): Action[AnyContent] = (authPredicate
+    andThen mandationStatusCheck
+//  TODO: andThen honestyDeclaration.authoriseForPeriodKey(periodKey)
+  ).async { implicit user =>
 
     val form = SubmitVatReturnForm()
 
-   form.validateBoxCalculations(form.nineBoxForm.bindFromRequest()).fold(
+    form.validateBoxCalculations(form.nineBoxForm.bindFromRequest()).fold(
       failure => {
 
         user.session.get(SessionKeys.viewModel) match {
