@@ -16,6 +16,7 @@
 
 package controllers
 
+import common.SessionKeys.HonestyDeclaration
 import config.{AppConfig, ErrorHandler}
 import controllers.predicates.{AuthPredicate, MandationStatusPredicate}
 import javax.inject.{Inject, Singleton}
@@ -34,11 +35,15 @@ class HonestyDeclarationController @Inject()(val messagesApi: MessagesApi,
                                              implicit val appConfig: AppConfig) extends FrontendController with I18nSupport {
 
   def show(periodKey: String): Action[AnyContent] = (authPredicate andThen mandationStatusCheck).async { implicit user =>
-  // TODO - if user has already checked the box then auto-fill
-    Future.successful(Ok(views.html.honesty_declaration(periodKey, HonestyDeclarationForm.honestyDeclarationForm)))
+    Future.successful(Ok(views.html.honesty_declaration(periodKey, HonestyDeclarationForm.honestyDeclarationForm))
+      .removingFromSession(HonestyDeclaration.key))
   }
 
   def submit(periodKey: String): Action[AnyContent] = (authPredicate andThen mandationStatusCheck).async { implicit user =>
-    Future.successful(Redirect(controllers.routes.SubmitFormController.show(periodKey)))
+    HonestyDeclarationForm.honestyDeclarationForm.bindFromRequest().fold(
+      error => Future.successful(BadRequest(views.html.honesty_declaration(periodKey, error))),
+      data => Future.successful(Redirect(controllers.routes.SubmitFormController.show(periodKey)).addingToSession(HonestyDeclaration.key -> data.toString))
+    )
+
   }
 }

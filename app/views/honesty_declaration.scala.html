@@ -15,6 +15,7 @@
  *@
 
 @import uk.gov.hmrc.play.views.html.helpers
+@import uk.gov.hmrc.play.views.html.helpers.{errorSummary => summary}
 @import config.AppConfig
 @import models.auth.User
 @import views.html.templates.inputs.checkboxHelper
@@ -29,10 +30,13 @@
     }
 }
 
-@*TODO - update pageTitle to include error prefix if form contains error*@
 @main_template(messages("honesty_declaration.title"), appConfig = appConfig, user = Some(user)) {
 
     <a class="link-back" href="@appConfig.returnDeadlinesUrl">@messages("common.back")</a>
+
+    @if(form.errors.nonEmpty) {
+        @summary(messages("error.summary.title"), form)
+    }
 
     @helpers.form(action = controllers.routes.HonestyDeclarationController.submit(periodKey)){
         <div class="form-group">
