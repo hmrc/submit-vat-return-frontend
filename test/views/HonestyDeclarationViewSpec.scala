@@ -24,7 +24,7 @@ class HonestyDeclarationViewSpec extends ViewBaseSpec {
 
   "Rendering the honesty declaration page" when {
 
-    "the user is an agent" should {
+    "the user is not an agent" should {
 
       lazy val view = views.html.honesty_declaration(
         "18AA",
@@ -52,9 +52,14 @@ class HonestyDeclarationViewSpec extends ViewBaseSpec {
       "have a continue button" in {
         element(".button").attr("value") shouldBe messages("common.continue")
       }
+
+      "have the correct action attributed to the form" in {
+        element("form").attr("action") shouldBe s"${controllers.routes.HonestyDeclarationController.submit("18AA")}"
+        element("form").attr("method") shouldBe "POST"
+      }
     }
 
-    "the user is not an agent" should {
+    "the user is an agent" should {
 
       lazy val view = views.html.honesty_declaration(
         "18AA",
@@ -81,6 +86,11 @@ class HonestyDeclarationViewSpec extends ViewBaseSpec {
 
       "have a continue button" in {
         element(".button").attr("value") shouldBe messages("common.continue")
+      }
+
+      "have the correct action attributed to the form" in {
+        element("form").attr("action") shouldBe s"${controllers.routes.HonestyDeclarationController.submit("18AA")}"
+        element("form").attr("method") shouldBe "POST"
       }
     }
 

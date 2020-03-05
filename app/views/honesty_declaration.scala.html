@@ -30,7 +30,7 @@
 }
 
 @*TODO - update pageTitle to include error prefix if form contains error*@
-@main_template(messages("honesty_declaration.title"), appConfig = appConfig, bodyClasses = None, user = Some(user)) {
+@main_template(messages("honesty_declaration.title"), appConfig = appConfig, user = Some(user)) {
 
     <a class="link-back" href="@appConfig.returnDeadlinesUrl">@messages("common.back")</a>
 
