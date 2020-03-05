@@ -39,7 +39,12 @@ class HonestyDeclarationControllerSpec extends BaseSpec with MockAuth with MockM
     "user is authorised" should {
 
       lazy val result = {
-        TestHonestyDeclarationController.show("18AA")(fakeRequest.withSession(SessionKeys.mandationStatus -> MandationStatuses.nonMTDfB))
+        TestHonestyDeclarationController.show("18AA")(fakeRequest
+          .withSession(
+            SessionKeys.mandationStatus -> MandationStatuses.nonMTDfB,
+            SessionKeys.HonestyDeclaration.key -> "true"
+          )
+        )
       }
 
       "return 200" in {
@@ -47,31 +52,58 @@ class HonestyDeclarationControllerSpec extends BaseSpec with MockAuth with MockM
         status(result) shouldBe Status.OK
       }
 
+      "remove the honesty declaration session key from session" in {
+        result.session.get(SessionKeys.HonestyDeclaration.key) shouldBe None
+      }
+
       "return HTML" in {
         contentType(result) shouldBe Some("text/html")
       }
     }
+
+    authControllerChecks(TestHonestyDeclarationController.show("18AA"), fakeRequest)
   }
 
   "HonestyDeclarationController .submit" when {
 
-    "user is authenticated" should {
+    "user is authenticated" when {
 
-      lazy val result = {
-        TestHonestyDeclarationController.submit("18AA")(fakeRequest.withSession(SessionKeys.mandationStatus -> MandationStatuses.nonMTDfB))
+      "a valid form is submitted" should {
+
+        lazy val result = {
+          TestHonestyDeclarationController.submit("18AA")(fakeRequest.withFormUrlEncodedBody(
+            "checkbox" -> "true"
+          ).withSession(SessionKeys.mandationStatus -> MandationStatuses.nonMTDfB))
+        }
+
+        "status is SEE_OTHER" in {
+          mockAuthorise(mtdVatAuthorisedResponse)
+          status(result) shouldBe SEE_OTHER
+        }
+
+        s"redirect to ${controllers.routes.SubmitFormController.show("18AA")}" in {
+          redirectLocation(result).get.contains(controllers.routes.SubmitFormController.show("18AA").url) shouldBe true
+        }
+
+        "save the honesty declaration session key to session" in {
+          result.session.get(SessionKeys.HonestyDeclaration.key) shouldBe Some("true")
+        }
       }
 
-      "status is SEE_OTHER" in {
-        mockAuthorise(mtdVatAuthorisedResponse)
-        status(result) shouldBe SEE_OTHER
-      }
+      "no form is submitted" should {
 
-      s"redirect to ${controllers.routes.ConfirmationController.show()}" in {
-        redirectLocation(result).get.contains(controllers.routes.SubmitFormController.show("18AA").url) shouldBe true
-      }
+        lazy val result = {
+          TestHonestyDeclarationController.submit("18AA")(fakeRequest.withSession(SessionKeys.mandationStatus -> MandationStatuses.nonMTDfB))
+        }
 
+        "status is BAD_REQUEST" in {
+          mockAuthorise(mtdVatAuthorisedResponse)
+          status(result) shouldBe BAD_REQUEST
+        }
+      }
     }
 
+    authControllerChecks(TestHonestyDeclarationController.submit("18AA"), fakeRequest)
   }
 
 }
