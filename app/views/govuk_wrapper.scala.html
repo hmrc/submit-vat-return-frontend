@@ -128,6 +128,17 @@
     }
 }
 
+@mainContentHeaderContent = {
+@views.html.language_selection(
+    appConfig.languageMap,
+    appConfig.routeToSwitchLanguage,
+    customClass = Some("text--right")
+)
+    @if(contentHeader.isDefined) {
+        @uiLayouts.main_content_header(contentHeader = contentHeader.get)
+    }
+}
+
 @getHelpForm = @{uiHelpers.reportAProblemLink(appConfig.reportAProblemPartialUrl, appConfig.reportAProblemNonJSUrl)}
 
 @content = {
@@ -135,7 +146,7 @@
       article = mainContent,
       mainClass = mainClass,
       mainDataAttributes = mainDataAttributes,
-      mainContentHeader = mainContentHeader,
+      mainContentHeader = mainContentHeaderContent,
       serviceInfo = serviceInfo,
       getHelpForm = getHelpForm,
       sidebar = sidebar)
