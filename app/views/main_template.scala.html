@@ -30,16 +30,7 @@ user: Option[User[_]] = None)(mainContent: Html)(implicit request : Request[_], 
 
 @import uk.gov.hmrc.play.views.html.layouts
 
-
-@serviceInfoContent = {
-  @if(appConfig.features.languageToggleEnabled()) {
-   @views.html.language_selection(
-      appConfig.languageMap,
-      appConfig.routeToSwitchLanguage,
-      customClass = Some("text--right")
-    )
-  }
-}
+@serviceInfoContent = {}
 
 @sidebar = {
   @if(sidebarLinks.isDefined) {
