@@ -18,11 +18,17 @@ package forms
 
 import play.api.data.Form
 import play.api.data.Forms._
+import uk.gov.hmrc.play.mappers.StopOnFirstFail
+import uk.gov.hmrc.play.mappers.StopOnFirstFail.constraint
 
 object HonestyDeclarationForm {
 
   val honestyDeclarationForm: Form[Boolean] = Form(
-    "checkbox" -> boolean
+    "checkbox" -> boolean.verifying(
+      StopOnFirstFail(
+        constraint[Boolean]("honesty_declaration.required", _.equals(true))
+        )
+    )
   )
 
 }
