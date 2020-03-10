@@ -351,5 +351,19 @@ class ConfirmSubmissionPageSpec extends NrsAssets with GivenWhenThen {
         response.status shouldBe FORBIDDEN
       }
     }
+
+    "user has not checked the honesty declaration" should {
+
+      "return 303" in {
+
+        When("The user is authenticated")
+        AuthStub.stubResponse(OK, mtdVatAuthResponse)
+
+        val response: WSResponse = request(mandationStatusSessionValue ++ nineBoxSessionValue)
+
+        Then("The response should be 303")
+        response.status shouldBe SEE_OTHER
+      }
+    }
   }
 }

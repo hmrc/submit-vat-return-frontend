@@ -40,8 +40,7 @@ class SubmitFormPageSpec extends BaseISpec {
 
       val sessionValues = formatSessionMandationStatus(Some(MandationStatuses.nonMTDfB)) ++ Map(SessionKeys.HonestyDeclaration.key -> s"$vrn-18AA")
 
-      def request: WSResponse =
-        get("/18AA/submit-form", sessionValues)
+      def request: WSResponse = get("/18AA/submit-form", sessionValues)
 
       "user is authorised" when {
 
@@ -204,6 +203,22 @@ class SubmitFormPageSpec extends BaseISpec {
 
         }
       }
+
+      "user has not checked the honesty declaration" should {
+
+        "return 303" in {
+
+          AuthStub.stubResponse(OK, mtdVatAuthResponse)
+          VatSubscriptionStub.stubResponse("customer-details", OK, customerInformationSuccessJson)
+          VatSubscriptionStub.stubResponse("mandation-status", OK, mandationStatusSuccessJson)
+          BtaLinkPartialStub.stubResponse(OK)
+          VatObligationsStub.stubResponse(OK, vatObligationsSuccessJson(endDate = LocalDate.now().minusDays(1)))
+
+          val response: WSResponse = get("/18AA/submit-form", formatSessionMandationStatus(Some(MandationStatuses.nonMTDfB)))
+
+          response.status shouldBe SEE_OTHER
+        }
+      }
     }
 
     "there is a POST request" when {
@@ -337,6 +352,25 @@ class SubmitFormPageSpec extends BaseISpec {
         }
       }
 
+      "user has not checked the honesty declaration" should {
+
+        def postRequest(data: NineBoxModel): WSResponse = postForm(
+          "/18AA/submit-form",
+          formatSessionMandationStatus(Some(MandationStatuses.nonMTDfB)),
+          toFormData(SubmitVatReturnForm().nineBoxForm, data)
+        )
+
+        "return 303" in {
+
+          AuthStub.stubResponse(OK, mtdVatAuthResponse)
+          VatSubscriptionStub.stubResponse("customer-details", OK, customerInformationSuccessJson)
+          VatObligationsStub.stubResponse(OK, vatObligationsSuccessJson())
+
+          val response: WSResponse = postRequest(validSubmissionModel)
+
+          response.status shouldBe SEE_OTHER
+        }
+      }
     }
   }
 }
