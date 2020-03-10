@@ -36,10 +36,10 @@ class HonestyDeclarationAction @Inject()(implicit ec: ExecutionContext, appConfi
         case Some(sessionValue) if sessionValue.equals(HonestyDeclaration.format(request.vrn, periodKey)) => Future(Right(request))
         case Some(_) =>
           Logger.debug("[HonestyDeclarationAction][authoriseForPeriodKey] Honesty declaration invalid for request")
-          Future(Left(Redirect(appConfig.returnDeadlinesUrl).removingFromSession(HonestyDeclaration.key)(request)))
+          Future(Left(Redirect(controllers.routes.HonestyDeclarationController.show(periodKey)).removingFromSession(HonestyDeclaration.key)(request)))
         case _ =>
           Logger.debug("[HonestyDeclarationAction][authoriseForPeriodKey] Honesty declaration is missing from session")
-          Future(Left(Redirect(appConfig.returnDeadlinesUrl)))
+          Future(Left(Redirect(controllers.routes.HonestyDeclarationController.show(periodKey))))
       }
     }
   }

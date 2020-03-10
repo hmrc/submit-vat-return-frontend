@@ -62,7 +62,7 @@ class HonestyDeclarationActionSpec extends BaseSpec {
 
         "redirect to /return-deadlines" in {
           status(result) shouldBe 303
-          redirectLocation(result) shouldBe Some(mockAppConfig.returnDeadlinesUrl)
+          redirectLocation(result) shouldBe Some(s"${controllers.routes.HonestyDeclarationController.show("19AA")}")
         }
 
         "remove value of current mtdVatHonestyDeclaration session key" in {
@@ -84,7 +84,7 @@ class HonestyDeclarationActionSpec extends BaseSpec {
 
       "redirect to /return-deadlines" in {
         status(result) shouldBe 303
-        redirectLocation(result) shouldBe Some(mockAppConfig.returnDeadlinesUrl)
+        redirectLocation(result) shouldBe Some(s"${controllers.routes.HonestyDeclarationController.show("19AA")}")
       }
     }
   }

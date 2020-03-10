@@ -42,7 +42,9 @@ class HonestyDeclarationController @Inject()(val messagesApi: MessagesApi,
   def submit(periodKey: String): Action[AnyContent] = (authPredicate andThen mandationStatusCheck).async { implicit user =>
     HonestyDeclarationForm.honestyDeclarationForm.bindFromRequest().fold(
       error => Future.successful(BadRequest(views.html.honesty_declaration(periodKey, error))),
-      data => Future.successful(Redirect(controllers.routes.SubmitFormController.show(periodKey)).addingToSession(HonestyDeclaration.key -> data.toString))
+      _ =>
+        Future.successful(Redirect(controllers.routes.SubmitFormController.show(periodKey))
+          .addingToSession(HonestyDeclaration.key -> s"${user.vrn}-$periodKey"))
     )
 
   }

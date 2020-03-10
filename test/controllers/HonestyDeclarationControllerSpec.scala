@@ -86,7 +86,7 @@ class HonestyDeclarationControllerSpec extends BaseSpec with MockAuth with MockM
         }
 
         "save the honesty declaration session key to session" in {
-          result.session.get(SessionKeys.HonestyDeclaration.key) shouldBe Some("true")
+          result.session.get(SessionKeys.HonestyDeclaration.key) shouldBe Some(s"$vrn-18AA")
         }
       }
 

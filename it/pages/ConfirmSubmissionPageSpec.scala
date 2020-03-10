@@ -19,6 +19,7 @@ package pages
 import java.time.LocalDate
 
 import assets.NrsAssets
+import common.SessionKeys
 import org.jsoup.Jsoup
 import org.scalatest.GivenWhenThen
 import play.api.http.Status._
@@ -51,7 +52,8 @@ class ConfirmSubmissionPageSpec extends NrsAssets with GivenWhenThen {
 
     val mandationStatusSessionValue = Map("mtdVatMandationStatus" -> "Non MTDfB")
     val nineBoxSessionValue = Map("mtdNineBoxReturnData" -> nineBoxSessionData(LocalDate.now().minusDays(1).toString))
-    val fullSessionValues = mandationStatusSessionValue ++ nineBoxSessionValue
+    val honestySessionValue: String => Map[String, String] = periodKey => Map(SessionKeys.HonestyDeclaration.key -> s"$vrn-$periodKey")
+    val fullSessionValues: Map[String, String] = mandationStatusSessionValue ++ nineBoxSessionValue ++ honestySessionValue("18AA")
 
     def getRequest(sessionValues: Map[String, String] = Map.empty): WSResponse = get("/18AA/confirm-submission", sessionValues)
     def request(sessionValues: Map[String, String] = Map.empty): WSResponse = postJson("/18AA/confirm-submission", sessionValues)
@@ -229,7 +231,7 @@ class ConfirmSubmissionPageSpec extends NrsAssets with GivenWhenThen {
 
             val response: WSResponse = request(
               Map("mtdNineBoxReturnData" -> nineBoxSessionData(LocalDate.now().plusDays(1).toString)) ++
-                mandationStatusSessionValue
+                mandationStatusSessionValue ++ honestySessionValue("18AA")
             )
 
             Then("The response should be 400")
@@ -267,7 +269,9 @@ class ConfirmSubmissionPageSpec extends NrsAssets with GivenWhenThen {
             And("The POST to vat-returns is successful")
             VatReturnsStub.stubResponse(vatReturnUri("999999999"))(OK, Json.obj("formBundleNumber" -> "12345"))
 
-            val response: WSResponse = postJson(s"/$encodedPeriodKey/confirm-submission", fullSessionValues)
+            val response: WSResponse = postJson(s"/$encodedPeriodKey/confirm-submission",
+              mandationStatusSessionValue ++ nineBoxSessionValue ++ honestySessionValue("#005")
+            )
 
             And("The backend submission contained the decoded period key")
             VatReturnsStub.verifyVatReturnSubmission("999999999", postRequestJsonBody)
@@ -289,7 +293,7 @@ class ConfirmSubmissionPageSpec extends NrsAssets with GivenWhenThen {
           AuthStub.stubResponse(OK, mtdVatAuthResponse)
 
           And("The session data for mtdNineBoxReturnData is empty")
-          val invalidSessionData = Map("mtdNineBoxReturnData" -> "") ++ mandationStatusSessionValue
+          val invalidSessionData = Map("mtdNineBoxReturnData" -> "") ++ mandationStatusSessionValue ++ honestySessionValue("18AA")
 
           val response: WSResponse = request(invalidSessionData)
 
@@ -309,7 +313,7 @@ class ConfirmSubmissionPageSpec extends NrsAssets with GivenWhenThen {
           AuthStub.stubResponse(OK, mtdVatAuthResponse)
 
           And("No session data exists for mtdNineBoxReturnData")
-          val response: WSResponse = request(mandationStatusSessionValue)
+          val response: WSResponse = request(mandationStatusSessionValue ++ honestySessionValue("18AA"))
 
           Then("The response should be 303")
           response.status shouldBe SEE_OTHER
