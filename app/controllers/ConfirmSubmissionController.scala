@@ -69,7 +69,7 @@ class ConfirmSubmissionController @Inject()(val messagesApi: MessagesApi,
 
   def show(periodKey: String): Action[AnyContent] = (authPredicate
     andThen mandationStatusCheck
-//  TODO: andThen honestyDeclaration.authoriseForPeriodKey(periodKey)
+    andThen honestyDeclaration.authoriseForPeriodKey(periodKey)
   ).async { implicit user =>
 
     user.session.get(SessionKeys.returnData) match {
@@ -108,7 +108,7 @@ class ConfirmSubmissionController @Inject()(val messagesApi: MessagesApi,
 
   def submit(periodKey: String): Action[AnyContent] = (authPredicate
     andThen mandationStatusCheck
-//  TODO: andThen honestyDeclaration.authoriseForPeriodKey(periodKey)
+    andThen honestyDeclaration.authoriseForPeriodKey(periodKey)
   ) async {
     implicit user =>
       user.session.get(SessionKeys.returnData) match {

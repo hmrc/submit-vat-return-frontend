@@ -19,7 +19,7 @@ package pages
 import java.time.LocalDate
 
 import base.BaseISpec
-import common.MandationStatuses
+import common.{MandationStatuses, SessionKeys}
 import play.api.http.Status._
 import play.api.libs.json.Json
 import play.api.libs.ws.WSResponse
@@ -38,7 +38,9 @@ class SubmitFormPageSpec extends BaseISpec {
 
     "there is a GET request" when {
 
-      def request: WSResponse = get("/18AA/submit-form", formatSessionMandationStatus(Some(MandationStatuses.nonMTDfB)))
+      val sessionValues = formatSessionMandationStatus(Some(MandationStatuses.nonMTDfB)) ++ Map(SessionKeys.HonestyDeclaration.key -> s"$vrn-18AA")
+
+      def request: WSResponse = get("/18AA/submit-form", sessionValues)
 
       "user is authorised" when {
 
@@ -132,7 +134,10 @@ class SubmitFormPageSpec extends BaseISpec {
               VatSubscriptionStub.stubResponse("mandation-status", OK, mandationStatusSuccessJson)
               VatObligationsStub.stubResponse(OK, obligation)
 
-              val response: WSResponse = get(s"/$encodedPeriodKey/submit-form", formatSessionMandationStatus(Some(MandationStatuses.nonMTDfB)))
+              val response: WSResponse = get(
+                s"/$encodedPeriodKey/submit-form",
+                formatSessionMandationStatus(Some(MandationStatuses.nonMTDfB)) ++ Map(SessionKeys.HonestyDeclaration.key -> s"$vrn-#005")
+              )
 
               response.status shouldBe OK
               Jsoup.parse(response.body).select("h1 > span:nth-of-type(2)").text() should include("1 Jan to 31 Mar 2018")
@@ -198,9 +203,27 @@ class SubmitFormPageSpec extends BaseISpec {
 
         }
       }
+
+      "user has not checked the honesty declaration" should {
+
+        "return 303" in {
+
+          AuthStub.stubResponse(OK, mtdVatAuthResponse)
+          VatSubscriptionStub.stubResponse("customer-details", OK, customerInformationSuccessJson)
+          VatSubscriptionStub.stubResponse("mandation-status", OK, mandationStatusSuccessJson)
+          BtaLinkPartialStub.stubResponse(OK)
+          VatObligationsStub.stubResponse(OK, vatObligationsSuccessJson(endDate = LocalDate.now().minusDays(1)))
+
+          val response: WSResponse = get("/18AA/submit-form", formatSessionMandationStatus(Some(MandationStatuses.nonMTDfB)))
+
+          response.status shouldBe SEE_OTHER
+        }
+      }
     }
 
     "there is a POST request" when {
+
+      val sessionValues = formatSessionMandationStatus(Some(MandationStatuses.nonMTDfB)) ++ Map(SessionKeys.HonestyDeclaration.key -> s"$vrn-18AA")
 
       val validSubmissionModel = NineBoxModel(
         box1 = 1000.00,
@@ -216,7 +239,7 @@ class SubmitFormPageSpec extends BaseISpec {
 
       def postRequest(data: NineBoxModel): WSResponse = postForm(
         "/18AA/submit-form",
-        formatSessionMandationStatus(Some(MandationStatuses.nonMTDfB)),
+        sessionValues,
         toFormData(SubmitVatReturnForm().nineBoxForm, data)
       )
 
@@ -260,7 +283,7 @@ class SubmitFormPageSpec extends BaseISpec {
 
             def postRequest(data: NineBoxModel): WSResponse =
               postForm("/18AA/submit-form",
-                formatSessionMandationStatus(Some(MandationStatuses.nonMTDfB))
+                sessionValues
                   ++ formatViewModel(Some(viewModel)), toFormData(SubmitVatReturnForm().nineBoxForm, data))
 
             "return 200" in {
@@ -279,7 +302,7 @@ class SubmitFormPageSpec extends BaseISpec {
 
             def postRequest(data: NineBoxModel): WSResponse = postForm(
               "/18AA/submit-form",
-              formatSessionMandationStatus(Some(MandationStatuses.nonMTDfB)),
+              sessionValues,
               toFormData(SubmitVatReturnForm().nineBoxForm, data)
             )
 
@@ -313,7 +336,7 @@ class SubmitFormPageSpec extends BaseISpec {
 
         def postRequest(data: NineBoxModel): WSResponse = postForm(
           "/18AA/submit-form",
-          formatSessionMandationStatus(Some("unsupportedMandationStatus")),
+          formatSessionMandationStatus(Some("unsupportedMandationStatus")) ++ Map(SessionKeys.HonestyDeclaration.key -> s"$vrn-18AA"),
           toFormData(SubmitVatReturnForm().nineBoxForm, data)
         )
 
@@ -329,6 +352,25 @@ class SubmitFormPageSpec extends BaseISpec {
         }
       }
 
+      "user has not checked the honesty declaration" should {
+
+        def postRequest(data: NineBoxModel): WSResponse = postForm(
+          "/18AA/submit-form",
+          formatSessionMandationStatus(Some(MandationStatuses.nonMTDfB)),
+          toFormData(SubmitVatReturnForm().nineBoxForm, data)
+        )
+
+        "return 303" in {
+
+          AuthStub.stubResponse(OK, mtdVatAuthResponse)
+          VatSubscriptionStub.stubResponse("customer-details", OK, customerInformationSuccessJson)
+          VatObligationsStub.stubResponse(OK, vatObligationsSuccessJson())
+
+          val response: WSResponse = postRequest(validSubmissionModel)
+
+          response.status shouldBe SEE_OTHER
+        }
+      }
     }
   }
 }

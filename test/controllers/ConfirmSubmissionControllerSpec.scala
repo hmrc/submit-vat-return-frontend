@@ -24,9 +24,8 @@ import audit.mocks.MockAuditingService
 import base.BaseSpec
 import common.{MandationStatuses, SessionKeys}
 import connectors.httpParsers.ResponseHttpParsers.HttpGetResult
-import controllers.predicates.HonestyDeclarationAction
 import mocks.service.{MockBtaLinkService, MockDateService, MockVatReturnsService, MockVatSubscriptionService}
-import mocks.{MockAuth, MockMandationPredicate, MockReceiptDataService}
+import mocks.{MockAuth, MockHonestyDeclarationAction, MockMandationPredicate, MockReceiptDataService}
 import models.auth.User
 import models.errors.{BadRequestError, UnexpectedJsonFormat, UnknownError}
 import models.nrs.SuccessModel
@@ -53,9 +52,8 @@ class ConfirmSubmissionControllerSpec extends BaseSpec
   with MockDateService
   with MockAuditingService
   with MockReceiptDataService
-  with MockBtaLinkService {
-
-  val honestyDeclarationAction: HonestyDeclarationAction = mock[HonestyDeclarationAction]
+  with MockBtaLinkService
+  with MockHonestyDeclarationAction{
 
   object TestConfirmSubmissionController extends ConfirmSubmissionController(
     messagesApi,
@@ -65,7 +63,7 @@ class ConfirmSubmissionControllerSpec extends BaseSpec
     mockAuthPredicate,
     mockVatReturnsService,
     mockAuditService,
-    honestyDeclarationAction,
+    mockHonestyDeclarationAction,
     mockDateService,
     mockBtaLinkService,
     mockEnrolmentsAuthService,
@@ -105,7 +103,8 @@ class ConfirmSubmissionControllerSpec extends BaseSpec
           lazy val requestWithSessionData: User[AnyContentAsEmpty.type] =
             User[AnyContentAsEmpty.type]("123456789")(fakeRequest.withSession(
               SessionKeys.returnData -> nineBoxModel,
-              SessionKeys.mandationStatus -> MandationStatuses.nonMTDfB
+              SessionKeys.mandationStatus -> MandationStatuses.nonMTDfB,
+              SessionKeys.HonestyDeclaration.key -> s"$vrn-18AA"
             )
             )
 
@@ -141,7 +140,8 @@ class ConfirmSubmissionControllerSpec extends BaseSpec
           lazy val requestWithSessionData: User[AnyContentAsEmpty.type] =
             User[AnyContentAsEmpty.type]("123456789")(fakeRequest.withSession(
               SessionKeys.returnData -> nineBoxModel,
-              SessionKeys.mandationStatus -> MandationStatuses.nonMTDfB
+              SessionKeys.mandationStatus -> MandationStatuses.nonMTDfB,
+              SessionKeys.HonestyDeclaration.key -> s"$vrn-18AA"
             )
             )
 
@@ -170,7 +170,8 @@ class ConfirmSubmissionControllerSpec extends BaseSpec
 
         lazy val result: Future[Result] = {
           TestConfirmSubmissionController.show("18AA")(fakeRequest.withSession(
-            SessionKeys.mandationStatus -> MandationStatuses.nonMTDfB)
+            SessionKeys.mandationStatus -> MandationStatuses.nonMTDfB,
+            SessionKeys.HonestyDeclaration.key -> s"$vrn-18AA")
           )
         }
 
@@ -219,7 +220,8 @@ class ConfirmSubmissionControllerSpec extends BaseSpec
             lazy val result: Future[Result] = {
               TestConfirmSubmissionController.submit("18AA")(fakeRequest.withSession(
                 "mtdNineBoxReturnData" -> nineBoxData,
-                SessionKeys.mandationStatus -> MandationStatuses.nonMTDfB
+                SessionKeys.mandationStatus -> MandationStatuses.nonMTDfB,
+                SessionKeys.HonestyDeclaration.key -> s"$vrn-18AA"
               ))
             }
 
@@ -250,7 +252,8 @@ class ConfirmSubmissionControllerSpec extends BaseSpec
 
             lazy val result: Future[Result] = TestConfirmSubmissionController.submit("18AA")(fakeRequest.withSession(
               "mtdNineBoxReturnData" -> nineBoxData,
-              SessionKeys.mandationStatus -> MandationStatuses.nonMTDfB
+              SessionKeys.mandationStatus -> MandationStatuses.nonMTDfB,
+              SessionKeys.HonestyDeclaration.key -> s"$vrn-18AA"
             ))
 
             "return 500" in {
@@ -278,7 +281,8 @@ class ConfirmSubmissionControllerSpec extends BaseSpec
 
           lazy val result: Future[Result] = TestConfirmSubmissionController.submit("18AA")(fakeRequest.withSession(
             "mtdNineBoxReturnData" -> nineBoxData,
-            SessionKeys.mandationStatus -> MandationStatuses.nonMTDfB
+            SessionKeys.mandationStatus -> MandationStatuses.nonMTDfB,
+            SessionKeys.HonestyDeclaration.key -> s"$vrn-18AA"
           ))
 
           "return 400" in {
@@ -298,7 +302,8 @@ class ConfirmSubmissionControllerSpec extends BaseSpec
         val nineBoxData = Json.obj("box10" -> "why").toString()
         lazy val result: Future[Result] = TestConfirmSubmissionController.submit("18AA")(fakeRequest.withSession(
           "mtdNineBoxReturnData" -> nineBoxData,
-          SessionKeys.mandationStatus -> MandationStatuses.nonMTDfB
+          SessionKeys.mandationStatus -> MandationStatuses.nonMTDfB,
+          SessionKeys.HonestyDeclaration.key -> s"$vrn-18AA"
         ))
 
         "return 303" in {
@@ -314,7 +319,8 @@ class ConfirmSubmissionControllerSpec extends BaseSpec
       "no session data exists for key" should {
 
         lazy val result: Future[Result] = TestConfirmSubmissionController.submit("18AA")(fakeRequest.withSession(
-          SessionKeys.mandationStatus -> MandationStatuses.nonMTDfB
+          SessionKeys.mandationStatus -> MandationStatuses.nonMTDfB,
+          SessionKeys.HonestyDeclaration.key -> s"$vrn-18AA"
         ))
 
         "return 303" in {

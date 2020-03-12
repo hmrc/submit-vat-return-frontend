@@ -55,7 +55,7 @@ class SubmitFormController @Inject()(val messagesApi: MessagesApi,
 
   def show(periodKey: String): Action[AnyContent] = (authPredicate
     andThen mandationStatusCheck
-//  TODO: andThen honestyDeclaration.authoriseForPeriodKey(periodKey)
+    andThen honestyDeclaration.authoriseForPeriodKey(periodKey)
   ).async { implicit user =>
 
     auditService.audit(
@@ -161,7 +161,7 @@ class SubmitFormController @Inject()(val messagesApi: MessagesApi,
 
   def submit(periodKey: String): Action[AnyContent] = (authPredicate
     andThen mandationStatusCheck
-//  TODO: andThen honestyDeclaration.authoriseForPeriodKey(periodKey)
+    andThen honestyDeclaration.authoriseForPeriodKey(periodKey)
   ).async { implicit user =>
 
     val form = SubmitVatReturnForm()
