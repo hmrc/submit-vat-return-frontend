@@ -65,31 +65,8 @@ class SubmitFormViewSpec extends ViewBaseSpec {
       )(fakeRequest, messages, mockAppConfig, user, Lang.apply("en"))
       lazy implicit val document: Document = Jsoup.parse(view.body)
 
-      "render breadcrumbs" which {
-
-        "have the correct hidden label for box 1" in {
-          elementText("label[for=box1]") shouldBe "Box 1 VAT you charged on sales and other supplies amount"
-        }
-
-        "has the 'Your VAT details' title" in {
-          elementText("div.breadcrumbs li:nth-of-type(1)") shouldBe "Your VAT details"
-        }
-
-        "and links to the VAT Overview page" in {
-          element("div.breadcrumbs li:nth-of-type(1) a").attr("href") shouldBe mockAppConfig.vatSummaryUrl
-        }
-
-        "has the 'Submit VAT Return' title" in {
-          elementText("div.breadcrumbs li:nth-of-type(2)") shouldBe "Submit VAT Return"
-        }
-
-        "and links to the Return deadlines page" in {
-          element("div.breadcrumbs li:nth-of-type(2) a").attr("href") shouldBe mockAppConfig.returnDeadlinesUrl
-        }
-
-        "has the correct current page title" in {
-          elementText("div.breadcrumbs li:nth-of-type(3)") shouldBe "Submit 12 January to 12 April 2019 return"
-        }
+      "have the correct hidden label for box 1" in {
+        elementText("label[for=box1]") shouldBe "Box 1 VAT you charged on sales and other supplies amount"
       }
 
       "have the correct title" in {

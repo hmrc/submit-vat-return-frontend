@@ -68,19 +68,11 @@ user: User[_], lang: Lang)
 
 @main_template(pageTitle, appConfig = appConfig, bodyClasses = None, user = Some(user)) {
 
-    @btaLinkContent
+@if(!isAgent) {
+<a class="link-back" href="@controllers.routes.HonestyDeclarationController.show(periodKey)">@messages("common.back")</a>
+}
 
-    @if(!isAgent) {
-        @navigationBreadcrumb(
-            Map(
-                appConfig.vatSummaryUrl -> messages("breadcrumbs.yourVatDetails"),
-                appConfig.returnDeadlinesUrl -> messages("breadcrumbs.submitVatReturn")
-            ),
-            messages("breadcrumbs.submitReturnForDate",
-                displayDateRange(obligation.start, obligation.end)
-            )
-        )
-    }
+    @btaLinkContent
 
     <div>
 
