@@ -109,31 +109,6 @@ class ConfirmSubmissionViewSpec extends ViewBaseSpec {
           document.title shouldBe viewMessages.title
         }
 
-        "render breadcrumbs" which {
-
-          "has the 'Your VAT details' title" in {
-            elementText(Selectors.breadcrumbOne) shouldBe "Your VAT details"
-          }
-
-          "and links to the VAT Overview page" in {
-            element(Selectors.breadcrumbOneLink).attr("href") shouldBe mockAppConfig.vatSummaryUrl
-          }
-
-
-          "has the 'Submit VAT Return' title" in {
-            elementText(Selectors.breadcrumbTwo) shouldBe "Submit VAT Return"
-          }
-
-          "and links to the Return deadlines page" in {
-            element(Selectors.breadcrumbTwoLink).attr("href") shouldBe mockAppConfig.returnDeadlinesUrl
-          }
-        }
-
-
-        "has the correct current page title" in {
-          elementText(Selectors.breadcrumbCurrentPage) shouldBe "Submit 12 January to 12 April 2019 return"
-        }
-
         s"the smaller ${viewMessages.returnDueDate} heading" in {
           elementText("#content > article > section > h1 > p") shouldBe s"${viewMessages.returnDueDate} 12 May 2019"
         }

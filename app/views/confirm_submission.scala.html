@@ -55,17 +55,11 @@
 
 @main_template(messages("confirm_submission.title"), appConfig = appConfig, bodyClasses = None, user = Some(user)) {
 
-  @btaLinkContent
-
   @if(!isAgent) {
-    @navigationBreadcrumb(
-      Map(
-        appConfig.vatSummaryUrl -> messages("breadcrumbs.yourVatDetails"),
-        appConfig.returnDeadlinesUrl -> messages("breadcrumbs.submitVatReturn")
-      ),
-      messages("breadcrumbs.submitReturnForDate", displayDateRange(viewModel.returnDetail.start, viewModel.returnDetail.end))
-    )
+    <a class="link-back" href="@controllers.routes.SubmitFormController.show(viewModel.periodKey)">@messages("common.back")</a>
   }
+
+  @btaLinkContent
 
   <section>
     <h1 class="heading-xlarge">
