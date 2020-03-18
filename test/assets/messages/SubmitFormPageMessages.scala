@@ -22,6 +22,7 @@ object SubmitFormPageMessages {
   val returnDue: String => String = date => "Return due date: " + date
   val vatDetails = "VAT details"
   val errorHeading = "There is a problem"
+  val back: String = "Back"
 
   val box1 = "Box 1"
   val box1Text = "VAT you charged on sales and other supplies"

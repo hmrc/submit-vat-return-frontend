@@ -20,8 +20,7 @@ package views
 import java.time.LocalDate
 
 import assets.CustomerDetailsTestAssets._
-import assets.messages.{BtaLinkMessages, ConfirmSubmissionMessages => viewMessages}
-import forms.SubmitVatReturnForm
+import assets.messages.{ConfirmSubmissionMessages => viewMessages}
 import models._
 import org.jsoup.Jsoup
 import org.jsoup.nodes.Document
@@ -109,29 +108,10 @@ class ConfirmSubmissionViewSpec extends ViewBaseSpec {
           document.title shouldBe viewMessages.title
         }
 
-        "render breadcrumbs" which {
-
-          "has the 'Your VAT details' title" in {
-            elementText(Selectors.breadcrumbOne) shouldBe "Your VAT details"
-          }
-
-          "and links to the VAT Overview page" in {
-            element(Selectors.breadcrumbOneLink).attr("href") shouldBe mockAppConfig.vatSummaryUrl
-          }
-
-
-          "has the 'Submit VAT Return' title" in {
-            elementText(Selectors.breadcrumbTwo) shouldBe "Submit VAT Return"
-          }
-
-          "and links to the Return deadlines page" in {
-            element(Selectors.breadcrumbTwoLink).attr("href") shouldBe mockAppConfig.returnDeadlinesUrl
-          }
-        }
-
-
-        "has the correct current page title" in {
-          elementText(Selectors.breadcrumbCurrentPage) shouldBe "Submit 12 January to 12 April 2019 return"
+        s"the back link is displayed with the correct href" in {
+          elementText(Selectors.backLink) shouldBe viewMessages.back
+          element(Selectors.backLink).attr("href") shouldBe
+            controllers.routes.SubmitFormController.show(periodKey).url
         }
 
         s"the smaller ${viewMessages.returnDueDate} heading" in {

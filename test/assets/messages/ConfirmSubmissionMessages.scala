@@ -19,6 +19,7 @@ package assets.messages
 object ConfirmSubmissionMessages extends BaseMessages {
 
   val title: String = "Confirm your VAT Return" + titleSuffix
+  val back: String = "Back"
   val agentTitle: String = "Confirm your VAT Return" + agentTitleSuffix
   val heading = "Submit return"
   val subHeadingVatDetails = "VAT details"
