@@ -20,8 +20,7 @@ package views
 import java.time.LocalDate
 
 import assets.CustomerDetailsTestAssets._
-import assets.messages.{BtaLinkMessages, ConfirmSubmissionMessages => viewMessages}
-import forms.SubmitVatReturnForm
+import assets.messages.{ConfirmSubmissionMessages => viewMessages}
 import models._
 import org.jsoup.Jsoup
 import org.jsoup.nodes.Document
@@ -107,6 +106,12 @@ class ConfirmSubmissionViewSpec extends ViewBaseSpec {
 
         s"the title is displayed as ${viewMessages.title}" in {
           document.title shouldBe viewMessages.title
+        }
+
+        s"the back link is displayed with the correct href" in {
+          elementText(Selectors.backLink) shouldBe viewMessages.back
+          element(Selectors.backLink).attr("href") shouldBe
+            controllers.routes.SubmitFormController.show(periodKey).url
         }
 
         s"the smaller ${viewMessages.returnDueDate} heading" in {
