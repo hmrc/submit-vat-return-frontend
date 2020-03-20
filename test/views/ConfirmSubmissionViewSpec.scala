@@ -25,7 +25,6 @@ import models._
 import org.jsoup.Jsoup
 import org.jsoup.nodes.Document
 import play.api.i18n.Lang
-import play.twirl.api.Html
 
 class ConfirmSubmissionViewSpec extends ViewBaseSpec {
 
@@ -101,7 +100,8 @@ class ConfirmSubmissionViewSpec extends ViewBaseSpec {
           userName = customerDetailsWithFRS.clientName
         )
 
-        lazy val view = views.html.confirm_submission(viewModel, isAgent = false)(fakeRequest, messages, mockAppConfig, user, Lang.apply("en"))
+        lazy val view = views.html.confirm_submission(viewModel, isAgent = false)(
+          fakeRequest, messages, mockAppConfig, user, Lang.apply("en"))
         lazy implicit val document: Document = Jsoup.parse(view.body)
 
         s"the title is displayed as ${viewMessages.title}" in {
@@ -276,23 +276,6 @@ class ConfirmSubmissionViewSpec extends ViewBaseSpec {
         "not display the text in bold" in {
           element(Selectors.agentDeclarationText).hasClass("bold-small") shouldBe false
         }
-      }
-    }
-
-    "the btaLinkContent parameter is provided with html" should {
-
-      val viewModel: ConfirmSubmissionViewModel = ConfirmSubmissionViewModel(
-        vatReturn(true),
-        periodKey,
-        userName = customerDetailsWithFRS.clientName
-      )
-
-      lazy val view = views.html.confirm_submission(
-        viewModel, isAgent = false, Html("""<p id="example"> Example Html</p>"""))(fakeRequest, messages, mockAppConfig, user, Lang.apply("en"))
-      lazy implicit val document: Document = Jsoup.parse(view.body)
-
-      "should have the text home" in {
-        document.getElementById("example").text() shouldBe "Example Html"
       }
     }
   }

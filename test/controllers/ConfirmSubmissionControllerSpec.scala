@@ -24,23 +24,20 @@ import audit.mocks.MockAuditingService
 import base.BaseSpec
 import common.{MandationStatuses, SessionKeys}
 import connectors.httpParsers.ResponseHttpParsers.HttpGetResult
-import mocks.service.{MockBtaLinkService, MockDateService, MockVatReturnsService, MockVatSubscriptionService}
+import mocks.service.{MockDateService, MockVatReturnsService, MockVatSubscriptionService}
 import mocks.{MockAuth, MockHonestyDeclarationAction, MockMandationPredicate, MockReceiptDataService}
 import models.auth.User
 import models.errors.{BadRequestError, UnexpectedJsonFormat, UnknownError}
 import models.nrs.SuccessModel
 import models.vatReturnSubmission.SubmissionSuccessModel
 import models.{CustomerDetails, SubmitVatReturnModel}
-import org.joda.time.DateTime
 import org.jsoup.Jsoup
 import play.api.http.Status
 import play.api.libs.json.Json
 import play.api.mvc.{AnyContentAsEmpty, Result}
 import play.api.test.Helpers._
-import play.twirl.api
-import play.twirl.api.Html
 import uk.gov.hmrc.auth.core.retrieve._
-import uk.gov.hmrc.auth.core.{AffinityGroup, BearerTokenExpired}
+import uk.gov.hmrc.auth.core.BearerTokenExpired
 
 import scala.concurrent.Future
 
@@ -52,7 +49,6 @@ class ConfirmSubmissionControllerSpec extends BaseSpec
   with MockDateService
   with MockAuditingService
   with MockReceiptDataService
-  with MockBtaLinkService
   with MockHonestyDeclarationAction{
 
   object TestConfirmSubmissionController extends ConfirmSubmissionController(
@@ -65,14 +61,13 @@ class ConfirmSubmissionControllerSpec extends BaseSpec
     mockAuditService,
     mockHonestyDeclarationAction,
     mockDateService,
-    mockBtaLinkService,
     mockEnrolmentsAuthService,
     mockReceiptDataService,
     mockAppConfig,
     ec
   )
 
-  val submitVatReturnModel = SubmitVatReturnModel(
+  val submitVatReturnModel: SubmitVatReturnModel = SubmitVatReturnModel(
     1000.00,
     1000.00,
     1000.00,
@@ -115,7 +110,6 @@ class ConfirmSubmissionControllerSpec extends BaseSpec
           }
 
           "return 200" in {
-            mockBtaLinkPartial(Html(""))
             mockAuthorise(mtdVatAuthorisedResponse)
             status(result) shouldBe Status.OK
           }
@@ -151,7 +145,6 @@ class ConfirmSubmissionControllerSpec extends BaseSpec
           }
 
           "return 200" in {
-            mockBtaLinkPartial(Html(""))
             mockAuthorise(mtdVatAuthorisedResponse)
             status(result) shouldBe Status.OK
           }
@@ -226,7 +219,6 @@ class ConfirmSubmissionControllerSpec extends BaseSpec
             }
 
             "return 303" in {
-              mockBtaLinkPartial(Html(""))
               mockAuthorise(mtdVatAuthorisedResponse)
               mockDateHasPassed(response = true)
               mockVatReturnSubmission(Future.successful(Right(SubmissionSuccessModel("12345"))))
@@ -257,7 +249,6 @@ class ConfirmSubmissionControllerSpec extends BaseSpec
             ))
 
             "return 500" in {
-              mockBtaLinkPartial(Html(""))
               mockAuthorise(mtdVatAuthorisedResponse)
               mockDateHasPassed(true)
               setupVatSubscriptionService(successCustomerInfoResponse)
@@ -347,7 +338,6 @@ class ConfirmSubmissionControllerSpec extends BaseSpec
 
       "return a SEE_OTHER" in {
 
-        mockBtaLinkPartial(Html(""))
         setupVatSubscriptionService(successCustomerInfoResponse)
         mockFullAuthResponse(agentFullInformationResponse)
         mockNrsSubmission(Future.successful(Right(SuccessModel("1234567890"))))
@@ -370,7 +360,6 @@ class ConfirmSubmissionControllerSpec extends BaseSpec
       lazy val result = TestConfirmSubmissionController.submitToNrs("18AA", submitVatReturnModel)
 
       "return an ISE" in {
-        mockBtaLinkPartial(Html(""))
         setupVatSubscriptionService(successCustomerInfoResponse)
         mockExtractReceiptData(successReceiptDataResponse)
         mockFullAuthResponse(Future.failed(BearerTokenExpired()))
@@ -388,7 +377,6 @@ class ConfirmSubmissionControllerSpec extends BaseSpec
       lazy val result = TestConfirmSubmissionController.submitToNrs("18AA", submitVatReturnModel)
 
       "return an ISE" in {
-        mockBtaLinkPartial(Html(""))
         setupVatSubscriptionService(successCustomerInfoResponse)
         mockFullAuthResponse(agentFullInformationResponse)
         mockExtractReceiptData(Future.successful(Left(UnknownError)))
@@ -407,7 +395,6 @@ class ConfirmSubmissionControllerSpec extends BaseSpec
       lazy val result = TestConfirmSubmissionController.submitToNrs("18AA", submitVatReturnModel)
 
       "return an ISE" in {
-        mockBtaLinkPartial(Html(""))
         setupVatSubscriptionService(successCustomerInfoResponse)
         mockFullAuthResponse(agentFullInformationResponse)
         mockExtractReceiptData(successReceiptDataResponse)
@@ -507,25 +494,8 @@ class ConfirmSubmissionControllerSpec extends BaseSpec
 
     "return html if all parameters are provided" in {
 
-      mockBtaLinkPartial(Html(""))
       TestConfirmSubmissionController.renderConfirmSubmissionView(
         vrn, submitVatReturnModel, successCustomerInfoResponse)(user).contentType shouldBe "text/html"
-
     }
-
-    "return the html from the BtaLinkService" in {
-
-      mockBtaLinkPartial(Html("<p id=BtaLinks> Example HTML </p>"))
-
-      lazy val result: Html = {
-        TestConfirmSubmissionController.renderConfirmSubmissionView(
-          vrn, submitVatReturnModel, successCustomerInfoResponse)(user)
-      }
-
-      Jsoup.parse(result.toString()).getElementById("BtaLinks").text shouldBe "Example HTML"
-
-    }
-
   }
-
 }

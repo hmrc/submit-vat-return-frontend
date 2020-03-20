@@ -37,8 +37,7 @@ import play.api.i18n.{I18nSupport, MessagesApi}
 import play.api.libs.json.Json
 import play.api.mvc.{Result, _}
 import play.twirl.api.Html
-import services.{BtaLinkService, DateService, EnrolmentsAuthService, VatReturnsService, VatSubscriptionService}
-import uk.gov.hmrc.auth.core.AffinityGroup._
+import services.{DateService, EnrolmentsAuthService, VatReturnsService, VatSubscriptionService}
 import uk.gov.hmrc.auth.core.AuthorisationException
 import uk.gov.hmrc.auth.core.retrieve.v2.Retrievals
 import uk.gov.hmrc.auth.core.retrieve.{ItmpAddress, ItmpName, ~}
@@ -58,7 +57,6 @@ class ConfirmSubmissionController @Inject()(val messagesApi: MessagesApi,
                                             auditService: AuditService,
                                             honestyDeclaration: HonestyDeclarationAction,
                                             dateService: DateService,
-                                            btaLinkService: BtaLinkService,
                                             authService: EnrolmentsAuthService,
                                             receiptDataHelper: ReceiptDataHelper,
                                             implicit val appConfig: AppConfig,
@@ -76,15 +74,14 @@ class ConfirmSubmissionController @Inject()(val messagesApi: MessagesApi,
       case Some(model) =>
         val sessionData = Json.parse(model).as[SubmitVatReturnModel]
 
-        vatSubscriptionService.getCustomerDetails(user.vrn) flatMap { model =>
-          renderConfirmSubmissionView(periodKey, sessionData, model) map { view =>
-            if (appConfig.features.viewVatReturnEnabled.apply()) {
-              Ok(view)
-                .addingToSession(SessionKeys.submissionYear -> sessionData.end.format(dateTimeFormatter))
-                .addingToSession(SessionKeys.inSessionPeriodKey -> periodKey)
-            } else {
-              Ok(view)
-            }
+        vatSubscriptionService.getCustomerDetails(user.vrn) map { model =>
+          val view = renderConfirmSubmissionView(periodKey, sessionData, model)
+          if (appConfig.features.viewVatReturnEnabled.apply()) {
+            Ok(view)
+              .addingToSession(SessionKeys.submissionYear -> sessionData.end.format(dateTimeFormatter))
+              .addingToSession(SessionKeys.inSessionPeriodKey -> periodKey)
+          } else {
+            Ok(view)
           }
         }
       case _ => Future.successful(Redirect(controllers.routes.SubmitFormController.show(periodKey)))
@@ -92,18 +89,16 @@ class ConfirmSubmissionController @Inject()(val messagesApi: MessagesApi,
   }
 
   private[controllers] def renderConfirmSubmissionView[A](periodKey: String,
-                                             sessionData: SubmitVatReturnModel,
-                                             customerDetails: Either[HttpError, CustomerDetails])(implicit user: User[A]): Future[Html] = {
-
+                                                          sessionData: SubmitVatReturnModel,
+                                                          customerDetails: Either[HttpError, CustomerDetails])
+                                                         (implicit user: User[A]): Html = {
     val clientName = customerDetails match {
       case Right(model) => model.clientName
       case _ => None
     }
     val viewModel = ConfirmSubmissionViewModel(sessionData, periodKey, clientName)
 
-    btaLinkService.getPartial map { partial =>
-      views.html.confirm_submission(viewModel, user.isAgent, partial)
-    }
+    views.html.confirm_submission(viewModel, user.isAgent)
   }
 
   def submit(periodKey: String): Action[AnyContent] = (authPredicate
@@ -174,34 +169,42 @@ class ConfirmSubmissionController @Inject()(val messagesApi: MessagesApi,
                                           sessionData: SubmitVatReturnModel)(implicit user: User[A]): Future[Result] = {
     for {
       customerDetails <- vatSubscriptionService.getCustomerDetails(user.vrn)
-      html <- renderConfirmSubmissionView(periodKey, sessionData, customerDetails)
       receiptData = receiptDataHelper.extractReceiptData(sessionData, customerDetails)
-      htmlPayload = HashUtil.encode(html.body)
-      sha256Checksum = HashUtil.getHash(html.body)
       identity <- buildIdentityData()
       result <- (identity, receiptData) match {
-        case (Right(id), Right(receipt)) => vatReturnsService.nrsSubmission(periodKey, htmlPayload, sha256Checksum, id, receipt) flatMap {
-          case Left(error: BadRequestError) =>
-            Logger.debug(s"[ConfirmSubmissionController][submitToNRS] - NRS returned BAD_REQUEST: $error")
-            Logger.warn("[ConfirmSubmissionController][submitToNRS] - NRS returned BAD_REQUEST")
-            auditService.audit(
-              NrsErrorAuditModel(user.vrn, user.arn.isDefined, user.arn, sessionData.start, sessionData.end, sessionData.due, error.code),
-              Some(controllers.routes.ConfirmSubmissionController.submit(periodKey).url)
-            )
-            Future.successful(InternalServerError(views.html.errors.submission_error()))
-          case Right(success) =>
-            auditService.audit(
-              NrsSuccessAuditModel(user.vrn, user.arn.isDefined, user.arn, sessionData.start, sessionData.end, sessionData.due, success.nrSubmissionId),
-              Some(controllers.routes.ConfirmSubmissionController.submit(periodKey).url)
-            )
-            submitVatReturn(periodKey, sessionData)
-          case Left(other: ServerSideError) =>
-            auditService.audit(
-              NrsErrorAuditModel(user.vrn, user.arn.isDefined, user.arn, sessionData.start, sessionData.end, sessionData.due, other.code),
-              Some(controllers.routes.ConfirmSubmissionController.submit(periodKey).url)
-            )
-            submitVatReturn(periodKey, sessionData)
-        }
+        case (Right(id), Right(receipt)) =>
+          val html = renderConfirmSubmissionView(periodKey, sessionData, customerDetails)
+          val htmlPayload = HashUtil.encode(html.body)
+          val sha256Checksum = HashUtil.getHash(html.body)
+
+          vatReturnsService.nrsSubmission(periodKey, htmlPayload, sha256Checksum, id, receipt) flatMap {
+            case Left(error: BadRequestError) =>
+              Logger.debug(s"[ConfirmSubmissionController][submitToNRS] - NRS returned BAD_REQUEST: $error")
+              Logger.warn("[ConfirmSubmissionController][submitToNRS] - NRS returned BAD_REQUEST")
+              auditService.audit(
+                NrsErrorAuditModel(
+                  user.vrn, user.arn.isDefined, user.arn, sessionData.start, sessionData.end, sessionData.due, error.code
+                ),
+                Some(controllers.routes.ConfirmSubmissionController.submit(periodKey).url)
+              )
+              Future.successful(InternalServerError(views.html.errors.submission_error()))
+            case Right(success) =>
+              auditService.audit(
+                NrsSuccessAuditModel(
+                  user.vrn, user.arn.isDefined, user.arn, sessionData.start, sessionData.end, sessionData.due, success.nrSubmissionId
+                ),
+                Some(controllers.routes.ConfirmSubmissionController.submit(periodKey).url)
+              )
+              submitVatReturn(periodKey, sessionData)
+            case Left(other: ServerSideError) =>
+              auditService.audit(
+                NrsErrorAuditModel(
+                  user.vrn, user.arn.isDefined, user.arn, sessionData.start, sessionData.end, sessionData.due, other.code
+                ),
+                Some(controllers.routes.ConfirmSubmissionController.submit(periodKey).url)
+              )
+              submitVatReturn(periodKey, sessionData)
+          }
         case (Left(errorResult), _) => Future(errorResult)
         case (_, Left(error)) =>
           Logger.debug(s"[ConfirmSubmissionController][submitToNRS] - extractReceiptData helper returned error of: $error")
