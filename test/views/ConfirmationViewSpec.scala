@@ -17,7 +17,7 @@
 package views
 
 import assets.messages.{ConfirmationPageMessages => viewMessages}
-import common.{MandationStatuses, SessionKeys}
+import common.SessionKeys
 import models.auth.User
 import org.jsoup.Jsoup
 import org.jsoup.nodes.Document
@@ -69,7 +69,8 @@ class ConfirmationViewSpec extends ViewBaseSpec {
           }
 
           "have the correct redirect link" in {
-            element("#view-vat-return-button").attr("href") shouldBe mockAppConfig.viewSubmittedReturnUrl + s"/$submitYear/$periodKey"
+            element("#view-vat-return-button").attr("href") shouldBe
+              mockAppConfig.viewSubmittedReturnUrl + s"/$submitYear/$periodKey"
           }
         }
 

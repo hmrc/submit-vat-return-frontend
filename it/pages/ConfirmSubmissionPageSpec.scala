@@ -27,7 +27,7 @@ import play.api.libs.json.{JsObject, JsValue, Json}
 import play.api.libs.ws.WSResponse
 import stubs.AuthStub._
 import stubs.VatReturnsStub._
-import stubs.{AuthStub, BtaLinkPartialStub, VatReturnsStub, VatSubscriptionStub}
+import stubs.{AuthStub, VatReturnsStub, VatSubscriptionStub}
 
 
 class ConfirmSubmissionPageSpec extends NrsAssets with GivenWhenThen {
@@ -102,9 +102,6 @@ class ConfirmSubmissionPageSpec extends NrsAssets with GivenWhenThen {
               And("The auth call for full information is successful")
               AuthStub.stubResponse(OK, fullNRSAuthResponse)
 
-              And("The request to BTA is successful")
-              BtaLinkPartialStub.stubResponse(OK)
-
               And("The POST to NRS is successful")
               VatReturnsStub.stubResponse(nrsSubmissionUri)(ACCEPTED, Json.obj("nrSubmissionId" -> "nrsIDExample"))
 
@@ -155,9 +152,6 @@ class ConfirmSubmissionPageSpec extends NrsAssets with GivenWhenThen {
               When("The user is authenticated and authorised")
               AuthStub.stubResponse(OK, mtdVatAuthResponse)
 
-              And("The request to BTA is successful")
-              BtaLinkPartialStub.stubResponse(OK)
-
               And("The customer-details call is successful")
               VatSubscriptionStub.stubResponse("customer-details", OK, customerDetails)
 
@@ -182,41 +176,6 @@ class ConfirmSubmissionPageSpec extends NrsAssets with GivenWhenThen {
               response.header("Location") shouldBe Some(controllers.routes.ConfirmationController.show().url)
             }
           }
-
-          "The Bta service for the partial returns a SERVICE_UNAVAILABLE" should {
-
-            "display the backup partial" in {
-              When("The user is authenticated and authorised")
-              AuthStub.stubResponse(OK, mtdVatAuthResponse)
-
-              And("The request to BTA is unsuccessful")
-              BtaLinkPartialStub.stubResponse(SERVICE_UNAVAILABLE)
-
-              And("The customer-details call is successful")
-              VatSubscriptionStub.stubResponse("customer-details", OK, customerDetails)
-
-              And("The auth call for full information is successful")
-              AuthStub.stubResponse(OK, fullNRSAuthResponse)
-
-              And("The POST to NRS is successful")
-              VatReturnsStub.stubResponse(nrsSubmissionUri)(OK, Json.obj())
-
-              And("The POST to vat-returns is successful")
-              VatReturnsStub.stubResponse(vatReturnUri("999999999"))(OK, Json.obj("formBundleNumber" -> "12345"))
-
-              val response: WSResponse = getRequest(fullSessionValues)
-
-              And("The backend submission was made with the correct nine box value mappings and headers")
-              VatReturnsStub.verifyVatReturnSubmission("999999999", postRequestJsonBody)
-
-              Jsoup.parse(response.body).getElementById("service-info-home-link").text shouldBe "Home"
-              Jsoup.parse(response.body).getElementById("service-info-manage-account-link").text shouldBe "Manage account"
-              Jsoup.parse(response.body).getElementById("service-info-messages-link").text shouldBe "Messages"
-              Jsoup.parse(response.body).getElementById("service-info-help-and-contact-link").text shouldBe "Help and contact"
-            }
-          }
-
-
         }
 
         "matching obligation end date is in the future" should {
@@ -225,9 +184,6 @@ class ConfirmSubmissionPageSpec extends NrsAssets with GivenWhenThen {
 
             When("The user is authenticated and authorised")
             AuthStub.stubResponse(OK, mtdVatAuthResponse)
-
-            And("The request to BTA is successful")
-            BtaLinkPartialStub.stubResponse(OK)
 
             val response: WSResponse = request(
               Map("mtdNineBoxReturnData" -> nineBoxSessionData(LocalDate.now().plusDays(1).toString)) ++

@@ -25,7 +25,7 @@ import assets.messages.SubmitFormPageMessages
 import audit.mocks.MockAuditingService
 import connectors.httpParsers.ResponseHttpParsers.HttpGetResult
 import mocks.{MockAuth, MockHonestyDeclarationAction, MockMandationPredicate}
-import mocks.service.{MockBtaLinkService, MockDateService, MockVatObligationsService, MockVatSubscriptionService}
+import mocks.service.{MockDateService, MockVatObligationsService, MockVatSubscriptionService}
 import models._
 import models.auth.User
 import models.errors.UnexpectedJsonFormat
@@ -35,7 +35,6 @@ import play.api.libs.json.Json
 import play.api.mvc.{AnyContentAsEmpty, Result}
 import play.api.test.FakeRequest
 import play.api.test.Helpers._
-import play.twirl.api.Html
 
 import scala.concurrent.Future
 
@@ -46,7 +45,6 @@ class SubmitFormControllerSpec extends BaseSpec
   with MockMandationPredicate
   with MockDateService
   with MockAuditingService
-  with MockBtaLinkService
   with MockHonestyDeclarationAction
 {
 
@@ -76,7 +74,6 @@ class SubmitFormControllerSpec extends BaseSpec
     mockVatSubscriptionService,
     mockVatObligationsService,
     mockMandationStatusPredicate,
-    mockBtaLinkService,
     mockDateService,
     mockAuditService,
     mockAuthPredicate,
@@ -123,7 +120,6 @@ class SubmitFormControllerSpec extends BaseSpec
           }
 
           "return 200" in {
-            mockBtaLinkPartial(Html(""))
             mockAuthorise(mtdVatAuthorisedResponse)
             setupAuditExtendedEvent
             setupVatSubscriptionService(vatSubscriptionResponse)
@@ -152,7 +148,6 @@ class SubmitFormControllerSpec extends BaseSpec
           }
 
           "return 200" in {
-            mockBtaLinkPartial(Html(""))
             mockAuthorise(mtdVatAuthorisedResponse)
             setupAuditExtendedEvent
             setupVatSubscriptionService(vatSubscriptionFailureResponse)
@@ -194,7 +189,6 @@ class SubmitFormControllerSpec extends BaseSpec
             }
 
             "return 200" in {
-              mockBtaLinkPartial(Html("""<a id="BtaLinks"> Example HTML </a>"""))
               mockAuthorise(mtdVatAuthorisedResponse)
               setupAuditExtendedEvent
               setupVatSubscriptionService(vatSubscriptionResponse)
@@ -205,10 +199,6 @@ class SubmitFormControllerSpec extends BaseSpec
 
             "return HTML" in {
               contentType(result) shouldBe Some("text/html")
-            }
-
-            "return HTML from the BtaLinkService" in {
-              Jsoup.parse(bodyOf(result)).getElementById("BtaLinks").text shouldBe "Example HTML"
             }
           }
 
@@ -222,7 +212,6 @@ class SubmitFormControllerSpec extends BaseSpec
             }
 
             "return 400" in {
-              mockBtaLinkPartial(Html(""))
               mockAuthorise(mtdVatAuthorisedResponse)
               setupAuditExtendedEvent
               setupVatSubscriptionService(vatSubscriptionResponse)
@@ -258,7 +247,6 @@ class SubmitFormControllerSpec extends BaseSpec
           val badPeriodKeyObsResponse: Future[HttpGetResult[VatObligations]] = Future.successful(Right(badPeriodKeyObs))
 
           "return a 303" in {
-            mockBtaLinkPartial(Html(""))
             mockAuthorise(mtdVatAuthorisedResponse)
             setupAuditExtendedEvent
             setupVatSubscriptionService(vatSubscriptionResponse)
@@ -279,7 +267,6 @@ class SubmitFormControllerSpec extends BaseSpec
             val vatSubscriptionErrorResponse: Future[HttpGetResult[CustomerDetails]] = Future.successful(Left(UnexpectedJsonFormat))
             val vatObligationsErrorResponse: Future[HttpGetResult[VatObligations]] = Future.successful(Left(UnexpectedJsonFormat))
 
-            mockBtaLinkPartial(Html(""))
             mockAuthorise(mtdVatAuthorisedResponse)
             setupAuditExtendedEvent
             setupVatSubscriptionService(vatSubscriptionErrorResponse)
@@ -792,7 +779,6 @@ class SubmitFormControllerSpec extends BaseSpec
           }
 
           "return 200" in {
-            mockBtaLinkPartial(Html(""))
             mockAuthorise(mtdVatAuthorisedResponse)
             mockDateHasPassed(response = true)
             setupVatSubscriptionService(vatSubscriptionResponse)
@@ -823,7 +809,6 @@ class SubmitFormControllerSpec extends BaseSpec
           }
 
           "return a 303" in {
-            mockBtaLinkPartial(Html(""))
             mockAuthorise(mtdVatAuthorisedResponse)
             setupVatSubscriptionService(vatSubscriptionResponse)
             setupVatObligationsService(vatObligationsResponse)
@@ -844,7 +829,6 @@ class SubmitFormControllerSpec extends BaseSpec
             val vatObligationsErrorResponse: Future[HttpGetResult[VatObligations]] = Future.successful(Left(UnexpectedJsonFormat))
 
             mockAuthorise(mtdVatAuthorisedResponse)
-            mockBtaLinkPartial(Html(""))
 
             setupVatSubscriptionService(vatSubscriptionErrorResponse)
             setupVatObligationsService(vatObligationsErrorResponse)

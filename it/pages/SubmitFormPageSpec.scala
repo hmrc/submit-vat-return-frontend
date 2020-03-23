@@ -26,11 +26,10 @@ import play.api.libs.ws.WSResponse
 import stubs.AuthStub._
 import stubs.VatObligationsStub._
 import stubs.VatSubscriptionStub._
-import stubs.{AuthStub, BtaLinkPartialStub, VatObligationsStub, VatSubscriptionStub}
+import stubs.{AuthStub, VatObligationsStub, VatSubscriptionStub}
 import forms.SubmitVatReturnForm
-import models.{NineBoxModel, SubmitFormViewModel, SubmitVatReturnModel}
+import models.{NineBoxModel, SubmitFormViewModel}
 import org.jsoup.Jsoup
-import play.twirl.api.Html
 
 class SubmitFormPageSpec extends BaseISpec {
 
@@ -38,7 +37,8 @@ class SubmitFormPageSpec extends BaseISpec {
 
     "there is a GET request" when {
 
-      val sessionValues = formatSessionMandationStatus(Some(MandationStatuses.nonMTDfB)) ++ Map(SessionKeys.HonestyDeclaration.key -> s"$vrn-18AA")
+      val sessionValues =
+        formatSessionMandationStatus(Some(MandationStatuses.nonMTDfB)) ++ Map(SessionKeys.HonestyDeclaration.key -> s"$vrn-18AA")
 
       def request: WSResponse = get("/18AA/submit-form", sessionValues)
 
@@ -53,46 +53,12 @@ class SubmitFormPageSpec extends BaseISpec {
               AuthStub.stubResponse(OK, mtdVatAuthResponse)
               VatSubscriptionStub.stubResponse("customer-details", OK, customerInformationSuccessJson)
               VatSubscriptionStub.stubResponse("mandation-status", OK, mandationStatusSuccessJson)
-              BtaLinkPartialStub.stubResponse(OK)
               VatObligationsStub.stubResponse(OK, vatObligationsSuccessJson(endDate = LocalDate.now().minusDays(1)))
 
               val response: WSResponse = request
 
               response.status shouldBe OK
             }
-          }
-
-          "the Bta service for the partial is return a SERVICE_UNAVAILABLE" should {
-
-            "return 200" in {
-
-              AuthStub.stubResponse(OK, mtdVatAuthResponse)
-              VatSubscriptionStub.stubResponse("customer-details", OK, customerInformationSuccessJson)
-              VatSubscriptionStub.stubResponse("mandation-status", OK, mandationStatusSuccessJson)
-              BtaLinkPartialStub.stubResponse(SERVICE_UNAVAILABLE)
-              VatObligationsStub.stubResponse(OK, vatObligationsSuccessJson(endDate = LocalDate.now().minusDays(1)))
-
-              val response: WSResponse = request
-
-              response.status shouldBe OK
-            }
-
-            "display the backup partial" in {
-
-              AuthStub.stubResponse(OK, mtdVatAuthResponse)
-              VatSubscriptionStub.stubResponse("customer-details", OK, customerInformationSuccessJson)
-              VatSubscriptionStub.stubResponse("mandation-status", OK, mandationStatusSuccessJson)
-              BtaLinkPartialStub.stubResponse(SERVICE_UNAVAILABLE)
-              VatObligationsStub.stubResponse(OK, vatObligationsSuccessJson(endDate = LocalDate.now().minusDays(1)))
-
-              val response: WSResponse = request
-
-              Jsoup.parse(response.body).getElementById("service-info-home-link").text shouldBe "Home"
-              Jsoup.parse(response.body).getElementById("service-info-manage-account-link").text shouldBe "Manage account"
-              Jsoup.parse(response.body).getElementById("service-info-messages-link").text shouldBe "Messages"
-              Jsoup.parse(response.body).getElementById("service-info-help-and-contact-link").text shouldBe "Help and contact"
-            }
-
           }
 
           "matching obligation end date is in the future" should {
@@ -102,7 +68,6 @@ class SubmitFormPageSpec extends BaseISpec {
               AuthStub.stubResponse(OK, mtdVatAuthResponse)
               VatSubscriptionStub.stubResponse("customer-details", OK, customerInformationSuccessJson)
               VatSubscriptionStub.stubResponse("mandation-status", OK, mandationStatusSuccessJson)
-              BtaLinkPartialStub.stubResponse(OK)
               VatObligationsStub.stubResponse(OK, vatObligationsSuccessJson(endDate = LocalDate.now().plusDays(1)))
 
               val response: WSResponse = request
@@ -211,7 +176,6 @@ class SubmitFormPageSpec extends BaseISpec {
           AuthStub.stubResponse(OK, mtdVatAuthResponse)
           VatSubscriptionStub.stubResponse("customer-details", OK, customerInformationSuccessJson)
           VatSubscriptionStub.stubResponse("mandation-status", OK, mandationStatusSuccessJson)
-          BtaLinkPartialStub.stubResponse(OK)
           VatObligationsStub.stubResponse(OK, vatObligationsSuccessJson(endDate = LocalDate.now().minusDays(1)))
 
           val response: WSResponse = get("/18AA/submit-form", formatSessionMandationStatus(Some(MandationStatuses.nonMTDfB)))
@@ -223,7 +187,8 @@ class SubmitFormPageSpec extends BaseISpec {
 
     "there is a POST request" when {
 
-      val sessionValues = formatSessionMandationStatus(Some(MandationStatuses.nonMTDfB)) ++ Map(SessionKeys.HonestyDeclaration.key -> s"$vrn-18AA")
+      val sessionValues =
+        formatSessionMandationStatus(Some(MandationStatuses.nonMTDfB)) ++ Map(SessionKeys.HonestyDeclaration.key -> s"$vrn-18AA")
 
       val validSubmissionModel = NineBoxModel(
         box1 = 1000.00,

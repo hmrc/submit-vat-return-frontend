@@ -18,15 +18,15 @@
 @import models.auth.User
 
 @(title: String,
-        appConfig: AppConfig,
-        sidebarLinks: Option[Html] = None,
-        contentHeader: Option[Html] = None,
-        bodyClasses: Option[String] = None,
-        mainClass: Option[String] = None,
-        showSignOut: Boolean = true,
-        feedbackOnSignOut: Boolean = true,
-        scriptElem: Option[Html] = None,
-user: Option[User[_]] = None)(mainContent: Html)(implicit request : Request[_], messages: Messages)
+  appConfig: AppConfig,
+  sidebarLinks: Option[Html] = None,
+  contentHeader: Option[Html] = None,
+  bodyClasses: Option[String] = None,
+  mainClass: Option[String] = None,
+  showSignOut: Boolean = true,
+  feedbackOnSignOut: Boolean = true,
+  scriptElem: Option[Html] = None,
+  user: Option[User[_]] = None)(mainContent: Html)(implicit request : Request[_], messages: Messages)
 
 @import uk.gov.hmrc.play.views.html.layouts
 
@@ -39,11 +39,13 @@ user: Option[User[_]] = None)(mainContent: Html)(implicit request : Request[_], 
 }
 
 @defaultScriptElem = {
-    <script type="text/javascript" src=@routes.Assets.at("js/errorFocus.js")></script>
-@scriptElem.fold(HtmlFormat.empty)(x => x)
+  <script type="text/javascript" src=@routes.Assets.at("js/errorFocus.js")></script>
+  @scriptElem.fold(HtmlFormat.empty)(x => x)
 }
 
-@titleServiceName = {@{user.fold(messages("navTitle.mtdfv"))(u => if(u.isAgent) messages("navTitle.agent") else messages("navTitle.nonAgent"))}}
+@titleServiceName = {@{
+  user.fold(messages("navTitle.mtdfv"))(u => if(u.isAgent) messages("navTitle.agent") else messages("navTitle.nonAgent"))
+}}
 
 @govuk_wrapper(appConfig = appConfig,
   title = messages("common.pageTitle", title, titleServiceName),

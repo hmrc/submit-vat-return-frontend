@@ -63,11 +63,4 @@ class MockConfig(implicit val runModeConfiguration: Configuration) extends AppCo
   )
 
   override val viewSubmittedReturnUrl: String = "/submittedreturns/year/periodkey"
-  override val btaBaseUrl: String = ""
-  override val btaHomeUrl: String = "/home"
-  override val btaMessagesUrl: String = "/messages"
-  override val btaManageAccountUrl: String = "/manageAccountUrl"
-  override val btaHelpAndContactUrl: String = "/helpandcontact"
-
-  override val btaPartialUrl: String = "/partialUrl"
 }
