@@ -16,21 +16,21 @@
 
 package config
 
-import base.BaseSpec
 import org.jsoup.Jsoup
 import org.jsoup.nodes.Document
-import play.api.http.Status
 import play.api.http.Status._
 import play.api.mvc.Cookie
 import play.api.test.FakeRequest
-import play.twirl.api.Html
 import views.ViewBaseSpec
+import views.html.templates.ErrorTemplate
 
 class ErrorHandlerSpec extends ViewBaseSpec {
 
+  val errorTemplate: ErrorTemplate = inject[ErrorTemplate]
+
   "ErrorHandler" when {
 
-    lazy val service: ErrorHandler = new ErrorHandler(messagesApi, mockAppConfig)
+    lazy val service: ErrorHandler = new ErrorHandler(messagesApi, errorTemplate, mockAppConfig)
 
     "calling showInternalServerError" when {
 

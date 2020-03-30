@@ -16,17 +16,22 @@
 
 @import models.auth.User
 
+@this(mainTemplate: MainTemplate)
+
 @()(implicit request: Request[_], messages: Messages, appConfig: config.AppConfig, user: Option[User[_]] = None)
 
-@views.html.main_template(title = messages("unauthorised_non_agent.title"), bodyClasses = None, appConfig = appConfig) {
+@mainTemplate(
+  pageTitle = messages("unauthorised_non_agent.title"),
+  appConfig = appConfig
+) {
 
-    <h1>@messages("unauthorised_non_agent.heading")</h1>
+  <h1>@messages("unauthorised_non_agent.heading")</h1>
 
-    <p>@messages("unauthorised_non_agent.text")
-        <a href="@appConfig.govUkGuidanceMtdVat">@messages("unauthorised_non_agent.link")</a>@messages("common.fullStop")
-    </p>
+  <p>@messages("unauthorised_non_agent.text")
+    <a href="@appConfig.govUkGuidanceMtdVat">@messages("unauthorised_non_agent.link")</a>@messages("common.fullStop")
+  </p>
 
-    <a class="button" role="button" href="@controllers.routes.SignOutController.signOut(feedbackOnSignOut = false)">
-       @messages("common.signOut")
-    </a>
+  <a class="button" role="button" href="@controllers.routes.SignOutController.signOut(feedbackOnSignOut = false)">
+    @messages("common.signOut")
+  </a>
 }

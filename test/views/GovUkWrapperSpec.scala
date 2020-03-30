@@ -20,17 +20,19 @@ import models.auth.User
 import org.jsoup.Jsoup
 import org.jsoup.nodes.Document
 import play.api.mvc.AnyContentAsEmpty
+import views.html.GovUkWrapper
 
 class GovUkWrapperSpec extends ViewBaseSpec {
 
+  val govUkWrapper: GovUkWrapper = inject[GovUkWrapper]
   val navTitleSelector = ".header__menu__proposition-name"
   val accessibilityLinkSelector = "#footer > div > div > div.footer-meta-inner > ul > li:nth-child(2) > a"
 
-  "Calling .govuk_wrapper" when {
+  "Calling .GovUkWrapper" when {
 
     "user is not known" should {
 
-      lazy val view = views.html.govuk_wrapper(mockAppConfig, "title", user = None)(fakeRequest, messages)
+      lazy val view = govUkWrapper(mockAppConfig, "title", user = None)(fakeRequest, messages)
       lazy implicit val document: Document = Jsoup.parse(view.body)
 
       "have the default nav title 'VAT" in {
@@ -42,7 +44,7 @@ class GovUkWrapperSpec extends ViewBaseSpec {
 
       "user is an agent" should {
 
-        lazy val view = views.html.govuk_wrapper(mockAppConfig, "title", user = Some(User[AnyContentAsEmpty.type]
+        lazy val view = govUkWrapper(mockAppConfig, "title", user = Some(User[AnyContentAsEmpty.type]
           ("999999999", arn = Some("XARN1234567"))))(fakeRequest, messages)
         lazy implicit val document: Document = Jsoup.parse(view.body)
 
@@ -63,7 +65,7 @@ class GovUkWrapperSpec extends ViewBaseSpec {
 
       "user is not an agent" should {
 
-        lazy val view = views.html.govuk_wrapper(mockAppConfig, "title", user = Some(User[AnyContentAsEmpty.type]
+        lazy val view = govUkWrapper(mockAppConfig, "title", user = Some(User[AnyContentAsEmpty.type]
           ("999999999", arn = None)))(fakeRequest, messages)
         lazy implicit val document: Document = Jsoup.parse(view.body)
 

@@ -18,10 +18,11 @@ package testOnly.config
 
 import config.FrontendAppConfig
 import javax.inject.Inject
-import play.api.{Configuration, Environment}
+import play.api.Configuration
+import uk.gov.hmrc.play.bootstrap.config.ServicesConfig
 
-class TestOnlyAppConfig @Inject()(env: Environment,
-                                  config: Configuration) extends FrontendAppConfig(config, env) {
+class TestOnlyAppConfig @Inject()(config: Configuration,
+                                  servicesConfig: ServicesConfig) extends FrontendAppConfig(config, servicesConfig) {
 
-  lazy val dynamicStubUrl: String = baseUrl("vat-returns-dynamic-stub")
+  lazy val dynamicStubUrl: String = servicesConfig.baseUrl("vat-returns-dynamic-stub")
 }

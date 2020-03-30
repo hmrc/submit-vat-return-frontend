@@ -29,17 +29,18 @@ import models.auth.User
 import models.{NineBoxModel, SubmitFormViewModel, SubmitVatReturnModel, VatObligation}
 import play.api.Logger
 import play.api.data.Form
-import play.api.i18n.{I18nSupport, MessagesApi}
+import play.api.i18n.I18nSupport
 import play.api.libs.json.Json
-import play.api.mvc.{Action, AnyContent, Request}
+import play.api.mvc.{Action, AnyContent, MessagesControllerComponents, Request}
 import services.{DateService, VatObligationsService, VatSubscriptionService}
 import uk.gov.hmrc.http.HeaderCarrier
 import uk.gov.hmrc.play.bootstrap.controller.FrontendController
+import views.html.SubmitForm
 
 import scala.concurrent.ExecutionContext
 
 @Singleton
-class SubmitFormController @Inject()(val messagesApi: MessagesApi,
+class SubmitFormController @Inject()(mcc: MessagesControllerComponents,
                                      vatSubscriptionService: VatSubscriptionService,
                                      vatObligationsService: VatObligationsService,
                                      mandationStatusCheck: MandationStatusPredicate,
@@ -47,9 +48,10 @@ class SubmitFormController @Inject()(val messagesApi: MessagesApi,
                                      auditService: AuditService,
                                      authPredicate: AuthPredicate,
                                      honestyDeclaration: HonestyDeclarationAction,
+                                     submitForm: SubmitForm,
                                      implicit val errorHandler: ErrorHandler,
                                      implicit val appConfig: AppConfig,
-                                     implicit val executionContext: ExecutionContext) extends FrontendController
+                                     implicit val executionContext: ExecutionContext) extends FrontendController(mcc)
                                                                                       with I18nSupport {
 
   def show(periodKey: String): Action[AnyContent] = (authPredicate
@@ -87,7 +89,7 @@ class SubmitFormController @Inject()(val messagesApi: MessagesApi,
 
     vatSubscriptionService.getCustomerDetails(user.vrn).map {
       case Right(customerDetails) =>
-        Ok(views.html.submit_form(
+        Ok(submitForm(
           periodKey,
           customerDetails.clientName,
           sessionData.flatRateScheme,
@@ -96,7 +98,7 @@ class SubmitFormController @Inject()(val messagesApi: MessagesApi,
           isAgent = user.isAgent
         ))
       case _ =>
-        Ok(views.html.submit_form(
+        Ok(submitForm(
           periodKey,
           None,
           sessionData.flatRateScheme,
@@ -129,7 +131,7 @@ class SubmitFormController @Inject()(val messagesApi: MessagesApi,
                   obligation.due
                 )
 
-                Ok(views.html.submit_form(
+                Ok(submitForm(
                   periodKey,
                   customerDetails.clientName,
                   customerDetails.hasFlatRateScheme,
@@ -169,7 +171,7 @@ class SubmitFormController @Inject()(val messagesApi: MessagesApi,
 
             vatSubscriptionService.getCustomerDetails(user.vrn) map {
               case Right(customerDetails) =>
-                BadRequest(views.html.submit_form(
+                BadRequest(submitForm(
                   periodKey,
                   customerDetails.clientName,
                   sessionData.hasFlatRateScheme,
@@ -178,7 +180,7 @@ class SubmitFormController @Inject()(val messagesApi: MessagesApi,
                   user.isAgent)
                 )
               case _ =>
-                BadRequest(views.html.submit_form(
+                BadRequest(submitForm(
                   periodKey,
                   None,
                   sessionData.hasFlatRateScheme,

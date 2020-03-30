@@ -1,4 +1,4 @@
-/*
+@*
  * Copyright 2020 HM Revenue & Customs
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -12,20 +12,25 @@
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License.
- */
+ *@
 
-package audit
+@import config.AppConfig
 
-import javax.inject.{Inject, Singleton}
-import play.api.{Configuration, Environment}
-import play.api.Mode.Mode
-import uk.gov.hmrc.play.audit.http.connector.{AuditConnector => Auditing}
-import uk.gov.hmrc.play.bootstrap.config.LoadAuditingConfig
-import uk.gov.hmrc.play.config.AppName
+@this(govUkWrapper: GovUkWrapper)
 
-@Singleton
-class AuditConnector @Inject()(val environment: Environment,
-                               val conf: Configuration) extends Auditing {
-  protected val mode: Mode = environment.mode
-  override lazy val auditingConfig = LoadAuditingConfig(conf, mode, "auditing")
+@(pageTitle: String, heading: String, message: String)(implicit request: Request[_], messages: Messages, appConfig: AppConfig)
+
+@contentHeader = {
+  <h1>@messages(heading)</h1>
 }
+
+@mainContent = {
+  <p>@messages(message)</p>
+}
+
+@govUkWrapper(
+ appConfig = appConfig,
+ title = messages(pageTitle),
+ contentHeader = Some(contentHeader),
+ mainBody = mainContent
+)

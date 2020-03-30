@@ -16,14 +16,15 @@
 
 package views.templates.inputs
 
-import forms.SubmitVatReturnForm
 import play.api.data.Form
 import play.api.data.Forms._
 import play.twirl.api.Html
-import views.html.templates.inputs.moneyInput
+import views.html.templates.inputs.MoneyInput
 import views.templates.TemplateBaseSpec
 
 class MoneyInputTemplateSpec extends TemplateBaseSpec {
+
+  val moneyInput: MoneyInput = inject[MoneyInput]
 
   "Calling MoneyInput" when {
 

@@ -22,7 +22,7 @@ import models.nrs._
 import play.api.libs.json.{JsValue, Json}
 import uk.gov.hmrc.auth.core.AffinityGroup.Agent
 import uk.gov.hmrc.auth.core.retrieve._
-import uk.gov.hmrc.auth.core.{Admin, ConfidenceLevel}
+import uk.gov.hmrc.auth.core.{User, ConfidenceLevel}
 
 object NrsTestData {
 
@@ -54,7 +54,7 @@ object NrsTestData {
         |    "agentFriendlyName" : "Bodgitt & Legget LLP"
         |  },
         |  "groupIdentifier" : "GroupId",
-        |  "credentialRole": "Admin",
+        |  "credentialRole": "User",
         |  "mdtpInformation" : {
         |    "deviceId" : "DeviceId",
         |    "sessionId": "SessionId"
@@ -93,7 +93,7 @@ object NrsTestData {
       email = Some("test@test.com"),
       agentInformation = AgentInformation(agentCode = Some("TZRXXV"), agentFriendlyName = Some("Bodgitt & Legget LLP"), agentId = Some("BDGL")),
       groupIdentifier = Some("GroupId"),
-      credentialRole = Some(Admin),
+      credentialRole = Some(User),
       mdtpInformation = Some(MdtpInformation("DeviceId", "SessionId")),
       itmpName = ItmpName(Some("test"), Some("test"), Some("test")),
       itmpDateOfBirth = Some(LocalDate.parse("1985-01-01")),

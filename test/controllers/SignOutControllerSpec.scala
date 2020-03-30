@@ -32,7 +32,7 @@ class SignOutControllerSpec extends BaseSpec {
 
   val mockAuthConnector: AuthConnector = mock[AuthConnector]
   val mockEnrolmentsAuthService: EnrolmentsAuthService = new EnrolmentsAuthService(mockAuthConnector)
-  val controller: SignOutController = new SignOutController(messagesApi, mockEnrolmentsAuthService)
+  val controller: SignOutController = new SignOutController(mcc, mockEnrolmentsAuthService)
 
   def mockAuth(authResult: Future[Option[AffinityGroup]]): Any =
     (mockAuthConnector.authorise(_: Predicate, _: Retrieval[Option[AffinityGroup]])(_: HeaderCarrier, _: ExecutionContext))

@@ -19,16 +19,15 @@ package config
 import java.util.Base64
 
 import javax.inject.{Inject, Singleton}
-import play.api.{Configuration, Environment}
-import play.api.Mode.Mode
-import uk.gov.hmrc.play.config.ServicesConfig
+import play.api.Configuration
 import common.ConfigKeys
 import config.features.Features
 import play.api.i18n.Lang
 import play.api.mvc.Call
 import uk.gov.hmrc.play.binders.ContinueUrl
+import uk.gov.hmrc.play.bootstrap.config.ServicesConfig
 
-trait AppConfig extends ServicesConfig {
+trait AppConfig {
   val reportAProblemPartialUrl: String
   val reportAProblemNonJSUrl: String
   val betaFeedbackUrl: String
@@ -61,11 +60,14 @@ trait AppConfig extends ServicesConfig {
   def feedbackUrl(redirectUrl: String): String
   def routeToSwitchLanguage: String => Call
   def languageMap: Map[String, Lang]
+  val vatObligationsBaseUrl: String
+  val vatSubscriptionBaseUrl: String
 }
 
 @Singleton
-class FrontendAppConfig @Inject()(val runModeConfiguration: Configuration, environment: Environment) extends AppConfig {
-  override protected def mode: Mode = environment.mode
+class FrontendAppConfig @Inject()(configuration: Configuration, servicesConfig: ServicesConfig) extends AppConfig {
+
+  import servicesConfig._
 
   lazy val appName: String = getString(ConfigKeys.appName)
 
@@ -148,11 +150,14 @@ class FrontendAppConfig @Inject()(val runModeConfiguration: Configuration, envir
   override def submitReturnUrl(vrn: String): String = s"$vatReturnsHost/${getString(ConfigKeys.submitReturnUrl)}/$vrn"
   override lazy val submitNrsUrl: String = s"$vatReturnsHost/${getString(ConfigKeys.submitNrsUrl)}"
 
-  override val features = new Features(runModeConfiguration)
+  override val features = new Features(configuration)
   override lazy val staticDateValue: String = getString(ConfigKeys.staticDateValue)
 
   override def feedbackUrl(redirectUrl: String): String = {s"$contactHost/contact/beta-feedback?service=$contactFormServiceIdentifier" +
     s"&backUrl=${ContinueUrl(platformHost + redirectUrl).encodedUrl}"}
 
   override val accessibilityLinkUrl: String = getString(ConfigKeys.vatSummaryHost) + getString(ConfigKeys.vatSummaryAccessibilityUrl)
+
+  override val vatObligationsBaseUrl: String = baseUrl("vat-obligations")
+  override val vatSubscriptionBaseUrl: String = baseUrl("vat-subscription")
 }

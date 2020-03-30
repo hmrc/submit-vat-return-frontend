@@ -14,8 +14,15 @@
  * limitations under the License.
  *@
 
-@import java.time.LocalDate
+@import uk.gov.hmrc.play.views.formatting.Money
 
-@(from: LocalDate, to: LocalDate, useShortDayFormat: Boolean = false)(implicit messages: Messages, lang: Lang)@{
- displayDate(from, from.getYear != to.getYear, useShortDayFormat) + " " +  messages("common.dateRangeSeparator") + " " + displayDate(to, true, useShortDayFormat)
+@this()
+
+@(value: BigDecimal)(implicit messages: Messages)
+
+@(value.isWhole, value >= 0) match {
+  case (true, true) => { @Money.pounds(value) }
+  case (true, false) => { <span aria-hidden="true">&minus;</span>@Money.pounds(value.abs) }
+  case (false, true) => { @Money.pounds(value, 2) }
+  case (false, false) => { <span aria-hidden="true">&minus;</span>@Money.pounds(value.abs, 2) }
 }

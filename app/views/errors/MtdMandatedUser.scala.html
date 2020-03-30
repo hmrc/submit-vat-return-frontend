@@ -16,11 +16,18 @@
 
 @import config.AppConfig
 @import models.auth.User
-@import views.html.templates.heading
+@import views.html.templates.Heading
+
+@this(mainTemplate: MainTemplate,
+      heading: Heading)
 
 @()(implicit request: Request[_], appConfig: AppConfig, messages: Messages, user: User[_])
 
-@views.html.main_template(title = messages("incorrect_mandation.heading"), bodyClasses = None, appConfig = appConfig, user = Some(user)) {
+@mainTemplate(
+  pageTitle = messages("incorrect_mandation.heading"),
+  appConfig = appConfig,
+  user = Some(user)
+) {
 
   @heading(messages("incorrect_mandation.heading"))
 

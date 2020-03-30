@@ -16,35 +16,37 @@
 
 package controllers
 
-import common.SessionKeys.HonestyDeclaration
+import common.SessionKeys.{HonestyDeclaration => SessionKeys}
 import config.{AppConfig, ErrorHandler}
 import controllers.predicates.{AuthPredicate, MandationStatusPredicate}
-import javax.inject.{Inject, Singleton}
-import play.api.i18n.{I18nSupport, MessagesApi}
-import play.api.mvc.{Action, AnyContent}
-import uk.gov.hmrc.play.bootstrap.controller.FrontendController
 import forms.HonestyDeclarationForm
+import javax.inject.{Inject, Singleton}
+import play.api.i18n.I18nSupport
+import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
+import uk.gov.hmrc.play.bootstrap.controller.FrontendController
+import views.html.HonestyDeclaration
 
 import scala.concurrent.Future
 
 @Singleton
-class HonestyDeclarationController @Inject()(val messagesApi: MessagesApi,
-                                             val mandationStatusCheck: MandationStatusPredicate,
+class HonestyDeclarationController @Inject()(val mandationStatusCheck: MandationStatusPredicate,
                                              val errorHandler: ErrorHandler,
                                              authPredicate: AuthPredicate,
-                                             implicit val appConfig: AppConfig) extends FrontendController with I18nSupport {
+                                             mcc: MessagesControllerComponents,
+                                             honestyDeclaration: HonestyDeclaration,
+                                             implicit val appConfig: AppConfig) extends FrontendController(mcc) with I18nSupport {
 
   def show(periodKey: String): Action[AnyContent] = (authPredicate andThen mandationStatusCheck).async { implicit user =>
-    Future.successful(Ok(views.html.honesty_declaration(periodKey, HonestyDeclarationForm.honestyDeclarationForm))
-      .removingFromSession(HonestyDeclaration.key))
+    Future.successful(Ok(honestyDeclaration(periodKey, HonestyDeclarationForm.honestyDeclarationForm))
+      .removingFromSession(SessionKeys.key))
   }
 
   def submit(periodKey: String): Action[AnyContent] = (authPredicate andThen mandationStatusCheck).async { implicit user =>
     HonestyDeclarationForm.honestyDeclarationForm.bindFromRequest().fold(
-      error => Future.successful(BadRequest(views.html.honesty_declaration(periodKey, error))),
+      error => Future.successful(BadRequest(honestyDeclaration(periodKey, error))),
       _ =>
         Future.successful(Redirect(controllers.routes.SubmitFormController.show(periodKey))
-          .addingToSession(HonestyDeclaration.key -> s"${user.vrn}-$periodKey"))
+          .addingToSession(SessionKeys.key -> s"${user.vrn}-$periodKey"))
     )
 
   }

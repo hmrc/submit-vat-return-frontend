@@ -16,31 +16,35 @@
 
 @import views.html.helper._
 
+@this()
+
 @(form: Form[_], choices: Seq[(String, String)], heading: String)(implicit messages: Messages)
 
 <div @if(form.hasErrors){ class="form-field--error"}>
 
-<fieldset>
+  <fieldset>
 
     <legend>
-        <h1 id="page-heading" class="heading-large">
-            @heading
-        </h1>
+      <h1 id="page-heading" class="heading-large">
+        @heading
+      </h1>
     </legend>
 
     @form.errors.map { error => <span class="error-message">@messages(error.message)</span> }
 
     <div>
-    @choices.map { case (value, label) =>
-    <div class="multiple-choice">
-        <input type="checkbox"
-        id="@form(value).id"
-        name="@form(value).name"
-        value="true"
+      @choices.map { case (value, label) =>
+        <div class="multiple-choice">
+          <input type="checkbox"
+                 id="@form(value).id"
+                 name="@form(value).name"
+                 value="true"
             @form(value).value.filter(_ == "true").map{_ => checked="checked"}/>
-        <label for="@form(value).id">@label</label>
+
+          <label for="@form(value).id">@label</label>
+        </div>
+      }
     </div>
-    }
-</div>
-</fieldset>
+
+    </fieldset>
 </div>

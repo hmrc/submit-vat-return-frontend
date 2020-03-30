@@ -18,7 +18,6 @@ package assets.messages
 
 object SessionExpiredMessages extends BaseMessages {
 
-
   val title: String = "Your session has timed out" + nonAgentTitleSuffix
   val heading: String = "Your session has timed out"
   val signIn: String = "You’ll have to sign in using your Government Gateway ID."

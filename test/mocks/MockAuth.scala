@@ -26,10 +26,11 @@ import play.api.mvc.{Action, AnyContent, Request}
 import play.api.test.Helpers.redirectLocation
 import services.EnrolmentsAuthService
 import uk.gov.hmrc.auth.core.AffinityGroup.{Agent, Individual}
+import uk.gov.hmrc.auth.core._
 import uk.gov.hmrc.auth.core.authorise.Predicate
 import uk.gov.hmrc.auth.core.retrieve.{LoginTimes, Retrieval, ~}
-import uk.gov.hmrc.auth.core._
 import uk.gov.hmrc.http.HeaderCarrier
+import views.html.errors.{UnauthorisedAgent, UnauthorisedNonAgent}
 
 import scala.concurrent.{ExecutionContext, Future}
 
@@ -37,7 +38,19 @@ trait MockAuth extends BaseSpec {
 
   lazy val mockAuthConnector: AuthConnector = mock[AuthConnector]
   lazy val mockEnrolmentsAuthService: EnrolmentsAuthService = new EnrolmentsAuthService(mockAuthConnector)
-  lazy val mockAuthPredicate: AuthPredicate = new AuthPredicate(mockEnrolmentsAuthService, errorHandler, messagesApi, ec, mockAppConfig)
+
+  val unauthorisedAgent: UnauthorisedAgent = inject[UnauthorisedAgent]
+  val unauthorisedNonAgent: UnauthorisedNonAgent = inject[UnauthorisedNonAgent]
+
+  lazy val mockAuthPredicate: AuthPredicate = new AuthPredicate(
+    mockEnrolmentsAuthService,
+    errorHandler,
+    mcc,
+    unauthorisedAgent,
+    unauthorisedNonAgent,
+    ec,
+    mockAppConfig
+  )
 
   def mockAuthorise(authResponse: Future[~[Option[AffinityGroup], Enrolments]]): Unit = {
     (mockAuthConnector.authorise(_: Predicate, _: Retrieval[_])(_: HeaderCarrier, _: ExecutionContext))

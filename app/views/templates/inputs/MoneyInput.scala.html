@@ -14,6 +14,8 @@
  * limitations under the License.
  *@
 
+@this()
+
 @(field: Field,
   label: String,
   labelHidden: Boolean = true,
@@ -22,24 +24,24 @@
 
 <div class="form-group @if(field.hasErrors){form-field--error}">
 
-    <label for="@field.id" class="form-label @if(labelHidden){visuallyhidden}">
-        @label
-    </label>
+  <label for="@field.id" class="form-label @if(labelHidden){visuallyhidden}">
+    @label
+  </label>
 
-    @hint.map { hint =>
-        <span class="form-hint">
-            @hint
-        </span>
-    }
+  @hint.map { hint =>
+    <span class="form-hint">
+      @hint
+    </span>
+  }
 
-    <div class="input-icon">
-        <span>&pound;</span>
-        <input type="tel"
-            class="form-control @if(field.hasErrors){error-field}"
-            name="@field.name"
-            id="@field.id"
-            value="@field.value"
-            step="@if(decimalPlace) {0.01} else {1}"/>
-    </div>
+  <div class="input-icon">
+    <span>&pound;</span>
+    <input type="tel"
+           class="form-control @if(field.hasErrors){error-field}"
+           name="@field.name"
+           id="@field.id"
+           value="@field.value"
+           step="@if(decimalPlace) {0.01} else {1}"/>
+  </div>
 
 </div>

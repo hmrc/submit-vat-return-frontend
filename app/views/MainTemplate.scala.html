@@ -16,8 +16,14 @@
 
 @import config.AppConfig
 @import models.auth.User
+@import uk.gov.hmrc.play.views.html.layouts.Sidebar
+@import uk.gov.hmrc.play.views.html.layouts.Article
 
-@(title: String,
+@this(govUkWrapper: GovUkWrapper,
+      article: Article,
+      sidebar: Sidebar)
+
+@(pageTitle: String,
   appConfig: AppConfig,
   sidebarLinks: Option[Html] = None,
   contentHeader: Option[Html] = None,
@@ -26,37 +32,32 @@
   showSignOut: Boolean = true,
   feedbackOnSignOut: Boolean = true,
   scriptElem: Option[Html] = None,
-  user: Option[User[_]] = None)(mainContent: Html)(implicit request : Request[_], messages: Messages)
-
-@import uk.gov.hmrc.play.views.html.layouts
+  user: Option[User[_]] = None
+)(mainContent: Html)(implicit request: Request[_], messages: Messages)
 
 @serviceInfoContent = {}
 
-@sidebar = {
+@sidebarContent = {
   @if(sidebarLinks.isDefined) {
-    @layouts.sidebar(sidebarLinks.get, Some("sidebar"))
+    @sidebar(sidebarLinks.get, Some("sidebar"))
   }
-}
-
-@defaultScriptElem = {
-  <script type="text/javascript" src=@routes.Assets.at("js/errorFocus.js")></script>
-  @scriptElem.fold(HtmlFormat.empty)(x => x)
 }
 
 @titleServiceName = {@{
   user.fold(messages("navTitle.mtdfv"))(u => if(u.isAgent) messages("navTitle.agent") else messages("navTitle.nonAgent"))
 }}
 
-@govuk_wrapper(appConfig = appConfig,
-  title = messages("common.pageTitle", title, titleServiceName),
+@govUkWrapper(
+  appConfig = appConfig,
+  title = messages("common.pageTitle", pageTitle, titleServiceName),
   mainClass = mainClass,
   bodyClasses = bodyClasses,
-  sidebar = sidebar,
+  sidebar = sidebarContent,
   contentHeader = contentHeader,
-  mainContent = layouts.article(mainContent),
+  mainBody = article(mainContent),
   serviceInfoContent = serviceInfoContent,
   showSignOut = showSignOut,
   feedbackOnSignOut = feedbackOnSignOut,
-  scriptElem = Some(defaultScriptElem),
+  scriptElem = scriptElem,
   user = user
 )

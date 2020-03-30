@@ -63,7 +63,7 @@ trait BaseISpec extends WordSpec with WireMockHelper with Matchers with
   lazy val wsClient: WSClient = app.injector.instanceOf[WSClient]
   lazy val appConfig: AppConfig = app.injector.instanceOf[AppConfig]
   lazy val messagesApi: MessagesApi = app.injector.instanceOf[MessagesApi]
-  implicit lazy val messages: Messages = Messages(Lang("en-GB"), messagesApi)
+  implicit lazy val messages: Messages = messagesApi.preferred(Seq(Lang("en-GB")))
   val appRouteContext: String = "/vat-through-software/submit-vat-return"
 
   implicit val fakeRequest: FakeRequest[AnyContentAsEmpty.type] = FakeRequest()
@@ -106,7 +106,7 @@ trait BaseISpec extends WordSpec with WireMockHelper with Matchers with
 
   def buildRequest(path: String, additionalCookies: Map[String, String] = Map.empty): WSRequest =
     wsClient.url(s"http://localhost:$port$appRouteContext$path")
-      .withHeaders(
+      .withHttpHeaders(
         HeaderNames.COOKIE -> SessionCookieBaker.bakeSessionCookie(additionalCookies),
         "Csrf-Token" -> "nocheck"
       )

@@ -14,27 +14,26 @@
  * limitations under the License.
  *@
 
-@import helper.CSRF
 @import testOnly.models.FeatureSwitchModel
-@import testOnly.views.html.singleCheckbox
 @import common.ConfigKeys
+@import uk.gov.hmrc.play.views.html.helpers.FormWithCSRF
 
-@(form: Form[FeatureSwitchModel])(implicit request: Request[_], messages: Messages, appConfig: config.AppConfig)
+@this(mainTemplate: MainTemplate, form: FormWithCSRF)
 
-@views.html.main_template(title = "Feature switches", bodyClasses = None, appConfig = appConfig) {
+@(featureSwitchForm: Form[FeatureSwitchModel])(implicit request: Request[_], messages: Messages, appConfig: config.AppConfig)
 
-    @helper.form(action = testOnly.controllers.routes.FeatureSwitchController.submitFeatureSwitch) {
-        @CSRF.formField
+@mainTemplate(pageTitle = "Feature switches", bodyClasses = None, appConfig = appConfig) {
 
+    @form(action = testOnly.controllers.routes.FeatureSwitchController.submitFeatureSwitch) {
         <div class="form-group">
             <fieldset>
                 <legend>
                     <h1 class="heading-medium">Features</h1>
                 </legend>
 
-                @singleCheckbox(form(ConfigKeys.staticDateEnabledFeature), "Use static date (2018-05-01)")
-                @singleCheckbox(form(ConfigKeys.languageToggleFeature), "Enable language toggle")
-                @singleCheckbox(form(ConfigKeys.viewVatReturnEnabled), "View Vat Return Button")
+                @singleCheckbox(featureSwitchForm(ConfigKeys.staticDateEnabledFeature), "Use static date (2018-05-01)")
+                @singleCheckbox(featureSwitchForm(ConfigKeys.languageToggleFeature), "Enable language toggle")
+                @singleCheckbox(featureSwitchForm(ConfigKeys.viewVatReturnEnabled), "View Vat Return Button")
 
             </fieldset>
         </div>

@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package assets
+package integrationAssets
 
 import base.BaseISpec
 
@@ -49,12 +49,13 @@ trait NrsAssets extends BaseISpec {
         |"itmpAddress":\{"line1":".*?","postCode":".*?","countryName":".*?","countryCode":".*?"\},
         |"affinityGroup":".*?",
         |"credentialStrength":".*?",
-        |"loginTimes":\{"currentLogin":"\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}\.\d{3}Z",
-        |"previousLogin":"\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}\.\d{3}Z"\}
+        |"loginTimes":\{"previousLogin":"\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}\.\d{3}Z",
+        |"currentLogin":"\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}\.\d{3}Z"\}
         |\},
         |"userAuthToken":"Bearer 1234",
-        |"headerData":\{"Csrf-Token":"nocheck","X-Request-ID":"govuk-tax-.*?","X-Request-Timestamp":"\d*","Content-Length":"2","Accept":
-        |"\*\/\*","Content-Type":"application\/json","Cookie":".*?","User-Agent":"AHC\/2\.0","Host":"localhost:19001"\},
+        |"headerData":\{"Csrf-Token":"nocheck","X-Request-ID":"govuk-tax-.*?","Timeout-Access":".*?",
+        |"Tls-Session-Info":".*?","X-Request-Timestamp":"\d*","Content-Length":"2","Accept":"\*\/\*","Content-Type":"application\/json","Cookie":".*?","User-Agent":"AHC\/2\.0","Host":"localhost:19001",
+        |"Raw-Request-URI":"\/vat-through-software\/submit-vat-return\/18AA\/confirm-submission","Remote-Address":".*?"\},
         |"searchKeys":\{"vrn":"999999999","periodKey":"18AA"\},
         |"receiptData":\{"language":"en","checkYourAnswersSections":\[\{"title":"VAT Return submission complete",
         |"data":\[

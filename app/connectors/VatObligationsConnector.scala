@@ -28,7 +28,7 @@ import scala.concurrent.{ExecutionContext, Future}
 class VatObligationsConnector @Inject()(http: HttpClient,
                                         appConfig: AppConfig) {
 
-  private def vatObligationsUrl(vrn: String): String = appConfig.baseUrl("vat-obligations") + s"/vat-obligations/$vrn/obligations"
+  private def vatObligationsUrl(vrn: String): String = appConfig.vatObligationsBaseUrl + s"/vat-obligations/$vrn/obligations"
 
   def getObligations(vrn: String)(implicit hc: HeaderCarrier, ec: ExecutionContext): Future[HttpGetResult[VatObligations]] = {
 

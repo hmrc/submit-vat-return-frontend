@@ -24,8 +24,11 @@ import org.jsoup.nodes.Document
 import play.api.mvc.AnyContentAsEmpty
 import play.api.test.FakeRequest
 import views.ViewBaseSpec
+import views.html.errors.SubmissionError
 
 class SubmissionErrorViewSpec extends ViewBaseSpec {
+
+  val submissionError: SubmissionError = inject[SubmissionError]
 
   "Rendering the Submission error page" when {
 
@@ -38,7 +41,7 @@ class SubmissionErrorViewSpec extends ViewBaseSpec {
 
     "the user is a non agent" should {
 
-      lazy val view = views.html.errors.submission_error()(fakeRequest, mockAppConfig, messages, user)
+      lazy val view = submissionError()(fakeRequest, mockAppConfig, messages, user)
       lazy implicit val document: Document = Jsoup.parse(view.body)
 
       "have the correct document title" in {
@@ -67,7 +70,7 @@ class SubmissionErrorViewSpec extends ViewBaseSpec {
 
       lazy val fakeRequestWithClientsVRN: FakeRequest[AnyContentAsEmpty.type] = FakeRequest().withSession(AuthKeys.agentSessionVrn -> "999999999")
       lazy val agentUser: User[AnyContentAsEmpty.type] = User[AnyContentAsEmpty.type]("999999999", Some("XAIT012345678"))(fakeRequestWithClientsVRN)
-      lazy val view = views.html.errors.submission_error()(fakeRequestWithClientsVRN, mockAppConfig, messages, user = agentUser)
+      lazy val view = submissionError()(fakeRequestWithClientsVRN, mockAppConfig, messages, user = agentUser)
       lazy implicit val document: Document = Jsoup.parse(view.body)
 
       "have a link to the agent-action page" in {

@@ -27,7 +27,8 @@ import scala.concurrent.{ExecutionContext, Future}
 
 @Singleton
 class VatSubscriptionConnector @Inject()(httpClient: HttpClient, appConfig: AppConfig) {
-  private[connectors] def vatSubscriptionUrl(vrn: String,endpoint: String): String = appConfig.baseUrl("vat-subscription") + s"/vat-subscription/$vrn/$endpoint"
+
+  private[connectors] def vatSubscriptionUrl(vrn: String,endpoint: String): String = appConfig.vatSubscriptionBaseUrl + s"/vat-subscription/$vrn/$endpoint"
 
   private lazy val urlToCall: (String, String) => String = (vrn, endpoint) => vatSubscriptionUrl(vrn, endpoint)
 

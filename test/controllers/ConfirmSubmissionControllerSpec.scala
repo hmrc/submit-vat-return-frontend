@@ -17,9 +17,7 @@
 package controllers
 
 import java.time.LocalDate
-
 import assets.NrsTestData.IdentityDataTestData
-import assets.messages.SubmissionErrorMessages
 import audit.mocks.MockAuditingService
 import base.BaseSpec
 import common.{MandationStatuses, SessionKeys}
@@ -30,14 +28,15 @@ import models.auth.User
 import models.errors.{BadRequestError, UnexpectedJsonFormat, UnknownError}
 import models.nrs.SuccessModel
 import models.vatReturnSubmission.SubmissionSuccessModel
-import models.{CustomerDetails, SubmitVatReturnModel}
-import org.jsoup.Jsoup
+import models.{ConfirmSubmissionViewModel, CustomerDetails, SubmitVatReturnModel}
 import play.api.http.Status
 import play.api.libs.json.Json
 import play.api.mvc.{AnyContentAsEmpty, Result}
 import play.api.test.Helpers._
-import uk.gov.hmrc.auth.core.retrieve._
 import uk.gov.hmrc.auth.core.BearerTokenExpired
+import uk.gov.hmrc.auth.core.retrieve._
+import views.html.ConfirmSubmission
+import views.html.errors.SubmissionError
 
 import scala.concurrent.Future
 
@@ -51,8 +50,10 @@ class ConfirmSubmissionControllerSpec extends BaseSpec
   with MockReceiptDataService
   with MockHonestyDeclarationAction{
 
+  val confirmSubmission: ConfirmSubmission = inject[ConfirmSubmission]
+  val submissionError: SubmissionError = inject[SubmissionError]
+
   object TestConfirmSubmissionController extends ConfirmSubmissionController(
-    messagesApi,
     mockMandationStatusPredicate,
     errorHandler,
     mockVatSubscriptionService,
@@ -63,6 +64,9 @@ class ConfirmSubmissionControllerSpec extends BaseSpec
     mockDateService,
     mockEnrolmentsAuthService,
     mockReceiptDataService,
+    mcc,
+    confirmSubmission,
+    submissionError,
     mockAppConfig,
     ec
   )
@@ -83,6 +87,9 @@ class ConfirmSubmissionControllerSpec extends BaseSpec
     LocalDate.now()
   )
 
+  def viewAsString(model: ConfirmSubmissionViewModel): String = confirmSubmission(model, isAgent = false)(fakeRequest, messages, mockAppConfig, user).toString
+  def errorViewAsString(): String = submissionError()(fakeRequest, mockAppConfig, messages, user).toString
+
   "ConfirmSubmissionController .show" when {
 
     "user is authorised" when {
@@ -100,8 +107,7 @@ class ConfirmSubmissionControllerSpec extends BaseSpec
               SessionKeys.returnData -> nineBoxModel,
               SessionKeys.mandationStatus -> MandationStatuses.nonMTDfB,
               SessionKeys.HonestyDeclaration.key -> s"$vrn-18AA"
-            )
-            )
+            ))
 
           lazy val result: Future[Result] = {
             setupVatSubscriptionService(successCustomerInfoResponse)
@@ -118,12 +124,13 @@ class ConfirmSubmissionControllerSpec extends BaseSpec
             contentType(result) shouldBe Some("text/html")
           }
 
-          "the user name should be displayed" in {
-            Jsoup.parse(bodyOf(result)).select("#content > article > section > h2").text() shouldBe "ABC Solutions"
+          "return the correct view" in {
+            contentAsString(result) shouldBe viewAsString(ConfirmSubmissionViewModel(submitVatReturnModel, "18AA", Some("ABC Solutions")))
           }
 
           "add obligation data to session" in {
-            await(result).header.headers("Set-Cookie") should include(s"submissionYear=${LocalDate.now().getYear}&inSessionPeriodKey=18AA")
+            await(result).session.get("submissionYear").get shouldBe LocalDate.now().getYear.toString
+            await(result).session.get("inSessionPeriodKey").get shouldBe "18AA"
           }
         }
 
@@ -136,8 +143,7 @@ class ConfirmSubmissionControllerSpec extends BaseSpec
               SessionKeys.returnData -> nineBoxModel,
               SessionKeys.mandationStatus -> MandationStatuses.nonMTDfB,
               SessionKeys.HonestyDeclaration.key -> s"$vrn-18AA"
-            )
-            )
+            ))
 
           lazy val result: Future[Result] = {
             setupVatSubscriptionService(vatSubscriptionResponse)
@@ -153,8 +159,8 @@ class ConfirmSubmissionControllerSpec extends BaseSpec
             contentType(result) shouldBe Some("text/html")
           }
 
-          "the user name should not be displayed" in {
-            Jsoup.parse(bodyOf(result)).select("#content > article > div > h2").text() shouldBe ""
+          "return the correct view" in {
+            contentAsString(result) shouldBe viewAsString(ConfirmSubmissionViewModel(submitVatReturnModel, "18AA", None))
           }
         }
       }
@@ -262,8 +268,8 @@ class ConfirmSubmissionControllerSpec extends BaseSpec
               status(result) shouldBe Status.INTERNAL_SERVER_ERROR
             }
 
-            "show the Submission error page" in {
-              Jsoup.parse(bodyOf(result)).title() shouldBe SubmissionErrorMessages.title
+            "return the correct view" in {
+              contentAsString(result) shouldBe errorViewAsString()
             }
           }
         }
@@ -283,7 +289,7 @@ class ConfirmSubmissionControllerSpec extends BaseSpec
           }
 
           "render generic Bad Request page" in {
-            Jsoup.parse(bodyOf(result)).title() shouldBe "Bad request - VAT - GOV.UK"
+            contentAsString(result) shouldBe errorHandler.badRequestTemplate.toString()
           }
         }
       }
@@ -367,8 +373,8 @@ class ConfirmSubmissionControllerSpec extends BaseSpec
         status(result) shouldBe Status.INTERNAL_SERVER_ERROR
       }
 
-      "render the submission error page" in {
-        Jsoup.parse(bodyOf(result)).title shouldBe SubmissionErrorMessages.title
+      "return the correct view" in {
+        contentAsString(result) shouldBe errorViewAsString()
       }
     }
 
@@ -384,10 +390,9 @@ class ConfirmSubmissionControllerSpec extends BaseSpec
         status(result) shouldBe Status.INTERNAL_SERVER_ERROR
       }
 
-      "render the submission error page" in {
-        Jsoup.parse(bodyOf(result)).title shouldBe SubmissionErrorMessages.title
+      "return the correct view" in {
+        contentAsString(result) shouldBe errorViewAsString()
       }
-
     }
 
     "a BAD_REQUEST is returned from Nrs Submission" should {
@@ -404,8 +409,8 @@ class ConfirmSubmissionControllerSpec extends BaseSpec
         status(result) shouldBe Status.INTERNAL_SERVER_ERROR
       }
 
-      "render the submission error page" in {
-        Jsoup.parse(bodyOf(result)).title shouldBe SubmissionErrorMessages.title
+      "return the correct view" in {
+        contentAsString(result) shouldBe errorViewAsString()
       }
     }
   }
@@ -437,8 +442,8 @@ class ConfirmSubmissionControllerSpec extends BaseSpec
         status(result.left.get) shouldBe 500
       }
 
-      "render the submission error page" in {
-        Jsoup.parse(bodyOf(result.left.get)).title shouldBe SubmissionErrorMessages.title
+      "return the correct view" in {
+        contentAsString(result.left.get) shouldBe errorViewAsString()
       }
     }
   }
@@ -488,7 +493,6 @@ class ConfirmSubmissionControllerSpec extends BaseSpec
 
     }
   }
-
 
   "ConfirmSubmissionController .renderConfirmSubmissionView" should {
 

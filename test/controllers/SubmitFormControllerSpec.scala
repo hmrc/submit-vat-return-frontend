@@ -18,23 +18,24 @@ package controllers
 
 import java.time.LocalDate
 
+import assets.CustomerDetailsTestAssets._
+import audit.mocks.MockAuditingService
 import base.BaseSpec
 import common.{MandationStatuses, SessionKeys}
-import assets.CustomerDetailsTestAssets._
-import assets.messages.SubmitFormPageMessages
-import audit.mocks.MockAuditingService
 import connectors.httpParsers.ResponseHttpParsers.HttpGetResult
-import mocks.{MockAuth, MockHonestyDeclarationAction, MockMandationPredicate}
+import forms.SubmitVatReturnForm
 import mocks.service.{MockDateService, MockVatObligationsService, MockVatSubscriptionService}
+import mocks.{MockAuth, MockHonestyDeclarationAction, MockMandationPredicate}
 import models._
 import models.auth.User
 import models.errors.UnexpectedJsonFormat
-import org.jsoup.Jsoup
+import play.api.data.Form
 import play.api.http.Status
 import play.api.libs.json.Json
 import play.api.mvc.{AnyContentAsEmpty, Result}
 import play.api.test.FakeRequest
 import play.api.test.Helpers._
+import views.html.SubmitForm
 
 import scala.concurrent.Future
 
@@ -45,8 +46,9 @@ class SubmitFormControllerSpec extends BaseSpec
   with MockMandationPredicate
   with MockDateService
   with MockAuditingService
-  with MockHonestyDeclarationAction
-{
+  with MockHonestyDeclarationAction {
+
+  val submitForm: SubmitForm = inject[SubmitForm]
 
   val vatSubscriptionResponse: Future[HttpGetResult[CustomerDetails]] = Future.successful(Right(customerDetailsWithFRS))
   val vatSubscriptionFailureResponse: Future[HttpGetResult[CustomerDetails]] = Future.successful(Left(UnexpectedJsonFormat))
@@ -70,7 +72,7 @@ class SubmitFormControllerSpec extends BaseSpec
   val vatObligationsErrorResponse: Future[HttpGetResult[VatObligations]] = Future.successful(Left(UnexpectedJsonFormat))
 
   object TestSubmitFormController extends SubmitFormController(
-    messagesApi,
+    mcc,
     mockVatSubscriptionService,
     mockVatObligationsService,
     mockMandationStatusPredicate,
@@ -78,16 +80,39 @@ class SubmitFormControllerSpec extends BaseSpec
     mockAuditService,
     mockAuthPredicate,
     mockHonestyDeclarationAction,
+    submitForm,
     errorHandler,
     mockAppConfig,
     ec
   )
+
+  def viewAsString[A](form: Form[NineBoxModel],
+                      clientName: Option[String] = Some("ABC Solutions"))(user: User[A]): String = submitForm(
+    "18AA",
+    clientName,
+    flatRateScheme = true,
+    obligations.obligations.head,
+    form,
+    isAgent = false
+  )(fakeRequest, messages, mockAppConfig, user).toString
 
   "SubmitFormController .show" when {
 
     "user is authorised" when {
 
       "there is a SubmitVatReturn model in session" when {
+
+        val model = Map(
+          "box1" -> "1000",
+          "box2" -> "1000",
+          "box3" -> "1000",
+          "box4" -> "1000",
+          "box5" -> "1000",
+          "box6" -> "1000",
+          "box7" -> "1000",
+          "box8" -> "1000",
+          "box9" -> "1000"
+        )
 
         val nineBoxModel: String = Json.stringify(Json.toJson(
           SubmitVatReturnModel(
@@ -101,9 +126,9 @@ class SubmitFormControllerSpec extends BaseSpec
             1000.00,
             1000.00,
             flatRateScheme = true,
-            LocalDate.now(),
-            LocalDate.now(),
-            LocalDate.now()
+            LocalDate.parse("2019-01-12"),
+            LocalDate.parse("2019-04-12"),
+            LocalDate.parse("2019-05-12")
           )
         ))
 
@@ -130,8 +155,8 @@ class SubmitFormControllerSpec extends BaseSpec
             contentType(result) shouldBe Some("text/html")
           }
 
-          "the user name should be displayed" in {
-            Jsoup.parse(bodyOf(result)).select("#content > article > div > h2").text() shouldBe "ABC Solutions"
+          "return the correct view" in {
+            contentAsString(result) shouldBe viewAsString(SubmitVatReturnForm().nineBoxForm.bind(model))(requestWithSessionData)
           }
         }
 
@@ -158,8 +183,8 @@ class SubmitFormControllerSpec extends BaseSpec
             contentType(result) shouldBe Some("text/html")
           }
 
-          "the user name should not be displayed" in {
-            Jsoup.parse(bodyOf(result)).select("#content > article > div > h2").text() shouldBe ""
+          "return the correct view" in {
+            contentAsString(result) shouldBe viewAsString(SubmitVatReturnForm().nineBoxForm.bind(model), None)(requestWithSessionData)
           }
         }
       }
@@ -200,6 +225,10 @@ class SubmitFormControllerSpec extends BaseSpec
             "return HTML" in {
               contentType(result) shouldBe Some("text/html")
             }
+
+            "return the correct view" in {
+              contentAsString(result) shouldBe viewAsString(SubmitVatReturnForm().nineBoxForm)(user)
+            }
           }
 
           "obligation end date is in the future" should {
@@ -221,7 +250,7 @@ class SubmitFormControllerSpec extends BaseSpec
             }
 
             "render generic Bad Request page" in {
-              Jsoup.parse(bodyOf(result)).title() shouldBe "Bad request - VAT - GOV.UK"
+              contentAsString(result) shouldBe errorHandler.badRequestTemplate.toString()
             }
           }
         }
@@ -257,7 +286,6 @@ class SubmitFormControllerSpec extends BaseSpec
           s"redirect to ${mockAppConfig.returnDeadlinesUrl}" in {
             redirectLocation(result) shouldBe Some(mockAppConfig.returnDeadlinesUrl)
           }
-
         }
 
         "an error response is returned from the service" should {
@@ -464,7 +492,7 @@ class SubmitFormControllerSpec extends BaseSpec
       }
 
       "render generic Bad Request page" in {
-        Jsoup.parse(bodyOf(result)).title() shouldBe "Bad request - VAT - GOV.UK"
+        contentAsString(result) shouldBe errorHandler.badRequestTemplate(request).toString()
       }
     }
 
@@ -475,12 +503,24 @@ class SubmitFormControllerSpec extends BaseSpec
         val sessionModel: String = Json.toJson(
           SubmitFormViewModel(
             hasFlatRateScheme = true,
-            LocalDate.parse("2019-01-01"),
-            LocalDate.parse("2019-01-04"),
-            LocalDate.parse("2019-01-05"))
+            LocalDate.parse("2019-01-12"),
+            LocalDate.parse("2019-04-12"),
+            LocalDate.parse("2019-05-12"))
         ).toString()
 
         "an error occurs (unentered value in a box)" should {
+
+          val inputs = Map(
+            "box1" -> "1000",
+            "box2" -> "1000",
+            "box3" -> "2000",
+            "box4" -> "1000",
+            "box5" -> "3000",
+            "box6" -> "1000",
+            "box7" -> "1000",
+            "box8" -> "1000",
+            "box9" -> ""
+          )
 
           lazy val request = FakeRequest().withFormUrlEncodedBody(
             "box1" -> "1000",
@@ -493,17 +533,18 @@ class SubmitFormControllerSpec extends BaseSpec
             "box8" -> "1000",
             "box9" -> "",
             "flatRateScheme" -> "true",
-            "start" -> "2019-01-01",
-            "end" -> "2019-01-04",
-            "due" -> "2019-01-05"
+            "start" -> "2019-01-12",
+            "end" -> "2019-04-12",
+            "due" -> "2019-05-12"
           ).withSession(
             SessionKeys.mandationStatus -> MandationStatuses.nonMTDfB,
             SessionKeys.viewModel -> sessionModel,
-            SessionKeys.HonestyDeclaration.key -> s"$vrn-93DH"
+            SessionKeys.HonestyDeclaration.key -> s"$vrn-18AA"
           )
 
+          lazy val user = User("")(request)
           lazy val result = {
-            TestSubmitFormController.submit(periodKey = "93DH")(request)
+            TestSubmitFormController.submit(periodKey = "18AA")(request)
           }
 
           "status is BAD_REQUEST" in {
@@ -512,16 +553,24 @@ class SubmitFormControllerSpec extends BaseSpec
             status(result) shouldBe BAD_REQUEST
           }
 
-          "contains common header" in {
-            contentAsString(result) should include(SubmitFormPageMessages.errorHeading)
-          }
-
-          "contains missing number error" in {
-            contentAsString(result) should include("Enter a number")
+          "return the correct view with errors" in {
+            contentAsString(result) shouldBe viewAsString(form = SubmitVatReturnForm().nineBoxForm.bind(inputs))(user)
           }
         }
 
         "an error occurs (too many numbers)" should {
+
+          val inputs = Map(
+            "box1" -> "1000",
+            "box2" -> "1000",
+            "box3" -> "2000",
+            "box4" -> "12345.000",
+            "box5" -> "3000",
+            "box6" -> "1000",
+            "box7" -> "1000",
+            "box8" -> "12345",
+            "box9" -> "1234567890123456"
+          )
 
           lazy val request = FakeRequest().withFormUrlEncodedBody(
             "box1" -> "1000",
@@ -534,17 +583,18 @@ class SubmitFormControllerSpec extends BaseSpec
             "box8" -> "12345",
             "box9" -> "1234567890123456",
             "flatRateScheme" -> "true",
-            "start" -> "2019-01-01",
-            "end" -> "2019-01-04",
-            "due" -> "2019-01-05"
+            "start" -> "2019-01-12",
+            "end" -> "2019-04-12",
+            "due" -> "2019-05-12"
           ).withSession(
             SessionKeys.mandationStatus -> MandationStatuses.nonMTDfB,
             SessionKeys.viewModel -> sessionModel,
-            SessionKeys.HonestyDeclaration.key -> s"$vrn-93DH"
+            SessionKeys.HonestyDeclaration.key -> s"$vrn-18AA"
           )
 
+          lazy val user = User("")(request)
           lazy val result = {
-            TestSubmitFormController.submit(periodKey = "93DH")(request)
+            TestSubmitFormController.submit(periodKey = "18AA")(request)
           }
 
           "status is BAD_REQUEST" in {
@@ -553,17 +603,24 @@ class SubmitFormControllerSpec extends BaseSpec
             status(result) shouldBe BAD_REQUEST
           }
 
-          "contains common header" in {
-            contentAsString(result) should include(SubmitFormPageMessages.errorHeading)
-          }
-
-          "contains the too many numbers error" in {
-            contentAsString(result) should include("Enter a maximum of 13 digits for pounds in box 4." +
-              "\nEnter a maximum of 2 decimal places for pence.\nYou can use a negative amount eg -13.2")
+          "return the correct view with errors" in {
+            contentAsString(result) shouldBe viewAsString(form = SubmitVatReturnForm().nineBoxForm.bind(inputs))(user)
           }
         }
 
         "an error occurs (incorrect format)" when {
+
+          val inputs = Map(
+            "box1" -> "1000",
+            "box2" -> "1000",
+            "box3" -> "2000",
+            "box4" -> "1000",
+            "box5" -> "3000",
+            "box6" -> "1000",
+            "box7" -> "12345",
+            "box8" -> "12345",
+            "box9" -> "1234+][567,./;'#890123456"
+          )
 
           lazy val request = FakeRequest().withFormUrlEncodedBody(
             "box1" -> "1000",
@@ -576,17 +633,18 @@ class SubmitFormControllerSpec extends BaseSpec
             "box8" -> "12345",
             "box9" -> "1234+][567,./;'#890123456",
             "flatRateScheme" -> "true",
-            "start" -> "2019-01-01",
-            "end" -> "2019-01-04",
-            "due" -> "2019-01-05"
+            "start" -> "2019-01-12",
+            "end" -> "2019-04-12",
+            "due" -> "2019-05-12"
           ).withSession(
             SessionKeys.mandationStatus -> MandationStatuses.nonMTDfB,
             SessionKeys.viewModel -> sessionModel,
-            SessionKeys.HonestyDeclaration.key -> s"$vrn-93DH"
+            SessionKeys.HonestyDeclaration.key -> s"$vrn-18AA"
           )
 
+          lazy val user = User("")(request)
           lazy val result = {
-            TestSubmitFormController.submit(periodKey = "93DH")(request)
+            TestSubmitFormController.submit(periodKey = "18AA")(request)
           }
 
           "status is BAD_REQUEST" in {
@@ -595,16 +653,25 @@ class SubmitFormControllerSpec extends BaseSpec
             status(result) shouldBe BAD_REQUEST
           }
 
-          "contains common header" in {
-            contentAsString(result) should include(SubmitFormPageMessages.errorHeading)
-          }
-
-          "has the correct form error shown" in {
-            contentAsString(result) should include("Enter a number in the correct format")
+          "return the correct view with errors" in {
+            contentAsString(result) shouldBe viewAsString(form = SubmitVatReturnForm().nineBoxForm.bind(inputs))(user)
           }
         }
 
         "an error occurs (negative number)" when {
+
+          val inputs = Map(
+            "box1" -> "1000",
+            "box2" -> "1000",
+            "box3" -> "2000",
+            "box4" -> "1000",
+            "box5" -> "-3000",
+            "box6" -> "1000",
+            "box7" -> "1000",
+            "box8" -> "1000",
+            "box9" -> "1000"
+          )
+
           lazy val request = FakeRequest().withFormUrlEncodedBody(
             "box1" -> "1000",
             "box2" -> "1000",
@@ -616,17 +683,18 @@ class SubmitFormControllerSpec extends BaseSpec
             "box8" -> "1000",
             "box9" -> "1000",
             "flatRateScheme" -> "true",
-            "start" -> "2019-01-01",
-            "end" -> "2019-01-04",
-            "due" -> "2019-01-05"
+            "start" -> "2019-01-12",
+            "end" -> "2019-04-12",
+            "due" -> "2019-05-12"
           ).withSession(
             SessionKeys.mandationStatus -> MandationStatuses.nonMTDfB,
             SessionKeys.viewModel -> sessionModel,
-            SessionKeys.HonestyDeclaration.key -> s"$vrn-93DH"
+            SessionKeys.HonestyDeclaration.key -> s"$vrn-18AA"
           )
 
+          lazy val user = User("")(request)
           lazy val result = {
-            TestSubmitFormController.submit(periodKey = "93DH")(request)
+            TestSubmitFormController.submit(periodKey = "18AA")(request)
           }
 
           "status is BAD_REQUEST" in {
@@ -635,17 +703,31 @@ class SubmitFormControllerSpec extends BaseSpec
             status(result) shouldBe BAD_REQUEST
           }
 
-          "contains common header" in {
-            contentAsString(result) should include(SubmitFormPageMessages.errorHeading)
-          }
-
-          "contains negative number error" in {
-            contentAsString(result) should include("Enter a maximum of 11 digits for pounds in box 5." +
-              "\nEnter a maximum of 2 decimal places for pence.\nDo not use a negative amount eg -13.2")
+          "return the correct view with errors" in {
+            contentAsString(result) shouldBe submitForm(
+              "18AA",
+              Some("ABC Solutions"),
+              flatRateScheme = true,
+              obligations.obligations.head,
+              SubmitVatReturnForm().nineBoxForm.bind(inputs),
+              isAgent = false
+            )(request, messages, mockAppConfig, user).toString()
           }
         }
 
         "an error occurs (incorrect box additions)" when {
+
+          val inputs = Map(
+            "box1" -> "1000",
+            "box2" -> "1000",
+            "box3" -> "12000",
+            "box4" -> "1000",
+            "box5" -> "121000",
+            "box6" -> "1000",
+            "box7" -> "1000",
+            "box8" -> "1000",
+            "box9" -> "1000"
+          )
 
           lazy val request = FakeRequest().withFormUrlEncodedBody(
             "box1" -> "1000",
@@ -658,17 +740,18 @@ class SubmitFormControllerSpec extends BaseSpec
             "box8" -> "1000",
             "box9" -> "1000",
             "flatRateScheme" -> "true",
-            "start" -> "2019-01-01",
-            "end" -> "2019-01-04",
-            "due" -> "2019-01-05"
+            "start" -> "2019-01-12",
+            "end" -> "2019-04-12",
+            "due" -> "2019-05-12"
           ).withSession(
             SessionKeys.mandationStatus -> MandationStatuses.nonMTDfB,
             SessionKeys.viewModel -> sessionModel,
-            SessionKeys.HonestyDeclaration.key -> s"$vrn-93DH"
+            SessionKeys.HonestyDeclaration.key -> s"$vrn-18AA"
           )
 
+          lazy val user = User("")(request)
           lazy val result = {
-            TestSubmitFormController.submit(periodKey = "93DH")(request)
+            TestSubmitFormController.submit(periodKey = "18AA")(request)
           }
 
           "status is BAD_REQUEST" in {
@@ -677,20 +760,24 @@ class SubmitFormControllerSpec extends BaseSpec
             status(result) shouldBe BAD_REQUEST
           }
 
-          "contains common header" in {
-            contentAsString(result) should include(SubmitFormPageMessages.errorHeading)
-          }
-
-          "contains box 3 error" in {
-            contentAsString(result) should include("Add the number from box 1 to the number from box 2 and write it here")
-          }
-
-          "contains box 5 error" in {
-            contentAsString(result) should include("Subtract the number in box 4 away from the number in box 3 and write it here")
+          "return the correct view with errors" in {
+            contentAsString(result) shouldBe viewAsString(SubmitVatReturnForm().validateBoxCalculations(SubmitVatReturnForm().nineBoxForm.bind(inputs)))(user)
           }
         }
 
         "an unsuccessful response is received from the service" should {
+
+          val inputs = Map(
+            "box1" -> "1000",
+            "box2" -> "1000",
+            "box3" -> "2000",
+            "box4" -> "1000",
+            "box5" -> "3000",
+            "box6" -> "1000",
+            "box7" -> "1000",
+            "box8" -> "1000",
+            "box9" -> ""
+          )
 
           val vatSubscriptionFailureResponse: Future[HttpGetResult[CustomerDetails]] = Future.successful(Left(UnexpectedJsonFormat))
 
@@ -705,15 +792,16 @@ class SubmitFormControllerSpec extends BaseSpec
             "box8" -> "1000",
             "box9" -> "",
             "flatRateScheme" -> "true",
-            "start" -> "2019-01-01",
-            "end" -> "2019-01-04",
-            "due" -> "2019-01-05"
+            "start" -> "2019-01-12",
+            "end" -> "2019-04-12",
+            "due" -> "2019-05-12"
           ).withSession(
             SessionKeys.mandationStatus -> MandationStatuses.nonMTDfB,
             SessionKeys.viewModel -> sessionModel,
             SessionKeys.HonestyDeclaration.key -> s"$vrn-18AA"
           )
 
+          lazy val user = User("")(request)
           lazy val result: Future[Result] = {
             TestSubmitFormController.submit("18AA")(request)
           }
@@ -728,8 +816,8 @@ class SubmitFormControllerSpec extends BaseSpec
             contentType(result) shouldBe Some("text/html")
           }
 
-          "the user name should not be displayed" in {
-            Jsoup.parse(bodyOf(result)).select("#content > article > div > h2").text() shouldBe ""
+          "return the correct view with errors" in {
+            contentAsString(result) shouldBe viewAsString(form = SubmitVatReturnForm().nineBoxForm.bind(inputs), clientName = None)(user)
           }
         }
       }
@@ -747,30 +835,15 @@ class SubmitFormControllerSpec extends BaseSpec
           "box8" -> "1234567890123",
           "box9" -> "",
           "flatRateScheme" -> "true",
-          "start" -> "2019-01-01",
-          "end" -> "2019-01-04",
-          "due" -> "2019-01-05"
+          "start" -> "2019-01-12",
+          "end" -> "2019-04-12",
+          "due" -> "2019-05-12"
         ).withSession(
           SessionKeys.mandationStatus -> MandationStatuses.nonMTDfB,
           SessionKeys.HonestyDeclaration.key -> s"$vrn-18AA"
         )
 
         "a successful response is received from the service" should {
-
-          val obligations: VatObligations = VatObligations(Seq(
-            VatObligation(
-              LocalDate.parse("2019-01-12"),
-              LocalDate.parse("2019-04-12"),
-              LocalDate.parse("2019-05-12"),
-              "18AA"
-            ),
-            VatObligation(
-              LocalDate.parse("2019-01-12"),
-              LocalDate.now().plusYears(1),
-              LocalDate.parse("2019-05-12"),
-              "18AB"
-            )
-          ))
 
           val vatObligationsResponse: Future[HttpGetResult[VatObligations]] = Future.successful(Right(obligations))
 

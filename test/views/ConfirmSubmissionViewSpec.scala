@@ -16,7 +16,6 @@
 
 package views
 
-
 import java.time.LocalDate
 
 import assets.CustomerDetailsTestAssets._
@@ -24,9 +23,11 @@ import assets.messages.{ConfirmSubmissionMessages => viewMessages}
 import models._
 import org.jsoup.Jsoup
 import org.jsoup.nodes.Document
-import play.api.i18n.Lang
+import views.html.ConfirmSubmission
 
 class ConfirmSubmissionViewSpec extends ViewBaseSpec {
+
+  val confirmSubmissionView: ConfirmSubmission = inject[ConfirmSubmission]
 
   object Selectors {
     val boxes = List(
@@ -100,8 +101,8 @@ class ConfirmSubmissionViewSpec extends ViewBaseSpec {
           userName = customerDetailsWithFRS.clientName
         )
 
-        lazy val view = views.html.confirm_submission(viewModel, isAgent = false)(
-          fakeRequest, messages, mockAppConfig, user, Lang.apply("en"))
+        lazy val view = confirmSubmissionView(viewModel, isAgent = false)(
+          fakeRequest, messages, mockAppConfig, user)
         lazy implicit val document: Document = Jsoup.parse(view.body)
 
         s"the title is displayed as ${viewMessages.title}" in {
@@ -239,7 +240,7 @@ class ConfirmSubmissionViewSpec extends ViewBaseSpec {
         userName = customerDetailsWithFRS.clientName
       )
 
-      lazy val view = views.html.confirm_submission(viewModel, isAgent = false)(fakeRequest, messages, mockAppConfig, user, Lang.apply("en"))
+      lazy val view = confirmSubmissionView(viewModel, isAgent = false)(fakeRequest, messages, mockAppConfig, user)
       lazy implicit val document: Document = Jsoup.parse(view.body)
 
       s"box 6 description displays as ${viewMessages.box6DescriptionNoFRS}" in {
@@ -256,7 +257,7 @@ class ConfirmSubmissionViewSpec extends ViewBaseSpec {
         userName = customerDetailsModel.clientName
       )
 
-      lazy val view = views.html.confirm_submission(viewModel, isAgent = true)(fakeRequest, messages, mockAppConfig, agentUser, Lang.apply("en"))
+      lazy val view = confirmSubmissionView(viewModel, isAgent = true)(fakeRequest, messages, mockAppConfig, agentUser)
       lazy implicit val document: Document = Jsoup.parse(view.body)
 
       s"display the pageTitle as ${viewMessages.agentTitle}" in {

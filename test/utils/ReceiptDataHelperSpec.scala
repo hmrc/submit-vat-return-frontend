@@ -28,7 +28,7 @@ import play.api.mvc.{AnyContentAsEmpty, Cookie}
 
 class ReceiptDataHelperSpec extends BaseSpec {
 
-  val service = new ReceiptDataHelper()
+  val service = new ReceiptDataHelper()(messagesApi)
 
   val dateToUse: LocalDate = LocalDate.now()
 
@@ -49,7 +49,7 @@ class ReceiptDataHelperSpec extends BaseSpec {
       dateToUse
     )
 
-  def expectedAnswers(frs: Boolean, language: Language): Seq[Answers] = {
+  def expectedAnswers(frs: Boolean, language: Language): Seq[Answers] = { //scalastyle:ignore method.length
     def ifEnglishElse(ifEnglish: String, ifWelsh: String): String = if (language == EN) ifEnglish else ifWelsh
 
     val box1Expected = ifEnglishElse(
@@ -99,8 +99,13 @@ class ReceiptDataHelperSpec extends BaseSpec {
       "Cyfanswm gwerth y nwyddau a brynwyd o wledydd y GE ac y daethpwyd â nhw i mewn i’r DU, yn ogystal ag unrhyw gostau perthynol (ac eithrio TAW)"
     )
 
-    Seq(Answers(
+    val pageTitle = ifEnglishElse(
       "VAT Return submission complete",
+      "Mae’r Ffurflen TAW wedi’i chyflwyno"
+    )
+
+    Seq(Answers(
+      pageTitle,
       Seq(
         ("box1", box1Expected, Some("£10.00"), None),
         ("box2", box2Expected, Some("£25.55"), None),
@@ -122,7 +127,7 @@ class ReceiptDataHelperSpec extends BaseSpec {
         "correct and complete to the best of your knowledge and belief. A false declaration can result in prosecution."
       case (true, CY) => "Rwy’n cadarnhau bod fy nghleient wedi cael copi o’r wybodaeth sydd ar y Ffurflen TAW hon, ac " +
         "wedi cytuno bod yr wybodaeth yn gywir ac yn gyflawn hyd eithaf ei wybodaeth a’i gred."
-      case (false, CY) => "Drwy gyflwyno’r Ffurflen TAW hon, rydych yn gwneud datganiad cyfreithiol bod yr wybodaeth yn gywir " +
+      case _ => "Drwy gyflwyno’r Ffurflen TAW hon, rydych yn gwneud datganiad cyfreithiol bod yr wybodaeth yn gywir " +
         "ac yn gyflawn hyd eithaf eich gwybodaeth a’ch cred. Gall datganiad ffug arwain at erlyniad."
     }
 
@@ -148,8 +153,10 @@ class ReceiptDataHelperSpec extends BaseSpec {
     )))
 
   "extractReceiptData" should {
+
     "return a receipt" when {
-      "the user is an agent, with frs" in {
+
+      "the user is an agent, with frs and english selected" in {
         val userToUse = agentUserWithCookie(EN.languageCode)
 
         val result = await(service.extractReceiptData(createReturnModel(true), successResponse(frs = true))(userToUse, hc, ec))
@@ -158,7 +165,8 @@ class ReceiptDataHelperSpec extends BaseSpec {
           ReceiptData(EN, expectedAnswers(frs = true, EN), expectedDeclaration(isAgent = true, EN))
         )
       }
-      "the user is an individual, without frs" in {
+
+      "the user is an individual, without frs and welsh selected" in {
         val userToUse = userWithCookie(CY.languageCode)
 
         val result = await(service.extractReceiptData(createReturnModel(false), successResponse(frs = false))(userToUse, hc, ec))
@@ -167,6 +175,7 @@ class ReceiptDataHelperSpec extends BaseSpec {
           ReceiptData(CY, expectedAnswers(frs = false, CY), expectedDeclaration(isAgent = false, CY))
         )
       }
+
       "the user has no language cookie" in {
         val result = await(service.extractReceiptData(createReturnModel(false), successResponse(frs = false))(user, hc, ec))
 
@@ -175,6 +184,7 @@ class ReceiptDataHelperSpec extends BaseSpec {
         )
       }
     }
+
     "return an error" when {
 
       val implicitUser: User[AnyContentAsEmpty.type] = userWithCookie(EN.languageCode)

@@ -21,6 +21,7 @@ import javax.inject.Inject
 import play.api.libs.streams.Accumulator
 import play.api.mvc._
 import play.filters.csrf._
+import play.api.routing.Router
 
 /*
 This allow a routes be labeled in the route file to exclude a csrf check,
@@ -37,7 +38,8 @@ class ExcludingCSRFFilter @Inject()(filter: CSRFFilter) extends EssentialFilter 
 
     override def apply(rh: RequestHeader): Accumulator[ByteString, Result] = {
       val chainedFilter = filter.apply(nextFilter)
-      if (rh.tags.getOrElse("ROUTE_COMMENTS", "").contains("NOCSRF")) {
+      val handler = rh.attrs(Router.Attrs.HandlerDef)
+      if (handler.comments.contains("NOCSRF")) {
         nextFilter(rh)
       } else {
         chainedFilter(rh)

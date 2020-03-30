@@ -19,25 +19,29 @@ package testOnly.controllers
 import auth.AuthKeys
 import config.AppConfig
 import javax.inject.Inject
-import play.api.i18n.{I18nSupport, MessagesApi}
-import play.api.mvc.{Action, AnyContent}
+import play.api.i18n.I18nSupport
+import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
 import testOnly.forms.StubAgentClientLookupForm
 import uk.gov.hmrc.play.bootstrap.controller.FrontendController
+import testOnly.views.html._
 
-class StubAgentClientLookupController @Inject()(val messagesApi: MessagesApi,
+class StubAgentClientLookupController @Inject()(mcc: MessagesControllerComponents,
+                                                stubAgentClientLookup: StubAgentClientLookup,
+                                                stubAgentClientLookupAgentAction: StubAgentClientLookupAgentAction,
+                                                stubAgentClientUnauth: StubAgentClientUnauth,
                                                 implicit val appConfig: AppConfig)
-  extends FrontendController with I18nSupport {
+  extends FrontendController(mcc) with I18nSupport {
 
   def show(redirectUrl: Option[String]): Action[AnyContent] = Action { implicit request =>
-    Ok(testOnly.views.html.stubAgentClientLookup(StubAgentClientLookupForm.form, redirectUrl))
+    Ok(stubAgentClientLookup(StubAgentClientLookupForm.form, redirectUrl))
   }
 
   def showAgentAction(): Action[AnyContent] = Action { implicit request =>
-    Ok(testOnly.views.html.stubAgentClientLookupAgentAction())
+    Ok(stubAgentClientLookupAgentAction())
   }
 
   def unauthorised(redirectUrl: String): Action[AnyContent] = Action { implicit request =>
-    Ok(testOnly.views.html.stubAgentClientUnauth(redirectUrl))
+    Ok(stubAgentClientUnauth(redirectUrl))
       .removingFromSession(AuthKeys.agentSessionVrn)
   }
 

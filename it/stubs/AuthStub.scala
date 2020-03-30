@@ -79,7 +79,7 @@ object AuthStub extends BaseISpec {
       "agentFriendlyName"  -> "Bodgitt & Legget LLP"
     ),
     "groupIdentifier"  -> "GroupId",
-    "credentialRole" -> "Admin",
+    "credentialRole" -> "User",
     "mdtpInformation"  -> Json.obj(
       "deviceId"  -> "DeviceId",
       "sessionId" -> "SessionId"
