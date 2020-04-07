@@ -27,25 +27,25 @@ import org.scalatest.{BeforeAndAfterEach, Matchers, WordSpec}
 import org.scalatestplus.play.guice._
 import play.api.Configuration
 import play.api.i18n.{Lang, Messages, MessagesApi}
-import play.api.inject.Injector
-import play.api.mvc.AnyContentAsEmpty
-import play.api.test.FakeRequest
+import play.api.mvc.{AnyContentAsEmpty, MessagesControllerComponents}
+import play.api.test.{FakeRequest, Injecting}
 import uk.gov.hmrc.http.HeaderCarrier
 import uk.gov.hmrc.play.test.UnitSpec
 
 import scala.concurrent.ExecutionContext
 
-trait BaseSpec extends WordSpec with Matchers with GuiceOneAppPerSuite with MockFactory with UnitSpec with BeforeAndAfterEach {
-
-  lazy val injector: Injector = app.injector
+trait BaseSpec extends WordSpec with Matchers with GuiceOneAppPerSuite with MockFactory with UnitSpec with BeforeAndAfterEach with Injecting {
 
   implicit val config: Configuration = app.configuration
 
   implicit val mockAppConfig: AppConfig = new MockConfig
 
-  implicit lazy val messagesApi: MessagesApi = injector.instanceOf[MessagesApi]
+  lazy val mcc: MessagesControllerComponents = inject[MessagesControllerComponents]
+  lazy val messagesApi: MessagesApi = inject[MessagesApi]
+  implicit lazy val messages: Messages = messagesApi.preferred(Seq(Lang("en")))
+  lazy val welshMessages: Messages = messagesApi.preferred(Seq(Lang("cy")))
 
-  lazy val errorHandler: ErrorHandler = injector.instanceOf[ErrorHandler]
+  lazy val errorHandler: ErrorHandler = inject[ErrorHandler]
 
   implicit lazy val fakeRequest: FakeRequest[AnyContentAsEmpty.type] = FakeRequest("", "")
   lazy val fakeRequestWithClientsVRN: FakeRequest[AnyContentAsEmpty.type] =
@@ -57,13 +57,11 @@ trait BaseSpec extends WordSpec with Matchers with GuiceOneAppPerSuite with Mock
   lazy val user: User[AnyContentAsEmpty.type] = User[AnyContentAsEmpty.type](vrn)(fakeRequest)
   lazy val agentUser: User[AnyContentAsEmpty.type] = User[AnyContentAsEmpty.type](vrn, Some(arn))(fakeRequestWithClientsVRN)
 
-  implicit lazy val messages: Messages = messagesApi.preferred(fakeRequest)
-  lazy val welshMessages: Messages = Messages(Lang("cy"), messagesApi)
 
   implicit val system: ActorSystem = ActorSystem()
   implicit val materializer: Materializer = ActorMaterializer()
   implicit lazy val hc: HeaderCarrier = HeaderCarrier()
-  implicit lazy val ec: ExecutionContext = injector.instanceOf[ExecutionContext]
+  implicit lazy val ec: ExecutionContext = inject[ExecutionContext]
 
   override def beforeEach(): Unit = {
     super.beforeEach()

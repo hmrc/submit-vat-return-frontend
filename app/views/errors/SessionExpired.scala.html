@@ -16,24 +16,23 @@
 
 @import config.AppConfig
 @import models.auth.User
+@import views.html.templates.Heading
 
-@()(implicit request: Request[_], appConfig: AppConfig, messages: Messages, user: User[_])
+@this(mainTemplate: MainTemplate,
+      heading: Heading)
 
-@main_template(
-    title = messages("submissionError.heading"),
-    appConfig = appConfig) {
+@()(implicit request: Request[_], messages: Messages, appConfig: AppConfig, user: Option[User[_]] = None)
 
-    <header>
-        <h1 class="heading-xlarge">@messages("submissionError.heading")</h1>
-    </header>
+@mainTemplate(
+  pageTitle = messages("session_expired.title"),
+  appConfig = appConfig,
+  showSignOut = false
+) {
 
-    <p>@messages("submissionError.p1")</p>
+  @heading(messages("session_expired.heading"))
 
-    <p>@messages("submissionError.p2")</p>
-
-    @if(user.isAgent){
-        <a href="@appConfig.agentActionUrl">@messages("submissionError.agentLink")</a>
-    } else {
-        <a href="@appConfig.vatSummaryUrl">@messages("submissionError.userLink")</a>
-    }
+  <p>@messages("session_expired.helpOne")
+    <a href=@appConfig.signInUrl>@messages("session_expired.helpTwo")</a>
+    @messages("session_expired.helpThree")
+  </p>
 }

@@ -21,8 +21,8 @@ import java.time.format.DateTimeFormatter
 import java.time.{Instant, LocalDateTime, ZoneId}
 
 import audit.AuditService
-import audit.models.{NrsErrorAuditModel, NrsSuccessAuditModel, SubmitVatReturnAuditModel}
 import audit.models.journey.{FailureAuditModel, SuccessAuditModel}
+import audit.models.{NrsErrorAuditModel, NrsSuccessAuditModel, SubmitVatReturnAuditModel}
 import common.SessionKeys
 import config.{AppConfig, ErrorHandler}
 import controllers.predicates.{AuthPredicate, HonestyDeclarationAction, MandationStatusPredicate}
@@ -33,7 +33,7 @@ import models.nrs.{IdentityData, IdentityLoginTimes}
 import models.vatReturnSubmission.SubmissionModel
 import models.{ConfirmSubmissionViewModel, CustomerDetails, SubmitVatReturnModel}
 import play.api.Logger
-import play.api.i18n.{I18nSupport, MessagesApi}
+import play.api.i18n.I18nSupport
 import play.api.libs.json.Json
 import play.api.mvc.{Result, _}
 import play.twirl.api.Html
@@ -43,13 +43,14 @@ import uk.gov.hmrc.auth.core.retrieve.v2.Retrievals
 import uk.gov.hmrc.auth.core.retrieve.{ItmpAddress, ItmpName, ~}
 import uk.gov.hmrc.play.bootstrap.controller.FrontendController
 import utils.{HashUtil, ReceiptDataHelper}
+import views.html.ConfirmSubmission
+import views.html.errors.SubmissionError
 
 import scala.concurrent.{ExecutionContext, Future}
 import scala.util.{Failure, Success, Try}
 
 @Singleton
-class ConfirmSubmissionController @Inject()(val messagesApi: MessagesApi,
-                                            mandationStatusCheck: MandationStatusPredicate,
+class ConfirmSubmissionController @Inject()(mandationStatusCheck: MandationStatusPredicate,
                                             errorHandler: ErrorHandler,
                                             vatSubscriptionService: VatSubscriptionService,
                                             authPredicate: AuthPredicate,
@@ -59,8 +60,11 @@ class ConfirmSubmissionController @Inject()(val messagesApi: MessagesApi,
                                             dateService: DateService,
                                             authService: EnrolmentsAuthService,
                                             receiptDataHelper: ReceiptDataHelper,
+                                            mcc: MessagesControllerComponents,
+                                            confirmSubmission: ConfirmSubmission,
+                                            submissionError: SubmissionError,
                                             implicit val appConfig: AppConfig,
-                                            implicit val executionContext: ExecutionContext) extends FrontendController
+                                            implicit val executionContext: ExecutionContext) extends FrontendController(mcc)
                                                                                              with I18nSupport {
 
   val dateTimeFormatter: DateTimeFormatter = DateTimeFormatter.ofPattern("YYYY")
@@ -98,7 +102,7 @@ class ConfirmSubmissionController @Inject()(val messagesApi: MessagesApi,
     }
     val viewModel = ConfirmSubmissionViewModel(sessionData, periodKey, clientName)
 
-    views.html.confirm_submission(viewModel, user.isAgent)
+    confirmSubmission(viewModel, user.isAgent)
   }
 
   def submit(periodKey: String): Action[AnyContent] = (authPredicate
@@ -161,7 +165,7 @@ class ConfirmSubmissionController @Inject()(val messagesApi: MessagesApi,
           Some(controllers.routes.ConfirmSubmissionController.submit(periodKey).url)
         )
         Logger.warn(s"[ConfirmSubmissionController][submitVatReturn] Error returned from vat-returns service: $error")
-        InternalServerError(views.html.errors.submission_error())
+        InternalServerError(submissionError())
     }
   }
 
@@ -187,7 +191,7 @@ class ConfirmSubmissionController @Inject()(val messagesApi: MessagesApi,
                 ),
                 Some(controllers.routes.ConfirmSubmissionController.submit(periodKey).url)
               )
-              Future.successful(InternalServerError(views.html.errors.submission_error()))
+              Future.successful(InternalServerError(submissionError()))
             case Right(success) =>
               auditService.audit(
                 NrsSuccessAuditModel(
@@ -209,7 +213,7 @@ class ConfirmSubmissionController @Inject()(val messagesApi: MessagesApi,
         case (_, Left(error)) =>
           Logger.debug(s"[ConfirmSubmissionController][submitToNRS] - extractReceiptData helper returned error of: $error")
           Logger.warn("[ConfirmSubmissionController][submitToNRS] - extractReceiptData helper returned error")
-          Future.successful(InternalServerError(views.html.errors.submission_error()))
+          Future.successful(InternalServerError(submissionError()))
       }
     } yield result
   }
@@ -257,7 +261,7 @@ class ConfirmSubmissionController @Inject()(val messagesApi: MessagesApi,
       case exception: AuthorisationException =>
         Logger.warn(s"[ConfirmSubmissionController][buildIdentityData]" +
           s"Client authorisation failed due to internal server error. auth-client exception was $exception")
-        Left(InternalServerError(views.html.errors.submission_error()))
+        Left(InternalServerError(submissionError()))
     }
   }
 

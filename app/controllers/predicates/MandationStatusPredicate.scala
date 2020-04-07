@@ -27,15 +27,16 @@ import uk.gov.hmrc.http.HeaderCarrier
 import uk.gov.hmrc.play.HeaderCarrierConverter
 import common.{MandationStatuses, SessionKeys}
 import models.auth.User
+import views.html.errors.MtdMandatedUser
 
 import scala.concurrent.{ExecutionContext, Future}
 
 class MandationStatusPredicate @Inject()(mandationStatusService: MandationStatusService,
                                          val errorHandler: ErrorHandler,
                                          val messagesApi: MessagesApi,
+                                         mtdMandatedUser: MtdMandatedUser,
                                          implicit val appConfig: AppConfig,
-                                         implicit val ec: ExecutionContext) extends ActionRefiner[User, User] with I18nSupport {
-
+                                         implicit val executionContext: ExecutionContext) extends ActionRefiner[User, User] with I18nSupport {
 
   override def refine[A](request: User[A]): Future[Either[Result, User[A]]] = {
 
@@ -47,7 +48,7 @@ class MandationStatusPredicate @Inject()(mandationStatusService: MandationStatus
       case Some(status) if supportedMandationStatuses.contains(status) => Future.successful(Right(request))
       case Some(unsupportedMandationStatus) =>
           Logger.debug(s"[MandationStatusPredicate][refine] - User has a non 'non MTDfB' status received. Status returned was: $unsupportedMandationStatus")
-          Future.successful(Left(Forbidden(views.html.errors.mtd_mandated_user())))
+          Future.successful(Left(Forbidden(mtdMandatedUser())))
       case None => getMandationStatus
     }
   }

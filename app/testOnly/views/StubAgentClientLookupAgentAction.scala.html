@@ -14,13 +14,15 @@
  * limitations under the License.
  *@
 
-@import uk.gov.hmrc.play.views.formatting.Money
+@this(mainTemplate: MainTemplate)
 
-@(value: BigDecimal)(implicit messages: Messages)
+@()(implicit request: Request[_], messages: Messages, appConfig: config.AppConfig)
 
-@(value.isWhole, value >= 0) match {
-  case (true, true) => { @Money.pounds(value) }
-  case (true, false) => { <span aria-hidden="true">&minus;</span>@Money.pounds(value.abs) }
-  case (false, true) => { @Money.pounds(value, 2) }
-  case (false, false) => { <span aria-hidden="true">&minus;</span>@Money.pounds(value.abs, 2) }
+@mainTemplate(pageTitle = "Stub Agent Client Lookup Frontend", appConfig = appConfig) {
+
+  <h1 class="heading-large">Stubbed agent action page</h1>
+
+  <p>This button will redirect you to the start of the submit vat returns journey (returns deadline page)</p>
+
+  <a class="button" role="button" href="@appConfig.returnDeadlinesUrl">Finish</a>
 }

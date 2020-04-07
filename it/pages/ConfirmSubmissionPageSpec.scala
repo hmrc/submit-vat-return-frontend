@@ -18,9 +18,8 @@ package pages
 
 import java.time.LocalDate
 
-import assets.NrsAssets
 import common.SessionKeys
-import org.jsoup.Jsoup
+import integrationAssets.NrsAssets
 import org.scalatest.GivenWhenThen
 import play.api.http.Status._
 import play.api.libs.json.{JsObject, JsValue, Json}
@@ -28,7 +27,6 @@ import play.api.libs.ws.WSResponse
 import stubs.AuthStub._
 import stubs.VatReturnsStub._
 import stubs.{AuthStub, VatReturnsStub, VatSubscriptionStub}
-
 
 class ConfirmSubmissionPageSpec extends NrsAssets with GivenWhenThen {
 

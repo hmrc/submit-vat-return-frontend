@@ -14,23 +14,24 @@
  * limitations under the License.
  *@
 
-@import helper.CSRF
 @import testOnly.models.StubAgentClientLookupModel
-@import uk.gov.hmrc.play.views.html.helpers
+@import uk.gov.hmrc.play.views.html.helpers.Input
+@import uk.gov.hmrc.play.views.html.helpers.FormWithCSRF
+
+@this(mainTemplate: MainTemplate, input: Input, formWithCSRF: FormWithCSRF)
 
 @(form: Form[StubAgentClientLookupModel], redirectUrl: Option[String])(implicit request: Request[_], messages: Messages, appConfig: config.AppConfig)
 
-@views.html.main_template(title = "Stub Agent Client Lookup Frontend", bodyClasses = None, appConfig = appConfig) {
+@mainTemplate(pageTitle = "Stub Agent Client Lookup Frontend", bodyClasses = None, appConfig = appConfig) {
 
-    @helper.form(action = testOnly.controllers.routes.StubAgentClientLookupController.post) {
-        @CSRF.formField
+    @formWithCSRF(action = testOnly.controllers.routes.StubAgentClientLookupController.post) {
 
         <fieldset>
 
             <h2>Client VRN</h2>
 
             <div class="form-field">
-                @helpers.input(
+                @input(
                     form("vrn"),
                     '_label -> "Client VRN",
                     '_labelTextClass -> "form-label visuallyhidden",

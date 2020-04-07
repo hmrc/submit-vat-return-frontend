@@ -19,14 +19,18 @@ package mocks
 import base.BaseSpec
 import controllers.predicates.MandationStatusPredicate
 import mocks.service.MockMandationStatusService
+import views.html.errors.MtdMandatedUser
 
 trait MockMandationPredicate extends BaseSpec with MockMandationStatusService {
+
+  val mtdMandatedUser: MtdMandatedUser = inject[MtdMandatedUser]
 
   val mockMandationStatusPredicate: MandationStatusPredicate =
     new MandationStatusPredicate(
       mockMandationStatusService,
       errorHandler,
       messagesApi,
+      mtdMandatedUser,
       mockAppConfig,
       ec
     )

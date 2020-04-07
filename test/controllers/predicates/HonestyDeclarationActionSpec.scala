@@ -66,7 +66,7 @@ class HonestyDeclarationActionSpec extends BaseSpec {
         }
 
         "remove value of current mtdVatHonestyDeclaration session key" in {
-          result.header.headers("Set-Cookie") shouldNot include("mtdVatHonestyDeclaration")
+          result.session.get("mtdVatHonestyDeclaration") shouldBe None
         }
       }
     }

@@ -16,12 +16,20 @@
 
 @import config.AppConfig
 @import models.auth.User
-@import views.html.templates.formatters.dates.{displayDateRange, displayDate}
-@import views.html.templates.formatters.money.displayMoney
-@import uk.gov.hmrc.play.views.html.helpers
+@import views.html.templates.formatters.dates.{DisplayDateRange, DisplayDate}
+@import views.html.templates.formatters.money.DisplayMoney
+@import uk.gov.hmrc.play.views.html.helpers.FormWithCSRF
 
-@(viewModel: ConfirmSubmissionViewModel,
-  isAgent: Boolean)(implicit request: Request[_], messages: Messages, appConfig: AppConfig, user: User[_], lang: Lang)
+@this(mainTemplate: MainTemplate,
+      formAction: FormWithCSRF,
+      displayMoney: DisplayMoney,
+      displayDateRange: DisplayDateRange,
+      displayDate: DisplayDate)
+
+@(viewModel: ConfirmSubmissionViewModel, isAgent: Boolean)(implicit request: Request[_],
+                                                           messages: Messages,
+                                                           appConfig: AppConfig,
+                                                           user: User[_])
 
 @boxRow(divID: String, formID: String, boxTitle: String, boxDescription: String, boxAmount: BigDecimal) = {
   <div class="grid-row" id=@divID>
@@ -51,7 +59,11 @@
   }
 }
 
-@main_template(messages("confirm_submission.title"), appConfig = appConfig, bodyClasses = None, user = Some(user)) {
+@mainTemplate(
+    messages("confirm_submission.title"),
+    appConfig = appConfig,
+    user = Some(user)
+) {
 
   @if(!isAgent) {
     <a class="link-back" href="@controllers.routes.SubmitFormController.show(viewModel.periodKey)">@messages("common.back")</a>
@@ -65,16 +77,20 @@
     </h1>
 
     <h2 class="heading-large">@viewModel.userName</h2>
+
     <h3 class="bold-small form-group">@messages("confirm_submission.vatDetails")</h3>
+
     <dl class="form-group divider--bottom">
       <div class="form-group">
         @boxRow("box-one", "box1", "confirm_submission.boxOne", "confirm_submission.boxOneDescription", viewModel.returnDetail.box1)
         @boxRow("box-two", "box2", "confirm_submission.boxTwo", "confirm_submission.boxTwoDescription", viewModel.returnDetail.box2)
       </div>
+
       <div class="form-group">
         @boxRow("box-three", "box3", "confirm_submission.boxThree", "confirm_submission.boxThreeDescription", viewModel.returnDetail.box3)
         @boxRow("box-four", "box4", "confirm_submission.boxFour", "confirm_submission.boxFourDescription", viewModel.returnDetail.box4)
       </div>
+
       <div class="form-group">
         <div class="grid-row" id="box-five">
           <dt class="column-one-quarter">
@@ -88,22 +104,22 @@
           </dd>
         </div>
       </div>
+
     </dl>
 
     <h3 class="bold-small form-group">@messages("confirm_submission.additionalInfo")</h3>
+
     <dl class="form-group divider--bottom">
-
       <div class="form-group">
-      @if(viewModel.returnDetail.flatRateScheme){
-        @boxRow("box-six", "box6", "confirm_submission.boxSix", "confirm_submission.boxSixFlatRate", viewModel.returnDetail.box6)
-      } else {
-        @boxRow("box-six", "box6", "confirm_submission.boxSix", "confirm_submission.boxSixNoFlatRate", viewModel.returnDetail.box6)
-      }
-        @boxRow("box-seven", "box7", "confirm_submission.boxSeven", "confirm_submission.boxSevenDescription", viewModel.returnDetail.box7)
-        @boxRow("box-eight", "box8", "confirm_submission.boxEight", "confirm_submission.boxEightDescription", viewModel.returnDetail.box8)
-        @boxRow("box-nine", "box9", "confirm_submission.boxNine", "confirm_submission.boxNineDescription", viewModel.returnDetail.box9)
+        @if(viewModel.returnDetail.flatRateScheme){
+          @boxRow("box-six", "box6", "confirm_submission.boxSix", "confirm_submission.boxSixFlatRate", viewModel.returnDetail.box6)
+        } else {
+          @boxRow("box-six", "box6", "confirm_submission.boxSix", "confirm_submission.boxSixNoFlatRate", viewModel.returnDetail.box6)
+        }
+          @boxRow("box-seven", "box7", "confirm_submission.boxSeven", "confirm_submission.boxSevenDescription", viewModel.returnDetail.box7)
+          @boxRow("box-eight", "box8", "confirm_submission.boxEight", "confirm_submission.boxEightDescription", viewModel.returnDetail.box8)
+          @boxRow("box-nine", "box9", "confirm_submission.boxNine", "confirm_submission.boxNineDescription", viewModel.returnDetail.box9)
       </div>
-
     </dl>
 
     <section class="form-group divider--bottom">
@@ -119,7 +135,7 @@
 
     @declaration(isAgent: Boolean)
 
-    @helpers.form(action = controllers.routes.ConfirmSubmissionController.submit(viewModel.periodKey)) {
+    @formAction(action = controllers.routes.ConfirmSubmissionController.submit(viewModel.periodKey)) {
       <button
         class="button"
         type ="submit">

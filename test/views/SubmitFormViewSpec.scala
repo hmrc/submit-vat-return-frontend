@@ -17,7 +17,6 @@
 package views
 
 import java.time.LocalDate
-
 import assets.messages.SubmitFormPageMessages._
 import forms.SubmitVatReturnForm
 import models.VatObligation
@@ -25,8 +24,11 @@ import models.nrs.CY
 import org.jsoup.Jsoup
 import org.jsoup.nodes.Document
 import play.api.i18n.Lang
+import views.html.SubmitForm
 
 class SubmitFormViewSpec extends ViewBaseSpec {
+
+  val submitFormView: SubmitForm = inject[SubmitForm]
 
   "Rendering the submit_form page" should {
 
@@ -56,18 +58,22 @@ class SubmitFormViewSpec extends ViewBaseSpec {
 
     "the user is on the flat rate scheme" should {
 
-      lazy val view = views.html.submit_form(
+      lazy val view = submitFormView(
         periodKey,
         Some("ABC Studios"),
         flatRateScheme = true,
         obligation,
         SubmitVatReturnForm().nineBoxForm,
         isAgent = false
-      )(fakeRequest, messages, mockAppConfig, user, Lang.apply("en"))
+      )(fakeRequest, messages, mockAppConfig, user)
       lazy implicit val document: Document = Jsoup.parse(view.body)
 
       "have the correct hidden label for box 1" in {
         elementText("label[for=box1]") shouldBe "Box 1 VAT you charged on sales and other supplies amount"
+      }
+
+      "have the correct page title" in {
+        document.title shouldBe "Your VAT Return - Business tax account - GOV.UK"
       }
 
       "have the correct title" in {
@@ -134,14 +140,14 @@ class SubmitFormViewSpec extends ViewBaseSpec {
     }
 
     "the user is not on the flat rate scheme" should {
-      lazy val view = views.html.submit_form(
+      lazy val view = submitFormView(
         "18AA",
         Some("ABC Studios"),
         flatRateScheme = false,
         obligation,
         SubmitVatReturnForm().nineBoxForm,
         isAgent = false
-      )(fakeRequest, messages, mockAppConfig, user, Lang.apply("en"))
+      )(fakeRequest, messages, mockAppConfig, user)
       lazy implicit val document: Document = Jsoup.parse(view.body)
 
       "display the non flat rate scheme text ofr box 6" in {
@@ -156,14 +162,14 @@ class SubmitFormViewSpec extends ViewBaseSpec {
         languageOption.language shouldBe "cy"
       }
 
-      lazy val view = views.html.submit_form(
+      lazy val view = submitFormView(
         "18AA",
         Some("ABC Studios"),
         flatRateScheme = true,
         obligation,
         SubmitVatReturnForm().nineBoxForm,
         isAgent = false
-      )(fakeRequest, welshMessages, mockAppConfig, user, languageOption)
+      )(fakeRequest, welshMessages, mockAppConfig, user)
       lazy implicit val document: Document = Jsoup.parse(view.body)
 
       "have the welsh messages file" in {
@@ -172,6 +178,27 @@ class SubmitFormViewSpec extends ViewBaseSpec {
 
       "have the correct hidden label for box 1" in {
         elementText("label[for=box1]") shouldBe "Swm Blwch 1 TAW a godwyd gennych ar werthiannau a chyflenwadau eraill"
+      }
+    }
+
+    "page has errors" should {
+
+      lazy val view = submitFormView(
+        periodKey,
+        Some("ABC Studios"),
+        flatRateScheme = true,
+        obligation,
+        SubmitVatReturnForm().nineBoxForm.bind(Map("" -> "")),
+        isAgent = false
+      )(fakeRequest, messages, mockAppConfig, user)
+      lazy implicit val document: Document = Jsoup.parse(view.body)
+
+      s"have the correct page title" in {
+        document.title shouldBe "Error: Your VAT Return - Business tax account - GOV.UK"
+      }
+
+      "display an error summary" in {
+        elementText("#error-summary-display h2") shouldBe "There is a problem"
       }
     }
   }

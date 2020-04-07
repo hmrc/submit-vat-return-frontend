@@ -19,14 +19,17 @@ package views
 import forms.HonestyDeclarationForm
 import org.jsoup.Jsoup
 import org.jsoup.nodes.Document
+import views.html.HonestyDeclaration
 
 class HonestyDeclarationViewSpec extends ViewBaseSpec {
+
+  val honestyDeclaration: HonestyDeclaration = inject[HonestyDeclaration]
 
   "Rendering the honesty declaration page with no errors" when {
 
     "the user is not an agent" should {
 
-      lazy val view = views.html.honesty_declaration(
+      lazy val view = honestyDeclaration(
         "18AA",
         HonestyDeclarationForm.honestyDeclarationForm
       )(fakeRequest, messages, mockAppConfig, user)
@@ -37,15 +40,19 @@ class HonestyDeclarationViewSpec extends ViewBaseSpec {
         element(".link-back").attr("href") shouldBe mockAppConfig.returnDeadlinesUrl
       }
 
+      s"have the correct page title 'Honesty declaration'" in {
+        document.title shouldBe "Honesty declaration - Business tax account - GOV.UK"
+      }
+
       s"have the title ${messages("honesty_declaration.title")}" in {
         element("#page-heading").text() shouldBe messages("honesty_declaration.title")
       }
 
-      "display the error heading" in {
+      "display no error heading" in {
         elementExists("#error-summary-display") shouldBe false
       }
 
-      "display the error message" in {
+      "display no error message" in {
         elementExists(".error-message") shouldBe false
       }
 
@@ -69,7 +76,7 @@ class HonestyDeclarationViewSpec extends ViewBaseSpec {
 
     "the user is an agent" should {
 
-      lazy val view = views.html.honesty_declaration(
+      lazy val view = honestyDeclaration(
         "18AA",
         HonestyDeclarationForm.honestyDeclarationForm
       )(fakeRequest, messages, mockAppConfig, agentUser)
@@ -78,6 +85,10 @@ class HonestyDeclarationViewSpec extends ViewBaseSpec {
       "have the back link" in {
         element(".link-back").text() shouldBe messages("common.back")
         element(".link-back").attr("href") shouldBe mockAppConfig.returnDeadlinesUrl
+      }
+
+      s"have the correct page title 'Honesty declaration'" in {
+        document.title shouldBe "Honesty declaration - Your client’s VAT details - GOV.UK"
       }
 
       s"have the title ${messages("honesty_declaration.title")}" in {
@@ -113,11 +124,15 @@ class HonestyDeclarationViewSpec extends ViewBaseSpec {
 
   "Rendering the page with errors" should {
 
-    lazy val view = views.html.honesty_declaration(
+    lazy val view = honestyDeclaration(
       "18AA",
       HonestyDeclarationForm.honestyDeclarationForm.bind(Map("checkbox" -> "false"))
     )(fakeRequest, messages, mockAppConfig, user)
     lazy implicit val document: Document = Jsoup.parse(view.body)
+
+    s"have the correct page title 'Error: Honesty declaration'" in {
+      document.title shouldBe "Error: Honesty declaration - Business tax account - GOV.UK"
+    }
 
     "have the back link" in {
       element(".link-back").text() shouldBe messages("common.back")

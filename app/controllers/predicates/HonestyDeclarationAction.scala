@@ -26,9 +26,11 @@ import play.api.mvc.{ActionRefiner, Result}
 
 import scala.concurrent.{ExecutionContext, Future}
 
-class HonestyDeclarationAction @Inject()(implicit ec: ExecutionContext, appConfig: AppConfig) {
+class HonestyDeclarationAction @Inject()(implicit val ec: ExecutionContext, appConfig: AppConfig) {
 
   def authoriseForPeriodKey(periodKey: String): ActionRefiner[User, User] = new ActionRefiner[User, User] {
+
+    override protected def executionContext: ExecutionContext = ec
 
     override protected def refine[A](request: User[A]): Future[Either[Result, User[A]]] = {
 
@@ -36,7 +38,8 @@ class HonestyDeclarationAction @Inject()(implicit ec: ExecutionContext, appConfi
         case Some(sessionValue) if sessionValue.equals(HonestyDeclaration.format(request.vrn, periodKey)) => Future(Right(request))
         case Some(_) =>
           Logger.debug("[HonestyDeclarationAction][authoriseForPeriodKey] Honesty declaration invalid for request")
-          Future(Left(Redirect(controllers.routes.HonestyDeclarationController.show(periodKey)).removingFromSession(HonestyDeclaration.key)(request)))
+          Future(Left(Redirect(controllers.routes.HonestyDeclarationController.show(periodKey))
+            .removingFromSession(HonestyDeclaration.key)(request)))
         case _ =>
           Logger.debug("[HonestyDeclarationAction][authoriseForPeriodKey] Honesty declaration is missing from session")
           Future(Left(Redirect(controllers.routes.HonestyDeclarationController.show(periodKey))))

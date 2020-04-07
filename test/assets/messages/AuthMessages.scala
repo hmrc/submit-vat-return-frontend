@@ -18,7 +18,7 @@ package assets.messages
 
 object AuthMessages extends BaseMessages {
 
-  val unauthorisedTitle = "You can’t use this service yet" + nonAgentTitleSuffix
+  val unauthorisedTitle: String = "You can’t use this service yet" + nonAgentTitleSuffix
   val unauthorisedHeading = "You can’t use this service yet"
 
   val setupAccount = "To use this service, you need to set up an agent services account."

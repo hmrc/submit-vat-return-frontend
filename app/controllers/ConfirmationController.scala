@@ -20,27 +20,33 @@ import common.SessionKeys
 import config.AppConfig
 import controllers.predicates.{AuthPredicate, MandationStatusPredicate}
 import javax.inject.{Inject, Singleton}
-import play.api.i18n.{I18nSupport, MessagesApi}
-import play.api.mvc.{Action, AnyContent}
+import play.api.i18n.I18nSupport
+import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
 import uk.gov.hmrc.play.bootstrap.controller.FrontendController
+import views.html.ConfirmationView
 
 import scala.concurrent.Future
 
 @Singleton
-class ConfirmationController @Inject()(val messagesApi: MessagesApi,
-                                       val mandationStatusCheck: MandationStatusPredicate,
+class ConfirmationController @Inject()(val mandationStatusCheck: MandationStatusPredicate,
                                        authPredicate: AuthPredicate,
-                                       implicit val appConfig: AppConfig) extends FrontendController with I18nSupport {
+                                       mcc: MessagesControllerComponents,
+                                       confirmationView: ConfirmationView,
+                                       implicit val appConfig: AppConfig) extends FrontendController(mcc) with I18nSupport {
 
   val show: Action[AnyContent] = (authPredicate andThen mandationStatusCheck).async { implicit user =>
-    Future.successful(Ok(views.html.confirmation_view()))
+    Future.successful(Ok(confirmationView()))
   }
 
   val submit: Action[AnyContent] = (authPredicate andThen mandationStatusCheck).async { implicit user =>
     if (user.isAgent) {
-      Future.successful(Redirect(appConfig.manageClientUrl)).removeSessionKey(SessionKeys.inSessionPeriodKey).removeSessionKey(SessionKeys.submissionYear)
+      Future.successful(
+        Redirect(appConfig.manageClientUrl).removingFromSession(SessionKeys.inSessionPeriodKey, SessionKeys.submissionYear)
+      )
     } else {
-      Future.successful(Redirect(appConfig.vatSummaryUrl)).removeSessionKey(SessionKeys.inSessionPeriodKey).removeSessionKey(SessionKeys.submissionYear)
+      Future.successful(
+        Redirect(appConfig.vatSummaryUrl).removingFromSession(SessionKeys.inSessionPeriodKey, SessionKeys.submissionYear)
+      )
     }
   }
 

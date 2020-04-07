@@ -15,14 +15,17 @@
  *@
 
 @import config.AppConfig
-@(pageTitle: String, heading: String, message: String)(implicit request: Request[_], messages: Messages, appConfig: AppConfig)
 
-@contentHeader = {
-  <h1>@messages(heading)</h1>
+@this(mainTemplate: MainTemplate)
+
+@(redirectUrl: String)(implicit request: Request[_], messages: Messages, appConfig: AppConfig)
+
+@mainTemplate(pageTitle = "Stub Agent Client Lookup Frontend - Unauthorised", appConfig = appConfig) {
+
+    <h1>Agent Unauthorised</h1>
+
+    <p><span class="bold-small">RedirectUrl:</span> @redirectUrl</p>
+
+    <a class="button" role="button" id="continue-button" href="@redirectUrl">Redirect</a>
+
 }
-
-@mainContent = {
-  <p>@messages(message)</p>
-}
-
-@govuk_wrapper(appConfig = appConfig, title = messages(pageTitle), contentHeader = Some(contentHeader), mainContent = mainContent)

@@ -22,8 +22,11 @@ import models.auth.User
 import org.jsoup.Jsoup
 import org.jsoup.nodes.Document
 import play.api.mvc.AnyContentAsEmpty
+import views.html.ConfirmationView
 
 class ConfirmationViewSpec extends ViewBaseSpec {
+
+  val confirmationView: ConfirmationView = inject[ConfirmationView]
 
   "Confirmation view" when {
 
@@ -41,13 +44,13 @@ class ConfirmationViewSpec extends ViewBaseSpec {
 
         lazy val view = {
           mockAppConfig.features.viewVatReturnEnabled(true)
-          views.html.confirmation_view()(fakeRequest, messages, mockAppConfig, userWithSession)
+          confirmationView()(fakeRequest, messages, mockAppConfig, userWithSession)
         }
 
         lazy implicit val document: Document = Jsoup.parse(view.body)
 
         s"display the title as ${viewMessages.title}" in {
-          elementText("title") shouldBe viewMessages.title
+          document.title shouldBe viewMessages.title
         }
 
         s"display the h1 as ${viewMessages.heading}" in {
@@ -88,7 +91,7 @@ class ConfirmationViewSpec extends ViewBaseSpec {
 
         lazy val view = {
           mockAppConfig.features.viewVatReturnEnabled(true)
-          views.html.confirmation_view()(fakeRequest, messages, mockAppConfig, userWithSession)
+          confirmationView()(fakeRequest, messages, mockAppConfig, userWithSession)
         }
 
         lazy implicit val document: Document = Jsoup.parse(view.body)
@@ -106,7 +109,7 @@ class ConfirmationViewSpec extends ViewBaseSpec {
 
       lazy val view = {
         mockAppConfig.features.viewVatReturnEnabled(false)
-        views.html.confirmation_view()(fakeRequest, messages, mockAppConfig, user)
+        confirmationView()(fakeRequest, messages, mockAppConfig, user)
       }
 
       lazy implicit val document: Document = Jsoup.parse(view.body)
@@ -119,7 +122,7 @@ class ConfirmationViewSpec extends ViewBaseSpec {
     "user is an Agent" should {
 
       lazy val agent: User[AnyContentAsEmpty.type] = User[AnyContentAsEmpty.type]("999999999", Some("123456789"))
-      lazy val feature_view = views.html.confirmation_view()(fakeRequest, messages, mockAppConfig, agent)
+      lazy val feature_view = confirmationView()(fakeRequest, messages, mockAppConfig, agent)
 
       lazy implicit val document: Document = Jsoup.parse(feature_view.body)
 

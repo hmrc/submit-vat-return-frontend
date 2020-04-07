@@ -12,7 +12,7 @@ addSbtPlugin("uk.gov.hmrc" % "sbt-distributables" % "2.0.0")
 
 addSbtPlugin("uk.gov.hmrc" % "sbt-artifactory" % "1.2.0")
 
-addSbtPlugin("com.typesafe.play" % "sbt-plugin" % "2.5.19")
+addSbtPlugin("com.typesafe.play" % "sbt-plugin" % "2.6.25")
 
 addSbtPlugin("org.scalastyle" %% "scalastyle-sbt-plugin" % "0.9.0")
 

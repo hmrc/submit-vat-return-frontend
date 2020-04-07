@@ -14,8 +14,12 @@
  * limitations under the License.
  *@
 
-@(heading: String)(implicit messages: Messages)
+@import java.time.LocalDate
 
-<header>
-    <h1 class="heading-large">@heading</h1>
-</header>
+@this(displayDate: DisplayDate)
+
+@(from: LocalDate, to: LocalDate, useShortDayFormat: Boolean = false)(implicit messages: Messages)
+
+@{
+ displayDate(from, from.getYear != to.getYear, useShortDayFormat) + " " +  messages("common.dateRangeSeparator") + " " + displayDate(to, true, useShortDayFormat)
+}

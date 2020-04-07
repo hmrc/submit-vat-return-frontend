@@ -16,24 +16,29 @@
 
 package controllers
 
-import auth.AuthKeys
 import base.BaseSpec
 import common.{MandationStatuses, SessionKeys}
 import mocks.{MockAuth, MockMandationPredicate}
 import mocks.service.{MockVatObligationsService, MockVatSubscriptionService}
 import play.api.http.Status
 import play.api.test.Helpers._
+import views.html.ConfirmationView
 
 class ConfirmationControllerSpec extends BaseSpec with MockVatSubscriptionService with MockVatObligationsService with MockAuth with MockMandationPredicate {
 
+  val view: ConfirmationView = inject[ConfirmationView]
+
   object TestConfirmationController extends ConfirmationController(
-    messagesApi,
     mockMandationStatusPredicate,
     mockAuthPredicate,
+    mcc,
+    view,
     mockAppConfig
   )
 
-  "SubmitFormController .show" when {
+  def viewAsString: String = view()(fakeRequest, messages, mockAppConfig, user).toString
+
+  "ConfirmationController .show" when {
 
     "user is authorised" should {
 
@@ -41,6 +46,7 @@ class ConfirmationControllerSpec extends BaseSpec with MockVatSubscriptionServic
         mockAuthorise(mtdVatAuthorisedResponse)
         TestConfirmationController.show()(fakeRequest.withSession(SessionKeys.mandationStatus -> MandationStatuses.nonMTDfB))
       }
+
       "return a success response for .show" in {
         status(result) shouldBe Status.OK
       }
@@ -48,11 +54,16 @@ class ConfirmationControllerSpec extends BaseSpec with MockVatSubscriptionServic
       "return HTML for .show" in {
         contentType(result) shouldBe Some("text/html")
       }
+
+      "return the correct view" in {
+        contentAsString(result) shouldBe viewAsString
+      }
     }
+
     authControllerChecks(TestConfirmationController.show(), fakeRequest)
   }
 
-  "SubmitFormController .submit as an agent" when {
+  "ConfirmationController .submit as an agent" when {
 
     "user is authorised" should {
 
@@ -63,17 +74,17 @@ class ConfirmationControllerSpec extends BaseSpec with MockVatSubscriptionServic
             .withSession(SessionKeys.inSessionPeriodKey -> "19AA")
             .withSession(SessionKeys.submissionYear -> "2019")
         )
-
       }
 
       "return a see other response for .submit" in {
         status(result) shouldBe Status.SEE_OTHER
       }
     }
+
     authControllerChecks(TestConfirmationController.submit(), fakeRequest)
   }
 
-  "SubmitFormController .submit as a non agent" when {
+  "ConfirmationController .submit as a non agent" when {
 
     "user is authorised" should {
 

@@ -21,7 +21,7 @@ import models.auth.User
 import models.errors.{HttpError, UnknownError}
 import models.nrs.{Declaration, _}
 import models.{CustomerDetails, SubmitVatReturnModel}
-import play.api.i18n.{Lang, MessagesApi}
+import play.api.i18n.{Messages, MessagesApi}
 import play.api.{Logger, Play}
 import uk.gov.hmrc.http.HeaderCarrier
 import uk.gov.hmrc.play.views.helpers.MoneyPounds
@@ -39,30 +39,30 @@ class ReceiptDataHelper @Inject()(implicit val messages: MessagesApi) {
       case None => EN
     }
     
-    extractDeclaration(submitModel, customerDetails, Lang.apply(language.languageCode)) match {
+    extractDeclaration(submitModel, customerDetails, messages.preferred(user)) match {
       case Right(declaration) =>
         Right(ReceiptData(
           language,
-          extractAnswers(submitModel, Lang.apply(language.languageCode)),
+          extractAnswers(submitModel)(user, messages.preferred(user)),
           declaration
         ))
       case Left(error) => Left(error)
     }
   }
 
-  private def extractAnswers(submitModel: SubmitVatReturnModel, lang: Lang)(implicit user: User[_]): Seq[Answers] = {
+  private def extractAnswers(submitModel: SubmitVatReturnModel)(implicit user: User[_], messages: Messages): Seq[Answers] = {
     val boxSixSearchKey = if (submitModel.flatRateScheme) "boxSixFlatRate" else "boxSixNoFlatRate"
 
     val answerSeq = Seq(
-      ("box1", messages("confirm_submission.boxOneDescription")(lang), submitModel.box1),
-      ("box2", messages("confirm_submission.boxTwoDescription")(lang), submitModel.box2),
-      ("box3", messages("confirm_submission.boxThreeDescription")(lang), submitModel.box3),
-      ("box4", messages("confirm_submission.boxFourDescription")(lang), submitModel.box4),
-      ("box5", messages("confirm_submission.boxFiveDescription")(lang), submitModel.box5),
-      ("box6", messages(s"confirm_submission.$boxSixSearchKey")(lang), submitModel.box6),
-      ("box7", messages("confirm_submission.boxSevenDescription")(lang), submitModel.box7),
-      ("box8", messages("confirm_submission.boxEightDescription")(lang), submitModel.box8),
-      ("box9", messages("confirm_submission.boxNineDescription")(lang), submitModel.box9)
+      ("box1", messages("confirm_submission.boxOneDescription"), submitModel.box1),
+      ("box2", messages("confirm_submission.boxTwoDescription"), submitModel.box2),
+      ("box3", messages("confirm_submission.boxThreeDescription"), submitModel.box3),
+      ("box4", messages("confirm_submission.boxFourDescription"), submitModel.box4),
+      ("box5", messages("confirm_submission.boxFiveDescription"), submitModel.box5),
+      ("box6", messages(s"confirm_submission.$boxSixSearchKey"), submitModel.box6),
+      ("box7", messages("confirm_submission.boxSevenDescription"), submitModel.box7),
+      ("box8", messages("confirm_submission.boxEightDescription"), submitModel.box8),
+      ("box9", messages("confirm_submission.boxNineDescription"), submitModel.box9)
     ).map { case (questionId, question, answer) =>
       Answer(questionId, question, Some("£" + MoneyPounds(answer, 2).quantity))
     }
@@ -73,7 +73,7 @@ class ReceiptDataHelper @Inject()(implicit val messages: MessagesApi) {
     ))
   }
 
-  private def extractDeclaration(submitModel: SubmitVatReturnModel, customerDetails: Either[HttpError, CustomerDetails], lang: Lang)
+  private def extractDeclaration(submitModel: SubmitVatReturnModel, customerDetails: Either[HttpError, CustomerDetails], messages: Messages)
                                 (implicit user: User[_], hc: HeaderCarrier, ec: ExecutionContext): Either[HttpError, Declaration] = {
 
     val declarationAgentOrNonAgent = if (user.isAgent) "agentDeclaration" else "nonAgentDeclaration"
@@ -82,7 +82,7 @@ class ReceiptDataHelper @Inject()(implicit val messages: MessagesApi) {
       case Right(model) => model.clientName match {
         case Some(name) => Right(
           Declaration(
-            messages(s"confirm_submission.$declarationAgentOrNonAgent")(lang),
+            messages(s"confirm_submission.$declarationAgentOrNonAgent"),
             name,
             None,
             declarationConsent = true

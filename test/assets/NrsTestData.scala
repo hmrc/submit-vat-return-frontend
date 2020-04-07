@@ -23,7 +23,7 @@ import org.joda.time.LocalDate
 import play.api.libs.json.{JsObject, JsValue, Json}
 import uk.gov.hmrc.auth.core.AffinityGroup.Agent
 import uk.gov.hmrc.auth.core.retrieve._
-import uk.gov.hmrc.auth.core.{Admin, ConfidenceLevel}
+import uk.gov.hmrc.auth.core.{ConfidenceLevel, User}
 
 object NrsTestData {
 
@@ -152,7 +152,7 @@ object NrsTestData {
         |    "agentFriendlyName" : "Bodgitt & Legget LLP"
         |  },
         |  "groupIdentifier" : "GroupId",
-        |  "credentialRole": "Admin",
+        |  "credentialRole": "User",
         |  "mdtpInformation" : {"deviceId" : "DeviceId",
         |    "sessionId": "SessionId" },
         |  "itmpName" : {},
@@ -178,7 +178,7 @@ object NrsTestData {
       email = Some("test@test.com"),
       agentInformation = AgentInformation(agentCode = Some("TZRXXV"), agentFriendlyName = Some("Bodgitt & Legget LLP"), agentId = Some("BDGL")),
       groupIdentifier = Some("GroupId"),
-      credentialRole = Some(Admin),
+      credentialRole = Some(User),
       mdtpInformation = Some(MdtpInformation("DeviceId", "SessionId")),
       itmpName = ItmpName(None, None, None),
       itmpDateOfBirth = None,

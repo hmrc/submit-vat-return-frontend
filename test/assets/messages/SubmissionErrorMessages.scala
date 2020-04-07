@@ -18,7 +18,7 @@ package assets.messages
 
 object SubmissionErrorMessages extends BaseMessages {
 
-  val title = "Sorry, there is a problem with the service" + nonAgentTitleSuffix
+  val title = "Sorry, there is a problem with the service" + titleSuffix
   val heading = "Sorry, there is a problem with the service"
   val p1 = "We have been unable to submit the VAT Return."
   val p2 = "We have not saved your answers. When the service is available, you will have to start again."

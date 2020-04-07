@@ -18,21 +18,28 @@ package controllers
 
 import base.BaseSpec
 import common.{MandationStatuses, SessionKeys}
+import forms.HonestyDeclarationForm
 import mocks.{MockAuth, MockMandationPredicate}
+import play.api.data.Form
 import play.api.http.Status
 import play.api.test.Helpers.contentType
 import play.api.test.Helpers._
-
+import views.html.HonestyDeclaration
 
 class HonestyDeclarationControllerSpec extends BaseSpec with MockAuth with MockMandationPredicate {
 
-  object TestHonestyDeclarationController extends HonestyDeclarationController (
-    messagesApi,
+  val honestyDeclaration: HonestyDeclaration = inject[HonestyDeclaration]
+
+  object TestHonestyDeclarationController extends HonestyDeclarationController(
     mockMandationStatusPredicate,
     errorHandler,
     mockAuthPredicate,
+    mcc,
+    honestyDeclaration,
     mockAppConfig
   )
+
+  def viewAsString(form: Form[Boolean]): String = honestyDeclaration("18AA", form)(fakeRequest, messages, mockAppConfig, user).toString
 
   "HonestyDeclarationController .show" when {
 
@@ -58,6 +65,10 @@ class HonestyDeclarationControllerSpec extends BaseSpec with MockAuth with MockM
 
       "return HTML" in {
         contentType(result) shouldBe Some("text/html")
+      }
+
+      "return the correct view" in {
+        contentAsString(result) shouldBe viewAsString(HonestyDeclarationForm.honestyDeclarationForm)
       }
     }
 
