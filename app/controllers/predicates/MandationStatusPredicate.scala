@@ -42,7 +42,7 @@ class MandationStatusPredicate @Inject()(mandationStatusService: MandationStatus
 
     implicit val hc: HeaderCarrier = HeaderCarrierConverter.fromHeadersAndSession(request.headers, Some(request.session))
     implicit val req: User[A] = request
-    val supportedMandationStatuses = List(MandationStatuses.nonMTDfB, MandationStatuses.nonDigital)
+    val supportedMandationStatuses = List(MandationStatuses.nonMTDfB, MandationStatuses.nonDigital, MandationStatuses.MTDfBExempt)
 
     req.session.get(SessionKeys.mandationStatus) match {
       case Some(status) if supportedMandationStatuses.contains(status) => Future.successful(Right(request))

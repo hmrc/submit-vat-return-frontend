@@ -50,6 +50,20 @@ class MandationStatusPredicateSpec extends BaseSpec with MockMandationPredicate 
         }
       }
 
+      "an exempted mandation status is retrieved" should {
+
+        lazy val userWithSession: User[AnyContentAsEmpty.type] =
+          User[AnyContentAsEmpty.type]("123456789")(fakeRequest.withSession(SessionKeys.mandationStatus -> MandationStatuses.MTDfBExempt))
+
+        lazy val result = {
+          await(mockMandationStatusPredicate.refine(userWithSession))
+        }
+
+        "allow the request to pass through the predicate" in {
+          result shouldBe Right(userWithSession)
+        }
+      }
+
       "a non-Digital mandation status is retrieved" should {
 
         lazy val userWithSession: User[AnyContentAsEmpty.type] =

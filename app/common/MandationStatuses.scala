@@ -20,5 +20,6 @@ object MandationStatuses {
 
   val nonMTDfB = "Non MTDfB"
   val nonDigital= "Non Digital"
+  val MTDfBExempt = "MTDfB Exempt"
 
 }
