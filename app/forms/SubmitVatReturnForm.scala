@@ -48,16 +48,6 @@ case class SubmitVatReturnForm (implicit messages: Messages){
       )
   }
 
-  private def box5Validation(boxId: Int): (Mapping[BigDecimal]) = {
-    text.verifying(validNumber(boxId))
-      .transform(toBigDecimal(boxId), fromBigDecimal(boxId))
-      .verifying(
-        max(maxBox5Value, messages("submit_form.error.negativeError", boxId)),
-        min(minBox5Value, messages("submit_form.error.negativeError", boxId)),
-        twoDecimalPlaces(messages("submit_form.error.negativeError", boxId))
-      )
-  }
-
   private def box6To9Validation(boxId: Int): (Mapping[BigDecimal]) = {
     text.verifying(validNumber(boxId))
       .transform(toBigDecimal(boxId), fromBigDecimal(boxId))
@@ -68,21 +58,11 @@ case class SubmitVatReturnForm (implicit messages: Messages){
       )
   }
 
-  private def validateBox3Calculation(box1: BigDecimal, box2: BigDecimal, box3: BigDecimal): Option[FormError] = {
-    if(box1 + box2 == box3) None else Some(FormError("box3", "submit_form.error.box3Error"))
-  }
-
-  private def validateBox5Calculation(box3: BigDecimal, box4: BigDecimal, box5: BigDecimal): Option[FormError] = {
-    if((box3 - box4).abs == box5) None else Some(FormError("box5", "submit_form.error.box5Error"))
-  }
-
   val nineBoxForm: Form[NineBoxModel] = Form(
     mapping(
       "box1" -> box1To4Validation(1),
       "box2" -> box1To4Validation(2),
-      "box3" -> box1To4Validation(3),
       "box4" -> box1To4Validation(4),
-      "box5" -> box5Validation(5),
       "box6" -> box6To9Validation(6),
       "box7" -> box6To9Validation(7),
       "box8" -> box6To9Validation(8),
@@ -90,20 +70,4 @@ case class SubmitVatReturnForm (implicit messages: Messages){
     )(NineBoxModel.apply)(NineBoxModel.unapply)
   )
 
-  def validateBoxCalculations(form: Form[NineBoxModel]): Form[NineBoxModel] = {
-    if(form.hasErrors) {
-      form
-    } else {
-      form.value match {
-        case Some(model) =>
-          val formErrors: Seq[FormError] = Seq(
-            validateBox3Calculation(model.box1, model.box2, model.box3) ++
-            validateBox5Calculation(model.box3, model.box4, model.box5)
-          ).flatten
-
-          form.copy(mapping = form.mapping, data = form.data, errors = form.errors ++ formErrors, value = form.value)
-        case None => form
-      }
-    }
-  }
 }

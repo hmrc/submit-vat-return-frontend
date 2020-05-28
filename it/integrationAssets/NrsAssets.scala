@@ -57,7 +57,7 @@ trait NrsAssets extends BaseISpec {
         |"Tls-Session-Info":".*?","X-Request-Timestamp":"\d*","Content-Length":"2","Accept":"\*\/\*","Content-Type":"application\/json","Cookie":".*?","User-Agent":"AHC\/2\.0","Host":"localhost:19001",
         |"Raw-Request-URI":"\/vat-through-software\/submit-vat-return\/18AA\/confirm-submission","Remote-Address":".*?"\},
         |"searchKeys":\{"vrn":"999999999","periodKey":"18AA"\},
-        |"receiptData":\{"language":"en","checkYourAnswersSections":\[\{"title":"VAT Return submission complete",
+        |"receiptData":\{"language":"en","checkYourAnswersSections":\[\{"title":"You have submitted a VAT Return",
         |"data":\[
         |\{"questionId":"box1","question":".*?","answer":".*?"\},
         |\{"questionId":"box2","question":".*?","answer":".*?"\},

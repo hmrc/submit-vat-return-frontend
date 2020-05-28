@@ -52,4 +52,18 @@ object ConfirmSubmissionMessages extends BaseMessages {
   val nonAgentDeclarationText: String = "By submitting this return, you are making a legal declaration that the information is correct and" +
     " complete to the best of your knowledge and belief. A false declaration can result in prosecution."
   val warning = "Warning"
+
+  object WarningMessages {
+    val headerMultipleWarning = "The amounts you entered in boxes 1 and 4 are higher than what we would expect, based on the amounts in boxes 6 and 7."
+    val listItemMultipleWarning = "have understated the amount in boxes 6 and 7"
+
+    def headerSingleWarning: (Int, Int) => String = (number1: Int, number2: Int) => s"The amount you entered in Box $number1 " +
+      s"is higher than what we would expect, based on the amount in Box $number2."
+    def listItemSingleWarning: Int => String = boxNumber => s"have understated the amount in Box $boxNumber"
+
+    val listHeading = "These might be correct if you:"
+    val listCommonItem = "are adjusting a previous return"
+    val listCommonBottomText = "Check the figures you entered. You can change the amounts in the VAT Return if you need to."
+  }
+
 }

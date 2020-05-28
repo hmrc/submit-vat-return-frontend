@@ -36,20 +36,28 @@
   form: Form[NineBoxModel],
   isAgent: Boolean)(implicit request: Request[_], messages: Messages, appConfig: AppConfig, user: User[_])
 
-@boxRow(divID: String, formID: String, boxTitle: String, boxDescription: String, boxAmount: String) = {
+@boxRow(divID: String, formID: String, boxTitle: String, boxDescription: String, boxAmount: String, autoCalculated: Boolean = false) = {
   <div class="grid-row" id=@divID>
     <div class="column-one-quarter form-hint">@messages(boxTitle)</div>
     <div class="column-one-half form-hint">@messages(boxDescription)</div>
-    <div class="column-one-quarter r-align form-hint">
-      <div class="form-group">
-        @moneyInput(
-          field = form(formID),
-          label = if (messages.lang.language == "cy") messages(boxAmount) + " " + messages(boxDescription)
-          else messages(boxTitle) + " " + messages(boxDescription) + " " + messages("confirm_submission.amount"),
-          decimalPlace = true
-        )
-      </div>
-    </div>
+        @if(autoCalculated) {
+            <div class="column-one-quarter r-align">
+                <div class="form-group bold-small">
+                    @messages("submit_form.calculatedValue")
+                </div>
+            </div>
+        } else {
+            <div class="column-one-quarter r-align form-hint">
+                <div class="form-group">
+                    @moneyInput(
+                        field = form(formID),
+                        label = if (messages.lang.language == "cy") messages(boxAmount) + " " + messages(boxDescription)
+                        else messages(boxTitle) + " " + messages(boxDescription) + " " + messages("confirm_submission.amount"),
+                        decimalPlace = true
+                    )
+                </div>
+            </div>
+        }
   </div>
 }
 
@@ -100,9 +108,9 @@
         @boxRow("box-two", "box2", "confirm_submission.boxTwo", "confirm_submission.boxTwoDescription", "confirm_submission.boxTwoAmt")
       </div>
 
-      @boxRow("box-three", "box3", "confirm_submission.boxThree", "confirm_submission.boxThreeDescription", "confirm_submission.boxThreeAmt")
+      @boxRow("box-three", "box3", "confirm_submission.boxThree", "confirm_submission.boxThreeDescription", "confirm_submission.boxThreeAmt", autoCalculated = true)
       @boxRow("box-four", "box4", "confirm_submission.boxFour", "confirm_submission.boxFourDescription", "confirm_submission.boxFourAmt")
-      @boxRow("box-five", "box5", "confirm_submission.boxFive", "confirm_submission.boxFiveDescription", "confirm_submission.boxFiveAmt")
+      @boxRow("box-five", "box5", "confirm_submission.boxFive", "confirm_submission.boxFiveDescription", "confirm_submission.boxFiveAmt", autoCalculated = true)
       <hr>
 
       <div class="form-group grid-row">

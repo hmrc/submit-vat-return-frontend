@@ -18,8 +18,8 @@ package assets.messages
 
 object ConfirmationPageMessages extends BaseMessages {
 
-  val title: String = "VAT Return submission complete" + titleSuffix
-  val heading = "VAT Return submission complete"
+  val title: String = "You have submitted a VAT Return" + titleSuffix
+  val heading = "You have submitted a VAT Return"
   val subHeading = "What happens next"
   val paragraph = "We have received your VAT Return."
   val button = "View VAT Return"

@@ -193,9 +193,7 @@ class SubmitFormPageSpec extends BaseISpec {
       val validSubmissionModel = NineBoxModel(
         box1 = 1000.00,
         box2 = 1000.00,
-        box3 = 2000.00,
         box4 = 1000.00,
-        box5 = 1000.00,
         box6 = 1000.00,
         box7 = 1000.00,
         box8 = 1000.00,
@@ -223,66 +221,6 @@ class SubmitFormPageSpec extends BaseISpec {
           }
         }
 
-        "the data posted is invalid" when {
-
-          val invalidSubmissionModel = NineBoxModel(
-            box1 = 1000.00,
-            box2 = 1000.00,
-            box3 = 1000.00,
-            box4 = 1000.00,
-            box5 = 1000.00,
-            box6 = 1000.00,
-            box7 = 1000.00,
-            box8 = 1000.00,
-            box9 = 1000.00
-          )
-
-          "there is a view model in session" should {
-
-            val viewModel: String = Json.toJson(SubmitFormViewModel(
-              hasFlatRateScheme = true,
-              start = LocalDate.parse("2019-01-01"),
-              end = LocalDate.parse("2019-01-04"),
-              due = LocalDate.parse("2019-01-05")
-            )).toString
-
-            def postRequest(data: NineBoxModel): WSResponse =
-              postForm("/18AA/submit-form",
-                sessionValues
-                  ++ formatViewModel(Some(viewModel)), toFormData(SubmitVatReturnForm().nineBoxForm, data))
-
-            "return 200" in {
-
-              AuthStub.stubResponse(OK, mtdVatAuthResponse)
-
-              VatSubscriptionStub.stubResponse("customer-details", OK, customerInformationSuccessJson)
-
-              val response: WSResponse = postRequest(invalidSubmissionModel)
-
-              response.status shouldBe BAD_REQUEST
-            }
-          }
-
-          "there is not a view model in session" should {
-
-            def postRequest(data: NineBoxModel): WSResponse = postForm(
-              "/18AA/submit-form",
-              sessionValues,
-              toFormData(SubmitVatReturnForm().nineBoxForm, data)
-            )
-
-            "return 200" in {
-
-              AuthStub.stubResponse(OK, mtdVatAuthResponse)
-              VatSubscriptionStub.stubResponse("customer-details", OK, customerInformationSuccessJson)
-              VatObligationsStub.stubResponse(OK, vatObligationsSuccessJson())
-
-              val response: WSResponse = postRequest(invalidSubmissionModel)
-
-              response.status shouldBe OK
-            }
-          }
-        }
       }
 
       "user is unauthorised" should {

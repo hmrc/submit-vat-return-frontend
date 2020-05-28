@@ -100,8 +100,8 @@ class ReceiptDataHelperSpec extends BaseSpec {
     )
 
     val pageTitle = ifEnglishElse(
-      "VAT Return submission complete",
-      "Mae’r Ffurflen TAW wedi’i chyflwyno"
+      "You have submitted a VAT Return",
+      "Rydych wedi cyflwyno Ffurflen TAW"
     )
 
     Seq(Answers(
