@@ -62,4 +62,5 @@ class MockConfig(implicit val runModeConfiguration: Configuration) extends AppCo
   override val viewSubmittedReturnUrl: String = "/submittedreturns/year/periodkey"
   override val vatObligationsBaseUrl: String = "vatObligationsBaseUrl"
   override val vatSubscriptionBaseUrl: String = "vatSubscriptionBaseUrl"
+  override val maximum9BoxReturnBoxRatio: Double = 5.714
 }

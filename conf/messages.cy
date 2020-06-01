@@ -55,6 +55,7 @@ submit_form.title = Eich Ffurflen TAW
 submit_form.heading = Cyflwyno Ffurflen TAW
 submit_form.additionalInformation = Gwybodaeth ychwanegol
 submit_form.submitReturn = Gallwch gyflwyno’ch Ffurflen TAW ar y sgrin nesaf.
+submit_form.calculatedValue = Swm wedi’i gyfrifo
 
 submit_form.error.emptyError = Nodwch rif ym mwlch {0}
 submit_form.error.tooManyCharacters = Nodwch uchafswm o 13 digid ar gyfer punnoedd ym mwlch {0}.\nNodwch uchafswm o 2 le degol ar gyfer ceiniogau.\nGallwch ddefnyddio swm negyddol e.e. -13.2
@@ -69,6 +70,16 @@ confirm_submission.heading = Cyflwyno Ffurflen TAW
 confirm_submission.returnDueDate = Dyddiad cau ar gyfer cyflwyno’r Ffurflen TAW: {0}
 confirm_submission.vatDetails = Manylion TAW
 confirm_submission.returnTotal = Cyfanswm y Ffurflen TAW:
+
+confirm_submission.warning.singleIssue.header = Yn seiliedig ar y swm ym {1}, mae’r swm yr ydych wedi ei nodi ym {0} yn uwch nag y byddwn yn ei ddisgwyl.
+confirm_submission.warning.singleIssue.additional = rydych wedi tanddatgan y swm ym {0}
+confirm_submission.warning.multipleIssues.header = Yn seiliedig ar y symiau ym mlychau 6 a 7, mae’r symiau yr ydych wedi’u nodi ym mlychau 1 a 4 yn uwch nag y byddwn yn eu disgwyl.
+confirm_submission.warning.multipleIssues.additional = rydych wedi tanddatgan y symiau ym mlychau 6 a 7
+confirm_submission.warning.common.listHeading = Gallai hyn fod yn gywir os yw’r canlynol yn wir:
+confirm_submission.warning.common.adjustPrevious = rydych yn addasu Ffurflen TAW flaenorol
+confirm_submission.warning.common.checkFigures.part1 = Gwiriwch y ffigurau a nodwyd gennych. Gallwch newid
+confirm_submission.warning.common.checkFigures.part2 = newid y swm yn y Ffurflen TAW
+confirm_submission.warning.common.checkFigures.part3 = os oes angen.
 
 confirm_submission.amount = swm
 confirm_submission.additionalInfo = Gwybodaeth ychwanegol
@@ -115,8 +126,8 @@ unauthorised_non_agent.heading = Ni allwch ddefnyddio’r gwasanaeth hwn eto
 unauthorised_non_agent.text = Mae angen i chi
 unauthorised_non_agent.link = sgofrestru i ddefnyddio meddalwedd er mwyn cyflwyno’ch Ffurflenni TAW
 
-confirmation_view.title = Mae’r Ffurflen TAW wedi’i chyflwyno
-confirmation_view.heading = Mae’r Ffurflen TAW wedi’i chyflwyno
+confirmation_view.title = Rydych wedi cyflwyno Ffurflen TAW
+confirmation_view.heading = Rydych wedi cyflwyno Ffurflen TAW
 confirmation_view.subHeading = Yr hyn sy’n digwydd nesaf
 confirmation_view.paragraph = Rydym wedi cael eich Ffurflen TAW.
 confirmation_view.changeClient = Newid cleient

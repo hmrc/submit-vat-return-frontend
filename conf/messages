@@ -57,6 +57,7 @@ submit_form.title = Your VAT Return
 submit_form.heading = Submit return
 submit_form.additionalInformation = Additional information
 submit_form.submitReturn = You can submit your return on the next screen.
+submit_form.calculatedValue = Calculated value
 
 submit_form.error.emptyError = Enter a number in box {0}
 submit_form.error.tooManyCharacters = Enter a maximum of 13 digits for pounds in box {0}.\nEnter a maximum of 2 decimal places for pence.\nYou can use a negative amount eg -13.2
@@ -71,6 +72,16 @@ confirm_submission.heading = Submit return
 confirm_submission.returnDueDate = Return due date: {0}
 confirm_submission.vatDetails = VAT details
 confirm_submission.returnTotal = Return total:
+
+confirm_submission.warning.singleIssue.header = The amount you entered in Box {0} is higher than what we would expect, based on the amount in Box {1}.
+confirm_submission.warning.singleIssue.additional = have understated the amount in Box {0}
+confirm_submission.warning.multipleIssues.header = The amounts you entered in boxes 1 and 4 are higher than what we would expect, based on the amounts in boxes 6 and 7.
+confirm_submission.warning.multipleIssues.additional = have understated the amount in boxes 6 and 7
+confirm_submission.warning.common.listHeading = These might be correct if you:
+confirm_submission.warning.common.adjustPrevious = are adjusting a previous return
+confirm_submission.warning.common.checkFigures.part1 = Check the figures you entered. You can
+confirm_submission.warning.common.checkFigures.part2 = change the amounts in the VAT Return
+confirm_submission.warning.common.checkFigures.part3 = if you need to.
 
 confirm_submission.amount = amount
 confirm_submission.additionalInfo = Additional information
@@ -118,8 +129,8 @@ unauthorised_non_agent.heading = You can’t use this service yet
 unauthorised_non_agent.text = You need to
 unauthorised_non_agent.link = sign up to use software to submit your VAT returns
 
-confirmation_view.title = VAT Return submission complete
-confirmation_view.heading = VAT Return submission complete
+confirmation_view.title = You have submitted a VAT Return
+confirmation_view.heading = You have submitted a VAT Return
 confirmation_view.subHeading = What happens next
 confirmation_view.paragraph = We have received your VAT Return.
 confirmation_view.changeClient = Change client

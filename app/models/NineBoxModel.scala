@@ -20,9 +20,7 @@ import play.api.libs.json.{Json, OFormat}
 
 case class NineBoxModel(box1: BigDecimal,
                         box2: BigDecimal,
-                        box3: BigDecimal,
                         box4: BigDecimal,
-                        box5: BigDecimal,
                         box6: BigDecimal,
                         box7: BigDecimal,
                         box8: BigDecimal,

@@ -26,7 +26,7 @@ import controllers.predicates.{AuthPredicate, HonestyDeclarationAction, Mandatio
 import forms.SubmitVatReturnForm
 import javax.inject.{Inject, Singleton}
 import models.auth.User
-import models.{NineBoxModel, SubmitFormViewModel, SubmitVatReturnModel, VatObligation}
+import models.{NineBoxModel, SubmitFormViewModel, SubmitVatReturnModel, VatObligation, CalculatedNineBoxModel}
 import play.api.Logger
 import play.api.data.Form
 import play.api.i18n.I18nSupport
@@ -78,9 +78,7 @@ class SubmitFormController @Inject()(mcc: MessagesControllerComponents,
     val nineBoxModel = NineBoxModel(
       sessionData.box1,
       sessionData.box2,
-      sessionData.box3,
       sessionData.box4,
-      sessionData.box5,
       sessionData.box6,
       sessionData.box7,
       sessionData.box8,
@@ -161,7 +159,7 @@ class SubmitFormController @Inject()(mcc: MessagesControllerComponents,
 
     val form = SubmitVatReturnForm()
 
-    form.validateBoxCalculations(form.nineBoxForm.bindFromRequest()).fold(
+    form.nineBoxForm.bindFromRequest().fold(
       failure => {
 
         user.session.get(SessionKeys.viewModel) match {
@@ -193,12 +191,12 @@ class SubmitFormController @Inject()(mcc: MessagesControllerComponents,
         }
       },
       success => {
-        submitSuccess(success, periodKey)
+        submitSuccess(CalculatedNineBoxModel.fromNineBox(success), periodKey)
       }
     )
   }
 
-  private def submitSuccess(model: NineBoxModel, periodKey: String)
+  private def submitSuccess(model: CalculatedNineBoxModel, periodKey: String)
                            (implicit request: Request[_], user: User[_], hc: HeaderCarrier) = {
     for {
       customerInformation <- vatSubscriptionService.getCustomerDetails(user.vrn)

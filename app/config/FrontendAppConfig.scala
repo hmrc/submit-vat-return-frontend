@@ -62,6 +62,7 @@ trait AppConfig {
   def languageMap: Map[String, Lang]
   val vatObligationsBaseUrl: String
   val vatSubscriptionBaseUrl: String
+  val maximum9BoxReturnBoxRatio: Double
 }
 
 @Singleton
@@ -160,4 +161,5 @@ class FrontendAppConfig @Inject()(configuration: Configuration, servicesConfig: 
 
   override val vatObligationsBaseUrl: String = baseUrl("vat-obligations")
   override val vatSubscriptionBaseUrl: String = baseUrl("vat-subscription")
+  override val maximum9BoxReturnBoxRatio: Double = configuration.get[Double](ConfigKeys.nineBoxReturnAllowedRatio)
 }
