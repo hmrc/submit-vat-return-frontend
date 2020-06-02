@@ -285,7 +285,7 @@ class ConfirmSubmissionViewSpec extends ViewBaseSpec {
           }
 
           "display the correct second item in the list" in {
-            elementText(Selectors.listItem2) shouldBe viewMessages.WarningMessages.listItemSingleWarning(1)
+            elementText(Selectors.listItem2) shouldBe viewMessages.WarningMessages.listItemSingleWarning(6)
           }
 
           "display the correct bottom text" in {
@@ -317,7 +317,7 @@ class ConfirmSubmissionViewSpec extends ViewBaseSpec {
           }
 
           "display the correct second item in the list" in {
-            elementText(Selectors.listItem2) shouldBe viewMessages.WarningMessages.listItemSingleWarning(4)
+            elementText(Selectors.listItem2) shouldBe viewMessages.WarningMessages.listItemSingleWarning(7)
           }
 
           "display the correct bottom text" in {
