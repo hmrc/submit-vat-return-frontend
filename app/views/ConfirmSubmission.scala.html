@@ -53,7 +53,7 @@
       @messages("confirm_submission.warning.singleIssue." + endPath, firstBox, secondBox)
     }
     case (Some(firstBox), None) => {
-      @messages("confirm_submission.warning.singleIssue." + endPath, secondBoxIssue)
+      @messages("confirm_submission.warning.singleIssue." + endPath, firstBox)
     }
     case _ => {
       @messages("confirm_submission.warning.multipleIssues." + endPath)
@@ -67,7 +67,7 @@
     <p>@messages("confirm_submission.warning.common.listHeading")</p>
     <ul class="list list-bullet">
       <li>@messages("confirm_submission.warning.common.adjustPrevious")</li>
-      <li>@boxDependantMessage("additional", firstBoxIssue)</li>
+      <li>@boxDependantMessage("additional", secondBoxIssue)</li>
     </ul>
     <p>
       @messages("confirm_submission.warning.common.checkFigures.part1")
