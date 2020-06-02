@@ -53,7 +53,7 @@
       @messages("confirm_submission.warning.singleIssue." + endPath, firstBox, secondBox)
     }
     case (Some(firstBox), None) => {
-      @messages("confirm_submission.warning.singleIssue." + endPath, firstBox)
+      @messages("confirm_submission.warning.singleIssue." + endPath, secondBoxIssue)
     }
     case _ => {
       @messages("confirm_submission.warning.multipleIssues." + endPath)
