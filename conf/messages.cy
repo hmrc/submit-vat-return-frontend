@@ -71,13 +71,13 @@ confirm_submission.returnDueDate = Dyddiad cau ar gyfer cyflwyno’r Ffurflen TA
 confirm_submission.vatDetails = Manylion TAW
 confirm_submission.returnTotal = Cyfanswm y Ffurflen TAW:
 
-confirm_submission.warning.singleIssue.header = Yn seiliedig ar y swm ym {1}, mae’r swm yr ydych wedi ei nodi ym {0} yn uwch nag y byddwn yn ei ddisgwyl.
-confirm_submission.warning.singleIssue.additional = rydych wedi tanddatgan y swm ym {0}
+confirm_submission.warning.singleIssue.header = Yn seiliedig ar y swm ym Mlwch {1}, mae’r swm yr ydych wedi ei nodi ym Mlwch {0} yn uwch nag y byddwn yn ei ddisgwyl.
+confirm_submission.warning.singleIssue.additional = rydych wedi tanddatgan y swm ym Mlwch {0}
 confirm_submission.warning.multipleIssues.header = Yn seiliedig ar y symiau ym mlychau 6 a 7, mae’r symiau yr ydych wedi’u nodi ym mlychau 1 a 4 yn uwch nag y byddwn yn eu disgwyl.
 confirm_submission.warning.multipleIssues.additional = rydych wedi tanddatgan y symiau ym mlychau 6 a 7
 confirm_submission.warning.common.listHeading = Gallai hyn fod yn gywir os yw’r canlynol yn wir:
 confirm_submission.warning.common.adjustPrevious = rydych yn addasu Ffurflen TAW flaenorol
-confirm_submission.warning.common.checkFigures.part1 = Gwiriwch y ffigurau a nodwyd gennych. Gallwch newid
+confirm_submission.warning.common.checkFigures.part1 = Gwiriwch y ffigurau a nodwyd gennych. Gallwch
 confirm_submission.warning.common.checkFigures.part2 = newid y swm yn y Ffurflen TAW
 confirm_submission.warning.common.checkFigures.part3 = os oes angen.
 
