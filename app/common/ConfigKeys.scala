@@ -27,11 +27,6 @@ object ConfigKeys {
   val vatObligationPort: String = "microservice.services.vat-obligations.port"
   val vatObligationsContextUrl: String = "vat-obligations.contextUrl"
 
-  val whitelistEnabled: String = "whitelist.enabled"
-  val whitelistedIps: String = "whitelist.allowedIps"
-  val whitelistExcludedPaths: String = "whitelist.excludedPaths"
-  val whitelistShutterPage: String = "whitelist.shutter-page-url"
-
   val vatSubscriptionHost: String = "microservice.services.vat-subscription.host"
   val vatSubscriptionPort: String = "microservice.services.vat-subscription.port"
 

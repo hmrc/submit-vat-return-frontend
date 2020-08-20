@@ -32,10 +32,6 @@ trait AppConfig {
   val reportAProblemNonJSUrl: String
   val betaFeedbackUrl: String
   val betaFeedbackUnauthenticatedUrl: String
-  val whitelistedIps: Seq[String]
-  val whitelistEnabled: Boolean
-  val whitelistExcludedPaths: Seq[Call]
-  val shutterPage: String
   val signInUrl: String
   val timeoutPeriod: Int
   val timeoutCountdown: Int
@@ -90,17 +86,6 @@ class FrontendAppConfig @Inject()(configuration: Configuration, servicesConfig: 
     "english" -> Lang("en"),
     "cymraeg" -> Lang("cy")
   )
-
-  // Whitelist config
-  private def whitelistConfig(key: String): Seq[String] = Some(new String(Base64.getDecoder
-    .decode(getString(key)), "UTF-8"))
-    .map(_.split(",")).getOrElse(Array.empty).toSeq
-
-  override lazy val whitelistEnabled: Boolean = getBoolean(ConfigKeys.whitelistEnabled)
-  override lazy val whitelistedIps: Seq[String] = whitelistConfig(ConfigKeys.whitelistedIps)
-  override lazy val whitelistExcludedPaths: Seq[Call] = whitelistConfig(ConfigKeys.whitelistExcludedPaths) map
-    (path => Call("GET", path))
-  override val shutterPage: String = getString(ConfigKeys.whitelistShutterPage)
 
   // Sign-in
   private lazy val signInBaseUrl: String = getString(ConfigKeys.signInBaseUrl)

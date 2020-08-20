@@ -28,10 +28,6 @@ class MockConfig(implicit val runModeConfiguration: Configuration) extends AppCo
   override val reportAProblemNonJSUrl: String = ""
   override val betaFeedbackUrl: String = ""
   override val betaFeedbackUnauthenticatedUrl: String = ""
-  override val whitelistEnabled: Boolean = false
-  override val whitelistedIps: Seq[String] = Seq("")
-  override val whitelistExcludedPaths: Seq[Call] = Nil
-  override val shutterPage: String = "https://www.tax.service.gov.uk/shutter/vat-through-software"
   override val signInUrl: String = "sign-in-url"
   override def signOutUrl(identifier: String): String = s"/some-gg-signout-url/$identifier"
   override def exitSurveyUrl(identifier: String): String = s"/some-survey-url/$identifier"
