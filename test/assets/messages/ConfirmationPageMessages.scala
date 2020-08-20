@@ -24,4 +24,5 @@ object ConfirmationPageMessages extends BaseMessages {
   val paragraph = "We have received your VAT Return."
   val button = "View VAT Return"
   val button2 = "View your VAT account"
+  val agentFinishButton = "Back to client’s details"
 }

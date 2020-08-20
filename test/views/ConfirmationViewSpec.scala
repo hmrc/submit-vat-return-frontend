@@ -122,15 +122,18 @@ class ConfirmationViewSpec extends ViewBaseSpec {
     "user is an Agent" should {
 
       lazy val agent: User[AnyContentAsEmpty.type] = User[AnyContentAsEmpty.type]("999999999", Some("123456789"))
-      lazy val feature_view = confirmationView()(fakeRequest, messages, mockAppConfig, agent)
+      lazy val feature_view = {
+        mockAppConfig.features.viewVatReturnEnabled(true)
+        confirmationView()(fakeRequest, messages, mockAppConfig, agent)
+      }
 
       lazy implicit val document: Document = Jsoup.parse(feature_view.body)
 
-      "display a Change Client link" in {
-        val changeClientLinkElem = element("#content > article > p:nth-child(4) > a")(document)
+      "display the Agent Finish button" should {
 
-        changeClientLinkElem.text() shouldBe "Change client"
-        changeClientLinkElem.attributes().get("href") shouldBe "/change-client?redirectUrl=/agent-action"
+        s"have the button text as ${viewMessages.agentFinishButton}" in {
+          elementText("#finish-button2") shouldBe viewMessages.agentFinishButton
+        }
       }
     }
   }
