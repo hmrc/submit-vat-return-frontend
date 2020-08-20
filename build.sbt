@@ -57,7 +57,6 @@ val compile = Seq(
   "uk.gov.hmrc" %% "govuk-template" % "5.52.0-play-26",
   "uk.gov.hmrc" %% "play-ui" % "8.8.0-play-26",
   "uk.gov.hmrc" %% "bootstrap-play-26" % "1.6.0",
-  "uk.gov.hmrc" %% "play-whitelist-filter" % "3.1.0-play-26",
   "uk.gov.hmrc" %% "play-language" % "4.2.0-play-26",
   "uk.gov.hmrc" %% "play-partials" % "6.10.0-play-26",
   "uk.gov.hmrc" %% "domain" % "5.6.0-play-26",
