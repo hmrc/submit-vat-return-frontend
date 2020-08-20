@@ -53,14 +53,6 @@
   <h2>@messages("confirmation_view.subHeading")</h2>
   <p>@messages("confirmation_view.paragraph")</p>
 
-  @if(user.isAgent) {
-    <p>
-      <a href="@{appConfig.changeClientUrl}?redirectUrl=@{appConfig.agentActionUrl}">
-         @messages("confirmation_view.changeClient")
-      </a>
-    </p>
-  }
-
   @if(!appConfig.features.viewVatReturnEnabled()) {
     <p>
       @formAction(action = controllers.routes.ConfirmationController.submit) {

@@ -130,10 +130,9 @@ confirmation_view.title = Rydych wedi cyflwyno Ffurflen TAW
 confirmation_view.heading = Rydych wedi cyflwyno Ffurflen TAW
 confirmation_view.subHeading = Yr hyn sy’n digwydd nesaf
 confirmation_view.paragraph = Rydym wedi cael eich Ffurflen TAW.
-confirmation_view.changeClient = Newid cleient
 confirmation_view.viewAccount = Bwrw golwg dros eich cyfrif TAW
 confirmation_view.viewVATReturn = Bwrw golwg dros y Ffurflen TAW
-confirmation_view.viewClientAccount = Bwrw golwg dros gyfrif TAW y cleient
+confirmation_view.viewClientAccount = Yn ôl i fanylion y cleient
 
 breadcrumbs.yourVatDetails = Eich manylion TAW
 breadcrumbs.submitVatReturn = Cyflwyno Ffurflen TAW
