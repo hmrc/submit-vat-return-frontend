@@ -87,8 +87,8 @@ class ConfirmSubmissionControllerSpec extends BaseSpec
     LocalDate.now()
   )
 
-  def viewAsString(model: ConfirmSubmissionViewModel): String = confirmSubmission(model, isAgent = false)(fakeRequest, messages, mockAppConfig, user).toString
-  def errorViewAsString(): String = submissionError()(fakeRequest, mockAppConfig, messages, user).toString
+  def viewAsString(model: ConfirmSubmissionViewModel): String = confirmSubmission(model, isAgent = false)(messages, mockAppConfig, user).toString
+  def errorViewAsString(): String = submissionError()(mockAppConfig, messages, user).toString
 
   "ConfirmSubmissionController .show" when {
 
@@ -214,8 +214,6 @@ class ConfirmSubmissionControllerSpec extends BaseSpec
 
           "a submission to the backend is successful" should {
 
-            implicit lazy val nrsUser: User[AnyContentAsEmpty.type] = User[AnyContentAsEmpty.type](vrn)(fakeRequest)
-
             lazy val result: Future[Result] = {
               TestConfirmSubmissionController.submit("18AA")(fakeRequest.withSession(
                 "mtdNineBoxReturnData" -> nineBoxData,
@@ -245,8 +243,6 @@ class ConfirmSubmissionControllerSpec extends BaseSpec
           }
 
           "submission to backend is unsuccessful" should {
-
-            implicit lazy val nrsUser: User[AnyContentAsEmpty.type] = User[AnyContentAsEmpty.type](vrn)(fakeRequest)
 
             lazy val result: Future[Result] = TestConfirmSubmissionController.submit("18AA")(fakeRequest.withSession(
               "mtdNineBoxReturnData" -> nineBoxData,

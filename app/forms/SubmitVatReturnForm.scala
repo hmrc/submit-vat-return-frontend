@@ -21,11 +21,11 @@ import javax.inject.Singleton
 import models.NineBoxModel
 import play.api.data.Forms._
 import play.api.data.validation.Constraint
-import play.api.data.{Form, FormError, Mapping}
+import play.api.data.{Form, Mapping}
 import play.api.i18n.Messages
 
 @Singleton
-case class SubmitVatReturnForm (implicit messages: Messages){
+case class SubmitVatReturnForm ()(implicit messages: Messages){
 
   val minDecimalValue: BigDecimal   = -9999999999999.99
   val minNoDecimalValue: BigDecimal = -9999999999999.00
@@ -36,7 +36,8 @@ case class SubmitVatReturnForm (implicit messages: Messages){
 
   private def toBigDecimal(boxId : Int): String => BigDecimal = (text: String) => BigDecimal.apply(text)
   private def fromBigDecimal(boxId : Int): BigDecimal => String = (bd: BigDecimal) => bd.toString()
-  private def validNumber(boxId : Int): Constraint[String] = validBigDecimal(messages("submit_form.error.emptyError", boxId),  messages("submit_form.error.formatCheckError", boxId))
+  private def validNumber(boxId : Int): Constraint[String] = validBigDecimal(messages("submit_form.error.emptyError", boxId),
+    messages("submit_form.error.formatCheckError", boxId))
 
   private def box1To4Validation(boxId: Int): (Mapping[BigDecimal]) = {
     text.verifying(validNumber(boxId))

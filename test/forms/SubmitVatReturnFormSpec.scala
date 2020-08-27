@@ -16,10 +16,8 @@
 
 package forms
 
-import java.time.LocalDate
-
 import base.BaseSpec
-import models.{NineBoxModel, SubmitVatReturnModel}
+import models.NineBoxModel
 
 class SubmitVatReturnFormSpec extends BaseSpec {
 
@@ -34,7 +32,7 @@ class SubmitVatReturnFormSpec extends BaseSpec {
     val box5Sum: String = "Subtract the number in box 4 away from the number in box 3 and write it here"
   }
 
-  val form =  SubmitVatReturnForm()
+  val form: SubmitVatReturnForm =  SubmitVatReturnForm()
 
   "Binding a NineBoxForm" when {
 

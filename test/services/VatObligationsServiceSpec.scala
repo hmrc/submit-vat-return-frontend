@@ -26,7 +26,6 @@ import models.{VatObligation, VatObligations}
 import uk.gov.hmrc.http.HeaderCarrier
 
 import scala.concurrent.{ExecutionContext, Future}
-import scala.concurrent.ExecutionContext.Implicits.global
 
 class VatObligationsServiceSpec extends BaseSpec {
 

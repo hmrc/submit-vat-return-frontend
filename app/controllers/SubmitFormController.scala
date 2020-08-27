@@ -26,15 +26,15 @@ import controllers.predicates.{AuthPredicate, HonestyDeclarationAction, Mandatio
 import forms.SubmitVatReturnForm
 import javax.inject.{Inject, Singleton}
 import models.auth.User
-import models.{NineBoxModel, SubmitFormViewModel, SubmitVatReturnModel, VatObligation, CalculatedNineBoxModel}
+import models._
 import play.api.Logger
 import play.api.data.Form
 import play.api.i18n.I18nSupport
 import play.api.libs.json.Json
-import play.api.mvc.{Action, AnyContent, MessagesControllerComponents, Request}
+import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
 import services.{DateService, VatObligationsService, VatSubscriptionService}
 import uk.gov.hmrc.http.HeaderCarrier
-import uk.gov.hmrc.play.bootstrap.controller.FrontendController
+import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendController
 import views.html.SubmitForm
 
 import scala.concurrent.ExecutionContext
@@ -71,7 +71,7 @@ class SubmitFormController @Inject()(mcc: MessagesControllerComponents,
   }
 
   private def renderViewWithSessionData(periodKey: String, model: String)
-                                       (implicit request: Request[_], user: User[_], hc: HeaderCarrier, appConfig: AppConfig) = {
+                                       (implicit user: User[_], hc: HeaderCarrier, appConfig: AppConfig) = {
 
     val sessionData = Json.parse(model).as[SubmitVatReturnModel]
 
@@ -108,7 +108,7 @@ class SubmitFormController @Inject()(mcc: MessagesControllerComponents,
   }
 
   private def renderViewWithoutSessionData(periodKey: String, form: Form[NineBoxModel])
-                                          (implicit request: Request[_], user: User[_], hc: HeaderCarrier) = {
+                                          (implicit user: User[_], hc: HeaderCarrier) = {
 
     for {
       customerInformation <- vatSubscriptionService.getCustomerDetails(user.vrn)
@@ -197,7 +197,7 @@ class SubmitFormController @Inject()(mcc: MessagesControllerComponents,
   }
 
   private def submitSuccess(model: CalculatedNineBoxModel, periodKey: String)
-                           (implicit request: Request[_], user: User[_], hc: HeaderCarrier) = {
+                           (implicit user: User[_], hc: HeaderCarrier) = {
     for {
       customerInformation <- vatSubscriptionService.getCustomerDetails(user.vrn)
       obligations <- vatObligationsService.getObligations(user.vrn)

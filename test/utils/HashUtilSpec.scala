@@ -16,8 +16,6 @@
 
 package utils
 
-import java.util.Base64
-
 import uk.gov.hmrc.play.test.UnitSpec
 
 class HashUtilSpec extends UnitSpec {

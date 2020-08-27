@@ -44,7 +44,7 @@ class VatObligationsHttpParserSpec extends BaseSpec {
             ))
 
           )
-          val httpResponse = HttpResponse(OK, Some(validJson))
+          val httpResponse = HttpResponse(OK, validJson, Map.empty[String,Seq[String]])
           val result = VatObligationsHttpParser.VatObligationsReads.read("", "", httpResponse)
           val expectedResponse = Right(VatObligations(Seq(
             VatObligation(
@@ -71,7 +71,7 @@ class VatObligationsHttpParserSpec extends BaseSpec {
             ))
 
           )
-          val httpResponse = HttpResponse(OK, Some(validJson))
+          val httpResponse = HttpResponse(OK, validJson, Map.empty[String,Seq[String]])
           val result = VatObligationsHttpParser.VatObligationsReads.read("", "", httpResponse)
           val expectedResponse = Left(UnexpectedJsonFormat)
 
@@ -85,7 +85,7 @@ class VatObligationsHttpParserSpec extends BaseSpec {
       "return an empty sequence" in {
         val emptyReturn = Json.obj()
 
-        val httpResponse = HttpResponse(NOT_FOUND, Some(emptyReturn))
+        val httpResponse = HttpResponse(NOT_FOUND, emptyReturn, Map.empty[String,Seq[String]])
         val result = VatObligationsHttpParser.VatObligationsReads.read("", "", httpResponse)
         val expectedResponse = Right(VatObligations(Seq()))
 
@@ -101,7 +101,7 @@ class VatObligationsHttpParserSpec extends BaseSpec {
           "message" -> "summet gon messed up"
         )
 
-        val httpResponse = HttpResponse(BAD_REQUEST, Some(emptyReturn))
+        val httpResponse = HttpResponse(BAD_REQUEST, emptyReturn, Map.empty[String,Seq[String]])
         val result = VatObligationsHttpParser.VatObligationsReads.read("", "", httpResponse)
         val expectedResponse = Left(BadRequestError("NOOO!", "summet gon messed up"))
 
@@ -114,7 +114,7 @@ class VatObligationsHttpParserSpec extends BaseSpec {
       "return ServerSideError" in {
         val emptyReturn = Json.obj()
 
-        val httpResponse = HttpResponse(INTERNAL_SERVER_ERROR, Some(emptyReturn))
+        val httpResponse = HttpResponse(INTERNAL_SERVER_ERROR, emptyReturn, Map.empty[String,Seq[String]])
         val result = VatObligationsHttpParser.VatObligationsReads.read("", "", httpResponse)
         val expectedResponse = Left(ServerSideError(s"$INTERNAL_SERVER_ERROR", "{ }"))
 
@@ -126,7 +126,7 @@ class VatObligationsHttpParserSpec extends BaseSpec {
       "return UnexpectedStatusError" in {
         val emptyReturn = Json.obj()
 
-        val httpResponse = HttpResponse(PROXY_AUTHENTICATION_REQUIRED, Some(emptyReturn))
+        val httpResponse = HttpResponse(PROXY_AUTHENTICATION_REQUIRED, emptyReturn, Map.empty[String,Seq[String]])
         val result = VatObligationsHttpParser.VatObligationsReads.read("", "", httpResponse)
         val expectedResponse = Left(UnexpectedStatusError(s"$PROXY_AUTHENTICATION_REQUIRED", "{ }"))
 
@@ -161,7 +161,7 @@ class VatObligationsHttpParserSpec extends BaseSpec {
           )
         )
 
-        val httpResponse = HttpResponse(BAD_REQUEST, Some(multipleReturn))
+        val httpResponse = HttpResponse(BAD_REQUEST, multipleReturn, Map.empty[String,Seq[String]])
         val result = VatObligationsHttpParser.VatObligationsReads.read("", "", httpResponse)
         val expectedResponse = Left(MultipleErrors(s"$BAD_REQUEST", Json.stringify(expectedBody)))
 

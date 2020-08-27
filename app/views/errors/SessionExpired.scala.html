@@ -15,13 +15,12 @@
  *@
 
 @import config.AppConfig
-@import models.auth.User
 @import views.html.templates.Heading
 
 @this(mainTemplate: MainTemplate,
       heading: Heading)
 
-@()(implicit request: Request[_], messages: Messages, appConfig: AppConfig, user: Option[User[_]] = None)
+@()(implicit request: Request[_], messages: Messages, appConfig: AppConfig)
 
 @mainTemplate(
   pageTitle = messages("session_expired.title"),

@@ -41,7 +41,7 @@ class MtdMandationUserViewSpec extends ViewBaseSpec {
 
     "the user is a non agent" should {
 
-      lazy val view = mtdMandatedUserView()(fakeRequest, mockAppConfig, messages, user)
+      lazy val view = mtdMandatedUserView()(mockAppConfig, messages, user)
       lazy implicit val document: Document = Jsoup.parse(view.body)
 
       "have the correct document title" in {
@@ -71,7 +71,7 @@ class MtdMandationUserViewSpec extends ViewBaseSpec {
         FakeRequest().withSession(AuthKeys.agentSessionVrn -> "999999999")
 
       lazy val agentUser: User[AnyContentAsEmpty.type] = User[AnyContentAsEmpty.type]("999999999", Some("XAIT012345678"))(fakeRequestWithClientsVRN)
-      lazy val view = mtdMandatedUserView()(fakeRequestWithClientsVRN, mockAppConfig, messages, user = agentUser)
+      lazy val view = mtdMandatedUserView()(mockAppConfig, messages, user = agentUser)
       lazy implicit val document: Document = Jsoup.parse(view.body)
 
       "have the correct instructions on the page" in {

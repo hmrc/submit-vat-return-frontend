@@ -48,7 +48,8 @@ class SubmitVatReturnHttpParserSpec extends BaseSpec {
 
         val httpResponse = HttpResponse(
           OK,
-          Some(correctResponseJson)
+          correctResponseJson,
+          Map.empty[String,Seq[String]]
         )
 
         val expectedResult = SubmissionSuccessModel(
@@ -66,7 +67,8 @@ class SubmitVatReturnHttpParserSpec extends BaseSpec {
 
         val httpResponse = HttpResponse(
           OK,
-          Some(incorrectResponseJson)
+          incorrectResponseJson,
+          Map.empty[String,Seq[String]]
         )
 
         val expectedResult = UnexpectedJsonFormat
@@ -83,7 +85,8 @@ class SubmitVatReturnHttpParserSpec extends BaseSpec {
 
       val httpResponse = HttpResponse(
         SERVICE_UNAVAILABLE,
-        Some(errorResponseJson)
+        errorResponseJson,
+        Map.empty[String,Seq[String]]
       )
 
       val expectedResult = ServerSideError(SERVICE_UNAVAILABLE.toString, "Received downstream error when submitting VAT return.")

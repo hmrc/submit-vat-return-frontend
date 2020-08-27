@@ -31,13 +31,13 @@ trait MockVatReturnsService extends UnitSpec with MockFactory {
 
   val mockVatReturnsService: VatReturnsService = mock[VatReturnsService]
 
-  def mockVatReturnSubmission(response: Future[HttpGetResult[SubmissionSuccessModel]])(implicit hc: HeaderCarrier, ec: ExecutionContext): Unit = {
+  def mockVatReturnSubmission(response: Future[HttpGetResult[SubmissionSuccessModel]])(): Unit = {
     (mockVatReturnsService.submitVatReturn(_: String, _: SubmissionModel)(_: HeaderCarrier, _: ExecutionContext))
       .expects(*, *, *, *)
       .returns(response)
   }
 
-  def mockNrsSubmission[A](response: Future[HttpGetResult[SuccessModel]])(implicit hc: HeaderCarrier, ec: ExecutionContext): Unit = {
+  def mockNrsSubmission[A](response: Future[HttpGetResult[SuccessModel]])(): Unit = {
     (mockVatReturnsService.nrsSubmission(_: String, _: String, _: String, _: IdentityData, _: ReceiptData)(_: HeaderCarrier, _: ExecutionContext, _: User[A]))
       .expects(*, *, *, *, *, *, *, *)
       .returns(response)

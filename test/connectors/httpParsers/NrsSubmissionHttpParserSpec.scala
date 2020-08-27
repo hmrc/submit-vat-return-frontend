@@ -18,7 +18,7 @@ package connectors.httpParsers
 
 import base.BaseSpec
 import connectors.httpParsers.NrsSubmissionHttpParser.NrsSubmissionReads
-import models.errors.{BadRequestError, ServerSideError, UnexpectedJsonFormat}
+import models.errors.{BadRequestError, ServerSideError}
 import models.nrs.SuccessModel
 import play.api.http.Status._
 import play.api.libs.json.{JsObject, Json}
@@ -44,7 +44,7 @@ class NrsSubmissionHttpParserSpec extends BaseSpec {
 
       "response body is in expected JSON format" should {
 
-        val httpResponse = HttpResponse(ACCEPTED, Some(correctResponseJson))
+        val httpResponse = HttpResponse(ACCEPTED, correctResponseJson, Map.empty[String,Seq[String]])
         val expectedResult = SuccessModel("2dd537bc-4244-4ebf-bac9-96321be13cdc")
 
         val result = NrsSubmissionReads.read("", "", httpResponse)
@@ -56,8 +56,7 @@ class NrsSubmissionHttpParserSpec extends BaseSpec {
 
       "response body is not in expected JSON format" should {
 
-        val httpResponse = HttpResponse(ACCEPTED, Some(incorrectResponseJson))
-        val expectedResult = UnexpectedJsonFormat
+        val httpResponse = HttpResponse(ACCEPTED, incorrectResponseJson, Map.empty[String,Seq[String]])
 
         val result = NrsSubmissionReads.read("", "", httpResponse)
 
@@ -69,7 +68,7 @@ class NrsSubmissionHttpParserSpec extends BaseSpec {
 
     "response is 400" should {
 
-      val httpResponse = HttpResponse(BAD_REQUEST, Some(badRequestResponseJson))
+      val httpResponse = HttpResponse(BAD_REQUEST, badRequestResponseJson, Map.empty[String,Seq[String]])
       val expectedResult = BadRequestError("400", "Bad Request response when submitting to NRS.")
 
       val result = NrsSubmissionReads.read("", "", httpResponse)
@@ -81,7 +80,7 @@ class NrsSubmissionHttpParserSpec extends BaseSpec {
     
     "response is any other status" should {
 
-      val httpResponse = HttpResponse(SERVICE_UNAVAILABLE)
+      val httpResponse = HttpResponse(SERVICE_UNAVAILABLE, "", Map.empty[String,Seq[String]])
       val expectedResult = ServerSideError(SERVICE_UNAVAILABLE.toString, "Received downstream error when submitting to NRS")
 
       val result = NrsSubmissionReads.read("", "", httpResponse)

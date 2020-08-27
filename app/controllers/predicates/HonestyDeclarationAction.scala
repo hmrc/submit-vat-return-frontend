@@ -17,7 +17,6 @@
 package controllers.predicates
 
 import common.SessionKeys.HonestyDeclaration
-import config.AppConfig
 import javax.inject.Inject
 import models.auth.User
 import play.api.Logger
@@ -26,7 +25,7 @@ import play.api.mvc.{ActionRefiner, Result}
 
 import scala.concurrent.{ExecutionContext, Future}
 
-class HonestyDeclarationAction @Inject()(implicit val ec: ExecutionContext, appConfig: AppConfig) {
+class HonestyDeclarationAction @Inject()(implicit val ec: ExecutionContext) {
 
   def authoriseForPeriodKey(periodKey: String): ActionRefiner[User, User] = new ActionRefiner[User, User] {
 

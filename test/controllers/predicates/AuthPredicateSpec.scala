@@ -33,7 +33,7 @@ import scala.concurrent.Future
 class AuthPredicateSpec extends MockAuth {
 
   def target(): Action[AnyContent] = mockAuthPredicate.async {
-    implicit user => Future.successful(Ok("hello"))
+    Future.successful(Ok("hello"))
   }
 
   "Calling .invokeBlock" when {

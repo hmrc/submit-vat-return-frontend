@@ -16,26 +16,25 @@
 
 package mocks
 
-import models.{CustomerDetails, SubmitVatReturnModel}
+import assets.NrsTestData.ReceiptTestData.{correctModel => TestReceiptDataModel}
 import models.auth.User
 import models.errors.HttpError
 import models.nrs.ReceiptData
+import models.{CustomerDetails, SubmitVatReturnModel}
 import org.scalamock.scalatest.MockFactory
-import uk.gov.hmrc.http.HeaderCarrier
 import uk.gov.hmrc.play.test.UnitSpec
 import utils.ReceiptDataHelper
-import assets.NrsTestData.ReceiptTestData.{correctModel => TestReceiptDataModel}
 
-import scala.concurrent.{ExecutionContext, Future}
+import scala.concurrent.Future
 
 trait MockReceiptDataService extends UnitSpec with MockFactory {
 
   val mockReceiptDataService: ReceiptDataHelper = mock[ReceiptDataHelper]
 
-  def mockExtractReceiptData[A](response: Future[Either[HttpError, ReceiptData]])(implicit user: User[A], hc: HeaderCarrier, ec: ExecutionContext): Unit = {
+  def mockExtractReceiptData[A](response: Future[Either[HttpError, ReceiptData]])(): Unit = {
     (mockReceiptDataService
-      .extractReceiptData(_: SubmitVatReturnModel, _: Either[HttpError, CustomerDetails])(_: User[A], _: HeaderCarrier, _: ExecutionContext))
-      .expects(*, *, *, *, *)
+      .extractReceiptData(_: SubmitVatReturnModel, _: Either[HttpError, CustomerDetails])(_: User[A]))
+      .expects(*, *, *)
       .returns(response)
   }
 

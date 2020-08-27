@@ -32,7 +32,7 @@ class HonestyDeclarationViewSpec extends ViewBaseSpec {
       lazy val view = honestyDeclaration(
         "18AA",
         HonestyDeclarationForm.honestyDeclarationForm
-      )(fakeRequest, messages, mockAppConfig, user)
+      )(messages, mockAppConfig, user)
       lazy implicit val document: Document = Jsoup.parse(view.body)
 
       "have the back link" in {
@@ -79,7 +79,7 @@ class HonestyDeclarationViewSpec extends ViewBaseSpec {
       lazy val view = honestyDeclaration(
         "18AA",
         HonestyDeclarationForm.honestyDeclarationForm
-      )(fakeRequest, messages, mockAppConfig, agentUser)
+      )(messages, mockAppConfig, agentUser)
       lazy implicit val document: Document = Jsoup.parse(view.body)
 
       "have the back link" in {
@@ -127,7 +127,7 @@ class HonestyDeclarationViewSpec extends ViewBaseSpec {
     lazy val view = honestyDeclaration(
       "18AA",
       HonestyDeclarationForm.honestyDeclarationForm.bind(Map("checkbox" -> "false"))
-    )(fakeRequest, messages, mockAppConfig, user)
+    )(messages, mockAppConfig, user)
     lazy implicit val document: Document = Jsoup.parse(view.body)
 
     s"have the correct page title 'Error: Honesty declaration'" in {

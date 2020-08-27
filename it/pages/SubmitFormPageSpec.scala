@@ -20,6 +20,9 @@ import java.time.LocalDate
 
 import base.BaseISpec
 import common.{MandationStatuses, SessionKeys}
+import forms.SubmitVatReturnForm
+import models.NineBoxModel
+import org.jsoup.Jsoup
 import play.api.http.Status._
 import play.api.libs.json.Json
 import play.api.libs.ws.WSResponse
@@ -27,9 +30,6 @@ import stubs.AuthStub._
 import stubs.VatObligationsStub._
 import stubs.VatSubscriptionStub._
 import stubs.{AuthStub, VatObligationsStub, VatSubscriptionStub}
-import forms.SubmitVatReturnForm
-import models.{NineBoxModel, SubmitFormViewModel}
-import org.jsoup.Jsoup
 
 class SubmitFormPageSpec extends BaseISpec {
 

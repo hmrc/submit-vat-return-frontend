@@ -29,7 +29,7 @@ trait MockVatObligationsService extends UnitSpec with MockFactory {
 
   val mockVatObligationsService: VatObligationsService = mock[VatObligationsService]
 
-  def setupVatObligationsService(response: Future[HttpGetResult[VatObligations]])(implicit hc: HeaderCarrier, ec: ExecutionContext): Unit = {
+  def setupVatObligationsService(response: Future[HttpGetResult[VatObligations]])(): Unit = {
     (mockVatObligationsService.getObligations(_: String)(_: HeaderCarrier, _: ExecutionContext))
       .expects(*, *, *)
       .returns(response)

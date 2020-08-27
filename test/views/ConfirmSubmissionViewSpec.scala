@@ -126,7 +126,7 @@ class ConfirmSubmissionViewSpec extends ViewBaseSpec {
           )
 
           lazy val view = confirmSubmissionView(viewModel, isAgent = false)(
-            fakeRequest, messages, mockAppConfig, user)
+            messages, mockAppConfig, user)
           lazy implicit val document: Document = Jsoup.parse(view.body)
 
           s"the title is displayed as ${viewMessages.title}" in {
@@ -269,23 +269,27 @@ class ConfirmSubmissionViewSpec extends ViewBaseSpec {
           )
 
           lazy val view = confirmSubmissionView(viewModel, isAgent = false)(
-            fakeRequest, messages, mockAppConfig, user)
+            messages, mockAppConfig, user)
           lazy implicit val document: Document = Jsoup.parse(view.body)
 
           "display the correct warning header" in {
-            elementText(Selectors.warningHeader) shouldBe viewMessages.WarningMessages.headerSingleWarning(1, 6)
+            elementText(Selectors.warningHeader) shouldBe
+              viewMessages.WarningMessages.headerSingleWarning(1, 6)
           }
 
           "display the correct list header" in {
-            elementText(Selectors.listHeader) shouldBe viewMessages.WarningMessages.listHeading
+            elementText(Selectors.listHeader) shouldBe
+              viewMessages.WarningMessages.listHeading
           }
 
           "display the correct first item in the list" in {
-            elementText(Selectors.listItem1) shouldBe viewMessages.WarningMessages.listCommonItem
+            elementText(Selectors.listItem1) shouldBe
+              viewMessages.WarningMessages.listCommonItem
           }
 
           "display the correct second item in the list" in {
-            elementText(Selectors.listItem2) shouldBe viewMessages.WarningMessages.listItemSingleWarning(6)
+            elementText(Selectors.listItem2) shouldBe
+              viewMessages.WarningMessages.listItemSingleWarning(6)
           }
 
           "display the correct bottom text" in {
@@ -301,11 +305,12 @@ class ConfirmSubmissionViewSpec extends ViewBaseSpec {
           )
 
           lazy val view = confirmSubmissionView(viewModel, isAgent = false)(
-            fakeRequest, messages, mockAppConfig, user)
+            messages, mockAppConfig, user)
           lazy implicit val document: Document = Jsoup.parse(view.body)
 
           "display the correct warning header" in {
-            elementText(Selectors.warningHeader) shouldBe viewMessages.WarningMessages.headerSingleWarning(4, 7)
+            elementText(Selectors.warningHeader) shouldBe
+              viewMessages.WarningMessages.headerSingleWarning(4, 7)
           }
 
           "display the correct list header" in {
@@ -317,7 +322,8 @@ class ConfirmSubmissionViewSpec extends ViewBaseSpec {
           }
 
           "display the correct second item in the list" in {
-            elementText(Selectors.listItem2) shouldBe viewMessages.WarningMessages.listItemSingleWarning(7)
+            elementText(Selectors.listItem2) shouldBe
+              viewMessages.WarningMessages.listItemSingleWarning(7)
           }
 
           "display the correct bottom text" in {
@@ -333,7 +339,7 @@ class ConfirmSubmissionViewSpec extends ViewBaseSpec {
           )
 
           lazy val view = confirmSubmissionView(viewModel, isAgent = false)(
-            fakeRequest, messages, mockAppConfig, user)
+            messages, mockAppConfig, user)
           lazy implicit val document: Document = Jsoup.parse(view.body)
 
           "display the correct warning header" in {
@@ -369,11 +375,12 @@ class ConfirmSubmissionViewSpec extends ViewBaseSpec {
         userName = customerDetailsWithFRS.clientName
       )
 
-      lazy val view = confirmSubmissionView(viewModel, isAgent = false)(fakeRequest, messages, mockAppConfig, user)
+      lazy val view = confirmSubmissionView(viewModel, isAgent = false)(messages, mockAppConfig, user)
       lazy implicit val document: Document = Jsoup.parse(view.body)
 
       s"box 6 description displays as ${viewMessages.box6DescriptionNoFRS}" in {
-        elementText(boxElement(Selectors.boxes(5), 2)) shouldBe viewMessages.box6DescriptionNoFRS
+        elementText(boxElement(Selectors.boxes(5), 2)) shouldBe
+          viewMessages.box6DescriptionNoFRS
       }
 
     }
@@ -386,7 +393,7 @@ class ConfirmSubmissionViewSpec extends ViewBaseSpec {
         userName = customerDetailsModel.clientName
       )
 
-      lazy val view = confirmSubmissionView(viewModel, isAgent = true)(fakeRequest, messages, mockAppConfig, agentUser)
+      lazy val view = confirmSubmissionView(viewModel, isAgent = true)(messages, mockAppConfig, agentUser)
       lazy implicit val document: Document = Jsoup.parse(view.body)
 
       s"display the pageTitle as ${viewMessages.agentTitle}" in {

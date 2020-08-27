@@ -29,7 +29,7 @@ import scala.concurrent.Future
 
 class VatSubscriptionConnectorSpec extends BaseSpec with MockHttp {
 
-  val errorModel: HttpResponse = HttpResponse(Status.BAD_REQUEST, responseString = Some("Error Message"))
+  val errorModel: HttpResponse = HttpResponse(Status.BAD_REQUEST, "Error Message")
 
   object TestVatSubscriptionConnector extends VatSubscriptionConnector(mockHttp, mockAppConfig)
 
