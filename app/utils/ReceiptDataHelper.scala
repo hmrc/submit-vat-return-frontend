@@ -23,16 +23,13 @@ import models.nrs.{Declaration, _}
 import models.{CustomerDetails, SubmitVatReturnModel}
 import play.api.i18n.{Messages, MessagesApi}
 import play.api.{Logger, Play}
-import uk.gov.hmrc.http.HeaderCarrier
 import uk.gov.hmrc.play.views.helpers.MoneyPounds
-
-import scala.concurrent.ExecutionContext
 
 @Singleton
 class ReceiptDataHelper @Inject()(implicit val messages: MessagesApi) {
 
   def extractReceiptData(submitModel: SubmitVatReturnModel, customerDetails: Either[HttpError, CustomerDetails])
-                        (implicit user: User[_], hc: HeaderCarrier, ec: ExecutionContext): Either[HttpError, ReceiptData] = {
+                        (implicit user: User[_]): Either[HttpError, ReceiptData] = {
 
     val language: Language = user.cookies.get(Play.langCookieName) match {
       case Some(cookieValue) => Language.fromString(cookieValue.value)
@@ -43,14 +40,14 @@ class ReceiptDataHelper @Inject()(implicit val messages: MessagesApi) {
       case Right(declaration) =>
         Right(ReceiptData(
           language,
-          extractAnswers(submitModel)(user, messages.preferred(user)),
+          extractAnswers(submitModel)(messages.preferred(user)),
           declaration
         ))
       case Left(error) => Left(error)
     }
   }
 
-  private def extractAnswers(submitModel: SubmitVatReturnModel)(implicit user: User[_], messages: Messages): Seq[Answers] = {
+  private def extractAnswers(submitModel: SubmitVatReturnModel)(implicit messages: Messages): Seq[Answers] = {
     val boxSixSearchKey = if (submitModel.flatRateScheme) "boxSixFlatRate" else "boxSixNoFlatRate"
 
     val answerSeq = Seq(
@@ -74,7 +71,7 @@ class ReceiptDataHelper @Inject()(implicit val messages: MessagesApi) {
   }
 
   private def extractDeclaration(submitModel: SubmitVatReturnModel, customerDetails: Either[HttpError, CustomerDetails], messages: Messages)
-                                (implicit user: User[_], hc: HeaderCarrier, ec: ExecutionContext): Either[HttpError, Declaration] = {
+                                (implicit user: User[_]): Either[HttpError, Declaration] = {
 
     val declarationAgentOrNonAgent = if (user.isAgent) "agentDeclaration" else "nonAgentDeclaration"
 

@@ -48,7 +48,8 @@ class CustomerDetailsHttpParserSpec extends BaseSpec {
       "the returned JSON is valid" in {
         val httpResponse = HttpResponse(
           OK,
-          Some(correctReturnJson)
+          correctReturnJson,
+          Map.empty[String,Seq[String]]
         )
 
         val expectedResult = CustomerDetails(
@@ -66,7 +67,8 @@ class CustomerDetailsHttpParserSpec extends BaseSpec {
       "the returned JSON is mostly empty" in {
         val httpResponse = HttpResponse(
           OK,
-          Some(correctEmptyReturnJson)
+          correctEmptyReturnJson,
+          Map.empty[String,Seq[String]]
         )
 
         val expectedResult = CustomerDetails(
@@ -86,7 +88,8 @@ class CustomerDetailsHttpParserSpec extends BaseSpec {
       "there is invalid json" in {
         val httpResponse = HttpResponse(
           OK,
-          Some(incorrectReturnJson)
+          incorrectReturnJson,
+          Map.empty[String,Seq[String]]
         )
 
         val expectedResult = UnexpectedJsonFormat
@@ -98,7 +101,7 @@ class CustomerDetailsHttpParserSpec extends BaseSpec {
       "a non OK status is returned" in {
         val httpResponse = HttpResponse(
           INTERNAL_SERVER_ERROR,
-          None
+          ""
         )
 
         val expectedResult = Left(ServerSideError("500", "Received downstream error when retrieving customer details."))

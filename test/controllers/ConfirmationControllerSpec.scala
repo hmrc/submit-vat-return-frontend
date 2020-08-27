@@ -36,7 +36,7 @@ class ConfirmationControllerSpec extends BaseSpec with MockVatSubscriptionServic
     mockAppConfig
   )
 
-  def viewAsString: String = view()(fakeRequest, messages, mockAppConfig, user).toString
+  def viewAsString: String = view()(messages, mockAppConfig, user).toString
 
   "ConfirmationController .show" when {
 

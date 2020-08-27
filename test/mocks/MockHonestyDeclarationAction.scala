@@ -23,8 +23,7 @@ trait MockHonestyDeclarationAction extends BaseSpec {
 
   val mockHonestyDeclarationAction: HonestyDeclarationAction =
     new HonestyDeclarationAction()(
-      ec,
-      mockAppConfig
+      ec
     )
 
 }

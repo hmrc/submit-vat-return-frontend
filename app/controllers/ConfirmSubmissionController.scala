@@ -41,7 +41,7 @@ import services.{DateService, EnrolmentsAuthService, VatReturnsService, VatSubsc
 import uk.gov.hmrc.auth.core.AuthorisationException
 import uk.gov.hmrc.auth.core.retrieve.v2.Retrievals
 import uk.gov.hmrc.auth.core.retrieve.{ItmpAddress, ItmpName, ~}
-import uk.gov.hmrc.play.bootstrap.controller.FrontendController
+import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendController
 import utils.{HashUtil, ReceiptDataHelper}
 import views.html.ConfirmSubmission
 import views.html.errors.SubmissionError

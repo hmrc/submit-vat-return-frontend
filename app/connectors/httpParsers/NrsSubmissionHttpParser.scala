@@ -17,7 +17,7 @@
 package connectors.httpParsers
 
 import connectors.httpParsers.ResponseHttpParsers.HttpGetResult
-import models.errors.{ServerSideError, UnexpectedJsonFormat, BadRequestError}
+import models.errors.{BadRequestError, ServerSideError}
 import models.nrs.SuccessModel
 import play.api.Logger
 import play.api.http.Status._

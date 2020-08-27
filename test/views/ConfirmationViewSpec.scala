@@ -44,7 +44,7 @@ class ConfirmationViewSpec extends ViewBaseSpec {
 
         lazy val view = {
           mockAppConfig.features.viewVatReturnEnabled(true)
-          confirmationView()(fakeRequest, messages, mockAppConfig, userWithSession)
+          confirmationView()(messages, mockAppConfig, userWithSession)
         }
 
         lazy implicit val document: Document = Jsoup.parse(view.body)
@@ -91,7 +91,7 @@ class ConfirmationViewSpec extends ViewBaseSpec {
 
         lazy val view = {
           mockAppConfig.features.viewVatReturnEnabled(true)
-          confirmationView()(fakeRequest, messages, mockAppConfig, userWithSession)
+          confirmationView()(messages, mockAppConfig, userWithSession)
         }
 
         lazy implicit val document: Document = Jsoup.parse(view.body)
@@ -109,7 +109,7 @@ class ConfirmationViewSpec extends ViewBaseSpec {
 
       lazy val view = {
         mockAppConfig.features.viewVatReturnEnabled(false)
-        confirmationView()(fakeRequest, messages, mockAppConfig, user)
+        confirmationView()(messages, mockAppConfig, user)
       }
 
       lazy implicit val document: Document = Jsoup.parse(view.body)
@@ -124,7 +124,7 @@ class ConfirmationViewSpec extends ViewBaseSpec {
       lazy val agent: User[AnyContentAsEmpty.type] = User[AnyContentAsEmpty.type]("999999999", Some("123456789"))
       lazy val feature_view = {
         mockAppConfig.features.viewVatReturnEnabled(true)
-        confirmationView()(fakeRequest, messages, mockAppConfig, agent)
+        confirmationView()(messages, mockAppConfig, agent)
       }
 
       lazy implicit val document: Document = Jsoup.parse(feature_view.body)

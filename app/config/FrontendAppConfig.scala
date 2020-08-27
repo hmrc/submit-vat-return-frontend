@@ -16,15 +16,13 @@
 
 package config
 
-import java.util.Base64
-
-import javax.inject.{Inject, Singleton}
-import play.api.Configuration
 import common.ConfigKeys
 import config.features.Features
+import javax.inject.{Inject, Singleton}
+import play.api.Configuration
 import play.api.i18n.Lang
 import play.api.mvc.Call
-import uk.gov.hmrc.play.binders.ContinueUrl
+import uk.gov.hmrc.play.bootstrap.binders.SafeRedirectUrl
 import uk.gov.hmrc.play.bootstrap.config.ServicesConfig
 
 trait AppConfig {
@@ -115,7 +113,7 @@ class FrontendAppConfig @Inject()(configuration: Configuration, servicesConfig: 
 
   // Agent Client Lookup
   private lazy val platformHost = getString(ConfigKeys.platformHost)
-  private lazy val agentClientLookupRedirectUrl: String => String = uri => ContinueUrl(platformHost + uri).encodedUrl
+  private lazy val agentClientLookupRedirectUrl: String => String = uri => SafeRedirectUrl(platformHost + uri).encodedUrl
   private lazy val agentClientLookupHost = getString(ConfigKeys.vatAgentClientLookupFrontendHost)
   override lazy val agentClientLookupStartUrl: String => String = uri =>
     agentClientLookupHost +
@@ -140,7 +138,7 @@ class FrontendAppConfig @Inject()(configuration: Configuration, servicesConfig: 
   override lazy val staticDateValue: String = getString(ConfigKeys.staticDateValue)
 
   override def feedbackUrl(redirectUrl: String): String = {s"$contactHost/contact/beta-feedback?service=$contactFormServiceIdentifier" +
-    s"&backUrl=${ContinueUrl(platformHost + redirectUrl).encodedUrl}"}
+    s"&backUrl=${SafeRedirectUrl(platformHost + redirectUrl).encodedUrl}"}
 
   override val accessibilityLinkUrl: String = getString(ConfigKeys.vatSummaryHost) + getString(ConfigKeys.vatSummaryAccessibilityUrl)
 

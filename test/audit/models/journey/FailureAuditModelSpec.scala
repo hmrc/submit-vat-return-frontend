@@ -17,7 +17,6 @@
 package audit.models.journey
 
 import base.BaseSpec
-import play.api.http.Status
 import play.api.libs.json.Json
 
 class FailureAuditModelSpec extends BaseSpec {

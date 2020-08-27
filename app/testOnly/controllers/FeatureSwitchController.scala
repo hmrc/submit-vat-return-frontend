@@ -23,7 +23,7 @@ import play.api.mvc.{Action, AnyContent, MessagesControllerComponents, Result}
 import testOnly.forms.FeatureSwitchForm
 import testOnly.models.FeatureSwitchModel
 import testOnly.views.html.FeatureSwitch
-import uk.gov.hmrc.play.bootstrap.controller.FrontendController
+import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendController
 
 class FeatureSwitchController @Inject()(mcc: MessagesControllerComponents,
                                         featureSwitch: FeatureSwitch,

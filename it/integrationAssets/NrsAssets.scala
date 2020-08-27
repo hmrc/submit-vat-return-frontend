@@ -49,8 +49,8 @@ trait NrsAssets extends BaseISpec {
         |"itmpAddress":\{"line1":".*?","postCode":".*?","countryName":".*?","countryCode":".*?"\},
         |"affinityGroup":".*?",
         |"credentialStrength":".*?",
-        |"loginTimes":\{"previousLogin":"\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}\.\d{3}Z",
-        |"currentLogin":"\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}\.\d{3}Z"\}
+        |"loginTimes":\{"currentLogin":"\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}\.\d{3}Z",
+        |"previousLogin":"\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}\.\d{3}Z"\}
         |\},
         |"userAuthToken":"Bearer 1234",
         |"headerData":\{"Csrf-Token":"nocheck","X-Request-ID":"govuk-tax-.*?","Timeout-Access":".*?",

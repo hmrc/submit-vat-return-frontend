@@ -94,7 +94,7 @@ class SubmitFormControllerSpec extends BaseSpec
     obligations.obligations.head,
     form,
     isAgent = false
-  )(fakeRequest, messages, mockAppConfig, user).toString
+  )(messages, mockAppConfig, user).toString
 
   "SubmitFormController .show" when {
 

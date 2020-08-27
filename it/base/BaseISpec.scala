@@ -30,7 +30,7 @@ import play.api.libs.ws.{WSClient, WSRequest, WSResponse}
 import play.api.mvc.AnyContentAsEmpty
 import play.api.test.FakeRequest
 import play.api.{Application, Environment, Mode}
-import uk.gov.hmrc.play.bootstrap.http.HttpClient
+import uk.gov.hmrc.http.HttpClient
 import utils.WireMockHelper
 
 import scala.concurrent.duration.Duration

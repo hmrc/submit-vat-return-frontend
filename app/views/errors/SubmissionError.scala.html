@@ -19,7 +19,7 @@
 
 @this(mainTemplate: MainTemplate)
 
-@()(implicit request: Request[_], appConfig: AppConfig, messages: Messages, user: User[_])
+@()(implicit appConfig: AppConfig, messages: Messages, user: User[_])
 
 @mainTemplate(
   pageTitle = messages("submissionError.heading"),

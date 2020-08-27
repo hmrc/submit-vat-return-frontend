@@ -34,7 +34,7 @@
   flatRateScheme: Boolean,
   obligation: VatObligation,
   form: Form[NineBoxModel],
-  isAgent: Boolean)(implicit request: Request[_], messages: Messages, appConfig: AppConfig, user: User[_])
+  isAgent: Boolean)(implicit messages: Messages, appConfig: AppConfig, user: User[_])
 
 @boxRow(divID: String, formID: String, boxTitle: String, boxDescription: String, boxAmount: String, autoCalculated: Boolean = false) = {
   <div class="grid-row" id=@divID>

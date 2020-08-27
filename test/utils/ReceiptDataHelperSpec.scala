@@ -159,7 +159,7 @@ class ReceiptDataHelperSpec extends BaseSpec {
       "the user is an agent, with frs and english selected" in {
         val userToUse = agentUserWithCookie(EN.languageCode)
 
-        val result = await(service.extractReceiptData(createReturnModel(true), successResponse(frs = true))(userToUse, hc, ec))
+        val result = await(service.extractReceiptData(createReturnModel(true), successResponse(frs = true))(userToUse))
 
         result shouldBe Right(
           ReceiptData(EN, expectedAnswers(frs = true, EN), expectedDeclaration(isAgent = true, EN))
@@ -169,7 +169,7 @@ class ReceiptDataHelperSpec extends BaseSpec {
       "the user is an individual, without frs and welsh selected" in {
         val userToUse = userWithCookie(CY.languageCode)
 
-        val result = await(service.extractReceiptData(createReturnModel(false), successResponse(frs = false))(userToUse, hc, ec))
+        val result = await(service.extractReceiptData(createReturnModel(false), successResponse(frs = false))(userToUse))
 
         result shouldBe Right(
           ReceiptData(CY, expectedAnswers(frs = false, CY), expectedDeclaration(isAgent = false, CY))
@@ -177,7 +177,7 @@ class ReceiptDataHelperSpec extends BaseSpec {
       }
 
       "the user has no language cookie" in {
-        val result = await(service.extractReceiptData(createReturnModel(false), successResponse(frs = false))(user, hc, ec))
+        val result = await(service.extractReceiptData(createReturnModel(false), successResponse(frs = false))(user))
 
         result shouldBe Right(
           ReceiptData(EN, expectedAnswers(frs = false, EN), expectedDeclaration(isAgent = false, EN))
@@ -192,7 +192,7 @@ class ReceiptDataHelperSpec extends BaseSpec {
       "there is an error from vat subscription" in {
         val expectedResult = BadRequestError("Bad Request", "There has been a bad request")
 
-        val result = await(service.extractReceiptData(createReturnModel(true), errorResponse)(user = implicitUser, hc, ec))
+        val result = await(service.extractReceiptData(createReturnModel(true), errorResponse)(user = implicitUser))
 
         result shouldBe Left(expectedResult)
       }
@@ -200,7 +200,7 @@ class ReceiptDataHelperSpec extends BaseSpec {
       "the user has no name" in {
         val expectedResult = UnknownError
 
-        val result = await(service.extractReceiptData(createReturnModel(true), successResponse(frs = true, noName = true))(user = implicitUser, hc, ec))
+        val result = await(service.extractReceiptData(createReturnModel(true), successResponse(frs = true, noName = true))(user = implicitUser))
 
         result shouldBe Left(expectedResult)
       }

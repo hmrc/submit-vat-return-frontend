@@ -27,8 +27,8 @@ class HonestyDeclarationActionSpec extends BaseSpec {
 
   "HonestyDeclarationAction .authoriseForPeriodKey" when {
 
-    val honestyDeclarationAction = new HonestyDeclarationAction()(ec, mockAppConfig)
-    def block[A]: User[A] => Future[Result] = { implicit user => Future(Ok("Test")) }
+    val honestyDeclarationAction = new HonestyDeclarationAction()(ec)
+    def block[A]: User[A] => Future[Result] = { _ => Future(Ok("Test")) }
 
     "mtdVatHonestyDeclaration is in session" when {
 

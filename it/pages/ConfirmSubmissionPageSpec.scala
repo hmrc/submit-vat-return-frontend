@@ -53,7 +53,6 @@ class ConfirmSubmissionPageSpec extends NrsAssets with GivenWhenThen {
     val honestySessionValue: String => Map[String, String] = periodKey => Map(SessionKeys.HonestyDeclaration.key -> s"$vrn-$periodKey")
     val fullSessionValues: Map[String, String] = mandationStatusSessionValue ++ nineBoxSessionValue ++ honestySessionValue("18AA")
 
-    def getRequest(sessionValues: Map[String, String] = Map.empty): WSResponse = get("/18AA/confirm-submission", sessionValues)
     def request(sessionValues: Map[String, String] = Map.empty): WSResponse = postJson("/18AA/confirm-submission", sessionValues)
 
     "user is authorised" when {

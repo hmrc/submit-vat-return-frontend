@@ -39,7 +39,7 @@ class HonestyDeclarationControllerSpec extends BaseSpec with MockAuth with MockM
     mockAppConfig
   )
 
-  def viewAsString(form: Form[Boolean]): String = honestyDeclaration("18AA", form)(fakeRequest, messages, mockAppConfig, user).toString
+  def viewAsString(form: Form[Boolean]): String = honestyDeclaration("18AA", form)(messages, mockAppConfig, user).toString
 
   "HonestyDeclarationController .show" when {
 

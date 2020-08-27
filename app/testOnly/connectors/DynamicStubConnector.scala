@@ -19,12 +19,15 @@ package testOnly.connectors
 import javax.inject.Inject
 import testOnly.config.TestOnlyAppConfig
 import testOnly.models.{DataModel, SchemaModel}
-import uk.gov.hmrc.http.{HeaderCarrier, HttpResponse}
-import uk.gov.hmrc.play.bootstrap.http.HttpClient
+import uk.gov.hmrc.http.{HeaderCarrier, HttpClient, HttpResponse, HttpReads}
+import uk.gov.hmrc.http.HttpReads.Implicits
+
 import scala.concurrent.{ExecutionContext, Future}
 
 class DynamicStubConnector @Inject()(val http: HttpClient,
                                      val appConfig: TestOnlyAppConfig) {
+
+  implicit val httpReads: HttpReads[HttpResponse] = Implicits.readRaw
 
   def populateStub(dataModel: DataModel)
                   (implicit hc: HeaderCarrier, ec: ExecutionContext): Future[HttpResponse] = {

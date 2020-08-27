@@ -65,7 +65,7 @@ class SubmitFormViewSpec extends ViewBaseSpec {
         obligation,
         SubmitVatReturnForm().nineBoxForm,
         isAgent = false
-      )(fakeRequest, messages, mockAppConfig, user)
+      )(messages, mockAppConfig, user)
       lazy implicit val document: Document = Jsoup.parse(view.body)
 
       "have the correct hidden label for box 1" in {
@@ -147,7 +147,7 @@ class SubmitFormViewSpec extends ViewBaseSpec {
         obligation,
         SubmitVatReturnForm().nineBoxForm,
         isAgent = false
-      )(fakeRequest, messages, mockAppConfig, user)
+      )(messages, mockAppConfig, user)
       lazy implicit val document: Document = Jsoup.parse(view.body)
 
       "display the non flat rate scheme text ofr box 6" in {
@@ -169,7 +169,7 @@ class SubmitFormViewSpec extends ViewBaseSpec {
         obligation,
         SubmitVatReturnForm().nineBoxForm,
         isAgent = false
-      )(fakeRequest, welshMessages, mockAppConfig, user)
+      )(welshMessages, mockAppConfig, user)
       lazy implicit val document: Document = Jsoup.parse(view.body)
 
       "have the welsh messages file" in {
@@ -190,7 +190,7 @@ class SubmitFormViewSpec extends ViewBaseSpec {
         obligation,
         SubmitVatReturnForm().nineBoxForm.bind(Map("" -> "")),
         isAgent = false
-      )(fakeRequest, messages, mockAppConfig, user)
+      )(messages, mockAppConfig, user)
       lazy implicit val document: Document = Jsoup.parse(view.body)
 
       s"have the correct page title" in {
