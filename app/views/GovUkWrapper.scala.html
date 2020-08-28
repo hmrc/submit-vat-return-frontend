@@ -52,6 +52,9 @@
 }
 
 @scriptElement = {
+  <!--[if !IE]>-->
+  <script type="text/javascript" src="@appConfig.trackingConsentUrl"></script>
+  <!--<![endif]-->
   <script type="text/javascript" src=@routes.Assets.at("js/errorFocus.js?2")></script>
   <script>
     @if(showSignOut) {

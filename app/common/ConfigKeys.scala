@@ -18,9 +18,6 @@ package common
 
 object ConfigKeys {
 
-  val googleAnalyticsToken: String = "google-analytics.token"
-  val googleAnalyticsHost: String = "google-analytics.host"
-
   val contactFrontendService: String = "contact-frontend.host"
 
   val vatObligationsHost: String = "microservice.services.vat-obligations.host"
@@ -58,6 +55,7 @@ object ConfigKeys {
   val submitNrsUrl: String = s"microservice.services.$vatReturnsBase.nrsUrl"
   val manageClientUrl: String = "vat-agent-client-lookup-frontend.whatToDoUrl"
   val nineBoxReturnAllowedRatio: String = "nine-box-return-box-ratio"
+  val trackingConsentUrl: String = "tracking-consent-frontend.url"
 
   val languageToggleFeature: String = "features.languageToggle.enabled"
   val staticDateEnabledFeature: String = "features.staticDate.enabled"
