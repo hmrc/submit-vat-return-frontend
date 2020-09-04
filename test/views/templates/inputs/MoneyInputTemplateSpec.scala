@@ -72,7 +72,7 @@ class MoneyInputTemplateSpec extends TemplateBaseSpec {
         s"""
            |<div class="form-group form-field--error"> <label for="amount" class="form-label visuallyhidden"> label1 </label>
            |<div class="hmrc-currency-input__wrapper"> <span class="hmrc-currency-input__unit" aria-hidden="true">£</span>
-           |<input class="govuk-input govuk-input--width-10" id="amount" name="amount" value="3" type="text"
+           |<input class="govuk-input govuk-input--width-10 error-field-thin" id="amount" name="amount" value="3" type="text"
            |aria-describedby="amount" autocomplete="off" inputmode="decimal">
            |</div>
            |</div>

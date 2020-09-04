@@ -59,6 +59,10 @@ display: Flex
 
 }
 
+.error-field-thin {
+    border: 2px solid #d4351c !important;
+}
+
 .hmrc-currency-input__unit {
   position: absolute;
   top: 2px;
