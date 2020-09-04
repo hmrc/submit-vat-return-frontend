@@ -1,7 +1,5 @@
 .input-icon {
     position: relative;
-    outline-color: #fd0;
-    font-color: govuk-color ("black");
 }
 
 .input-icon > span {
@@ -10,13 +8,11 @@
     top: 51%;
     width: 25px;
     text-align: center;
-    font-color: govuk-color ("black");
 }
 
 .input-icon > input {
     padding-left: 20px;
     width: 100%;
-    font-color: govuk-color ("black");
 }
 
 #displayFlex {
@@ -59,7 +55,7 @@ display: Flex
 }
 .hmrc-currency-input__wrapper {
   position: relative;
-
+  width: 20ch;
 
 }
 

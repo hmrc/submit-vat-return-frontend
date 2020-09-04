@@ -34,21 +34,11 @@
     </span>
   }
 
-    <div class="hmrc-currency-input__wrapper">
+    <div class="hmrc-currency-input__wrapper @if(field.hasErrors){error-field}">
         <span class="hmrc-currency-input__unit" aria-hidden="true">£</span>
-        <input class="govuk-input govuk-input--width-10" id="currency" name="@field.name" type="text"
-               aria-describedby="currency" autocomplete="off" inputmode="decimal" />
-
+        <input class="govuk-input govuk-input--width-10" id="@field.id" name="@field.name" value="@field.value" type="text"
+               aria-describedby="@field.id" autocomplete="off" inputmode="decimal"/>
     </div>
-
-    <div class="input-icon">
-        <span>£</span>
-        <input type="tel"
-               class="form-control @if(field.hasErrors){error-field}"
-               name="@field.name"
-               id="@field.id"
-               value="@field.value"
-               step="@if(decimalPlace) {0.01} else {1}"/>
-    </div>
-
 </div>
+
+<!--@if(field.hasErrors){error-field}-->
