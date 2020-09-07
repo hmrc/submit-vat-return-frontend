@@ -46,15 +46,12 @@ class MoneyInputTemplateSpec extends TemplateBaseSpec {
 
       val expectedMarkup = formatHtml(Html(
         s"""
-        | <div class="form-group ">
-        |   <label for="amount" class="form-label visuallyhidden">
-        |     label1
-        |   </label>
-        |   <div class="input-icon">
-        |     <span>£</span>
-        |     <input type="tel" class="form-control " name="amount" id="amount" value="3" step="0.01"/>
-        |   </div>
-        | </div>
+           |<div class="form-group "> <label for="amount" class="form-label visuallyhidden"> label1 </label>
+           |<div class="hmrc-currency-input__wrapper"> <span class="hmrc-currency-input__unit" aria-hidden="true">£</span>
+           |<input class="govuk-input govuk-input--width-10" id="amount" name="amount" value="3" type="text"
+           |aria-describedby="amount" autocomplete="off" inputmode="decimal">
+           |</div>
+           |</div>
       """.stripMargin
       ))
 
@@ -73,15 +70,12 @@ class MoneyInputTemplateSpec extends TemplateBaseSpec {
 
       val expectedMarkup = formatHtml(Html(
         s"""
-           | <div class="form-group form-field--error">
-           |   <label for="amount" class="form-label visuallyhidden">
-           |     label1
-           |   </label>
-           |   <div class="input-icon">
-           |     <span>£</span>
-           |     <input type="tel" class="form-control error-field" name="amount" id="amount" value="3" step="0.01"/>
-           |   </div>
-           | </div>
+           |<div class="form-group form-field--error"> <label for="amount" class="form-label visuallyhidden"> label1 </label>
+           |<div class="hmrc-currency-input__wrapper"> <span class="hmrc-currency-input__unit" aria-hidden="true">£</span>
+           |<input class="govuk-input govuk-input--width-10 error-field-thin" id="amount" name="amount" value="3" type="text"
+           |aria-describedby="amount" autocomplete="off" inputmode="decimal">
+           |</div>
+           |</div>
       """.stripMargin
       ))
 
@@ -101,18 +95,13 @@ class MoneyInputTemplateSpec extends TemplateBaseSpec {
 
       val expectedMarkup = formatHtml(Html(
         s"""
-           | <div class="form-group ">
-           |   <label for="amount" class="form-label visuallyhidden">
-           |     label1
-           |   </label>
-           |   <span class="form-hint">
-           |     Hint text
-           |   </span>
-           |   <div class="input-icon">
-           |     <span>£</span>
-           |     <input type="tel" class="form-control " name="amount" id="amount" value="3" step="0.01"/>
-           |   </div>
-           | </div>
+           |<div class="form-group "> <label for="amount" class="form-label visuallyhidden"> label1 </label>
+           |<span class="form-hint"> Hint text </span>
+           |<div class="hmrc-currency-input__wrapper"> <span class="hmrc-currency-input__unit" aria-hidden="true">£</span>
+           |<input class="govuk-input govuk-input--width-10" id="amount" name="amount" value="3" type="text"
+           |aria-describedby="amount" autocomplete="off" inputmode="decimal">
+           |</div>
+           |</div>
       """.stripMargin
       ))
 
@@ -132,18 +121,14 @@ class MoneyInputTemplateSpec extends TemplateBaseSpec {
 
       val expectedMarkup = formatHtml(Html(
         s"""
-           | <div class="form-group ">
-           |   <label for="amount" class="form-label ">
-           |     label1
-           |   </label>
-           |   <div class="input-icon">
-           |     <span>£</span>
-           |     <input type="tel" class="form-control " name="amount" id="amount" value="3" step="0.01"/>
-           |   </div>
-           | </div>
+           |<div class="form-group "> <label for="amount" class="form-label "> label1 </label>
+           |<div class="hmrc-currency-input__wrapper"> <span class="hmrc-currency-input__unit" aria-hidden="true">£</span>
+           |<input class="govuk-input govuk-input--width-10" id="amount" name="amount" value="3"
+           |type="text" aria-describedby="amount" autocomplete="off" inputmode="decimal">
+           |</div>
+           |</div>
       """.stripMargin
       ))
-
       "render the correct markup" in {
         formatHtml(template) shouldBe expectedMarkup
       }
