@@ -58,7 +58,7 @@ class CheckboxHelperSpec extends TemplateBaseSpec {
     s"""
        |  <div class="multiple-choice">
        |    <input type="checkbox" id="$name" name="$name" value="true"${if (checked) " checked" else ""}>
-       |    <label for="$name">$display</label>
+       |    <label id="$name-hint" for="$name">$display</label>
        |  </div>
       """.stripMargin
 
@@ -69,7 +69,7 @@ class CheckboxHelperSpec extends TemplateBaseSpec {
       val expectedMarkup = Html(
         s"""
            |  <div class="form-group">
-           |    <fieldset aria-describedby="form-hint">
+           |    <fieldset aria-describedby="checkbox-hint">
            |
            |    <div class="form-field">
            |
@@ -105,7 +105,7 @@ class CheckboxHelperSpec extends TemplateBaseSpec {
       val expectedMarkup = Html(
         s"""
            |  <div class="form-group">
-           |     <fieldset aria-describedby="form-hint">
+           |     <fieldset aria-describedby="checkbox-hint">
            |
            |     <div class="form-field">
            |
@@ -151,7 +151,7 @@ class CheckboxHelperSpec extends TemplateBaseSpec {
       val expectedMarkup = Html(
         s"""
            |  <div class="form-group">
-           |    <fieldset aria-describedby="form-hint form-error">
+           |    <fieldset aria-describedby="checkbox-hint form-error">
            |
            |    <div class="form-field--error panel-border-narrow">
            |
@@ -161,7 +161,7 @@ class CheckboxHelperSpec extends TemplateBaseSpec {
            |        </h1>
            |      </legend>
            |
-           |      <span class="error-message">
+           |      <span id="form-error" class="error-message">
            |      <span class="visuallyhidden">Error:</span>
            |      $errorMessage
            |      </span>

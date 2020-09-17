@@ -20,7 +20,7 @@
 
 <div class="form-group">
 
-    <fieldset aria-describedby="form-hint@if(form.hasErrors){ form-error}">
+    <fieldset aria-describedby="checkbox-hint@if(form.hasErrors){ form-error}">
 
         <div class="form-field@if(form.hasErrors){--error panel-border-narrow}">
 
@@ -31,7 +31,7 @@
             </legend>
 
             @form.errors.map { error =>
-                <span class="error-message">
+                <span id="form-error" class="error-message">
                     <span class="visuallyhidden">@messages("common.error")</span>
                     @messages(error.message)
                 </span>
@@ -46,7 +46,7 @@
                          value="true"
                     @form(value).value.filter(_ == "true").map{_ => checked="checked"}/>
 
-                  <label for="@form(value).id">@label</label>
+                  <label id="@{form(value).id}-hint" for="@form(value).id">@label</label>
                 </div>
               }
             </div>
