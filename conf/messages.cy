@@ -12,6 +12,7 @@ common.back = Yn ôl
 common.errorSummary.heading = Mae gennych un neu fwy o wallau
 common.warning = Rhybudd
 common.error.titlePrefix = Gwall: {0}
+common.error = Gwall:
 
 standardError.title = Mae problem gyda’r gwasanaeth - TAW - GOV.UK
 standardError.heading = Mae’n ddrwg gennym – mae problem gyda’r gwasanaeth

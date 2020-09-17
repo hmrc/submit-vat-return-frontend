@@ -68,8 +68,10 @@ class CheckboxHelperSpec extends TemplateBaseSpec {
 
       val expectedMarkup = Html(
         s"""
-           |  <div>
-           |    <fieldset>
+           |  <div class="form-group">
+           |    <fieldset aria-describedby="form-hint">
+           |
+           |    <div class="form-field">
            |
            |      <legend>
            |        <h1 id="page-heading" class="heading-large">
@@ -83,6 +85,7 @@ class CheckboxHelperSpec extends TemplateBaseSpec {
            |        ${generateExpectedCheckboxMarkup("value3", "display3")}
            |        ${generateExpectedCheckboxMarkup("value4", "display4")}
            |        ${generateExpectedCheckboxMarkup("value5", "display5")}
+           |      </div>
            |      </div>
            |
            |   </fieldset>
@@ -101,8 +104,10 @@ class CheckboxHelperSpec extends TemplateBaseSpec {
     "render a list of checkboxes with pre-checked boxes" in {
       val expectedMarkup = Html(
         s"""
-           |  <div>
-           |     <fieldset>
+           |  <div class="form-group">
+           |     <fieldset aria-describedby="form-hint">
+           |
+           |     <div class="form-field">
            |
            |      <legend>
            |        <h1 id="page-heading" class="heading-large">
@@ -117,6 +122,8 @@ class CheckboxHelperSpec extends TemplateBaseSpec {
            |        ${generateExpectedCheckboxMarkup("value4", "display4")}
            |        ${generateExpectedCheckboxMarkup("value5", "display5", checked = true)}
            |       </div>
+           |       </div>
+           |
            |    </fieldset>
            |  </div>
         """.stripMargin
@@ -143,8 +150,10 @@ class CheckboxHelperSpec extends TemplateBaseSpec {
       val form = testForm.bind(data).withError(FormError("err", errorMessage))
       val expectedMarkup = Html(
         s"""
-           |  <div class="form-field--error">
-           |    <fieldset>
+           |  <div class="form-group">
+           |    <fieldset aria-describedby="form-hint form-error">
+           |
+           |    <div class="form-field--error panel-border-narrow">
            |
            |      <legend>
            |        <h1 id="page-heading" class="heading-large">
@@ -152,7 +161,10 @@ class CheckboxHelperSpec extends TemplateBaseSpec {
            |        </h1>
            |      </legend>
            |
-           |      <span class="error-message">$errorMessage</span>
+           |      <span class="error-message">
+           |      <span class="visuallyhidden">Error:</span>
+           |      $errorMessage
+           |      </span>
            |      <div>
            |        ${generateExpectedCheckboxMarkup("value1", "display1")}
            |        ${generateExpectedCheckboxMarkup("value2", "display2")}
@@ -160,6 +172,8 @@ class CheckboxHelperSpec extends TemplateBaseSpec {
            |        ${generateExpectedCheckboxMarkup("value4", "display4")}
            |        ${generateExpectedCheckboxMarkup("value5", "display5")}
            |      </div>
+           |      </div>
+           |
            |    </fieldset>
            |  </div>
         """.stripMargin

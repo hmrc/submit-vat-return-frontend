@@ -20,7 +20,7 @@
 @import templates.formatters.dates.DisplayDate
 @import templates.formatters.dates.DisplayDateRange
 @import uk.gov.hmrc.play.views.html.helpers.FormWithCSRF
-@import uk.gov.hmrc.play.views.html.helpers.ErrorSummary
+@import views.html.templates.ErrorSummary
 
 @this(mainTemplate: MainTemplate,
       formAction: FormWithCSRF,
@@ -87,10 +87,9 @@
     <a class="link-back" href="@controllers.routes.HonestyDeclarationController.show(periodKey)">@messages("common.back")</a>
   }
 
+  @errorSummary(messages("error.summary.title"), form)
+
   <div>
-    @if(form.errors.nonEmpty) {
-      @errorSummary(messages("error.summary.title"), form)
-    }
 
     <h1 class="heading-xlarge">
       <span class="heading-secondary">@messages("submit_form.heading")</span>
