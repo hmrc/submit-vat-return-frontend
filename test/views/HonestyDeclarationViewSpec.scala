@@ -148,7 +148,7 @@ class HonestyDeclarationViewSpec extends ViewBaseSpec {
     }
 
     "display the error message" in {
-      elementText(".error-message") shouldBe messages("honesty_declaration.required")
+      elementText(".error-message") shouldBe messages("common.error") + " " + messages("honesty_declaration.required")
     }
 
     "has the checkbox unchecked" in {

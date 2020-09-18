@@ -17,7 +17,7 @@
 @import config.AppConfig
 @import models.auth.User
 @import views.html.templates.inputs.CheckboxHelper
-@import uk.gov.hmrc.play.views.html.helpers.ErrorSummary
+@import views.html.templates.ErrorSummary
 @import uk.gov.hmrc.play.views.html.helpers.FormWithCSRF
 
 @this(mainTemplate: MainTemplate,
@@ -51,9 +51,7 @@
 
   <a class="link-back" href="@appConfig.returnDeadlinesUrl">@messages("common.back")</a>
 
-  @if(form.errors.nonEmpty) {
-    @errorSummary(messages("error.summary.title"), form)
-  }
+  @errorSummary(messages("error.summary.title"), form)
 
   @formAction(action = controllers.routes.HonestyDeclarationController.submit(periodKey)){
     <div class="form-group">

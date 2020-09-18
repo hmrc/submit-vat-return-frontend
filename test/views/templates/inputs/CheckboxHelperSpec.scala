@@ -58,7 +58,7 @@ class CheckboxHelperSpec extends TemplateBaseSpec {
     s"""
        |  <div class="multiple-choice">
        |    <input type="checkbox" id="$name" name="$name" value="true"${if (checked) " checked" else ""}>
-       |    <label for="$name">$display</label>
+       |    <label id="$name-hint" for="$name">$display</label>
        |  </div>
       """.stripMargin
 
@@ -68,8 +68,10 @@ class CheckboxHelperSpec extends TemplateBaseSpec {
 
       val expectedMarkup = Html(
         s"""
-           |  <div>
-           |    <fieldset>
+           |  <div class="form-group">
+           |    <fieldset aria-describedby="checkbox-hint">
+           |
+           |    <div class="form-field">
            |
            |      <legend>
            |        <h1 id="page-heading" class="heading-large">
@@ -77,7 +79,6 @@ class CheckboxHelperSpec extends TemplateBaseSpec {
            |        </h1>
            |      </legend>
            |
-           |      <div>
            |        ${generateExpectedCheckboxMarkup("value1", "display1")}
            |        ${generateExpectedCheckboxMarkup("value2", "display2")}
            |        ${generateExpectedCheckboxMarkup("value3", "display3")}
@@ -101,8 +102,10 @@ class CheckboxHelperSpec extends TemplateBaseSpec {
     "render a list of checkboxes with pre-checked boxes" in {
       val expectedMarkup = Html(
         s"""
-           |  <div>
-           |     <fieldset>
+           |  <div class="form-group">
+           |     <fieldset aria-describedby="checkbox-hint">
+           |
+           |     <div class="form-field">
            |
            |      <legend>
            |        <h1 id="page-heading" class="heading-large">
@@ -110,13 +113,13 @@ class CheckboxHelperSpec extends TemplateBaseSpec {
            |        </h1>
            |      </legend>
            |
-           |      <div>
            |        ${generateExpectedCheckboxMarkup("value1", "display1", checked = true)}
            |        ${generateExpectedCheckboxMarkup("value2", "display2", checked = true)}
            |        ${generateExpectedCheckboxMarkup("value3", "display3")}
            |        ${generateExpectedCheckboxMarkup("value4", "display4")}
            |        ${generateExpectedCheckboxMarkup("value5", "display5", checked = true)}
            |       </div>
+           |
            |    </fieldset>
            |  </div>
         """.stripMargin
@@ -143,8 +146,10 @@ class CheckboxHelperSpec extends TemplateBaseSpec {
       val form = testForm.bind(data).withError(FormError("err", errorMessage))
       val expectedMarkup = Html(
         s"""
-           |  <div class="form-field--error">
-           |    <fieldset>
+           |  <div class="form-group">
+           |    <fieldset aria-describedby="checkbox-hint form-error">
+           |
+           |    <div class="form-field--error panel-border-narrow">
            |
            |      <legend>
            |        <h1 id="page-heading" class="heading-large">
@@ -152,14 +157,17 @@ class CheckboxHelperSpec extends TemplateBaseSpec {
            |        </h1>
            |      </legend>
            |
-           |      <span class="error-message">$errorMessage</span>
-           |      <div>
+           |      <span id="form-error" class="error-message">
+           |      <span class="visuallyhidden">Error:</span>
+           |      $errorMessage
+           |      </span>
            |        ${generateExpectedCheckboxMarkup("value1", "display1")}
            |        ${generateExpectedCheckboxMarkup("value2", "display2")}
            |        ${generateExpectedCheckboxMarkup("value3", "display3")}
            |        ${generateExpectedCheckboxMarkup("value4", "display4")}
            |        ${generateExpectedCheckboxMarkup("value5", "display5")}
            |      </div>
+           |
            |    </fieldset>
            |  </div>
         """.stripMargin

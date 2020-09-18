@@ -18,31 +18,39 @@
 
 @(form: Form[_], choices: Seq[(String, String)], heading: String)(implicit messages: Messages)
 
-<div @if(form.hasErrors){ class="form-field--error"}>
+<div class="form-group">
 
-  <fieldset>
+    <fieldset aria-describedby="checkbox-hint@if(form.hasErrors){ form-error}">
 
-    <legend>
-      <h1 id="page-heading" class="heading-large">
-        @heading
-      </h1>
-    </legend>
+        <div class="form-field@if(form.hasErrors){--error panel-border-narrow}">
 
-    @form.errors.map { error => <span class="error-message">@messages(error.message)</span> }
+            <legend>
+              <h1 id="page-heading" class="heading-large">
+                @heading
+              </h1>
+            </legend>
 
-    <div>
-      @choices.map { case (value, label) =>
-        <div class="multiple-choice">
-          <input type="checkbox"
-                 id="@form(value).id"
-                 name="@form(value).name"
-                 value="true"
-            @form(value).value.filter(_ == "true").map{_ => checked="checked"}/>
+            @form.errors.map { error =>
+                <span id="form-error" class="error-message">
+                    <span class="visuallyhidden">@messages("common.error")</span>
+                    @messages(error.message)
+                </span>
+            }
 
-          <label for="@form(value).id">@label</label>
+            @choices.map { case (value, label) =>
+            <div class="multiple-choice">
+              <input type="checkbox"
+                     id="@form(value).id"
+                     name="@form(value).name"
+                     value="true"
+                @form(value).value.filter(_ == "true").map{_ => checked="checked"}/>
+
+              <label id="@{form(value).id}-hint" for="@form(value).id">@label</label>
+            </div>
+            }
+
         </div>
-      }
-    </div>
 
     </fieldset>
+
 </div>

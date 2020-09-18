@@ -14,6 +14,7 @@ common.errorSummary.heading = You have one or more errors
 common.warning = Warning
 common.pageTitle = {0} - {1} - GOV.UK
 common.error.titlePrefix = Error: {0}
+common.error = Error:
 
 standardError.title = There is a problem with the service - VAT - GOV.UK
 standardError.heading = Sorry, there is a problem with the service
