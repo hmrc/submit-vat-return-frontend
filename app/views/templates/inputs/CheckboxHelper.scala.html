@@ -37,19 +37,17 @@
                 </span>
             }
 
-            <div>
-              @choices.map { case (value, label) =>
-                <div class="multiple-choice">
-                  <input type="checkbox"
-                         id="@form(value).id"
-                         name="@form(value).name"
-                         value="true"
-                    @form(value).value.filter(_ == "true").map{_ => checked="checked"}/>
+            @choices.map { case (value, label) =>
+            <div class="multiple-choice">
+              <input type="checkbox"
+                     id="@form(value).id"
+                     name="@form(value).name"
+                     value="true"
+                @form(value).value.filter(_ == "true").map{_ => checked="checked"}/>
 
-                  <label id="@{form(value).id}-hint" for="@form(value).id">@label</label>
-                </div>
-              }
+              <label id="@{form(value).id}-hint" for="@form(value).id">@label</label>
             </div>
+            }
 
         </div>
 

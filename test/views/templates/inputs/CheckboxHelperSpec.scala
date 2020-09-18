@@ -79,13 +79,11 @@ class CheckboxHelperSpec extends TemplateBaseSpec {
            |        </h1>
            |      </legend>
            |
-           |      <div>
            |        ${generateExpectedCheckboxMarkup("value1", "display1")}
            |        ${generateExpectedCheckboxMarkup("value2", "display2")}
            |        ${generateExpectedCheckboxMarkup("value3", "display3")}
            |        ${generateExpectedCheckboxMarkup("value4", "display4")}
            |        ${generateExpectedCheckboxMarkup("value5", "display5")}
-           |      </div>
            |      </div>
            |
            |   </fieldset>
@@ -115,13 +113,11 @@ class CheckboxHelperSpec extends TemplateBaseSpec {
            |        </h1>
            |      </legend>
            |
-           |      <div>
            |        ${generateExpectedCheckboxMarkup("value1", "display1", checked = true)}
            |        ${generateExpectedCheckboxMarkup("value2", "display2", checked = true)}
            |        ${generateExpectedCheckboxMarkup("value3", "display3")}
            |        ${generateExpectedCheckboxMarkup("value4", "display4")}
            |        ${generateExpectedCheckboxMarkup("value5", "display5", checked = true)}
-           |       </div>
            |       </div>
            |
            |    </fieldset>
@@ -165,13 +161,11 @@ class CheckboxHelperSpec extends TemplateBaseSpec {
            |      <span class="visuallyhidden">Error:</span>
            |      $errorMessage
            |      </span>
-           |      <div>
            |        ${generateExpectedCheckboxMarkup("value1", "display1")}
            |        ${generateExpectedCheckboxMarkup("value2", "display2")}
            |        ${generateExpectedCheckboxMarkup("value3", "display3")}
            |        ${generateExpectedCheckboxMarkup("value4", "display4")}
            |        ${generateExpectedCheckboxMarkup("value5", "display5")}
-           |      </div>
            |      </div>
            |
            |    </fieldset>
