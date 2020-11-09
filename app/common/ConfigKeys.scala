@@ -55,7 +55,7 @@ object ConfigKeys {
   val submitNrsUrl: String = s"microservice.services.$vatReturnsBase.nrsUrl"
   val manageClientUrl: String = "vat-agent-client-lookup-frontend.whatToDoUrl"
   val nineBoxReturnAllowedRatio: String = "nine-box-return-box-ratio"
-  val trackingConsentUrl: String = "tracking-consent-frontend.url"
+  val gtmContainer: String = "tracking-consent-frontend.gtm.container"
 
   val languageToggleFeature: String = "features.languageToggle.enabled"
   val staticDateEnabledFeature: String = "features.staticDate.enabled"

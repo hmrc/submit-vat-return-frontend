@@ -16,12 +16,12 @@
 
 @import config.AppConfig
 @import models.auth.User
-@import uk.gov.hmrc.play.views.html.layouts.{Head, HeaderNav, Footer, ServiceInfo, MainContentHeader, MainContent, FooterLinks}
+@import uk.gov.hmrc.play.views.html.layouts.{HeadWithTrackingConsent, HeaderNav, Footer, ServiceInfo, MainContentHeader, MainContent, FooterLinks}
 @import layouts.GovUkTemplate
 @import uk.gov.hmrc.play.views.html.helpers.ReportAProblemLink
 @import play.twirl.api.HtmlFormat
 
-@this(head: Head,
+@this(headWithTrackingConsent: HeadWithTrackingConsent,
       headerNav: HeaderNav,
       footer: Footer,
       footerLinks: FooterLinks,
@@ -52,9 +52,6 @@
 }
 
 @scriptElement = {
-  <!--[if !IE]>-->
-  <script type="text/javascript" src="@appConfig.trackingConsentUrl"></script>
-  <!--<![endif]-->
   <script type="text/javascript" src=@routes.Assets.at("js/errorFocus.js?2")></script>
   <script>
     @if(showSignOut) {
@@ -71,9 +68,10 @@
 }
 
 @headContent = {
-  @head(
+  @headWithTrackingConsent(
     linkElem = Some(linkElement),
-    headScripts = None
+    headScripts = None,
+    nonce = None
   )
   <meta name="format-detection" content="telephone=no" />
 }
@@ -168,4 +166,4 @@
   )
 }
 
-@hmrcGovUkTemplate(Some(title), bodyClasses)(headContent, bodyEnd, insideHeader, afterHeader, footerTop, Some(footerLinksContent), true)(content)
+@hmrcGovUkTemplate(Some(title), bodyClasses)(headContent, bodyEnd, insideHeader, afterHeader, footerTop, Some(footerLinksContent), nav = true)(content)

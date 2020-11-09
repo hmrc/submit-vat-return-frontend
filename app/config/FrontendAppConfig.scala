@@ -57,7 +57,7 @@ trait AppConfig {
   val vatObligationsBaseUrl: String
   val vatSubscriptionBaseUrl: String
   val maximum9BoxReturnBoxRatio: Double
-  val trackingConsentUrl: String
+  val gtmContainer: String
 }
 
 @Singleton
@@ -147,5 +147,5 @@ class FrontendAppConfig @Inject()(configuration: Configuration, servicesConfig: 
   override val vatSubscriptionBaseUrl: String = baseUrl("vat-subscription")
   override val maximum9BoxReturnBoxRatio: Double = configuration.get[Double](ConfigKeys.nineBoxReturnAllowedRatio)
 
-  override val trackingConsentUrl: String = getString(ConfigKeys.trackingConsentUrl)
+  override val gtmContainer: String = servicesConfig.getString(ConfigKeys.gtmContainer)
 }
