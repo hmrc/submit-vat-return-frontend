@@ -63,14 +63,4 @@ trait BaseSpec extends WordSpec with Matchers with GuiceOneAppPerSuite with Mock
   implicit lazy val hc: HeaderCarrier = HeaderCarrier()
   implicit lazy val ec: ExecutionContext = inject[ExecutionContext]
 
-  override def beforeEach(): Unit = {
-    super.beforeEach()
-    mockAppConfig.features.viewVatReturnEnabled(false)
-  }
-
-  override def afterEach(): Unit = {
-    super.afterEach()
-    mockAppConfig.features.viewVatReturnEnabled(false)
-  }
-
 }

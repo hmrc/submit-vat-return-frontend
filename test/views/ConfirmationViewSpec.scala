@@ -30,102 +30,76 @@ class ConfirmationViewSpec extends ViewBaseSpec {
 
   "Confirmation view" when {
 
-    "viewVatReturnEnabled feature switch is on" when {
+    "year and period key are in session" should {
 
-      "year and period key are in session" should {
+      val submitYear = "2019"
+      val periodKey = "21BB"
 
-        val submitYear = "2019"
-        val periodKey = "21BB"
+      lazy val userWithSession: User[AnyContentAsEmpty.type] = User[AnyContentAsEmpty.type](vrn)(fakeRequest.withSession(
+        SessionKeys.submissionYear -> submitYear,
+        SessionKeys.inSessionPeriodKey -> periodKey)
+      )
 
-        lazy val userWithSession: User[AnyContentAsEmpty.type] = User[AnyContentAsEmpty.type](vrn)(fakeRequest.withSession(
-          SessionKeys.submissionYear -> submitYear,
-          SessionKeys.inSessionPeriodKey -> periodKey)
-        )
+      lazy val view = confirmationView()(messages, mockAppConfig, userWithSession)
 
-        lazy val view = {
-          mockAppConfig.features.viewVatReturnEnabled(true)
-          confirmationView()(messages, mockAppConfig, userWithSession)
+      lazy implicit val document: Document = Jsoup.parse(view.body)
+
+      s"display the title as ${viewMessages.title}" in {
+        document.title shouldBe viewMessages.title
+      }
+
+      s"display the h1 as ${viewMessages.heading}" in {
+        elementText("h1") shouldBe viewMessages.heading
+      }
+
+      s"display the h2 as ${viewMessages.subHeading}" in {
+        elementText("h2") shouldBe viewMessages.subHeading
+      }
+
+      s"display the paragraph text as ${viewMessages.paragraph}" in {
+        elementText("#content article p") shouldBe viewMessages.paragraph
+      }
+
+      "display a View Return button" should {
+
+        s"have the button text as ${viewMessages.button}" in {
+          elementText("#view-vat-return-button") shouldBe viewMessages.button
         }
 
-        lazy implicit val document: Document = Jsoup.parse(view.body)
-
-        s"display the title as ${viewMessages.title}" in {
-          document.title shouldBe viewMessages.title
-        }
-
-        s"display the h1 as ${viewMessages.heading}" in {
-          elementText("h1") shouldBe viewMessages.heading
-        }
-
-        s"display the h2 as ${viewMessages.subHeading}" in {
-          elementText("h2") shouldBe viewMessages.subHeading
-        }
-
-        s"display the paragraph text as ${viewMessages.paragraph}" in {
-          elementText("#content article p") shouldBe viewMessages.paragraph
-        }
-
-        "display a View Return button" should {
-
-          s"have the button text as ${viewMessages.button}" in {
-            elementText("#view-vat-return-button") shouldBe viewMessages.button
-          }
-
-          "have the correct redirect link" in {
-            element("#view-vat-return-button").attr("href") shouldBe
-              mockAppConfig.viewSubmittedReturnUrl + s"/$submitYear/$periodKey"
-          }
-        }
-
-        "display a Finish button" should {
-
-          s"have the button text as ${viewMessages.button2}" in {
-            elementText("#finish-button2") shouldBe viewMessages.button2
-          }
+        "have the correct redirect link" in {
+          element("#view-vat-return-button").attr("href") shouldBe
+            mockAppConfig.viewSubmittedReturnUrl + s"/$submitYear/$periodKey"
         }
       }
 
-      "year and period key are not in session" should {
+      "display a Finish button" should {
 
-        lazy val userWithSession: User[AnyContentAsEmpty.type] = User[AnyContentAsEmpty.type](vrn)(fakeRequest)
-
-        lazy val view = {
-          mockAppConfig.features.viewVatReturnEnabled(true)
-          confirmationView()(messages, mockAppConfig, userWithSession)
-        }
-
-        lazy implicit val document: Document = Jsoup.parse(view.body)
-
-        "display a View Return button" should {
-
-          "have the correct redirect link" in {
-            element("#view-vat-return-button").attr("href") shouldBe mockAppConfig.viewSubmittedReturnUrl
-          }
+        s"have the button text as ${viewMessages.button2}" in {
+          elementText("#finish-button2") shouldBe viewMessages.button2
         }
       }
     }
 
-    "viewVatReturnEnabled feature switch is off" when {
+    "year and period key are not in session" should {
 
-      lazy val view = {
-        mockAppConfig.features.viewVatReturnEnabled(false)
-        confirmationView()(messages, mockAppConfig, user)
-      }
+      lazy val userWithSession: User[AnyContentAsEmpty.type] = User[AnyContentAsEmpty.type](vrn)(fakeRequest)
+
+      lazy val view = confirmationView()(messages, mockAppConfig, userWithSession)
 
       lazy implicit val document: Document = Jsoup.parse(view.body)
 
-      "not display View return button" in {
-        elementExists("#view-vat-return-button") shouldBe false
+      "display a View Return button" should {
+
+        "have the correct redirect link" in {
+          element("#view-vat-return-button").attr("href") shouldBe mockAppConfig.viewSubmittedReturnUrl
+        }
       }
     }
 
     "user is an Agent" should {
 
       lazy val agent: User[AnyContentAsEmpty.type] = User[AnyContentAsEmpty.type]("999999999", Some("123456789"))
-      lazy val feature_view = {
-        mockAppConfig.features.viewVatReturnEnabled(true)
-        confirmationView()(messages, mockAppConfig, agent)
-      }
+      lazy val feature_view = confirmationView()(messages, mockAppConfig, agent)
 
       lazy implicit val document: Document = Jsoup.parse(feature_view.body)
 

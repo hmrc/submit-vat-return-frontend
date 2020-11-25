@@ -17,7 +17,5 @@
 package testOnly.models
 
 case class FeatureSwitchModel(
-                               staticDateEnabled: Boolean,
-                               languageToggle: Boolean,
-                               viewVatReturnEnabled: Boolean
+                               staticDateEnabled: Boolean
                              )

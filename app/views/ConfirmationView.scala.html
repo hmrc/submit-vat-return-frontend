@@ -53,15 +53,6 @@
   <h2>@messages("confirmation_view.subHeading")</h2>
   <p>@messages("confirmation_view.paragraph")</p>
 
-  @if(!appConfig.features.viewVatReturnEnabled()) {
-    <p>
-      @formAction(action = controllers.routes.ConfirmationController.submit) {
-        <button class="button" type="submit" id="submit-confirmation-finish-button">
-          @messages("common.finish")
-        </button>
-      }
-    </p>
-  } else {
     <div id="displayFlex">
       <a class="button" role="button" id="view-vat-return-button" href=@viewSubmittedReturnUrl>
         @messages("confirmation_view.viewVATReturn")
@@ -73,5 +64,4 @@
         </button>
       }
     </div>
-  }
 }
