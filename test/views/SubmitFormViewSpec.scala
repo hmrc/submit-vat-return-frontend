@@ -30,31 +30,31 @@ class SubmitFormViewSpec extends ViewBaseSpec {
 
   val submitFormView: SubmitForm = inject[SubmitForm]
 
-  "Rendering the submit_form page" should {
+  object Selectors {
+    val boxes = List(
+      "#box-one", "#box-two", "#box-three",
+      "#box-four", "#box-five", "#box-six",
+      "#box-seven", "#box-eight", "#box-nine"
+    )
+    val backLink = "#content > article > a"
+    val returnTotalHeading = "#content > article > section > section:nth-child(6) > div > h3"
+    val returnDueDate = "#content > article > section > section:nth-child(6) > div > p"
+    val changeReturnLink = "#content > article > section > section:nth-child(6) > div > a"
+    val submitVatReturnHeading = "#content > article > section > h3.bold-medium"
+    val submitReturnInformation = "#content > article > section > p"
+    val submitButton = "#content > article > section > form > button"
+  }
 
-    object Selectors {
-      val boxes = List(
-        "#box-one", "#box-two", "#box-three",
-        "#box-four", "#box-five", "#box-six",
-        "#box-seven", "#box-eight", "#box-nine"
-      )
-      val backLink = "#content > article > a"
-      val returnTotalHeading = "#content > article > section > section:nth-child(6) > div > h3"
-      val returnDueDate = "#content > article > section > section:nth-child(6) > div > p"
-      val changeReturnLink = "#content > article > section > section:nth-child(6) > div > a"
-      val submitVatReturnHeading = "#content > article > section > h3.bold-medium"
-      val submitReturnInformation = "#content > article > section > p"
-      val submitButton = "#content > article > section > form > button"
-    }
+  def boxElement(box: String, column: Int): String = {
+    s"$box > div:nth-child($column)"
+  }
 
-    def boxElement(box: String, column: Int): String = {
-      s"$box > div:nth-child($column)"
-    }
+  val periodKey = "18AA"
 
-    val periodKey = "18AA"
+  val obligation: VatObligation =
+    VatObligation(LocalDate.parse("2019-01-12"), LocalDate.parse("2019-04-12"), LocalDate.parse("2019-05-12"), "18AA")
 
-    val obligation: VatObligation =
-      VatObligation(LocalDate.parse("2019-01-12"), LocalDate.parse("2019-04-12"), LocalDate.parse("2019-05-12"), "18AA")
+  "Rendering the submit_form page" when {
 
     "the user is on the flat rate scheme" should {
 
@@ -64,7 +64,8 @@ class SubmitFormViewSpec extends ViewBaseSpec {
         flatRateScheme = true,
         obligation,
         SubmitVatReturnForm().nineBoxForm,
-        isAgent = false
+        isAgent = false,
+        nIProtocolEnabled = false
       )(messages, mockAppConfig, user)
       lazy implicit val document: Document = Jsoup.parse(view.body)
 
@@ -146,7 +147,8 @@ class SubmitFormViewSpec extends ViewBaseSpec {
         flatRateScheme = false,
         obligation,
         SubmitVatReturnForm().nineBoxForm,
-        isAgent = false
+        isAgent = false,
+        nIProtocolEnabled = false
       )(messages, mockAppConfig, user)
       lazy implicit val document: Document = Jsoup.parse(view.body)
 
@@ -168,7 +170,8 @@ class SubmitFormViewSpec extends ViewBaseSpec {
         flatRateScheme = true,
         obligation,
         SubmitVatReturnForm().nineBoxForm,
-        isAgent = false
+        isAgent = false,
+        nIProtocolEnabled = false
       )(welshMessages, mockAppConfig, user)
       lazy implicit val document: Document = Jsoup.parse(view.body)
 
@@ -189,7 +192,8 @@ class SubmitFormViewSpec extends ViewBaseSpec {
         flatRateScheme = true,
         obligation,
         SubmitVatReturnForm().nineBoxForm.bind(Map("" -> "")),
-        isAgent = false
+        isAgent = false,
+        nIProtocolEnabled = false
       )(messages, mockAppConfig, user)
       lazy implicit val document: Document = Jsoup.parse(view.body)
 
@@ -199,6 +203,37 @@ class SubmitFormViewSpec extends ViewBaseSpec {
 
       "display an error summary" in {
         elementText("#error-summary-display h2") shouldBe "There is a problem"
+      }
+    }
+
+    "the NI protocol feature switch is on" should {
+
+      lazy val view = submitFormView(
+        periodKey,
+        Some("ABC Studios"),
+        flatRateScheme = true,
+        obligation,
+        SubmitVatReturnForm().nineBoxForm,
+        isAgent = false,
+        nIProtocolEnabled = true
+      )(messages, mockAppConfig, user)
+
+      lazy implicit val document: Document = Jsoup.parse(view.body)
+
+      "have the correct row descriptions in the table" in {
+
+        val expectedDescriptions = Array(
+          box1Text,
+          box2TextNIProtocol,
+          box3Text,
+          box4Text,
+          box5Text,
+          box6FlatRateSchemeText,
+          box7Text,
+          box8TextNIProtocol,
+          box9TextNIProtocol
+        )
+        expectedDescriptions.indices.foreach(i => elementText(boxElement(Selectors.boxes(i), 2)) shouldBe expectedDescriptions(i))
       }
     }
   }

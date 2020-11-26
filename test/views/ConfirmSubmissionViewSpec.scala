@@ -115,256 +115,287 @@ class ConfirmSubmissionViewSpec extends ViewBaseSpec {
 
     "user is non-agent and on the flat rate scheme" should {
 
-      "displays the correct information" when {
+      "display the correct information" when {
 
-        "the 9 box values are all valid" should {
+        "the NI protocol feature switch is off" when {
 
-          val viewModel: ConfirmSubmissionViewModel = ConfirmSubmissionViewModel(
-            vatReturnValid(true),
-            periodKey,
-            userName = customerDetailsWithFRS.clientName
-          )
+          "the 9 box values are all valid" should {
 
-          lazy val view = confirmSubmissionView(viewModel, isAgent = false)(
-            messages, mockAppConfig, user)
-          lazy implicit val document: Document = Jsoup.parse(view.body)
-
-          s"the title is displayed as ${viewMessages.title}" in {
-            document.title shouldBe viewMessages.title
-          }
-
-          s"the back link is displayed with the correct href" in {
-            elementText(Selectors.backLink) shouldBe viewMessages.back
-            element(Selectors.backLink).attr("href") shouldBe
-              controllers.routes.SubmitFormController.show(periodKey).url
-          }
-
-          s"the smaller ${viewMessages.returnDueDate} heading" in {
-            elementText("#content > article > section > h1 > p") shouldBe s"${viewMessages.returnDueDate} 12 May 2019"
-          }
-
-          s"the heading is displayed as ${viewMessages.heading}" in {
-            elementText("#content > article > section > h1 > span") shouldBe viewMessages.heading
-          }
-
-          "the obligation period is displayed" in {
-            elementText("h1") contains "12 Jan to 12 Apr 2019"
-          }
-
-          s"the name is displayed as ${viewModel.userName}" in {
-            elementText("h2") shouldBe viewModel.userName.getOrElse("")
-          }
-
-          s"the subheading vat detail is displayed as ${viewMessages.subHeadingVatDetails}" in {
-            elementText("h3") shouldBe viewMessages.subHeadingVatDetails
-          }
-
-          "have the correct box numbers in the table" in {
-            val expectedBoxes = Array(
-              viewMessages.box1Heading,
-              viewMessages.box2Heading,
-              viewMessages.box3Heading,
-              viewMessages.box4Heading,
-              viewMessages.box5Heading,
-              viewMessages.box6Heading,
-              viewMessages.box7Heading,
-              viewMessages.box8Heading,
-              viewMessages.box9Heading
+            val viewModel: ConfirmSubmissionViewModel = ConfirmSubmissionViewModel(
+              vatReturnValid(true),
+              periodKey,
+              userName = customerDetailsWithFRS.clientName
             )
-            expectedBoxes.indices.foreach(i => elementText(boxElement(Selectors.boxes(i), 1)) shouldBe expectedBoxes(i))
-          }
 
-          "have the correct row descriptions in the table" in {
-            val expectedDescriptions = Array(
-              viewMessages.box1Description,
-              viewMessages.box2Description,
-              viewMessages.box3Description,
-              viewMessages.box4Description,
-              viewMessages.box5Description,
-              viewMessages.box6DescriptionHasFRS,
-              viewMessages.box7Description,
-              viewMessages.box8Description,
-              viewMessages.box9Description
-            )
-            expectedDescriptions.indices.foreach(i => elementText(boxElement(Selectors.boxes(i), 2)) shouldBe expectedDescriptions(i))
-          }
+            lazy val view = confirmSubmissionView(viewModel, isAgent = false, nIProtocolEnabled = false)(
+              messages, mockAppConfig, user)
+            lazy implicit val document: Document = Jsoup.parse(view.body)
 
-          "have the correct row information in the table" in {
-            val expectedInformation = Array(
-              "£8,000.01",
-              "£8,000.02",
-              "£16,000.03",
-              "£4,000.01",
-              "£12,000.02",
-              "£4,000.06",
-              "£3,000.07",
-              "£4,000.08",
-              "£4,000.09"
-            )
-            expectedInformation.indices.foreach(i => elementText(boxElement(Selectors.boxes(i), 3)) shouldBe expectedInformation(i))
-          }
+            s"the title is displayed as ${viewMessages.title}" in {
+              document.title shouldBe viewMessages.title
+            }
 
-          s"the return total heading is shown as ${viewMessages.returnTotal} ${viewModel.returnDetail.box5}" in {
-            elementText(Selectors.returnTotalHeading) shouldBe s"${viewMessages.returnTotal} £12,000.02"
-          }
-
-          s"the return due date is shown as ${viewMessages.returnDueDate}" in {
-            elementText(Selectors.returnDueDate) shouldBe s"${viewMessages.returnDueDate} 12 May 2019"
-          }
-
-          "have the change return details link which" should {
-
-            s"the redirect url to ${controllers.routes.SubmitFormController.show(periodKey).url}" in {
-              element(Selectors.changeReturnLink).attr("href") shouldBe
+            s"the back link is displayed with the correct href" in {
+              elementText(Selectors.backLink) shouldBe viewMessages.back
+              element(Selectors.backLink).attr("href") shouldBe
                 controllers.routes.SubmitFormController.show(periodKey).url
             }
 
-            s"display the correct content as ${viewMessages.changeReturnLink}" in {
-              elementText(Selectors.changeReturnLink) shouldBe viewMessages.changeReturnLink
+            s"the smaller ${viewMessages.returnDueDate} heading" in {
+              elementText("#content > article > section > h1 > p") shouldBe s"${viewMessages.returnDueDate} 12 May 2019"
             }
-          }
 
-          "display the declaration header" in {
-            elementText(Selectors.declarationHeader) shouldBe viewMessages.declarationHeading
-          }
+            s"the heading is displayed as ${viewMessages.heading}" in {
+              elementText("#content > article > section > h1 > span") shouldBe viewMessages.heading
+            }
 
-          "display the correct declaration which" should {
+            "the obligation period is displayed" in {
+              elementText("h1") contains "12 Jan to 12 Apr 2019"
+            }
 
-            "display the warning notice which" should {
+            s"the name is displayed as ${viewModel.userName}" in {
+              elementText("h2") shouldBe viewModel.userName.getOrElse("")
+            }
 
-              "display the image" in {
-                element(Selectors.noticeImage).hasClass("icon icon-important") shouldBe true
+            s"the subheading vat detail is displayed as ${viewMessages.subHeadingVatDetails}" in {
+              elementText("h3") shouldBe viewMessages.subHeadingVatDetails
+            }
+
+            "have the correct box numbers in the table" in {
+              val expectedBoxes = Array(
+                viewMessages.box1Heading,
+                viewMessages.box2Heading,
+                viewMessages.box3Heading,
+                viewMessages.box4Heading,
+                viewMessages.box5Heading,
+                viewMessages.box6Heading,
+                viewMessages.box7Heading,
+                viewMessages.box8Heading,
+                viewMessages.box9Heading
+              )
+              expectedBoxes.indices.foreach(i => elementText(boxElement(Selectors.boxes(i), 1)) shouldBe expectedBoxes(i))
+            }
+
+            "have the correct row descriptions in the table" in {
+              val expectedDescriptions = Array(
+                viewMessages.box1Description,
+                viewMessages.box2Description,
+                viewMessages.box3Description,
+                viewMessages.box4Description,
+                viewMessages.box5Description,
+                viewMessages.box6DescriptionHasFRS,
+                viewMessages.box7Description,
+                viewMessages.box8Description,
+                viewMessages.box9Description
+              )
+              expectedDescriptions.indices.foreach(i => elementText(boxElement(Selectors.boxes(i), 2)) shouldBe expectedDescriptions(i))
+            }
+
+            "have the correct row information in the table" in {
+              val expectedInformation = Array(
+                "£8,000.01",
+                "£8,000.02",
+                "£16,000.03",
+                "£4,000.01",
+                "£12,000.02",
+                "£4,000.06",
+                "£3,000.07",
+                "£4,000.08",
+                "£4,000.09"
+              )
+              expectedInformation.indices.foreach(i => elementText(boxElement(Selectors.boxes(i), 3)) shouldBe expectedInformation(i))
+            }
+
+            s"the return total heading is shown as ${viewMessages.returnTotal} ${viewModel.returnDetail.box5}" in {
+              elementText(Selectors.returnTotalHeading) shouldBe s"${viewMessages.returnTotal} £12,000.02"
+            }
+
+            s"the return due date is shown as ${viewMessages.returnDueDate}" in {
+              elementText(Selectors.returnDueDate) shouldBe s"${viewMessages.returnDueDate} 12 May 2019"
+            }
+
+
+            "have the change return details link which" should {
+
+              s"the redirect url to ${controllers.routes.SubmitFormController.show(periodKey).url}" in {
+                element(Selectors.changeReturnLink).attr("href") shouldBe
+                  controllers.routes.SubmitFormController.show(periodKey).url
               }
 
-              "display the hidden text" in {
-                elementText(Selectors.noticeText) shouldBe viewMessages.warning
+              s"display the correct content as ${viewMessages.changeReturnLink}" in {
+                elementText(Selectors.changeReturnLink) shouldBe viewMessages.changeReturnLink
               }
             }
 
-            "display the correct text" in {
-              elementText(Selectors.nonAgentDeclarationText) shouldBe viewMessages.nonAgentDeclarationText
+            "display the declaration header" in {
+              elementText(Selectors.declarationHeader) shouldBe viewMessages.declarationHeading
             }
 
-            "display the text in bold" in {
-              element(Selectors.nonAgentDeclarationText).hasClass("bold-small") shouldBe true
+            "display the correct declaration which" should {
+
+              "display the warning notice which" should {
+
+                "display the image" in {
+                  element(Selectors.noticeImage).hasClass("icon icon-important") shouldBe true
+                }
+
+                "display the hidden text" in {
+                  elementText(Selectors.noticeText) shouldBe viewMessages.warning
+                }
+              }
+
+              "display the correct text" in {
+                elementText(Selectors.nonAgentDeclarationText) shouldBe viewMessages.nonAgentDeclarationText
+              }
+
+              "display the text in bold" in {
+                element(Selectors.nonAgentDeclarationText).hasClass("bold-small") shouldBe true
+              }
+            }
+
+            s"display the ${viewMessages.submitButton} button" in {
+              elementText(Selectors.submitButton) shouldBe viewMessages.submitButton
+            }
+
+            "not display the warning" in {
+              noElementsOf(Selectors.warningHeader)
+            }
+
+          }
+
+          "the ratio of box 1 and box 6 is too great" should {
+
+            val viewModel: ConfirmSubmissionViewModel = ConfirmSubmissionViewModel(
+              vatReturnBoxInvalid(80000.01, 4000.01, hasFlatRateScheme = true),
+              periodKey,
+              userName = customerDetailsWithFRS.clientName
+            )
+
+            lazy val view = confirmSubmissionView(viewModel, isAgent = false, nIProtocolEnabled = false)(
+              messages, mockAppConfig, user)
+            lazy implicit val document: Document = Jsoup.parse(view.body)
+
+            "display the correct warning header" in {
+              elementText(Selectors.warningHeader) shouldBe
+                viewMessages.WarningMessages.headerSingleWarning(1, 6)
+            }
+
+            "display the correct list header" in {
+              elementText(Selectors.listHeader) shouldBe
+                viewMessages.WarningMessages.listHeading
+            }
+
+            "display the correct first item in the list" in {
+              elementText(Selectors.listItem1) shouldBe
+                viewMessages.WarningMessages.listCommonItem
+            }
+
+            "display the correct second item in the list" in {
+              elementText(Selectors.listItem2) shouldBe
+                viewMessages.WarningMessages.listItemSingleWarning(6)
+            }
+
+            "display the correct bottom text" in {
+              elementText(Selectors.bottomText) shouldBe viewMessages.WarningMessages.listCommonBottomText
             }
           }
 
-          s"display the ${viewMessages.submitButton} button" in {
-            elementText(Selectors.submitButton) shouldBe viewMessages.submitButton
+          "the ratio of box 4 and box 7 is too great" should {
+            val viewModel: ConfirmSubmissionViewModel = ConfirmSubmissionViewModel(
+              vatReturnBoxInvalid(8000.01, 40000.01, hasFlatRateScheme = true),
+              periodKey,
+              userName = customerDetailsWithFRS.clientName
+            )
+
+            lazy val view = confirmSubmissionView(viewModel, isAgent = false, nIProtocolEnabled = false)(
+              messages, mockAppConfig, user)
+            lazy implicit val document: Document = Jsoup.parse(view.body)
+
+            "display the correct warning header" in {
+              elementText(Selectors.warningHeader) shouldBe
+                viewMessages.WarningMessages.headerSingleWarning(4, 7)
+            }
+
+            "display the correct list header" in {
+              elementText(Selectors.listHeader) shouldBe viewMessages.WarningMessages.listHeading
+            }
+
+            "display the correct first item in the list" in {
+              elementText(Selectors.listItem1) shouldBe viewMessages.WarningMessages.listCommonItem
+            }
+
+            "display the correct second item in the list" in {
+              elementText(Selectors.listItem2) shouldBe
+                viewMessages.WarningMessages.listItemSingleWarning(7)
+            }
+
+            "display the correct bottom text" in {
+              elementText(Selectors.bottomText) shouldBe viewMessages.WarningMessages.listCommonBottomText
+            }
           }
 
-          "not display the warning" in {
-            noElementsOf(Selectors.warningHeader)
+          "the ratio of boxes 1 and 6, and 4 and 7, are too great" should {
+            val viewModel: ConfirmSubmissionViewModel = ConfirmSubmissionViewModel(
+              vatReturnBoxInvalid(80000.01, 40000.01, hasFlatRateScheme = true),
+              periodKey,
+              userName = customerDetailsWithFRS.clientName
+            )
+
+            lazy val view = confirmSubmissionView(viewModel, isAgent = false, nIProtocolEnabled = false)(
+              messages, mockAppConfig, user)
+            lazy implicit val document: Document = Jsoup.parse(view.body)
+
+            "display the correct warning header" in {
+              elementText(Selectors.warningHeader) shouldBe viewMessages.WarningMessages.headerMultipleWarning
+            }
+
+            "display the correct list header" in {
+              elementText(Selectors.listHeader) shouldBe viewMessages.WarningMessages.listHeading
+            }
+
+            "display the correct first item in the list" in {
+              elementText(Selectors.listItem1) shouldBe viewMessages.WarningMessages.listCommonItem
+            }
+
+            "display the correct second item in the list" in {
+              elementText(Selectors.listItem2) shouldBe viewMessages.WarningMessages.listItemMultipleWarning
+            }
+
+            "display the correct bottom text" in {
+              elementText(Selectors.bottomText) shouldBe viewMessages.WarningMessages.listCommonBottomText
+            }
           }
 
         }
 
-        "the ratio of box 1 and box 6 is too great" should {
+        "the NI protocol feature switch is on" should {
 
-          val viewModel: ConfirmSubmissionViewModel = ConfirmSubmissionViewModel(
-            vatReturnBoxInvalid(80000.01, 4000.01, hasFlatRateScheme = true),
-            periodKey,
-            userName = customerDetailsWithFRS.clientName
-          )
-
-          lazy val view = confirmSubmissionView(viewModel, isAgent = false)(
-            messages, mockAppConfig, user)
-          lazy implicit val document: Document = Jsoup.parse(view.body)
-
-          "display the correct warning header" in {
-            elementText(Selectors.warningHeader) shouldBe
-              viewMessages.WarningMessages.headerSingleWarning(1, 6)
-          }
-
-          "display the correct list header" in {
-            elementText(Selectors.listHeader) shouldBe
-              viewMessages.WarningMessages.listHeading
-          }
-
-          "display the correct first item in the list" in {
-            elementText(Selectors.listItem1) shouldBe
-              viewMessages.WarningMessages.listCommonItem
-          }
-
-          "display the correct second item in the list" in {
-            elementText(Selectors.listItem2) shouldBe
-              viewMessages.WarningMessages.listItemSingleWarning(6)
-          }
-
-          "display the correct bottom text" in {
-            elementText(Selectors.bottomText) shouldBe viewMessages.WarningMessages.listCommonBottomText
-          }
-        }
-
-        "the ratio of box 4 and box 7 is too great" should {
           val viewModel: ConfirmSubmissionViewModel = ConfirmSubmissionViewModel(
             vatReturnBoxInvalid(8000.01, 40000.01, hasFlatRateScheme = true),
             periodKey,
             userName = customerDetailsWithFRS.clientName
           )
 
-          lazy val view = confirmSubmissionView(viewModel, isAgent = false)(
+          lazy val view = confirmSubmissionView(viewModel, isAgent = false, nIProtocolEnabled = true)(
             messages, mockAppConfig, user)
           lazy implicit val document: Document = Jsoup.parse(view.body)
 
-          "display the correct warning header" in {
-            elementText(Selectors.warningHeader) shouldBe
-              viewMessages.WarningMessages.headerSingleWarning(4, 7)
-          }
-
-          "display the correct list header" in {
-            elementText(Selectors.listHeader) shouldBe viewMessages.WarningMessages.listHeading
-          }
-
-          "display the correct first item in the list" in {
-            elementText(Selectors.listItem1) shouldBe viewMessages.WarningMessages.listCommonItem
-          }
-
-          "display the correct second item in the list" in {
-            elementText(Selectors.listItem2) shouldBe
-              viewMessages.WarningMessages.listItemSingleWarning(7)
-          }
-
-          "display the correct bottom text" in {
-            elementText(Selectors.bottomText) shouldBe viewMessages.WarningMessages.listCommonBottomText
+          "have the correct row descriptions in the table" in {
+            val expectedDescriptions = Array(
+              viewMessages.box1Description,
+              viewMessages.box2DescriptionNIProtocol,
+              viewMessages.box3Description,
+              viewMessages.box4Description,
+              viewMessages.box5Description,
+              viewMessages.box6DescriptionHasFRS,
+              viewMessages.box7Description,
+              viewMessages.box8DescriptionNIProtocol,
+              viewMessages.box9DescriptionNIProtocol
+            )
+            expectedDescriptions.indices.foreach(i => elementText(boxElement(Selectors.boxes(i), 2)) shouldBe expectedDescriptions(i))
           }
         }
-
-        "the ratio of boxes 1 and 6, and 4 and 7, are too great" should {
-          val viewModel: ConfirmSubmissionViewModel = ConfirmSubmissionViewModel(
-            vatReturnBoxInvalid(80000.01, 40000.01, hasFlatRateScheme = true),
-            periodKey,
-            userName = customerDetailsWithFRS.clientName
-          )
-
-          lazy val view = confirmSubmissionView(viewModel, isAgent = false)(
-            messages, mockAppConfig, user)
-          lazy implicit val document: Document = Jsoup.parse(view.body)
-
-          "display the correct warning header" in {
-            elementText(Selectors.warningHeader) shouldBe viewMessages.WarningMessages.headerMultipleWarning
-          }
-
-          "display the correct list header" in {
-            elementText(Selectors.listHeader) shouldBe viewMessages.WarningMessages.listHeading
-          }
-
-          "display the correct first item in the list" in {
-            elementText(Selectors.listItem1) shouldBe viewMessages.WarningMessages.listCommonItem
-          }
-
-          "display the correct second item in the list" in {
-            elementText(Selectors.listItem2) shouldBe viewMessages.WarningMessages.listItemMultipleWarning
-          }
-
-          "display the correct bottom text" in {
-            elementText(Selectors.bottomText) shouldBe viewMessages.WarningMessages.listCommonBottomText
-          }
-        }
-
       }
-
     }
 
     "the user is not on the flat rate scheme" should {
@@ -375,7 +406,7 @@ class ConfirmSubmissionViewSpec extends ViewBaseSpec {
         userName = customerDetailsWithFRS.clientName
       )
 
-      lazy val view = confirmSubmissionView(viewModel, isAgent = false)(messages, mockAppConfig, user)
+      lazy val view = confirmSubmissionView(viewModel, isAgent = false, nIProtocolEnabled = false)(messages, mockAppConfig, user)
       lazy implicit val document: Document = Jsoup.parse(view.body)
 
       s"box 6 description displays as ${viewMessages.box6DescriptionNoFRS}" in {
@@ -393,7 +424,7 @@ class ConfirmSubmissionViewSpec extends ViewBaseSpec {
         userName = customerDetailsModel.clientName
       )
 
-      lazy val view = confirmSubmissionView(viewModel, isAgent = true)(messages, mockAppConfig, agentUser)
+      lazy val view = confirmSubmissionView(viewModel, isAgent = true, nIProtocolEnabled = false)(messages, mockAppConfig, agentUser)
       lazy implicit val document: Document = Jsoup.parse(view.body)
 
       s"display the pageTitle as ${viewMessages.agentTitle}" in {
