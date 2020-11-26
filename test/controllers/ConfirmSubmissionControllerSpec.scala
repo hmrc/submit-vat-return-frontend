@@ -111,7 +111,6 @@ class ConfirmSubmissionControllerSpec extends BaseSpec
 
           lazy val result: Future[Result] = {
             setupVatSubscriptionService(successCustomerInfoResponse)
-            mockAppConfig.features.viewVatReturnEnabled(true)
             TestConfirmSubmissionController.show("18AA")(requestWithSessionData)
           }
 

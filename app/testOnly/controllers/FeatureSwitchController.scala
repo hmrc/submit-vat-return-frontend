@@ -33,9 +33,7 @@ class FeatureSwitchController @Inject()(mcc: MessagesControllerComponents,
   def featureSwitch: Action[AnyContent] = Action { implicit request =>
     Ok(featureSwitch(FeatureSwitchForm.form.fill(
       FeatureSwitchModel(
-        staticDateEnabled = appConfig.features.staticDateEnabled(),
-        languageToggle = appConfig.features.languageToggleEnabled(),
-        viewVatReturnEnabled = appConfig.features.viewVatReturnEnabled()
+        staticDateEnabled = appConfig.features.staticDateEnabled()
       )
     )))
   }
@@ -49,8 +47,6 @@ class FeatureSwitchController @Inject()(mcc: MessagesControllerComponents,
 
   def handleSuccess(model: FeatureSwitchModel): Result = {
     appConfig.features.staticDateEnabled(model.staticDateEnabled)
-    appConfig.features.languageToggleEnabled(model.languageToggle)
-    appConfig.features.viewVatReturnEnabled(model.viewVatReturnEnabled)
     Redirect(routes.FeatureSwitchController.featureSwitch())
   }
 }

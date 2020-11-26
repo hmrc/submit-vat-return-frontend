@@ -57,8 +57,6 @@ object ConfigKeys {
   val nineBoxReturnAllowedRatio: String = "nine-box-return-box-ratio"
   val gtmContainer: String = "tracking-consent-frontend.gtm.container"
 
-  val languageToggleFeature: String = "features.languageToggle.enabled"
   val staticDateEnabledFeature: String = "features.staticDate.enabled"
-  val viewVatReturnEnabled: String = "features.viewVatReturn.enabled"
   val staticDateValue: String = "date-service.staticDate.value"
 }

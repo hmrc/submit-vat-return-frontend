@@ -23,6 +23,4 @@ import play.api.Configuration
 @Singleton
 class Features @Inject()(config: Configuration) {
   val staticDateEnabled = new Feature(ConfigKeys.staticDateEnabledFeature, config)
-  val languageToggleEnabled = new Feature(ConfigKeys.languageToggleFeature, config)
-  val viewVatReturnEnabled = new Feature(ConfigKeys.viewVatReturnEnabled, config)
 }
