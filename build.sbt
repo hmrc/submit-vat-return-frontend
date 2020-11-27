@@ -55,25 +55,25 @@ lazy val coverageSettings: Seq[Setting[_]] = {
 
 val compile = Seq(
   play.sbt.PlayImport.ws,
-  "uk.gov.hmrc"       %% "govuk-template"             % "5.58.0-play-26",
-  "uk.gov.hmrc"       %% "play-ui"                    % "8.14.0-play-26",
+  "uk.gov.hmrc"       %% "govuk-template"             % "5.60.0-play-26",
+  "uk.gov.hmrc"       %% "play-ui"                    % "8.18.0-play-26",
   "uk.gov.hmrc"       %% "bootstrap-frontend-play-26" % "3.0.0",
-  "uk.gov.hmrc"       %% "play-language"              % "4.4.0-play-26",
+  "uk.gov.hmrc"       %% "play-language"              % "4.5.0-play-26",
   "uk.gov.hmrc"       %% "play-partials"              % "7.0.0-play-26",
-  "uk.gov.hmrc"       %% "domain"                     % "5.9.0-play-26",
-  "com.typesafe.play" %% "play-json-joda"             % "2.9.0"
+  "uk.gov.hmrc"       %% "domain"                     % "5.10.0-play-26",
+  "com.typesafe.play" %% "play-json-joda"             % "2.9.1"
 )
 
 val test = Seq(
-  "uk.gov.hmrc"            %% "bootstrap-play-26"           % "1.14.0" classifier "tests",
+  "uk.gov.hmrc"            %% "bootstrap-play-26"           % "1.16.0" classifier "tests",
   "uk.gov.hmrc"            %% "hmrctest"                    % "3.9.0-play-26",
-  "org.scalatest"          %% "scalatest"                   % "3.0.8",
-  "org.scalatestplus.play" %% "scalatestplus-play"          % "3.1.0",
+  "org.scalatest"          %% "scalatest"                   % "3.0.9",
+  "org.scalatestplus.play" %% "scalatestplus-play"          % "3.1.2",
   "org.pegdown"             % "pegdown"                     % "1.6.0",
   "org.jsoup"               % "jsoup"                       % "1.13.1",
   "com.typesafe.play"      %% "play-test"                   % PlayVersion.current,
   "org.scalamock"          %% "scalamock-scalatest-support" % "3.6.0",
-  "com.github.tomakehurst"  % "wiremock-jre8"               % "2.26.3"
+  "com.github.tomakehurst"  % "wiremock-jre8"               % "2.27.2"
 ).map(_ % s"$Test, $IntegrationTest")
 
 def oneForkedJvmPerTest(tests: Seq[TestDefinition]): Seq[Group] = tests map {
