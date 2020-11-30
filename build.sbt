@@ -57,7 +57,7 @@ val compile = Seq(
   play.sbt.PlayImport.ws,
   "uk.gov.hmrc"       %% "govuk-template"             % "5.60.0-play-26",
   "uk.gov.hmrc"       %% "play-ui"                    % "8.18.0-play-26",
-  "uk.gov.hmrc"       %% "bootstrap-frontend-play-26" % "3.0.0",
+  "uk.gov.hmrc"       %% "bootstrap-frontend-play-26" % "3.1.0",
   "uk.gov.hmrc"       %% "play-language"              % "4.5.0-play-26",
   "uk.gov.hmrc"       %% "play-partials"              % "7.0.0-play-26",
   "uk.gov.hmrc"       %% "domain"                     % "5.10.0-play-26",
