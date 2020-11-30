@@ -16,6 +16,7 @@
 
 package utils
 
+import config.AppConfig
 import javax.inject.{Inject, Singleton}
 import models.auth.User
 import models.errors.{HttpError, UnknownError}
@@ -26,7 +27,8 @@ import play.api.{Logger, Play}
 import uk.gov.hmrc.play.views.helpers.MoneyPounds
 
 @Singleton
-class ReceiptDataHelper @Inject()(implicit val messages: MessagesApi) {
+class ReceiptDataHelper @Inject()(implicit val messages: MessagesApi,
+                                               appConfig: AppConfig) {
 
   def extractReceiptData(submitModel: SubmitVatReturnModel, customerDetails: Either[HttpError, CustomerDetails])
                         (implicit user: User[_]): Either[HttpError, ReceiptData] = {
@@ -52,14 +54,26 @@ class ReceiptDataHelper @Inject()(implicit val messages: MessagesApi) {
 
     val answerSeq = Seq(
       ("box1", messages("confirm_submission.boxOneDescription"), submitModel.box1),
-      ("box2", messages("confirm_submission.boxTwoDescription"), submitModel.box2),
+      if(appConfig.features.nineBoxNIProtocolContentEnabled()) {
+        ("box2", messages("confirm_submission.boxTwoDescription.NIProtocol"), submitModel.box2)
+      } else {
+        ("box2", messages("confirm_submission.boxTwoDescription"), submitModel.box2)
+      },
       ("box3", messages("confirm_submission.boxThreeDescription"), submitModel.box3),
       ("box4", messages("confirm_submission.boxFourDescription"), submitModel.box4),
       ("box5", messages("confirm_submission.boxFiveDescription"), submitModel.box5),
       ("box6", messages(s"confirm_submission.$boxSixSearchKey"), submitModel.box6),
       ("box7", messages("confirm_submission.boxSevenDescription"), submitModel.box7),
-      ("box8", messages("confirm_submission.boxEightDescription"), submitModel.box8),
-      ("box9", messages("confirm_submission.boxNineDescription"), submitModel.box9)
+      if(appConfig.features.nineBoxNIProtocolContentEnabled()) {
+        ("box8", messages("confirm_submission.boxEightDescription.NIProtocol"), submitModel.box8)
+      } else {
+        ("box8", messages("confirm_submission.boxEightDescription"), submitModel.box8)
+      },
+      if(appConfig.features.nineBoxNIProtocolContentEnabled()) {
+        ("box9", messages("confirm_submission.boxNineDescription.NIProtocol"), submitModel.box9)
+      } else {
+        ("box9", messages("confirm_submission.boxNineDescription"), submitModel.box9)
+      }
     ).map { case (questionId, question, answer) =>
       Answer(questionId, question, Some("£" + MoneyPounds(answer, 2).quantity))
     }

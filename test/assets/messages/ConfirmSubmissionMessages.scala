@@ -27,6 +27,8 @@ object ConfirmSubmissionMessages extends BaseMessages {
   val box1Description = "VAT you charged on sales and other supplies"
   val box2Heading = "Box 2"
   val box2Description = "VAT you owe on goods purchased from EC countries and brought into the UK"
+  val box2DescriptionNIProtocol =
+    "VAT due in this period on intra-community acquisitions of goods made in Northern Ireland from EU Member States"
   val box3Heading = "Box 3"
   val box3Description = "VAT you owe before deductions (this is the total of box 1 and 2)"
   val box4Heading = "Box 4"
@@ -40,8 +42,12 @@ object ConfirmSubmissionMessages extends BaseMessages {
   val box7Description = "Total value of purchases and other expenses, excluding VAT"
   val box8Heading = "Box 8"
   val box8Description = "Total value of supplied goods to EC countries and related costs (excluding VAT)"
+  val box8DescriptionNIProtocol =
+    "Total value of intra-community dispatches of goods and related costs (excluding VAT) from Northern Ireland to EU Member States"
   val box9Heading = "Box 9"
   val box9Description = "Total value of goods purchased from EC countries and brought into the UK, as well as any related costs (excluding VAT)"
+  val box9DescriptionNIProtocol =
+    "Total value of intra-community acquisitions of goods and related costs (excluding VAT) from Northern Ireland to EU Member States"
   val returnTotal = "Return total:"
   val returnDueDate = "Return due date:"
   val changeReturnLink = "Change return details"

@@ -34,7 +34,8 @@
   flatRateScheme: Boolean,
   obligation: VatObligation,
   form: Form[NineBoxModel],
-  isAgent: Boolean)(implicit messages: Messages, appConfig: AppConfig, user: User[_])
+  isAgent: Boolean,
+  nIProtocolEnabled: Boolean)(implicit messages: Messages, appConfig: AppConfig, user: User[_])
 
 @boxRow(divID: String, formID: String, boxTitle: String, boxDescription: String, boxAmount: String, autoCalculated: Boolean = false) = {
   <div class="grid-row" id=@divID>
@@ -104,7 +105,11 @@
 
       <div class="form-group">
         @boxRow("box-one", "box1", "confirm_submission.boxOne", "confirm_submission.boxOneDescription", "confirm_submission.boxOneAmt")
-        @boxRow("box-two", "box2", "confirm_submission.boxTwo", "confirm_submission.boxTwoDescription", "confirm_submission.boxTwoAmt")
+        @if(nIProtocolEnabled) {
+          @boxRow("box-two", "box2", "confirm_submission.boxTwo", "confirm_submission.boxTwoDescription.NIProtocol", "confirm_submission.boxTwoAmt")
+        } else {
+          @boxRow("box-two", "box2", "confirm_submission.boxTwo", "confirm_submission.boxTwoDescription", "confirm_submission.boxTwoAmt")
+        }
       </div>
 
       @boxRow("box-three", "box3", "confirm_submission.boxThree", "confirm_submission.boxThreeDescription", "confirm_submission.boxThreeAmt", autoCalculated = true)
@@ -124,8 +129,13 @@
         }
 
         @boxRow("box-seven", "box7", "confirm_submission.boxSeven", "confirm_submission.boxSevenDescription", "confirm_submission.boxSevenAmt")
-        @boxRow("box-eight", "box8", "confirm_submission.boxEight", "confirm_submission.boxEightDescription", "confirm_submission.boxEightAmt")
-        @boxRow("box-nine", "box9", "confirm_submission.boxNine", "confirm_submission.boxNineDescription", "confirm_submission.boxNineAmt")
+        @if(nIProtocolEnabled) {
+          @boxRow("box-eight", "box8", "confirm_submission.boxEight", "confirm_submission.boxEightDescription.NIProtocol", "confirm_submission.boxEightAmt")
+          @boxRow("box-nine", "box9", "confirm_submission.boxNine", "confirm_submission.boxNineDescription.NIProtocol", "confirm_submission.boxNineAmt")
+        } else {
+          @boxRow("box-eight", "box8", "confirm_submission.boxEight", "confirm_submission.boxEightDescription", "confirm_submission.boxEightAmt")
+          @boxRow("box-nine", "box9", "confirm_submission.boxNine", "confirm_submission.boxNineDescription", "confirm_submission.boxNineAmt")
+        }
       </div>
       <hr>
 

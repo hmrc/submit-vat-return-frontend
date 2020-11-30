@@ -26,9 +26,11 @@
       displayDateRange: DisplayDateRange,
       displayDate: DisplayDate)
 
-@(viewModel: ConfirmSubmissionViewModel, isAgent: Boolean)(implicit messages: Messages,
-                                                           appConfig: AppConfig,
-                                                           user: User[_])
+@(viewModel: ConfirmSubmissionViewModel,
+  isAgent: Boolean,
+  nIProtocolEnabled: Boolean)(implicit messages: Messages,
+                                       appConfig: AppConfig,
+                                       user: User[_])
 
 @boxOneSixCorrectRatio = @{
   if(viewModel.returnDetail.box6 > 0) {
@@ -141,7 +143,11 @@
     <dl class="form-group divider--bottom">
       <div class="form-group">
         @boxRow("box-one", "box1", "confirm_submission.boxOne", "confirm_submission.boxOneDescription", viewModel.returnDetail.box1)
-        @boxRow("box-two", "box2", "confirm_submission.boxTwo", "confirm_submission.boxTwoDescription", viewModel.returnDetail.box2)
+        @if(nIProtocolEnabled) {
+          @boxRow("box-two", "box2", "confirm_submission.boxTwo", "confirm_submission.boxTwoDescription.NIProtocol", viewModel.returnDetail.box2)
+        } else {
+          @boxRow("box-two", "box2", "confirm_submission.boxTwo", "confirm_submission.boxTwoDescription", viewModel.returnDetail.box2)
+        }
       </div>
 
       <div class="form-group">
@@ -175,8 +181,13 @@
           @boxRow("box-six", "box6", "confirm_submission.boxSix", "confirm_submission.boxSixNoFlatRate", viewModel.returnDetail.box6)
         }
           @boxRow("box-seven", "box7", "confirm_submission.boxSeven", "confirm_submission.boxSevenDescription", viewModel.returnDetail.box7)
+        @if(nIProtocolEnabled) {
+          @boxRow("box-eight", "box8", "confirm_submission.boxEight", "confirm_submission.boxEightDescription.NIProtocol", viewModel.returnDetail.box8)
+          @boxRow("box-nine", "box9", "confirm_submission.boxNine", "confirm_submission.boxNineDescription.NIProtocol", viewModel.returnDetail.box9)
+        } else {
           @boxRow("box-eight", "box8", "confirm_submission.boxEight", "confirm_submission.boxEightDescription", viewModel.returnDetail.box8)
           @boxRow("box-nine", "box9", "confirm_submission.boxNine", "confirm_submission.boxNineDescription", viewModel.returnDetail.box9)
+        }
       </div>
     </dl>
 

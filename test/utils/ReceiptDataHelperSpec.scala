@@ -28,7 +28,10 @@ import play.api.mvc.{AnyContentAsEmpty, Cookie}
 
 class ReceiptDataHelperSpec extends BaseSpec {
 
-  val service = new ReceiptDataHelper()(messagesApi)
+  val service: ReceiptDataHelper = {
+    mockAppConfig.features.nineBoxNIProtocolContentEnabled(false)
+    new ReceiptDataHelper()(messagesApi, mockAppConfig)
+  }
 
   val dateToUse: LocalDate = LocalDate.now()
 
@@ -60,6 +63,11 @@ class ReceiptDataHelperSpec extends BaseSpec {
     val box2Expected = ifEnglishElse(
       "VAT you owe on goods purchased from EC countries and brought into the UK",
       "TAW sydd arnoch ar nwyddau a brynwyd o wledydd y GE ac y daethpwyd â nhw i mewn i’r DU"
+    )
+
+    val box2ExpectedNIProtocol = ifEnglishElse(
+      "VAT due in this period on intra-community acquisitions of goods made in Northern Ireland from EU Member States",
+      ""
     )
 
     val box3Expected = ifEnglishElse(
@@ -94,9 +102,19 @@ class ReceiptDataHelperSpec extends BaseSpec {
       "Cyfanswm gwerth y nwyddau a gyflenwyd i wledydd y GE a chostau perthynol (ac eithrio TAW)"
     )
 
+    val box8ExpectedNIProtocol = ifEnglishElse(
+      "Total value of intra-community dispatches of goods and related costs (excluding VAT) from Northern Ireland to EU Member States",
+      ""
+    )
+
     val box9Expected = ifEnglishElse(
       "Total value of goods purchased from EC countries and brought into the UK, as well as any related costs (excluding VAT)",
       "Cyfanswm gwerth y nwyddau a brynwyd o wledydd y GE ac y daethpwyd â nhw i mewn i’r DU, yn ogystal ag unrhyw gostau perthynol (ac eithrio TAW)"
+    )
+
+    val box9ExpectedNIProtocol = ifEnglishElse(
+      "Total value of intra-community acquisitions of goods and related costs (excluding VAT) from Northern Ireland to EU Member States",
+      ""
     )
 
     val pageTitle = ifEnglishElse(
@@ -108,14 +126,26 @@ class ReceiptDataHelperSpec extends BaseSpec {
       pageTitle,
       Seq(
         ("box1", box1Expected, Some("£10.00"), None),
-        ("box2", box2Expected, Some("£25.55"), None),
+        if(mockAppConfig.features.nineBoxNIProtocolContentEnabled()) {
+          ("box2", box2ExpectedNIProtocol, Some("£25.55"), None)
+        } else {
+          ("box2", box2Expected, Some("£25.55"), None)
+        },
         ("box3", box3Expected, Some("£33.00"), None),
         ("box4", box4Expected, Some("£74.00"), None),
         ("box5", box5Expected, Some("£95.06"), None),
         ("box6", box6Expected, Some("£1,006.00"), None),
         ("box7", box7Expected, Some("£1,006.66"), None),
-        ("box8", box8Expected, Some("£889.90"), None),
-        ("box9", box9Expected, Some("£900.00"), None)
+        if(mockAppConfig.features.nineBoxNIProtocolContentEnabled()) {
+          ("box8", box8ExpectedNIProtocol, Some("£889.90"), None)
+        } else {
+          ("box8", box8Expected, Some("£889.90"), None)
+        },
+        if(mockAppConfig.features.nineBoxNIProtocolContentEnabled()) {
+          ("box9", box9ExpectedNIProtocol, Some("£900.00"), None)
+        } else {
+          ("box9", box9Expected, Some("£900.00"), None)
+        }
       ).map((Answer.apply _).tupled(_))))
   }
 
@@ -177,6 +207,20 @@ class ReceiptDataHelperSpec extends BaseSpec {
       }
 
       "the user has no language cookie" in {
+        val result = await(service.extractReceiptData(createReturnModel(false), successResponse(frs = false))(user))
+
+        result shouldBe Right(
+          ReceiptData(EN, expectedAnswers(frs = false, EN), expectedDeclaration(isAgent = false, EN))
+        )
+      }
+
+      "the NI protocol feature switch is on" in {
+
+        val service: ReceiptDataHelper = {
+          mockAppConfig.features.nineBoxNIProtocolContentEnabled(true)
+          new ReceiptDataHelper()(messagesApi, mockAppConfig)
+        }
+
         val result = await(service.extractReceiptData(createReturnModel(false), successResponse(frs = false))(user))
 
         result shouldBe Right(

@@ -59,4 +59,5 @@ object ConfigKeys {
 
   val staticDateEnabledFeature: String = "features.staticDate.enabled"
   val staticDateValue: String = "date-service.staticDate.value"
+  val nineBoxNIProtocolContentEnabled: String = "features.nineBoxNIProtocolContent.enabled"
 }

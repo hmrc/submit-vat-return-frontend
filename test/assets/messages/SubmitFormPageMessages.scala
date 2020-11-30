@@ -29,6 +29,7 @@ object SubmitFormPageMessages {
 
   val box2 = "Box 2"
   val box2Text = "VAT you owe on goods purchased from EC countries and brought into the UK"
+  val box2TextNIProtocol = "VAT due in this period on intra-community acquisitions of goods made in Northern Ireland from EU Member States"
 
   val box3 = "Box 3"
   val box3Text = "VAT you owe before deductions (this is the total of box 1 and 2)"
@@ -50,9 +51,11 @@ object SubmitFormPageMessages {
 
   val box8 = "Box 8"
   val box8Text = "Total value of supplied goods to EC countries and related costs (excluding VAT)"
+  val box8TextNIProtocol = "Total value of intra-community dispatches of goods and related costs (excluding VAT) from Northern Ireland to EU Member States"
 
   val box9 = "Box 9"
   val box9Text = "Total value of goods purchased from EC countries and brought into the UK, as well as any related costs (excluding VAT)"
+  val box9TextNIProtocol = "Total value of intra-community acquisitions of goods and related costs (excluding VAT) from Northern Ireland to EU Member States"
 
   val nextScreen = "You can submit your return on the next screen."
 
