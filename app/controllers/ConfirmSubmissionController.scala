@@ -203,6 +203,8 @@ class ConfirmSubmissionController @Inject()(mandationStatusCheck: MandationStatu
                 ),
                 Some(controllers.routes.ConfirmSubmissionController.submit(periodKey).url)
               )
+              Logger.debug(s"[ConfirmSubmissionController][submitToNRS] - NRS returned a server side error: $other")
+              Logger.warn("[ConfirmSubmissionController][submitToNRS] - NRS returned a server side error")
               submitVatReturn(periodKey, sessionData)
           }
         case (Left(errorResult), _) => Future(errorResult)
