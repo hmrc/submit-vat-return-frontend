@@ -1,5 +1,5 @@
 /*
- * Copyright 2020 HM Revenue & Customs
+ * Copyright 2021 HM Revenue & Customs
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -53,7 +53,7 @@ object ConfigKeys {
   val vatReturnsBase: String = "vat-returns"
   val submitReturnUrl: String = s"microservice.services.$vatReturnsBase.returnUrl"
   val submitNrsUrl: String = s"microservice.services.$vatReturnsBase.nrsUrl"
-  val manageClientUrl: String = "vat-agent-client-lookup-frontend.whatToDoUrl"
+  val manageClientUrl: String = "vat-agent-client-lookup-frontend.agentHubUrl"
   val nineBoxReturnAllowedRatio: String = "nine-box-return-box-ratio"
   val gtmContainer: String = "tracking-consent-frontend.gtm.container"
 
