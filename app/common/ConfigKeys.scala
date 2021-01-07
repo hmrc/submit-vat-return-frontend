@@ -53,7 +53,7 @@ object ConfigKeys {
   val vatReturnsBase: String = "vat-returns"
   val submitReturnUrl: String = s"microservice.services.$vatReturnsBase.returnUrl"
   val submitNrsUrl: String = s"microservice.services.$vatReturnsBase.nrsUrl"
-  val manageClientUrl: String = "vat-agent-client-lookup-frontend.whatToDoUrl"
+  val manageClientUrl: String = "vat-agent-client-lookup-frontend.agentHubUrl"
   val nineBoxReturnAllowedRatio: String = "nine-box-return-box-ratio"
   val gtmContainer: String = "tracking-consent-frontend.gtm.container"
 
