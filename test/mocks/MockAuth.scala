@@ -20,6 +20,7 @@ import akka.util.Timeout
 import assets.NrsTestData.IdentityDataTestData
 import base.BaseSpec
 import controllers.predicates.AuthPredicate
+import mocks.service.MockVatSubscriptionService
 import org.joda.time.DateTime
 import play.api.http.Status
 import play.api.mvc.{Action, AnyContent, Request}
@@ -34,7 +35,7 @@ import views.html.errors.{UnauthorisedAgent, UnauthorisedNonAgent}
 
 import scala.concurrent.{ExecutionContext, Future}
 
-trait MockAuth extends BaseSpec {
+trait MockAuth extends BaseSpec with MockVatSubscriptionService {
 
   lazy val mockAuthConnector: AuthConnector = mock[AuthConnector]
   lazy val mockEnrolmentsAuthService: EnrolmentsAuthService = new EnrolmentsAuthService(mockAuthConnector)
@@ -44,12 +45,11 @@ trait MockAuth extends BaseSpec {
 
   lazy val mockAuthPredicate: AuthPredicate = new AuthPredicate(
     mockEnrolmentsAuthService,
+    mockVatSubscriptionService,
     errorHandler,
     mcc,
     unauthorisedAgent,
-    unauthorisedNonAgent,
-    ec,
-    mockAppConfig
+    unauthorisedNonAgent
   )
 
   def mockAuthorise(authResponse: Future[~[Option[AffinityGroup], Enrolments]]): Unit = {
@@ -90,6 +90,16 @@ trait MockAuth extends BaseSpec {
       lazy val result = action(request)
 
       "return 403" in {
+        mockAuthorise(Future.successful(new ~(Some(Individual), otherEnrolment)))
+        status(result) shouldBe Status.FORBIDDEN
+      }
+    }
+
+    "the user is insolvent and not continuing to trade" should {
+
+      lazy val result = action(insolventRequest)
+
+      "return 403 (Forbidden)" in {
         mockAuthorise(Future.successful(new ~(Some(Individual), otherEnrolment)))
         status(result) shouldBe Status.FORBIDDEN
       }

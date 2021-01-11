@@ -18,13 +18,15 @@ package controllers.predicates
 
 import auth.AuthKeys
 import auth.AuthKeys.{delegatedAuthRule, vatEnrolmentId, vatIdentifierId}
+import common.SessionKeys
 import config.{AppConfig, ErrorHandler}
+
 import javax.inject.{Inject, Singleton}
 import models.auth.User
 import play.api.Logger
 import play.api.i18n.I18nSupport
 import play.api.mvc._
-import services.EnrolmentsAuthService
+import services.{EnrolmentsAuthService, VatSubscriptionService}
 import uk.gov.hmrc.auth.core.AffinityGroup.Agent
 import uk.gov.hmrc.auth.core._
 import uk.gov.hmrc.auth.core.retrieve.v2.Retrievals._
@@ -36,11 +38,12 @@ import scala.concurrent.{ExecutionContext, Future}
 
 @Singleton
 class AuthPredicate @Inject()(authService: EnrolmentsAuthService,
+                              vatSubscriptionService: VatSubscriptionService,
                               errorHandler: ErrorHandler,
                               mcc: MessagesControllerComponents,
                               unauthorisedAgent: UnauthorisedAgent,
-                              unauthorisedNonAgent: UnauthorisedNonAgent,
-                              implicit val executionContext: ExecutionContext,
+                              unauthorisedNonAgent: UnauthorisedNonAgent)
+                             (implicit val executionContext: ExecutionContext,
                               implicit val appConfig: AppConfig) extends FrontendController(mcc)
                                                                  with I18nSupport
                                                                  with ActionBuilder[User, AnyContent]
@@ -82,7 +85,24 @@ class AuthPredicate @Inject()(authService: EnrolmentsAuthService,
     enrolments.enrolments.collectFirst {
       case Enrolment(AuthKeys.vatEnrolmentId, EnrolmentIdentifier(_, vrn) :: _, AuthKeys.activated, _) => vrn
     } match {
-      case Some(vrn) => block(User(vrn))
+      case Some(vrn) =>
+        val user = User(vrn)
+        request.session.get(SessionKeys.insolventWithoutAccessKey) match {
+          case Some("true") => Future.successful(Forbidden(unauthorisedNonAgent()))
+          case Some("false") => block(user)
+          case _ => vatSubscriptionService.getCustomerDetails(user.vrn).flatMap {
+            case Right(details) if details.isInsolventWithoutAccess =>
+              Logger.debug("[AuthPredicate][checkVatEnrolment] - User is insolvent and not continuing to trade")
+              Future.successful(Forbidden(unauthorisedNonAgent())
+                .addingToSession(SessionKeys.insolventWithoutAccessKey -> "true"))
+            case Right(_) =>
+              Logger.debug("[AuthPredicate][checkVatEnrolment] - Authenticated as principle")
+              block(user).map(result => result.addingToSession(SessionKeys.insolventWithoutAccessKey -> "false"))
+            case _ =>
+              Logger.warn("[AuthPredicate][checkVatEnrolment] - Failure obtaining insolvency status from Customer Info API")
+              Future.successful(errorHandler.showInternalServerError)
+          }
+        }
       case None =>
         Logger.debug("[AuthPredicate][authoriseAsNonAgent] - Non-agent with no HMRC-MTD-VAT enrolment. Rendering unauthorised view.")
         Future.successful(Forbidden(unauthorisedNonAgent()))

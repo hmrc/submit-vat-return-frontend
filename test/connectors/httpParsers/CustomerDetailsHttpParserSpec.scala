@@ -16,49 +16,25 @@
 
 package connectors.httpParsers
 
+import assets.CustomerDetailsTestAssets._
 import base.BaseSpec
 import connectors.httpParsers.CustomerDetailsHttpParser.CustomerDetailsReads
-import models.CustomerDetails
 import models.errors.{ServerSideError, UnexpectedJsonFormat}
 import play.api.http.Status._
-import play.api.libs.json.{JsObject, Json}
 import uk.gov.hmrc.http.HttpResponse
 
 class CustomerDetailsHttpParserSpec extends BaseSpec {
-
-  val correctReturnJson: JsObject = Json.obj(
-    "firstName" -> "Rath",
-    "lastName" -> "Alos",
-    "tradingName" -> "Azure Rathalos",
-    "organisationName" -> "Silver Rathalos",
-    "hasFlatRateScheme" -> true
-  )
-
-  val correctEmptyReturnJson: JsObject = Json.obj(
-    "hasFlatRateScheme" -> true
-  )
-
-  val incorrectReturnJson: JsObject = Json.obj(
-    "monster" -> "Rathalos",
-    "bestWeapon" -> "Swaxe"
-  )
 
   "CustomerDetailsReads" should {
     "parse the HTTP response correctly" when {
       "the returned JSON is valid" in {
         val httpResponse = HttpResponse(
           OK,
-          correctReturnJson,
+          customerDetailsJson,
           Map.empty[String,Seq[String]]
         )
 
-        val expectedResult = CustomerDetails(
-          Some("Rath"),
-          Some("Alos"),
-          Some("Azure Rathalos"),
-          Some("Silver Rathalos"),
-          hasFlatRateScheme = true
-        )
+        val expectedResult = customerDetailsModel
 
         val result = CustomerDetailsReads.read("", "", httpResponse)
 
@@ -67,17 +43,11 @@ class CustomerDetailsHttpParserSpec extends BaseSpec {
       "the returned JSON is mostly empty" in {
         val httpResponse = HttpResponse(
           OK,
-          correctEmptyReturnJson,
+          customerDetailsJsonMin,
           Map.empty[String,Seq[String]]
         )
 
-        val expectedResult = CustomerDetails(
-          None,
-          None,
-          None,
-          None,
-          hasFlatRateScheme = true
-        )
+        val expectedResult = customerDetailsModelMin
 
         val result = CustomerDetailsReads.read("", "", httpResponse)
 

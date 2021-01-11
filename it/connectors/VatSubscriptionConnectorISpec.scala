@@ -45,7 +45,9 @@ class VatSubscriptionConnectorISpec extends BaseISpec {
             Some("Alos"),
             Some("Blue Rathalos"),
             Some("Silver Rathalos"),
-            hasFlatRateScheme = true
+            hasFlatRateScheme = true,
+            isInsolvent = false,
+            continueToTrade = Some(true)
           )
 
           stubGet(s"/vat-subscription/$vrn/customer-details", customerInformationSuccessJson.toString(), OK)

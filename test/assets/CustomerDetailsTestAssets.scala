@@ -17,14 +17,21 @@
 package assets
 
 import models.CustomerDetails
+import play.api.libs.json.{JsObject, Json}
 
 object CustomerDetailsTestAssets {
 
   val customerDetailsModel: CustomerDetails = CustomerDetails(
-    firstName =  Some("Duanne"),
-    lastName =  Some("MilesAndMiles"),
-    tradingName =  Some("duannetherepairman"),
-    organisationName =  Some("BadGuys")
+    firstName =  Some("Test"),
+    lastName =  Some("User"),
+    tradingName =  Some("ABC Solutions"),
+    organisationName =  Some("ABCL"),
+    isInsolvent = false,
+    continueToTrade = Some(true)
+  )
+
+  val customerDetailsModelMin: CustomerDetails = CustomerDetails(
+    None, None, None, None, hasFlatRateScheme = false, isInsolvent = false, None
   )
 
   val customerDetailsWithFRS: CustomerDetails = CustomerDetails(
@@ -32,7 +39,30 @@ object CustomerDetailsTestAssets {
     lastName = Some("User"),
     tradingName = Some("ABC Solutions"),
     organisationName = Some("ABCL"),
-    hasFlatRateScheme = true
+    hasFlatRateScheme = true,
+    isInsolvent = false,
+    None
   )
 
+  val customerDetailsInsolvent: CustomerDetails = customerDetailsModel.copy(isInsolvent = true, continueToTrade = Some(false))
+
+  val customerDetailsJson: JsObject = Json.obj(
+    "firstName" -> "Test",
+    "lastName" -> "User",
+    "tradingName" -> "ABC Solutions",
+    "organisationName" -> "ABCL",
+    "hasFlatRateScheme" -> false,
+    "isInsolvent" -> false,
+    "continueToTrade" -> true
+  )
+
+  val customerDetailsJsonMin: JsObject = Json.obj(
+    "hasFlatRateScheme" -> false,
+    "isInsolvent" -> false
+  )
+
+  val incorrectReturnJson: JsObject = Json.obj(
+    "monster" -> "Rathalos",
+    "bestWeapon" -> "Swaxe"
+  )
 }
