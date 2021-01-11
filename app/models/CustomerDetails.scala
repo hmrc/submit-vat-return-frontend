@@ -18,13 +18,13 @@ package models
 
 import play.api.libs.json.{Json, OFormat}
 
-case class CustomerDetails(
-                            firstName: Option[String],
-                            lastName: Option[String],
-                            tradingName: Option[String],
-                            organisationName: Option[String],
-                            hasFlatRateScheme: Boolean = false
-                          ) {
+case class CustomerDetails(firstName: Option[String],
+                           lastName: Option[String],
+                           tradingName: Option[String],
+                           organisationName: Option[String],
+                           hasFlatRateScheme: Boolean = false,
+                           isInsolvent: Boolean,
+                           continueToTrade: Option[Boolean]) {
 
   val isOrg: Boolean = organisationName.isDefined
   val isInd: Boolean = firstName.isDefined || lastName.isDefined
@@ -34,6 +34,11 @@ case class CustomerDetails(
   }
   val businessName: Option[String] = if (isOrg) organisationName else userName
   val clientName: Option[String] = if (tradingName.isDefined) tradingName else businessName
+
+  val isInsolventWithoutAccess: Boolean = continueToTrade match {
+    case Some(false) => isInsolvent
+    case _ => false
+  }
 }
 
 

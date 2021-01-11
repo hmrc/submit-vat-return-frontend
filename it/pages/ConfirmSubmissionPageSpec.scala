@@ -48,10 +48,12 @@ class ConfirmSubmissionPageSpec extends NrsAssets with GivenWhenThen {
       "due" -> "2018-03-07"
     ).toString()
 
-    val mandationStatusSessionValue = Map("mtdVatMandationStatus" -> "Non MTDfB")
-    val nineBoxSessionValue = Map("mtdNineBoxReturnData" -> nineBoxSessionData(LocalDate.now().minusDays(1).toString))
+    val mandationStatusSessionValue = Map(SessionKeys.mandationStatus -> "Non MTDfB")
+    val nineBoxSessionValue = Map(SessionKeys.returnData -> nineBoxSessionData(LocalDate.now().minusDays(1).toString))
     val honestySessionValue: String => Map[String, String] = periodKey => Map(SessionKeys.HonestyDeclaration.key -> s"$vrn-$periodKey")
-    val fullSessionValues: Map[String, String] = mandationStatusSessionValue ++ nineBoxSessionValue ++ honestySessionValue("18AA")
+    val insolvencyValue = Map(SessionKeys.insolventWithoutAccessKey -> "false")
+    val fullSessionValues: Map[String, String] =
+      mandationStatusSessionValue ++ nineBoxSessionValue ++ honestySessionValue("18AA") ++ insolvencyValue
 
     def request(sessionValues: Map[String, String] = Map.empty): WSResponse = postJson("/18AA/confirm-submission", sessionValues)
 
@@ -84,7 +86,9 @@ class ConfirmSubmissionPageSpec extends NrsAssets with GivenWhenThen {
             "lastName" -> "Name",
             "tradingName" -> "",
             "organisationName" -> "",
-            "hasFlatRateScheme" -> false
+            "hasFlatRateScheme" -> false,
+            "isInsolvent" -> false,
+            "continueToTrade" -> true
           )
 
           "NRS returns successful response and backend submission returns 200" should {

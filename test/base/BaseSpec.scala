@@ -19,6 +19,7 @@ package base
 import akka.actor.ActorSystem
 import akka.stream.{ActorMaterializer, Materializer}
 import auth.AuthKeys
+import common.SessionKeys
 import config.{AppConfig, ErrorHandler}
 import mocks.MockConfig
 import models.auth.User
@@ -34,7 +35,8 @@ import uk.gov.hmrc.play.test.UnitSpec
 
 import scala.concurrent.ExecutionContext
 
-trait BaseSpec extends WordSpec with Matchers with GuiceOneAppPerSuite with MockFactory with UnitSpec with BeforeAndAfterEach with Injecting {
+trait BaseSpec extends WordSpec with Matchers with GuiceOneAppPerSuite with MockFactory with UnitSpec with BeforeAndAfterEach
+  with Injecting {
 
   implicit val config: Configuration = app.configuration
 
@@ -47,9 +49,12 @@ trait BaseSpec extends WordSpec with Matchers with GuiceOneAppPerSuite with Mock
 
   lazy val errorHandler: ErrorHandler = inject[ErrorHandler]
 
-  implicit lazy val fakeRequest: FakeRequest[AnyContentAsEmpty.type] = FakeRequest("", "")
+  implicit lazy val fakeRequest: FakeRequest[AnyContentAsEmpty.type] =
+    FakeRequest("", "").withSession(SessionKeys.insolventWithoutAccessKey -> "false")
   lazy val fakeRequestWithClientsVRN: FakeRequest[AnyContentAsEmpty.type] =
     FakeRequest().withSession(AuthKeys.agentSessionVrn -> vrn)
+  lazy val insolventRequest: FakeRequest[AnyContentAsEmpty.type] =
+    FakeRequest().withSession(SessionKeys.insolventWithoutAccessKey -> "true")
 
   val vrn: String = "999999999"
   val arn = "ABCD12345678901"

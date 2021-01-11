@@ -16,51 +16,51 @@
 
 package models
 
+import assets.CustomerDetailsTestAssets._
 import base.BaseSpec
-import play.api.libs.json.{JsValue, Json}
+import play.api.libs.json.Json
 
 class CustomerDetailsSpec extends BaseSpec {
 
-  def asJson(
-              firstName: Option[String],
-              lastName: Option[String],
-              tradingName: Option[String],
-              organisationName: Option[String],
-              hasFlatRateScheme: Boolean = false
-            ): JsValue = {
-    firstName.fold(Json.obj())(firstNameResult => Json.obj("firstName" -> firstNameResult)) ++
-      lastName.fold(Json.obj())(lastNameResult => Json.obj("lastName" -> lastNameResult)) ++
-      tradingName.fold(Json.obj())(tradingNameResult => Json.obj("tradingName" -> tradingNameResult)) ++
-      organisationName.fold(Json.obj())(organisationNameResult => Json.obj("organisationName" -> organisationNameResult)) ++
-      Json.obj("hasFlatRateScheme" -> hasFlatRateScheme)
+  "CustomerDetails" should {
+
+    "correctly read from JSON" when {
+
+      "all fields are present" in {
+        customerDetailsJson.as[CustomerDetails] shouldBe customerDetailsModel
+      }
+
+      "the minimum number of fields are present" in {
+        customerDetailsJsonMin.as[CustomerDetails] shouldBe customerDetailsModelMin
+      }
+    }
+
+    "correctly write to JSON" when {
+
+      "all fields are present" in {
+        Json.toJson(customerDetailsModel) shouldBe customerDetailsJson
+      }
+
+      "the minimum number of fields are present" in {
+        Json.toJson(customerDetailsModelMin) shouldBe customerDetailsJsonMin
+      }
+    }
   }
 
-  private def optionalFirstName: Seq[Option[String]] = Seq(None, Some("Shagura"))
-  private def optionalSecondName: Seq[Option[String]] = Seq(None, Some("Magala"))
-  private def optionalTradingName: Seq[Option[String]] = Seq(None, Some("Gore Magala"))
-  private def optionalOrganisationName: Seq[Option[String]] = Seq(None, Some("Fatalis"))
-  private def flatRateSchemeOptions: Seq[Boolean] = Seq(true, false)
+  "calling .isInsolventWithoutAccess" should {
 
-  "CustomerDetails" should {
-    "correctly parse" when {
-      (for {
-        firstName <- optionalFirstName
-        lastName <- optionalSecondName
-        tradingName <- optionalTradingName
-        orgName <- optionalOrganisationName
-        flatRateScheme <- flatRateSchemeOptions
-      } yield (firstName, lastName, tradingName, orgName, flatRateScheme)).foreach {
-        case (firstName, lastName, tradingName, orgName, flatRateScheme) =>
-          s"provided with Json containing $firstName, $lastName, $tradingName, $orgName, $flatRateScheme" in {
-            val expectedResult = CustomerDetails(firstName, lastName, tradingName, orgName, flatRateScheme)
-            asJson(firstName, lastName, tradingName, orgName, flatRateScheme).as[CustomerDetails] shouldBe expectedResult
-          }
+    "return true when the user is insolvent and not continuing to trade" in {
+      customerDetailsInsolvent.isInsolventWithoutAccess shouldBe true
+    }
 
-          s"provided with a model containing $firstName, $lastName, $tradingName, $orgName, $flatRateScheme" in {
-            val expectedResult = asJson(firstName, lastName, tradingName, orgName, flatRateScheme)
-            Json.toJson(CustomerDetails(firstName, lastName, tradingName, orgName, flatRateScheme)) shouldBe expectedResult
-          }
-      }
+    "return false when the user is insolvent but is continuing to trade" in {
+      customerDetailsInsolvent.copy(continueToTrade = Some(true)).isInsolventWithoutAccess shouldBe false
+    }
+
+    "return false when the user is not insolvent, regardless of the continueToTrade flag" in {
+      customerDetailsModel.isInsolventWithoutAccess shouldBe false
+      customerDetailsModel.copy(continueToTrade = Some(false)).isInsolventWithoutAccess shouldBe false
+      customerDetailsModel.copy(continueToTrade = None).isInsolventWithoutAccess shouldBe false
     }
   }
 }

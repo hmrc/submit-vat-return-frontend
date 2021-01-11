@@ -28,7 +28,9 @@ object VatSubscriptionStub extends BaseISpec {
     "lastName" -> "Alos",
     "tradingName" -> "Blue Rathalos",
     "organisationName" -> "Silver Rathalos",
-    "hasFlatRateScheme" -> true
+    "hasFlatRateScheme" -> true,
+    "isInsolvent" -> false,
+    "continueToTrade" -> true
   )
 
   val mandationStatusSuccessJson: JsObject = Json.obj(

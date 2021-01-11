@@ -17,6 +17,7 @@
 package controllers.predicates
 
 import assets.messages.AuthMessages
+import common.SessionKeys
 import mocks.MockAuth
 import org.jsoup.Jsoup
 import play.api.http.Status
@@ -129,15 +130,77 @@ class AuthPredicateSpec extends MockAuth {
 
     "user is non-Agent" when {
 
-      "user has HMRC-MTD-VAT enrolment" should {
+      "user has HMRC-MTD-VAT enrolment" when {
 
         val authResponse = Future.successful(new ~(Some(Individual), mtdVatEnrolment))
-        lazy val result = target()(FakeRequest())
 
-        "allow the request through" in {
-          mockAuthorise(authResponse)
+        "they have a value in session for their insolvency status" when {
 
-          status(result) shouldBe Status.OK
+          "the value is 'true' (insolvent user not continuing to trade)" should {
+
+            "return Forbidden (403)" in {
+              mockAuthorise(authResponse)
+              status(target()(insolventRequest)) shouldBe Status.FORBIDDEN
+            }
+          }
+
+          "the value is 'false' (user permitted to trade)" should {
+
+            "return OK (200)" in {
+              mockAuthorise(authResponse)
+              status(target()(fakeRequest)) shouldBe Status.OK
+            }
+          }
+        }
+
+        "they do not have a value in session for their insolvency status" when {
+
+          "they are insolvent and not continuing to trade" should {
+
+            lazy val result = {
+              mockAuthorise(authResponse)
+              setupVatSubscriptionService(customerInfoInsolventResponse)
+              target()(FakeRequest())
+            }
+
+            "return Forbidden (403)" in {
+              status(result) shouldBe Status.FORBIDDEN
+            }
+
+            "add the insolvent flag to the session" in {
+              session(result).get(SessionKeys.insolventWithoutAccessKey) shouldBe Some("true")
+            }
+          }
+
+          "they are permitted to trade" should {
+
+            lazy val result = {
+              mockAuthorise(authResponse)
+              setupVatSubscriptionService(successCustomerInfoResponse)
+              target()(FakeRequest())
+            }
+
+            "return OK (200)" in {
+              status(result) shouldBe Status.OK
+            }
+
+            "add the insolvent flag to the session" in {
+              session(result).get(SessionKeys.insolventWithoutAccessKey) shouldBe Some("false")
+            }
+          }
+
+          "there is an error returned from the customer information API" should {
+
+            lazy val result = {
+              mockAuthorise(authResponse)
+              setupVatSubscriptionService(customerInfoFailureResponse)
+              target()(FakeRequest())
+            }
+
+            "return Internal Server Error (500)" in {
+              status(result) shouldBe Status.INTERNAL_SERVER_ERROR
+            }
+          }
         }
       }
 

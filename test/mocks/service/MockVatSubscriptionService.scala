@@ -16,9 +16,10 @@
 
 package mocks.service
 
-import assets.CustomerDetailsTestAssets.customerDetailsWithFRS
+import assets.CustomerDetailsTestAssets.{customerDetailsInsolvent, customerDetailsWithFRS}
 import connectors.httpParsers.ResponseHttpParsers.HttpGetResult
 import models.CustomerDetails
+import models.errors.UnknownError
 import org.scalamock.scalatest.MockFactory
 import services.VatSubscriptionService
 import uk.gov.hmrc.http.HeaderCarrier
@@ -36,6 +37,10 @@ trait MockVatSubscriptionService extends UnitSpec with MockFactory {
       .returns(response)
   }
 
-  val successCustomerInfoResponse: Future[HttpGetResult[CustomerDetails]] = Future.successful(Right(customerDetailsWithFRS))
-
+  val successCustomerInfoResponse: Future[HttpGetResult[CustomerDetails]] =
+    Future.successful(Right(customerDetailsWithFRS))
+  val customerInfoInsolventResponse: Future[HttpGetResult[CustomerDetails]] =
+    Future.successful(Right(customerDetailsInsolvent))
+  val customerInfoFailureResponse: Future[HttpGetResult[CustomerDetails]] =
+    Future.successful(Left(UnknownError))
 }

@@ -16,9 +16,9 @@
 
 package services
 
+import assets.CustomerDetailsTestAssets.customerDetailsModel
 import base.BaseSpec
 import connectors.VatSubscriptionConnector
-import models.CustomerDetails
 import models.errors.UnexpectedJsonFormat
 import uk.gov.hmrc.http.HeaderCarrier
 
@@ -32,13 +32,7 @@ class VatSubscriptionServiceSpec extends BaseSpec {
   "getCustomerDetails" should {
     "return a CustomerDetails model" when {
       "the model is returned from the connector" in {
-        val expectedResult = CustomerDetails(
-          Some("Hiccup"),
-          Some("Toothless"),
-          Some("Rimuru Tempest"),
-          Some("Sadao Maou"),
-          hasFlatRateScheme = true
-        )
+        val expectedResult = customerDetailsModel
 
         (mockConnector.getCustomerDetails(_: String)(_: HeaderCarrier, _: ExecutionContext))
           .expects("111111111", *, *)

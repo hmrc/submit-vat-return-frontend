@@ -23,6 +23,7 @@ object SessionKeys {
   val viewModel = "mtdReturnInformation"
   val submissionYear = "submissionYear"
   val inSessionPeriodKey = "inSessionPeriodKey"
+  val insolventWithoutAccessKey: String = "insolventWithoutAccess"
 
   object HonestyDeclaration {
     val key = "mtdVatHonestyDeclaration"

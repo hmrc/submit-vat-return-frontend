@@ -138,8 +138,9 @@ class SubmitFormControllerSpec extends BaseSpec
           lazy val requestWithSessionData = User[AnyContentAsEmpty.type]("123456789")(fakeRequest.withSession(
             SessionKeys.returnData -> nineBoxModel,
             SessionKeys.mandationStatus -> MandationStatuses.nonMTDfB,
-            SessionKeys.HonestyDeclaration.key -> s"$vrn-18AA")
-          )
+            SessionKeys.HonestyDeclaration.key -> s"$vrn-18AA",
+            SessionKeys.insolventWithoutAccessKey -> "false"
+          ))
 
           lazy val result: Future[Result] = {
             mockAppConfig.features.nineBoxNIProtocolContentEnabled(false)
@@ -211,7 +212,8 @@ class SubmitFormControllerSpec extends BaseSpec
             lazy val result = {
               TestSubmitFormController.show("18AA")(fakeRequest.withSession(
                 SessionKeys.mandationStatus -> MandationStatuses.nonMTDfB,
-                SessionKeys.HonestyDeclaration.key -> s"$vrn-18AA"
+                SessionKeys.HonestyDeclaration.key -> s"$vrn-18AA",
+                SessionKeys.insolventWithoutAccessKey -> "false"
               ))
             }
 
@@ -262,7 +264,8 @@ class SubmitFormControllerSpec extends BaseSpec
           lazy val result = {
             TestSubmitFormController.show("18AA")(fakeRequest.withSession(
               SessionKeys.mandationStatus -> MandationStatuses.nonMTDfB,
-              SessionKeys.HonestyDeclaration.key -> s"$vrn-18AA"
+              SessionKeys.HonestyDeclaration.key -> s"$vrn-18AA",
+              SessionKeys.insolventWithoutAccessKey -> "false"
             ))
           }
 
@@ -304,7 +307,8 @@ class SubmitFormControllerSpec extends BaseSpec
 
             lazy val result = TestSubmitFormController.show("18AA")(fakeRequest.withSession(
               SessionKeys.mandationStatus -> MandationStatuses.nonMTDfB,
-              SessionKeys.HonestyDeclaration.key -> s"$vrn-18AA"
+              SessionKeys.HonestyDeclaration.key -> s"$vrn-18AA",
+              SessionKeys.insolventWithoutAccessKey -> "false"
             ))
             status(result) shouldBe Status.INTERNAL_SERVER_ERROR
 
@@ -337,7 +341,8 @@ class SubmitFormControllerSpec extends BaseSpec
             "box9" -> "1234567890123"
           ).withSession(
             SessionKeys.mandationStatus -> MandationStatuses.nonMTDfB,
-            SessionKeys.HonestyDeclaration.key -> s"$vrn-18AA"
+            SessionKeys.HonestyDeclaration.key -> s"$vrn-18AA",
+            SessionKeys.insolventWithoutAccessKey -> "false"
           )
 
           lazy val result = {
@@ -371,7 +376,8 @@ class SubmitFormControllerSpec extends BaseSpec
             "box9" -> "1234567890123"
           ).withSession(
             SessionKeys.mandationStatus -> MandationStatuses.nonMTDfB,
-            SessionKeys.HonestyDeclaration.key -> s"$vrn-18AA"
+            SessionKeys.HonestyDeclaration.key -> s"$vrn-18AA",
+            SessionKeys.insolventWithoutAccessKey -> "false"
           )
 
           lazy val result = {
@@ -416,7 +422,8 @@ class SubmitFormControllerSpec extends BaseSpec
           "box9" -> "1234567890123"
         ).withSession(
           SessionKeys.mandationStatus -> MandationStatuses.nonMTDfB,
-          SessionKeys.HonestyDeclaration.key -> s"$vrn-18AA"
+          SessionKeys.HonestyDeclaration.key -> s"$vrn-18AA",
+          SessionKeys.insolventWithoutAccessKey -> "false"
         )
 
         lazy val result = {
@@ -444,7 +451,8 @@ class SubmitFormControllerSpec extends BaseSpec
           "box9" -> "1234567890123"
         ).withSession(
           SessionKeys.mandationStatus -> MandationStatuses.nonMTDfB,
-          SessionKeys.HonestyDeclaration.key -> s"$vrn-18AA"
+          SessionKeys.HonestyDeclaration.key -> s"$vrn-18AA",
+          SessionKeys.insolventWithoutAccessKey -> "false"
         )
 
         lazy val result = {
@@ -478,7 +486,8 @@ class SubmitFormControllerSpec extends BaseSpec
         "due" -> "2019-01-05"
       ).withSession(
         SessionKeys.mandationStatus -> MandationStatuses.nonMTDfB,
-        SessionKeys.HonestyDeclaration.key -> s"$vrn-18AA"
+        SessionKeys.HonestyDeclaration.key -> s"$vrn-18AA",
+        SessionKeys.insolventWithoutAccessKey -> "false"
       )
 
       lazy val result = {
@@ -541,7 +550,8 @@ class SubmitFormControllerSpec extends BaseSpec
           ).withSession(
             SessionKeys.mandationStatus -> MandationStatuses.nonMTDfB,
             SessionKeys.viewModel -> sessionModel,
-            SessionKeys.HonestyDeclaration.key -> s"$vrn-18AA"
+            SessionKeys.HonestyDeclaration.key -> s"$vrn-18AA",
+            SessionKeys.insolventWithoutAccessKey -> "false"
           )
 
           lazy val user = User("")(request)
@@ -591,7 +601,8 @@ class SubmitFormControllerSpec extends BaseSpec
           ).withSession(
             SessionKeys.mandationStatus -> MandationStatuses.nonMTDfB,
             SessionKeys.viewModel -> sessionModel,
-            SessionKeys.HonestyDeclaration.key -> s"$vrn-18AA"
+            SessionKeys.HonestyDeclaration.key -> s"$vrn-18AA",
+            SessionKeys.insolventWithoutAccessKey -> "false"
           )
 
           lazy val user = User("")(request)
@@ -641,7 +652,8 @@ class SubmitFormControllerSpec extends BaseSpec
           ).withSession(
             SessionKeys.mandationStatus -> MandationStatuses.nonMTDfB,
             SessionKeys.viewModel -> sessionModel,
-            SessionKeys.HonestyDeclaration.key -> s"$vrn-18AA"
+            SessionKeys.HonestyDeclaration.key -> s"$vrn-18AA",
+            SessionKeys.insolventWithoutAccessKey -> "false"
           )
 
           lazy val user = User("")(request)
@@ -693,7 +705,8 @@ class SubmitFormControllerSpec extends BaseSpec
           ).withSession(
             SessionKeys.mandationStatus -> MandationStatuses.nonMTDfB,
             SessionKeys.viewModel -> sessionModel,
-            SessionKeys.HonestyDeclaration.key -> s"$vrn-18AA"
+            SessionKeys.HonestyDeclaration.key -> s"$vrn-18AA",
+            SessionKeys.insolventWithoutAccessKey -> "false"
           )
 
           lazy val user = User("")(request)
@@ -735,7 +748,8 @@ class SubmitFormControllerSpec extends BaseSpec
           "due" -> "2019-05-12"
         ).withSession(
           SessionKeys.mandationStatus -> MandationStatuses.nonMTDfB,
-          SessionKeys.HonestyDeclaration.key -> s"$vrn-18AA"
+          SessionKeys.HonestyDeclaration.key -> s"$vrn-18AA",
+          SessionKeys.insolventWithoutAccessKey -> "false"
         )
 
         "a successful response is received from the service" should {
