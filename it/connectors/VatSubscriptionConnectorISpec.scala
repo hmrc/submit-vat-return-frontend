@@ -47,7 +47,9 @@ class VatSubscriptionConnectorISpec extends BaseISpec {
             Some("Silver Rathalos"),
             hasFlatRateScheme = true,
             isInsolvent = false,
-            continueToTrade = Some(true)
+            continueToTrade = Some(true),
+            insolvencyType = None,
+            insolvencyDate = None
           )
 
           stubGet(s"/vat-subscription/$vrn/customer-details", customerInformationSuccessJson.toString(), OK)

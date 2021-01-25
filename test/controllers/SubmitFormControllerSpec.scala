@@ -342,7 +342,8 @@ class SubmitFormControllerSpec extends BaseSpec
           ).withSession(
             SessionKeys.mandationStatus -> MandationStatuses.nonMTDfB,
             SessionKeys.HonestyDeclaration.key -> s"$vrn-18AA",
-            SessionKeys.insolventWithoutAccessKey -> "false"
+            SessionKeys.insolventWithoutAccessKey -> "false",
+            SessionKeys.futureInsolvencyBlock -> "false"
           )
 
           lazy val result = {
@@ -377,7 +378,8 @@ class SubmitFormControllerSpec extends BaseSpec
           ).withSession(
             SessionKeys.mandationStatus -> MandationStatuses.nonMTDfB,
             SessionKeys.HonestyDeclaration.key -> s"$vrn-18AA",
-            SessionKeys.insolventWithoutAccessKey -> "false"
+            SessionKeys.insolventWithoutAccessKey -> "false",
+            SessionKeys.futureInsolvencyBlock -> "false"
           )
 
           lazy val result = {
@@ -423,7 +425,8 @@ class SubmitFormControllerSpec extends BaseSpec
         ).withSession(
           SessionKeys.mandationStatus -> MandationStatuses.nonMTDfB,
           SessionKeys.HonestyDeclaration.key -> s"$vrn-18AA",
-          SessionKeys.insolventWithoutAccessKey -> "false"
+          SessionKeys.insolventWithoutAccessKey -> "false",
+          SessionKeys.futureInsolvencyBlock -> "false"
         )
 
         lazy val result = {
@@ -452,7 +455,8 @@ class SubmitFormControllerSpec extends BaseSpec
         ).withSession(
           SessionKeys.mandationStatus -> MandationStatuses.nonMTDfB,
           SessionKeys.HonestyDeclaration.key -> s"$vrn-18AA",
-          SessionKeys.insolventWithoutAccessKey -> "false"
+          SessionKeys.insolventWithoutAccessKey -> "false",
+          SessionKeys.futureInsolvencyBlock -> "false"
         )
 
         lazy val result = {
@@ -487,7 +491,8 @@ class SubmitFormControllerSpec extends BaseSpec
       ).withSession(
         SessionKeys.mandationStatus -> MandationStatuses.nonMTDfB,
         SessionKeys.HonestyDeclaration.key -> s"$vrn-18AA",
-        SessionKeys.insolventWithoutAccessKey -> "false"
+        SessionKeys.insolventWithoutAccessKey -> "false",
+        SessionKeys.futureInsolvencyBlock -> "false"
       )
 
       lazy val result = {
@@ -551,7 +556,8 @@ class SubmitFormControllerSpec extends BaseSpec
             SessionKeys.mandationStatus -> MandationStatuses.nonMTDfB,
             SessionKeys.viewModel -> sessionModel,
             SessionKeys.HonestyDeclaration.key -> s"$vrn-18AA",
-            SessionKeys.insolventWithoutAccessKey -> "false"
+            SessionKeys.insolventWithoutAccessKey -> "false",
+            SessionKeys.futureInsolvencyBlock -> "false"
           )
 
           lazy val user = User("")(request)
@@ -602,7 +608,8 @@ class SubmitFormControllerSpec extends BaseSpec
             SessionKeys.mandationStatus -> MandationStatuses.nonMTDfB,
             SessionKeys.viewModel -> sessionModel,
             SessionKeys.HonestyDeclaration.key -> s"$vrn-18AA",
-            SessionKeys.insolventWithoutAccessKey -> "false"
+            SessionKeys.insolventWithoutAccessKey -> "false",
+            SessionKeys.futureInsolvencyBlock -> "false"
           )
 
           lazy val user = User("")(request)
@@ -653,7 +660,8 @@ class SubmitFormControllerSpec extends BaseSpec
             SessionKeys.mandationStatus -> MandationStatuses.nonMTDfB,
             SessionKeys.viewModel -> sessionModel,
             SessionKeys.HonestyDeclaration.key -> s"$vrn-18AA",
-            SessionKeys.insolventWithoutAccessKey -> "false"
+            SessionKeys.insolventWithoutAccessKey -> "false",
+            SessionKeys.futureInsolvencyBlock -> "false"
           )
 
           lazy val user = User("")(request)
@@ -706,7 +714,8 @@ class SubmitFormControllerSpec extends BaseSpec
             SessionKeys.mandationStatus -> MandationStatuses.nonMTDfB,
             SessionKeys.viewModel -> sessionModel,
             SessionKeys.HonestyDeclaration.key -> s"$vrn-18AA",
-            SessionKeys.insolventWithoutAccessKey -> "false"
+            SessionKeys.insolventWithoutAccessKey -> "false",
+            SessionKeys.futureInsolvencyBlock -> "false"
           )
 
           lazy val user = User("")(request)
@@ -749,7 +758,8 @@ class SubmitFormControllerSpec extends BaseSpec
         ).withSession(
           SessionKeys.mandationStatus -> MandationStatuses.nonMTDfB,
           SessionKeys.HonestyDeclaration.key -> s"$vrn-18AA",
-          SessionKeys.insolventWithoutAccessKey -> "false"
+          SessionKeys.insolventWithoutAccessKey -> "false",
+          SessionKeys.futureInsolvencyBlock -> "false"
         )
 
         "a successful response is received from the service" should {

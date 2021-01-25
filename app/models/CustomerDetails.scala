@@ -17,6 +17,7 @@
 package models
 
 import play.api.libs.json.{Json, OFormat}
+import java.time.LocalDate
 
 case class CustomerDetails(firstName: Option[String],
                            lastName: Option[String],
@@ -24,7 +25,9 @@ case class CustomerDetails(firstName: Option[String],
                            organisationName: Option[String],
                            hasFlatRateScheme: Boolean = false,
                            isInsolvent: Boolean,
-                           continueToTrade: Option[Boolean]) {
+                           continueToTrade: Option[Boolean],
+                           insolvencyType: Option[String],
+                           insolvencyDate: Option[String]) {
 
   val isOrg: Boolean = organisationName.isDefined
   val isInd: Boolean = firstName.isDefined || lastName.isDefined
@@ -39,6 +42,13 @@ case class CustomerDetails(firstName: Option[String],
     case Some(false) => isInsolvent
     case _ => false
   }
+
+  def insolvencyDateFutureUserBlocked(today: LocalDate): Boolean =
+    (isInsolvent, insolvencyType, insolvencyDate, continueToTrade) match {
+      case (_, Some("12") | Some("13"), _, _) => false
+      case (true, Some(_), Some(date), Some(true)) if LocalDate.parse(date).isAfter(today) => true
+      case _ => false
+    }
 }
 
 

@@ -20,13 +20,12 @@ import auth.AuthKeys
 import auth.AuthKeys.{delegatedAuthRule, vatEnrolmentId, vatIdentifierId}
 import common.SessionKeys
 import config.{AppConfig, ErrorHandler}
-
 import javax.inject.{Inject, Singleton}
 import models.auth.User
 import play.api.Logger
 import play.api.i18n.I18nSupport
 import play.api.mvc._
-import services.{EnrolmentsAuthService, VatSubscriptionService}
+import services.{DateService, EnrolmentsAuthService, VatSubscriptionService}
 import uk.gov.hmrc.auth.core.AffinityGroup.Agent
 import uk.gov.hmrc.auth.core._
 import uk.gov.hmrc.auth.core.retrieve.v2.Retrievals._
@@ -39,6 +38,7 @@ import scala.concurrent.{ExecutionContext, Future}
 @Singleton
 class AuthPredicate @Inject()(authService: EnrolmentsAuthService,
                               vatSubscriptionService: VatSubscriptionService,
+                              dateService: DateService,
                               errorHandler: ErrorHandler,
                               mcc: MessagesControllerComponents,
                               unauthorisedAgent: UnauthorisedAgent,
@@ -87,25 +87,32 @@ class AuthPredicate @Inject()(authService: EnrolmentsAuthService,
     } match {
       case Some(vrn) =>
         val user = User(vrn)
-        request.session.get(SessionKeys.insolventWithoutAccessKey) match {
-          case Some("true") => Future.successful(Forbidden(unauthorisedNonAgent()))
-          case Some("false") => block(user)
-          case _ => vatSubscriptionService.getCustomerDetails(user.vrn).flatMap {
-            case Right(details) if details.isInsolventWithoutAccess =>
-              Logger.debug("[AuthPredicate][checkVatEnrolment] - User is insolvent and not continuing to trade")
-              Future.successful(Forbidden(unauthorisedNonAgent())
-                .addingToSession(SessionKeys.insolventWithoutAccessKey -> "true"))
-            case Right(_) =>
-              Logger.debug("[AuthPredicate][checkVatEnrolment] - Authenticated as principle")
-              block(user).map(result => result.addingToSession(SessionKeys.insolventWithoutAccessKey -> "false"))
-            case _ =>
-              Logger.warn("[AuthPredicate][checkVatEnrolment] - Failure obtaining insolvency status from Customer Info API")
-              Future.successful(errorHandler.showInternalServerError)
-          }
+        (request.session.get(SessionKeys.insolventWithoutAccessKey), request.session.get(SessionKeys.futureInsolvencyBlock)) match {
+          case (Some("true"), _) => Future.successful(Forbidden(unauthorisedNonAgent()))
+          case (Some("false"), Some("true")) => Future.successful(errorHandler.showInternalServerError)
+          case (Some("false"), Some("false")) => block(user)
+          case _ => insolvencySubscriptionCall(user, block)
         }
       case None =>
         Logger.debug("[AuthPredicate][authoriseAsNonAgent] - Non-agent with no HMRC-MTD-VAT enrolment. Rendering unauthorised view.")
         Future.successful(Forbidden(unauthorisedNonAgent()))
+    }
+  }
+
+  private def insolvencySubscriptionCall[A](user: User[A], block: User[A] => Future[Result])(implicit request: Request[A]) = {
+    vatSubscriptionService.getCustomerDetails(user.vrn).flatMap {
+      case Right(details) =>
+        (details.isInsolventWithoutAccess, details.insolvencyDateFutureUserBlocked(dateService.now())) match {
+          case (true, futureDateBlock) => Future.successful(Forbidden(unauthorisedNonAgent())
+            .addingToSession(SessionKeys.insolventWithoutAccessKey -> "true", SessionKeys.futureInsolvencyBlock -> s"$futureDateBlock"))
+          case (_, true) => Future.successful(errorHandler.showInternalServerError
+            .addingToSession(SessionKeys.insolventWithoutAccessKey -> "false", SessionKeys.futureInsolvencyBlock -> "true"))
+          case _ => block(user).map(result => result
+            .addingToSession(SessionKeys.insolventWithoutAccessKey -> "false", SessionKeys.futureInsolvencyBlock -> "false"))
+        }
+      case _ =>
+        Logger.warn("[AuthPredicate][checkVatEnrolment] - Failure obtaining insolvency status from Customer Info API")
+        Future.successful(errorHandler.showInternalServerError)
     }
   }
 
