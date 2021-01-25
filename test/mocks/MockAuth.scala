@@ -101,8 +101,18 @@ trait MockAuth extends BaseSpec with MockVatSubscriptionService with MockDateSer
       lazy val result = action(insolventRequest)
 
       "return 403 (Forbidden)" in {
-        mockAuthorise(Future.successful(new ~(Some(Individual), otherEnrolment)))
+        mockAuthorise(Future.successful(new ~(Some(Individual), mtdVatEnrolment)))
         status(result) shouldBe Status.FORBIDDEN
+      }
+    }
+
+    "the user is insolvent, continuing to trade, with a future insolvencyDate" should {
+
+      lazy val result = action(futureInsolvencyRequest)
+
+      "return 500 (ISE)" in {
+        mockAuthorise(Future.successful(new ~(Some(Individual), mtdVatEnrolment)))
+        status(result) shouldBe Status.INTERNAL_SERVER_ERROR
       }
     }
   }
