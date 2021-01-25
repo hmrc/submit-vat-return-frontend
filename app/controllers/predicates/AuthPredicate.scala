@@ -103,15 +103,28 @@ class AuthPredicate @Inject()(authService: EnrolmentsAuthService,
     vatSubscriptionService.getCustomerDetails(user.vrn).flatMap {
       case Right(details) =>
         (details.isInsolventWithoutAccess, details.insolvencyDateFutureUserBlocked(dateService.now())) match {
-          case (true, futureDateBlock) => Future.successful(Forbidden(unauthorisedNonAgent())
-            .addingToSession(SessionKeys.insolventWithoutAccessKey -> "true", SessionKeys.futureInsolvencyBlock -> s"$futureDateBlock"))
-          case (_, true) => Future.successful(errorHandler.showInternalServerError
-            .addingToSession(SessionKeys.insolventWithoutAccessKey -> "false", SessionKeys.futureInsolvencyBlock -> "true"))
-          case _ => block(user).map(result => result
-            .addingToSession(SessionKeys.insolventWithoutAccessKey -> "false", SessionKeys.futureInsolvencyBlock -> "false"))
+          case (true, futureDateBlock) =>
+            Logger.debug("[AuthPredicate][insolvencySubscriptionCall] - User is insolvent and not continuing to trade")
+            Future.successful(
+              Forbidden(unauthorisedNonAgent()).addingToSession(
+                SessionKeys.insolventWithoutAccessKey -> "true",
+                SessionKeys.futureInsolvencyBlock -> s"$futureDateBlock")
+            )
+          case (_, true) =>
+            Logger.debug("[AuthPredicate][insolvencySubscriptionCall] - User has a future insolvencyDate, throwing ISE")
+            Future.successful(errorHandler.showInternalServerError.addingToSession(
+              SessionKeys.insolventWithoutAccessKey -> "false",
+              SessionKeys.futureInsolvencyBlock -> "true")
+            )
+          case _ =>
+            Logger.debug("[AuthPredicate][insolvencySubscriptionCall] - Authenticated as principle")
+            block(user).map(result => result.addingToSession(
+              SessionKeys.insolventWithoutAccessKey -> "false",
+              SessionKeys.futureInsolvencyBlock -> "false")
+            )
         }
       case _ =>
-        Logger.warn("[AuthPredicate][checkVatEnrolment] - Failure obtaining insolvency status from Customer Info API")
+        Logger.warn("[AuthPredicate][insolvencySubscriptionCall] - Failure obtaining insolvency status from Customer Info API")
         Future.successful(errorHandler.showInternalServerError)
     }
   }
