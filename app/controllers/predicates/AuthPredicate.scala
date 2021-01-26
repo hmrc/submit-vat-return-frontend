@@ -170,7 +170,6 @@ class AuthPredicate @Inject()(authService: EnrolmentsAuthService,
   private def insolvencySubscriptionCallAgent[A](block: User[A] => Future[Result], vrn: String, arn: String)(implicit request: Request[A]) = {
     val trueSession = s"true-$vrn"
     val falseSession = s"false-$vrn"
-    println(s"\n\nSESSION VALUES: ${request.session.get(SessionKeys.futureInsolvencyBlock)}\n\n")
     request.session.get(SessionKeys.futureInsolvencyBlock) match {
       case Some(`trueSession`) => Future.successful(errorHandler.showInternalServerError)
       case Some(`falseSession`) => block(User(vrn, Some(arn)))
