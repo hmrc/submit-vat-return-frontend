@@ -168,7 +168,7 @@ class ReceiptDataHelperSpec extends BaseSpec {
 
   private def successResponse(frs: Boolean, noName: Boolean = false) = {
     Right(CustomerDetails(
-      if(noName) None else Some("Test"), if(noName) None else Some("Name"), None, None, frs, isInsolvent = false, None
+      if(noName) None else Some("Test"), if(noName) None else Some("Name"), None, None, frs, isInsolvent = false, None, None, None
     ))
   }
 

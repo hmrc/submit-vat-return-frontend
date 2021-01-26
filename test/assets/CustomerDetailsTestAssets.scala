@@ -27,11 +27,13 @@ object CustomerDetailsTestAssets {
     tradingName =  Some("ABC Solutions"),
     organisationName =  Some("ABCL"),
     isInsolvent = false,
-    continueToTrade = Some(true)
+    continueToTrade = Some(true),
+    insolvencyType = Some("03"),
+    insolvencyDate = Some("2018-01-01")
   )
 
   val customerDetailsModelMin: CustomerDetails = CustomerDetails(
-    None, None, None, None, hasFlatRateScheme = false, isInsolvent = false, None
+    None, None, None, None, hasFlatRateScheme = false, isInsolvent = false, None, None, None
   )
 
   val customerDetailsWithFRS: CustomerDetails = CustomerDetails(
@@ -41,7 +43,20 @@ object CustomerDetailsTestAssets {
     organisationName = Some("ABCL"),
     hasFlatRateScheme = true,
     isInsolvent = false,
-    None
+    None,
+    insolvencyType = None,
+    insolvencyDate = None
+  )
+
+  val customerDetailsInsolvencyModel: CustomerDetails = CustomerDetails(
+    firstName =  Some("Test"),
+    lastName =  Some("User"),
+    tradingName =  Some("ABC Solutions"),
+    organisationName =  Some("ABCL"),
+    isInsolvent = true,
+    continueToTrade = Some(true),
+    insolvencyType = Some("03"),
+    insolvencyDate = Some("2018-02-01")
   )
 
   val customerDetailsInsolvent: CustomerDetails = customerDetailsModel.copy(isInsolvent = true, continueToTrade = Some(false))
@@ -53,7 +68,9 @@ object CustomerDetailsTestAssets {
     "organisationName" -> "ABCL",
     "hasFlatRateScheme" -> false,
     "isInsolvent" -> false,
-    "continueToTrade" -> true
+    "continueToTrade" -> true,
+    "insolvencyType" -> "03",
+    "insolvencyDate" -> "2018-01-01"
   )
 
   val customerDetailsJsonMin: JsObject = Json.obj(

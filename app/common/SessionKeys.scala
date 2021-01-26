@@ -24,6 +24,7 @@ object SessionKeys {
   val submissionYear = "submissionYear"
   val inSessionPeriodKey = "inSessionPeriodKey"
   val insolventWithoutAccessKey: String = "insolventWithoutAccess"
+  val futureInsolvencyBlock: String = "futureInsolvencyBlock"
 
   object HonestyDeclaration {
     val key = "mtdVatHonestyDeclaration"

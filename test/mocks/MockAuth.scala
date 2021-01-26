@@ -20,7 +20,7 @@ import akka.util.Timeout
 import assets.NrsTestData.IdentityDataTestData
 import base.BaseSpec
 import controllers.predicates.AuthPredicate
-import mocks.service.MockVatSubscriptionService
+import mocks.service.{MockDateService, MockVatSubscriptionService}
 import org.joda.time.DateTime
 import play.api.http.Status
 import play.api.mvc.{Action, AnyContent, Request}
@@ -35,7 +35,7 @@ import views.html.errors.{UnauthorisedAgent, UnauthorisedNonAgent}
 
 import scala.concurrent.{ExecutionContext, Future}
 
-trait MockAuth extends BaseSpec with MockVatSubscriptionService {
+trait MockAuth extends BaseSpec with MockVatSubscriptionService with MockDateService {
 
   lazy val mockAuthConnector: AuthConnector = mock[AuthConnector]
   lazy val mockEnrolmentsAuthService: EnrolmentsAuthService = new EnrolmentsAuthService(mockAuthConnector)
@@ -46,6 +46,7 @@ trait MockAuth extends BaseSpec with MockVatSubscriptionService {
   lazy val mockAuthPredicate: AuthPredicate = new AuthPredicate(
     mockEnrolmentsAuthService,
     mockVatSubscriptionService,
+    mockDateService,
     errorHandler,
     mcc,
     unauthorisedAgent,
@@ -100,8 +101,18 @@ trait MockAuth extends BaseSpec with MockVatSubscriptionService {
       lazy val result = action(insolventRequest)
 
       "return 403 (Forbidden)" in {
-        mockAuthorise(Future.successful(new ~(Some(Individual), otherEnrolment)))
+        mockAuthorise(Future.successful(new ~(Some(Individual), mtdVatEnrolment)))
         status(result) shouldBe Status.FORBIDDEN
+      }
+    }
+
+    "the user is insolvent, continuing to trade, with a future insolvencyDate" should {
+
+      lazy val result = action(futureInsolvencyRequest)
+
+      "return 500 (ISE)" in {
+        mockAuthorise(Future.successful(new ~(Some(Individual), mtdVatEnrolment)))
+        status(result) shouldBe Status.INTERNAL_SERVER_ERROR
       }
     }
   }

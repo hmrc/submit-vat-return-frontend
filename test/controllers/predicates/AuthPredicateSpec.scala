@@ -16,7 +16,10 @@
 
 package controllers.predicates
 
+import java.time.LocalDate
+
 import assets.messages.AuthMessages
+import assets.CustomerDetailsTestAssets.{customerDetailsInsolvencyModel, customerDetailsModelMin}
 import common.SessionKeys
 import mocks.MockAuth
 import org.jsoup.Jsoup
@@ -37,6 +40,8 @@ class AuthPredicateSpec extends MockAuth {
     Future.successful(Ok("hello"))
   }
 
+  val currentDate = LocalDate.of(2018,1,1)
+
   "Calling .invokeBlock" when {
 
     "user is Agent" when {
@@ -45,15 +50,99 @@ class AuthPredicateSpec extends MockAuth {
 
         "agent has delegated authority for the VRN" when {
 
-          "agent has HMRC-AS-AGENT enrolment" should {
+          "agent has HMRC-AS-AGENT enrolment" when {
 
             val authResponse = Future.successful(new ~(Some(Agent), agentServicesEnrolment))
-            lazy val result = target()(FakeRequest().withSession("CLIENT_VRN" -> "999999999"))
 
-            "allow the request through" in {
-              mockAuthoriseAsAgent(authResponse, authResponse.b)
+            "there is a value in session for future insolvency" when {
 
-              status(result) shouldBe Status.OK
+              "the value is 'true' (insolvencyDate exists and is in the future)" should {
+
+                lazy val result = target()(FakeRequest().withSession(
+                  "CLIENT_VRN" -> "999999999",
+                  SessionKeys.futureInsolvencyBlock -> "true-999999999"
+                ))
+
+                "return ISE (500)" in {
+                  mockAuthoriseAsAgent(authResponse, authResponse.b)
+                  status(result) shouldBe Status.INTERNAL_SERVER_ERROR
+                }
+              }
+
+              "the value is 'false' (insolvencyDate does not exist or has passed)" should {
+
+                lazy val result = target()(FakeRequest().withSession(
+                  "CLIENT_VRN" -> "999999999",
+                  SessionKeys.futureInsolvencyBlock -> "false-999999999"
+                ))
+
+                "return OK (200)" in {
+                  mockAuthoriseAsAgent(authResponse, authResponse.b)
+                  status(result) shouldBe Status.OK
+                }
+              }
+
+              "the value includes a different vrn to the current one" should {
+
+                lazy val result = {
+                  mockCurrentDate(currentDate)
+                  setupVatSubscriptionService(Future.successful(Right(customerDetailsModelMin)))
+                  target()(FakeRequest().withSession(
+                    "CLIENT_VRN" -> "999999999",
+                    SessionKeys.futureInsolvencyBlock -> "false-111111111"
+                  ))
+                }
+
+                "return OK (200)" in {
+                  mockAuthoriseAsAgent(authResponse, authResponse.b)
+                  status(result) shouldBe Status.OK
+                }
+
+                "overwrite the futureInsolvency flag to the session" in {
+                  session(result).get(SessionKeys.futureInsolvencyBlock) shouldBe Some("false-999999999")
+                }
+              }
+            }
+
+            "there is a value in session for future insolvency" when {
+
+              "there is an insolvencyDate in the future" should {
+
+                lazy val result = {
+                  mockAuthoriseAsAgent(authResponse, authResponse.b)
+                  mockCurrentDate(currentDate)
+                  setupVatSubscriptionService(Future.successful(Right(customerDetailsInsolvencyModel)))
+                  target()(FakeRequest().withSession(
+                    "CLIENT_VRN" -> "999999999"))
+                }
+
+                "return ISE (500)" in {
+                  status(result) shouldBe Status.INTERNAL_SERVER_ERROR
+                }
+
+                "add the futureInsolvency flag to the session" in {
+                  session(result).get(SessionKeys.futureInsolvencyBlock) shouldBe Some("true-999999999")
+                }
+              }
+
+              "they have an insolvencyDate in the past" should {
+
+                lazy val result = {
+                  mockAuthoriseAsAgent(authResponse, authResponse.b)
+                  mockCurrentDate(currentDate.plusMonths(2))
+                  setupVatSubscriptionService(Future.successful(Right(customerDetailsInsolvencyModel)))
+                  target()(FakeRequest().withSession(
+                    "CLIENT_VRN" -> "999999999"))
+                }
+
+                "return OK (200)" in {
+                  status(result) shouldBe Status.OK
+                }
+
+                "add both the insolvent and futureInsolvency flags to the session" in {
+                  session(result).get(SessionKeys.futureInsolvencyBlock) shouldBe Some("false-999999999")
+                }
+              }
             }
           }
 
@@ -153,12 +242,32 @@ class AuthPredicateSpec extends MockAuth {
           }
         }
 
-        "they do not have a value in session for their insolvency status" when {
+        "they have a value in session for future insolvency" when {
+
+          "the value is 'true' (insolvencyDate exists and is in the future)" should {
+
+            "return ISE (500)" in {
+              mockAuthorise(authResponse)
+              status(target()(futureInsolvencyRequest)) shouldBe Status.INTERNAL_SERVER_ERROR
+            }
+          }
+
+          "the value is 'false' (insolvencyDate does not exist or has passed)" should {
+
+            "return OK (200)" in {
+              mockAuthorise(authResponse)
+              status(target()(fakeRequest)) shouldBe Status.OK
+            }
+          }
+        }
+
+        "they do not have a value in session for their insolvency status or futureInsolvencyBlock" when {
 
           "they are insolvent and not continuing to trade" should {
 
             lazy val result = {
               mockAuthorise(authResponse)
+              mockCurrentDate(currentDate)
               setupVatSubscriptionService(customerInfoInsolventResponse)
               target()(FakeRequest())
             }
@@ -172,20 +281,44 @@ class AuthPredicateSpec extends MockAuth {
             }
           }
 
-          "they are permitted to trade" should {
+          "they are permitted to trade" when {
 
-            lazy val result = {
-              mockAuthorise(authResponse)
-              setupVatSubscriptionService(successCustomerInfoResponse)
-              target()(FakeRequest())
+            "they have an insolvencyDate in the future" should {
+
+              lazy val result = {
+                mockAuthorise(authResponse)
+                mockCurrentDate(currentDate)
+                setupVatSubscriptionService(Future.successful(Right(customerDetailsInsolvencyModel)))
+                target()(FakeRequest())
+              }
+
+              "return ISE (500)" in {
+                status(result) shouldBe Status.INTERNAL_SERVER_ERROR
+              }
+
+              "add both the insolvent and futureInsolvency flags to the session" in {
+                session(result).get(SessionKeys.insolventWithoutAccessKey) shouldBe Some("false")
+                session(result).get(SessionKeys.futureInsolvencyBlock) shouldBe Some("true")
+              }
             }
 
-            "return OK (200)" in {
-              status(result) shouldBe Status.OK
-            }
+            "they have an insolvencyDate in the past" should {
 
-            "add the insolvent flag to the session" in {
-              session(result).get(SessionKeys.insolventWithoutAccessKey) shouldBe Some("false")
+              lazy val result = {
+                mockAuthorise(authResponse)
+                mockCurrentDate(currentDate.plusMonths(2))
+                setupVatSubscriptionService(Future.successful(Right(customerDetailsInsolvencyModel)))
+                target()(FakeRequest())
+              }
+
+              "return OK (200)" in {
+                status(result) shouldBe Status.OK
+              }
+
+              "add both the insolvent and futureInsolvency flags to the session" in {
+                session(result).get(SessionKeys.insolventWithoutAccessKey) shouldBe Some("false")
+                session(result).get(SessionKeys.futureInsolvencyBlock) shouldBe Some("false")
+              }
             }
           }
 
