@@ -16,11 +16,14 @@
 
 package models
 
+import java.time.LocalDate
+
 import assets.CustomerDetailsTestAssets._
 import base.BaseSpec
+import mocks.service.MockDateService
 import play.api.libs.json.Json
 
-class CustomerDetailsSpec extends BaseSpec {
+class CustomerDetailsSpec extends BaseSpec with MockDateService {
 
   "CustomerDetails" should {
 
@@ -61,6 +64,33 @@ class CustomerDetailsSpec extends BaseSpec {
       customerDetailsModel.isInsolventWithoutAccess shouldBe false
       customerDetailsModel.copy(continueToTrade = Some(false)).isInsolventWithoutAccess shouldBe false
       customerDetailsModel.copy(continueToTrade = None).isInsolventWithoutAccess shouldBe false
+    }
+  }
+
+  "calling .insolvencyDateFutureUserBlocked" should {
+
+    val currentDate = LocalDate.parse("2018-01-01")
+
+    "return true when the user is insolvent, continuing to trade, insolvency type not 12 or 13, insolvency date in the future" in {
+      mockCurrentDate(currentDate)
+      customerDetailsInsolvencyModel.insolvencyDateFutureUserBlocked(currentDate) shouldBe true
+    }
+
+    "return false when the user is of a permitted insolvency type, regardless of other flags" in {
+      Seq("07", "12", "13", "14").foreach { value =>
+        mockCurrentDate(currentDate)
+        customerDetailsInsolvencyModel.copy(insolvencyType = Some(value)).insolvencyDateFutureUserBlocked(currentDate) shouldBe false
+      }
+    }
+
+    "return false when the insolvencyDate is in the past" in {
+      mockCurrentDate(currentDate)
+      customerDetailsInsolvencyModel.copy(insolvencyDate = Some("2017-12-31")).insolvencyDateFutureUserBlocked(currentDate) shouldBe false
+    }
+
+    "return false when the user has no insolvency criteria" in {
+      mockCurrentDate(currentDate)
+      customerDetailsModelMin.insolvencyDateFutureUserBlocked(currentDate) shouldBe false
     }
   }
 }
