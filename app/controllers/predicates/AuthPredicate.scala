@@ -146,7 +146,7 @@ class AuthPredicate @Inject()(authService: EnrolmentsAuthService,
               enrolments.enrolments.collectFirst {
                 case Enrolment(AuthKeys.agentEnrolmentId, EnrolmentIdentifier(_, arn) :: _, AuthKeys.activated, _) => arn
               } match {
-                case Some(arn) => insolvencySubscriptionCallAgent(block, vrn, arn)
+                case Some(arn) => block(User(vrn, Some(arn)))
                 case None =>
                   Logger.debug("[AuthPredicate][authoriseAsAgent] - Agent with no HMRC-AS-AGENT enrolment. Rendering unauthorised view.")
                   Future.successful(Forbidden(unauthorisedAgent()))
@@ -164,29 +164,6 @@ class AuthPredicate @Inject()(authService: EnrolmentsAuthService,
       case None =>
         Logger.debug(s"[AuthPredicate][authoriseAsAgent] - No Client VRN in session. Redirecting to ${appConfig.agentClientLookupStartUrl}")
         Future.successful(Redirect(appConfig.agentClientLookupStartUrl(request.uri)))
-    }
-  }
-
-  private def insolvencySubscriptionCallAgent[A](block: User[A] => Future[Result], vrn: String, arn: String)(implicit request: Request[A]) = {
-    val trueSession = s"true-$vrn"
-    val falseSession = s"false-$vrn"
-    request.session.get(SessionKeys.futureInsolvencyBlock) match {
-      case Some(`trueSession`) => Future.successful(errorHandler.showInternalServerError)
-      case Some(`falseSession`) => block(User(vrn, Some(arn)))
-      case _ =>
-        vatSubscriptionService.getCustomerDetails(vrn).flatMap {
-          case Right(details) =>
-            if (details.insolvencyDateFutureUserBlocked(dateService.now())) {
-              Logger.debug("[AuthPredicate][insolvencySubscriptionCallAgent] - Client has a future insolvencyDate, throwing ISE")
-              Future.successful(errorHandler.showInternalServerError.addingToSession(SessionKeys.futureInsolvencyBlock -> trueSession))
-            } else {
-              Logger.debug("[AuthPredicate][insolvencySubscriptionCallAgent] - Authenticated as agent")
-              block(User(vrn, Some(arn))).map(result => result.addingToSession(SessionKeys.futureInsolvencyBlock -> falseSession))
-            }
-          case _ =>
-            Logger.warn("[AuthPredicate][insolvencySubscriptionCallAgent] - Failure obtaining insolvency status from Customer Info API")
-            Future.successful(errorHandler.showInternalServerError)
-        }
     }
   }
 }

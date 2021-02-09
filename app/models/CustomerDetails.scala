@@ -38,14 +38,19 @@ case class CustomerDetails(firstName: Option[String],
   val businessName: Option[String] = if (isOrg) organisationName else userName
   val clientName: Option[String] = if (tradingName.isDefined) tradingName else businessName
 
-  val isInsolventWithoutAccess: Boolean = continueToTrade match {
-    case Some(false) => isInsolvent
+  val exemptInsolvencyTypes = Seq("07", "12", "13", "14")
+  val blockedInsolvencyTypes = Seq("08", "09", "10", "15")
+
+  val isInsolventWithoutAccess: Boolean = (isInsolvent, insolvencyType) match {
+    case (true, Some(inType)) if exemptInsolvencyTypes.contains(inType) => false
+    case (true, Some(inType)) if blockedInsolvencyTypes.contains(inType) => true
+    case (true, _) if continueToTrade.contains(false) => true
     case _ => false
   }
 
   def insolvencyDateFutureUserBlocked(today: LocalDate): Boolean =
     (isInsolvent, insolvencyType, insolvencyDate, continueToTrade) match {
-      case (_, Some(inType), _, _) if Seq("07", "12", "13", "14").contains(inType) => false
+      case (_, Some(inType), _, _) if exemptInsolvencyTypes.contains(inType) => false
       case (true, Some(_), Some(date), Some(true)) if LocalDate.parse(date).isAfter(today) => true
       case _ => false
     }
