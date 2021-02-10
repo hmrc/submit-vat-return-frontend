@@ -25,6 +25,9 @@ import play.api.libs.json.Json
 
 class CustomerDetailsSpec extends BaseSpec with MockDateService {
 
+  val exemptInsolvencyTypes: Seq[String] = customerDetailsModel.exemptInsolvencyTypes
+  val blockedInsolvencyTypes: Seq[String] = customerDetailsModel.blockedInsolvencyTypes
+
   "CustomerDetails" should {
 
     "correctly read from JSON" when {
@@ -50,34 +53,63 @@ class CustomerDetailsSpec extends BaseSpec with MockDateService {
     }
   }
 
-  "calling .isInsolventWithoutAccess" should {
+  "calling .isInsolventWithoutAccess" when {
 
-    "return true when the user is insolvent and not continuing to trade" in {
-      customerDetailsInsolvent.isInsolventWithoutAccess shouldBe true
+    "the user is insolvent and has an exempt insolvency type" should {
+
+      "return false" in {
+        exemptInsolvencyTypes.foreach { value =>
+          customerDetailsInsolvent.copy(insolvencyType = Some(value)).isInsolventWithoutAccess shouldBe false
+        }
+      }
     }
 
-    "return false when the user is insolvent but is continuing to trade" in {
-      customerDetailsInsolvent.copy(continueToTrade = Some(true)).isInsolventWithoutAccess shouldBe false
+    "the user is insolvent and has a blocked insolvency type" should {
+
+      "return true" in {
+        blockedInsolvencyTypes.foreach { value =>
+          customerDetailsInsolvent.copy(insolvencyType = Some(value)).isInsolventWithoutAccess shouldBe true
+        }
+      }
     }
 
-    "return false when the user is not insolvent, regardless of the continueToTrade flag" in {
-      customerDetailsModel.isInsolventWithoutAccess shouldBe false
-      customerDetailsModel.copy(continueToTrade = Some(false)).isInsolventWithoutAccess shouldBe false
-      customerDetailsModel.copy(continueToTrade = None).isInsolventWithoutAccess shouldBe false
+    "the user is insolvent and has an insolvency type with no associated rules" when {
+
+      "the user is continuing to trade" should {
+
+        "return false" in {
+          customerDetailsInsolvent.copy(continueToTrade = Some(true)).isInsolventWithoutAccess shouldBe false
+        }
+      }
+
+      "the user is not continuing to trade" should {
+
+        "return true" in {
+          customerDetailsInsolvent.isInsolventWithoutAccess shouldBe true
+        }
+      }
+    }
+
+    "the user is not insolvent" should {
+
+      "return false" in {
+        customerDetailsModel.isInsolventWithoutAccess shouldBe false
+      }
     }
   }
+
 
   "calling .insolvencyDateFutureUserBlocked" should {
 
     val currentDate = LocalDate.parse("2018-01-01")
 
-    "return true when the user is insolvent, continuing to trade, insolvency type not 12 or 13, insolvency date in the future" in {
+    "return true when the user is insolvent, continuing to trade, a non-exempt insolvency type, insolvency date in the future" in {
       mockCurrentDate(currentDate)
       customerDetailsInsolvencyModel.insolvencyDateFutureUserBlocked(currentDate) shouldBe true
     }
 
-    "return false when the user is of a permitted insolvency type, regardless of other flags" in {
-      Seq("07", "12", "13", "14").foreach { value =>
+    "return false when the user is of an exempt insolvency type, regardless of other flags" in {
+      exemptInsolvencyTypes.foreach { value =>
         mockCurrentDate(currentDate)
         customerDetailsInsolvencyModel.copy(insolvencyType = Some(value)).insolvencyDateFutureUserBlocked(currentDate) shouldBe false
       }
