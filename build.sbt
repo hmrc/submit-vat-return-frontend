@@ -56,7 +56,7 @@ lazy val coverageSettings: Seq[Setting[_]] = {
 val compile = Seq(
   play.sbt.PlayImport.ws,
   "uk.gov.hmrc"       %% "govuk-template"             % "5.63.0-play-26",
-  "uk.gov.hmrc"       %% "play-ui"                    % "8.21.0-play-26",
+  "uk.gov.hmrc"       %% "play-ui"                    % "9.0.0-play-26",
   "uk.gov.hmrc"       %% "bootstrap-frontend-play-26" % "3.4.0",
   "uk.gov.hmrc"       %% "play-language"              % "4.10.0-play-26",
   "uk.gov.hmrc"       %% "play-partials"              % "7.1.0-play-26",
