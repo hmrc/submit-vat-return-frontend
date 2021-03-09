@@ -101,3 +101,11 @@ textarea:focus {
     -webkit-box-shadow: inset 0 0 0 2px;
     box-shadow: inset 0 0 0 2px;
 }
+
+#global-header .header-proposition a.menu {
+  display: none;
+}
+
+.js-enabled #global-header .header-proposition #proposition-links {
+  display: block;
+}
