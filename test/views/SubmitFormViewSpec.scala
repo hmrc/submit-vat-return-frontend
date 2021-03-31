@@ -223,13 +223,13 @@ class SubmitFormViewSpec extends ViewBaseSpec {
       "have the correct row descriptions in the table" in {
 
         val expectedDescriptions = Array(
-          box1Text,
+          box1TextNIProtocol,
           box2TextNIProtocol,
-          box3Text,
-          box4Text,
-          box5Text,
+          box3TextNIProtocol,
+          box4TextNIProtocol,
+          box5TextNIProtocol,
           box6FlatRateSchemeText,
-          box7Text,
+          box7TextNIProtocol,
           box8TextNIProtocol,
           box9TextNIProtocol
         )

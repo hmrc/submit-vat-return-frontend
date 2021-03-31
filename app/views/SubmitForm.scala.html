@@ -78,6 +78,10 @@
   }
 }
 
+@niProtocolSuffix = @{
+  if(nIProtocolEnabled) ".NIProtocol" else ""
+}
+
 @mainTemplate(
     pageTitle = title,
     appConfig = appConfig,
@@ -104,17 +108,28 @@
     @formAction(action = controllers.routes.SubmitFormController.submit(periodKey)){
 
       <div class="form-group">
-        @boxRow("box-one", "box1", "confirm_submission.boxOne", "confirm_submission.boxOneDescription", "confirm_submission.boxOneAmt")
-        @if(nIProtocolEnabled) {
-          @boxRow("box-two", "box2", "confirm_submission.boxTwo", "confirm_submission.boxTwoDescription.NIProtocol", "confirm_submission.boxTwoAmt")
-        } else {
-          @boxRow("box-two", "box2", "confirm_submission.boxTwo", "confirm_submission.boxTwoDescription", "confirm_submission.boxTwoAmt")
-        }
+        @boxRow(
+          "box-one", "box1", "confirm_submission.boxOne",
+          s"confirm_submission.boxOneDescription$niProtocolSuffix", "confirm_submission.boxOneAmt"
+        )
+        @boxRow(
+          "box-two", "box2", "confirm_submission.boxTwo",
+          s"confirm_submission.boxTwoDescription$niProtocolSuffix", "confirm_submission.boxTwoAmt"
+        )
       </div>
 
-      @boxRow("box-three", "box3", "confirm_submission.boxThree", "confirm_submission.boxThreeDescription", "confirm_submission.boxThreeAmt", autoCalculated = true)
-      @boxRow("box-four", "box4", "confirm_submission.boxFour", "confirm_submission.boxFourDescription", "confirm_submission.boxFourAmt")
-      @boxRow("box-five", "box5", "confirm_submission.boxFive", "confirm_submission.boxFiveDescription", "confirm_submission.boxFiveAmt", autoCalculated = true)
+      @boxRow(
+        "box-three", "box3", "confirm_submission.boxThree",
+        s"confirm_submission.boxThreeDescription$niProtocolSuffix", "confirm_submission.boxThreeAmt", autoCalculated = true
+      )
+      @boxRow(
+        "box-four", "box4", "confirm_submission.boxFour",
+        s"confirm_submission.boxFourDescription$niProtocolSuffix", "confirm_submission.boxFourAmt"
+      )
+      @boxRow(
+        "box-five", "box5", "confirm_submission.boxFive",
+        s"confirm_submission.boxFiveDescription$niProtocolSuffix", "confirm_submission.boxFiveAmt", autoCalculated = true
+      )
       <hr>
 
       <div class="form-group grid-row">
@@ -123,19 +138,29 @@
 
       <div class="form-group">
         @if(flatRateScheme) {
-          @boxRow("box-six", "box6", "confirm_submission.boxSix", "confirm_submission.boxSixFlatRate", "confirm_submission.boxSixAmt")
+          @boxRow(
+            "box-six", "box6", "confirm_submission.boxSix",
+            "confirm_submission.boxSixFlatRate", "confirm_submission.boxSixAmt"
+          )
         } else {
-          @boxRow("box-six", "box6", "confirm_submission.boxSix", "confirm_submission.boxSixNoFlatRate", "confirm_submission.boxSixAmt")
+          @boxRow(
+            "box-six", "box6", "confirm_submission.boxSix",
+            "confirm_submission.boxSixNoFlatRate", "confirm_submission.boxSixAmt"
+          )
         }
 
-        @boxRow("box-seven", "box7", "confirm_submission.boxSeven", "confirm_submission.boxSevenDescription", "confirm_submission.boxSevenAmt")
-        @if(nIProtocolEnabled) {
-          @boxRow("box-eight", "box8", "confirm_submission.boxEight", "confirm_submission.boxEightDescription.NIProtocol", "confirm_submission.boxEightAmt")
-          @boxRow("box-nine", "box9", "confirm_submission.boxNine", "confirm_submission.boxNineDescription.NIProtocol", "confirm_submission.boxNineAmt")
-        } else {
-          @boxRow("box-eight", "box8", "confirm_submission.boxEight", "confirm_submission.boxEightDescription", "confirm_submission.boxEightAmt")
-          @boxRow("box-nine", "box9", "confirm_submission.boxNine", "confirm_submission.boxNineDescription", "confirm_submission.boxNineAmt")
-        }
+        @boxRow(
+          "box-seven", "box7", "confirm_submission.boxSeven",
+          s"confirm_submission.boxSevenDescription$niProtocolSuffix", "confirm_submission.boxSevenAmt"
+        )
+        @boxRow(
+          "box-eight", "box8", "confirm_submission.boxEight",
+          s"confirm_submission.boxEightDescription$niProtocolSuffix", "confirm_submission.boxEightAmt"
+        )
+        @boxRow(
+          "box-nine", "box9", "confirm_submission.boxNine",
+          s"confirm_submission.boxNineDescription$niProtocolSuffix", "confirm_submission.boxNineAmt"
+        )
       </div>
       <hr>
 

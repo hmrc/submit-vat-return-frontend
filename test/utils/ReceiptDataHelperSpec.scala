@@ -16,8 +16,9 @@
 
 package utils
 
-import java.time.LocalDate
+import assets.messages.SubmitFormPageMessages._
 
+import java.time.LocalDate
 import base.BaseSpec
 import models.auth.User
 import models.errors.{BadRequestError, UnknownError}
@@ -28,8 +29,8 @@ import play.api.mvc.{AnyContentAsEmpty, Cookie}
 
 class ReceiptDataHelperSpec extends BaseSpec {
 
-  val service: ReceiptDataHelper = {
-    mockAppConfig.features.nineBoxNIProtocolContentEnabled(false)
+  def service(niProtocolEnabled: Boolean = false): ReceiptDataHelper = {
+    mockAppConfig.features.nineBoxNIProtocolContentEnabled(niProtocolEnabled)
     new ReceiptDataHelper()(messagesApi, mockAppConfig)
   }
 
@@ -52,38 +53,25 @@ class ReceiptDataHelperSpec extends BaseSpec {
       dateToUse
     )
 
-  def expectedAnswers(frs: Boolean, language: Language): Seq[Answers] = { //scalastyle:ignore method.length
+  //scalastyle:off
+  def expectedAnswers(frs: Boolean, language: Language): Seq[Answers] = {
     def ifEnglishElse(ifEnglish: String, ifWelsh: String): String = if (language == EN) ifEnglish else ifWelsh
 
-    val box1Expected = ifEnglishElse(
-      "VAT you charged on sales and other supplies",
-      "TAW a godwyd gennych ar werthiannau a chyflenwadau eraill"
-    )
+    val box1Expected = ifEnglishElse(box1Text, box1TextWelsh)
+    val box1ExpectedNIProtocol = ifEnglishElse(box1TextNIProtocol, box1TextNIProtocolWelsh)
 
-    val box2Expected = ifEnglishElse(
-      "VAT you owe on goods purchased from EC countries and brought into the UK",
-      "TAW sydd arnoch ar nwyddau a brynwyd o wledydd y GE ac y daethpwyd â nhw i mewn i’r DU"
-    )
+    val box2Expected = ifEnglishElse(box2Text, box2TextWelsh)
+    val box2ExpectedNIProtocol = ifEnglishElse(box2TextNIProtocol, box2TextNIProtocolWelsh)
 
-    val box2ExpectedNIProtocol = ifEnglishElse(
-      "VAT due in this period on intra-community acquisitions of goods made in Northern Ireland from EU Member States",
-      ""
-    )
+    val box3Expected = ifEnglishElse(box3Text, box3TextWelsh)
+    val box3ExpectedNIProtocol = ifEnglishElse(box3TextNIProtocol, box3TextNIProtocolWelsh)
 
-    val box3Expected = ifEnglishElse(
-      "VAT you owe before deductions (this is the total of box 1 and 2)",
-      "TAW sydd arnoch cyn didyniadau (dyma gyfanswm blwch 1 a 2)"
-    )
+    val box4Expected = ifEnglishElse(box4Text, box4TextWelsh)
+    val box4ExpectedNIProtocol = ifEnglishElse(box4TextNIProtocol, box4TextNIProtocolWelsh)
 
-    val box4Expected = ifEnglishElse(
-      "VAT you have claimed back",
-      "TAW yr ydych wedi’i hawlio’n ôl"
-    )
+    val box5Expected = ifEnglishElse(box5Text, box5TextWelsh)
+    val box5ExpectedNIProtocol = ifEnglishElse(box5TextNIProtocol, box5TextNIProtocolWelsh)
 
-    val box5Expected = ifEnglishElse(
-      "Net VAT you owe HMRC or HMRC owes you (this is the difference between box 3 and 4)",
-      "TAW net sydd arnoch i CThEM neu sydd ar CThEM i chi (dyma’r gwahaniaeth rhwng Blychau 3 a 4)"
-    )
 
     val box6Expected = (frs, language) match {
       case (true, EN) => "Total value of sales and other supplies, including VAT"
@@ -92,30 +80,14 @@ class ReceiptDataHelperSpec extends BaseSpec {
       case (_, _) => "Cyfanswm gwerth y gwerthiannau a chyflenwadau eraill, ac eithrio TAW"
     }
 
-    val box7Expected = ifEnglishElse(
-      "Total value of purchases and other expenses, excluding VAT",
-      "Cyfanswm gwerth y pryniannau a threuliau eraill, ac eithrio TAW"
-    )
+    val box7Expected = ifEnglishElse(box7Text, box7TextWelsh)
+    val box7ExpectedNIProtocol = ifEnglishElse(box7TextNIProtocol, box7TextNIProtocolWelsh)
 
-    val box8Expected = ifEnglishElse(
-      "Total value of supplied goods to EC countries and related costs (excluding VAT)",
-      "Cyfanswm gwerth y nwyddau a gyflenwyd i wledydd y GE a chostau perthynol (ac eithrio TAW)"
-    )
+    val box8Expected = ifEnglishElse(box8Text, box8TextWelsh)
+    val box8ExpectedNIProtocol = ifEnglishElse(box8TextNIProtocol, box8TextNIProtocolWelsh)
 
-    val box8ExpectedNIProtocol = ifEnglishElse(
-      "Total value of intra-community dispatches of goods and related costs (excluding VAT) from Northern Ireland to EU Member States",
-      ""
-    )
-
-    val box9Expected = ifEnglishElse(
-      "Total value of goods purchased from EC countries and brought into the UK, as well as any related costs (excluding VAT)",
-      "Cyfanswm gwerth y nwyddau a brynwyd o wledydd y GE ac y daethpwyd â nhw i mewn i’r DU, yn ogystal ag unrhyw gostau perthynol (ac eithrio TAW)"
-    )
-
-    val box9ExpectedNIProtocol = ifEnglishElse(
-      "Total value of intra-community acquisitions of goods and related costs (excluding VAT) from Northern Ireland to EU Member States",
-      ""
-    )
+    val box9Expected = ifEnglishElse(box9Text, box9TextWelsh)
+    val box9ExpectedNIProtocol = ifEnglishElse(box9TextNIProtocol, box9TextNIProtocolWelsh)
 
     val pageTitle = ifEnglishElse(
       "You have submitted a VAT Return",
@@ -124,29 +96,31 @@ class ReceiptDataHelperSpec extends BaseSpec {
 
     Seq(Answers(
       pageTitle,
-      Seq(
-        ("box1", box1Expected, Some("£10.00"), None),
-        if(mockAppConfig.features.nineBoxNIProtocolContentEnabled()) {
-          ("box2", box2ExpectedNIProtocol, Some("£25.55"), None)
-        } else {
-          ("box2", box2Expected, Some("£25.55"), None)
-        },
-        ("box3", box3Expected, Some("£33.00"), None),
-        ("box4", box4Expected, Some("£74.00"), None),
-        ("box5", box5Expected, Some("£95.06"), None),
-        ("box6", box6Expected, Some("£1,006.00"), None),
-        ("box7", box7Expected, Some("£1,006.66"), None),
-        if(mockAppConfig.features.nineBoxNIProtocolContentEnabled()) {
-          ("box8", box8ExpectedNIProtocol, Some("£889.90"), None)
-        } else {
-          ("box8", box8Expected, Some("£889.90"), None)
-        },
-        if(mockAppConfig.features.nineBoxNIProtocolContentEnabled()) {
+      if(mockAppConfig.features.nineBoxNIProtocolContentEnabled()) {
+        Seq(
+          ("box1", box1ExpectedNIProtocol, Some("£10.00"), None),
+          ("box2", box2ExpectedNIProtocol, Some("£25.55"), None),
+          ("box3", box3ExpectedNIProtocol, Some("£33.00"), None),
+          ("box4", box4ExpectedNIProtocol, Some("£74.00"), None),
+          ("box5", box5ExpectedNIProtocol, Some("£95.06"), None),
+          ("box6", box6Expected, Some("£1,006.00"), None),
+          ("box7", box7ExpectedNIProtocol, Some("£1,006.66"), None),
+          ("box8", box8ExpectedNIProtocol, Some("£889.90"), None),
           ("box9", box9ExpectedNIProtocol, Some("£900.00"), None)
-        } else {
+        ).map((Answer.apply _).tupled(_))
+      } else {
+        Seq(
+          ("box1", box1Expected, Some("£10.00"), None),
+          ("box2", box2Expected, Some("£25.55"), None),
+          ("box3", box3Expected, Some("£33.00"), None),
+          ("box4", box4Expected, Some("£74.00"), None),
+          ("box5", box5Expected, Some("£95.06"), None),
+          ("box6", box6Expected, Some("£1,006.00"), None),
+          ("box7", box7Expected, Some("£1,006.66"), None),
+          ("box8", box8Expected, Some("£889.90"), None),
           ("box9", box9Expected, Some("£900.00"), None)
-        }
-      ).map((Answer.apply _).tupled(_))))
+        ).map((Answer.apply _).tupled(_))
+      }))
   }
 
   def expectedDeclaration(isAgent: Boolean, language: Language): Declaration = {
@@ -182,14 +156,16 @@ class ReceiptDataHelperSpec extends BaseSpec {
       "PLAY_LANG", cookieString, None, "/", None, secure = false, httpOnly = true
     )))
 
+  val welshUser: User[AnyContentAsEmpty.type] = userWithCookie(CY.languageCode)
+
   "extractReceiptData" should {
 
     "return a receipt" when {
 
       "the user is an agent, with frs and english selected" in {
-        val userToUse = agentUserWithCookie(EN.languageCode)
+        val agentUser = agentUserWithCookie(EN.languageCode)
 
-        val result = await(service.extractReceiptData(createReturnModel(true), successResponse(frs = true))(userToUse))
+        val result = await(service().extractReceiptData(createReturnModel(true), successResponse(frs = true))(agentUser))
 
         result shouldBe Right(
           ReceiptData(EN, expectedAnswers(frs = true, EN), expectedDeclaration(isAgent = true, EN))
@@ -197,9 +173,7 @@ class ReceiptDataHelperSpec extends BaseSpec {
       }
 
       "the user is an individual, without frs and welsh selected" in {
-        val userToUse = userWithCookie(CY.languageCode)
-
-        val result = await(service.extractReceiptData(createReturnModel(false), successResponse(frs = false))(userToUse))
+        val result = await(service().extractReceiptData(createReturnModel(false), successResponse(frs = false))(welshUser))
 
         result shouldBe Right(
           ReceiptData(CY, expectedAnswers(frs = false, CY), expectedDeclaration(isAgent = false, CY))
@@ -207,24 +181,30 @@ class ReceiptDataHelperSpec extends BaseSpec {
       }
 
       "the user has no language cookie" in {
-        val result = await(service.extractReceiptData(createReturnModel(false), successResponse(frs = false))(user))
+        val result = await(service().extractReceiptData(createReturnModel(false), successResponse(frs = false))(user))
 
         result shouldBe Right(
           ReceiptData(EN, expectedAnswers(frs = false, EN), expectedDeclaration(isAgent = false, EN))
         )
       }
 
-      "the NI protocol feature switch is on" in {
-
-        val service: ReceiptDataHelper = {
-          mockAppConfig.features.nineBoxNIProtocolContentEnabled(true)
-          new ReceiptDataHelper()(messagesApi, mockAppConfig)
-        }
-
-        val result = await(service.extractReceiptData(createReturnModel(false), successResponse(frs = false))(user))
+      "the NI protocol feature switch is on, with english selected" in {
+        val result = await(service(niProtocolEnabled = true).extractReceiptData(
+          createReturnModel(false), successResponse(frs = false)
+        )(user))
 
         result shouldBe Right(
           ReceiptData(EN, expectedAnswers(frs = false, EN), expectedDeclaration(isAgent = false, EN))
+        )
+      }
+
+      "the NI protocol feature switch is on, with welsh selected" in {
+        val result = await(service(niProtocolEnabled = true).extractReceiptData(
+          createReturnModel(false), successResponse(frs = false)
+        )(welshUser))
+
+        result shouldBe Right(
+          ReceiptData(CY, expectedAnswers(frs = false, CY), expectedDeclaration(isAgent = false, CY))
         )
       }
     }
@@ -236,7 +216,7 @@ class ReceiptDataHelperSpec extends BaseSpec {
       "there is an error from vat subscription" in {
         val expectedResult = BadRequestError("Bad Request", "There has been a bad request")
 
-        val result = await(service.extractReceiptData(createReturnModel(true), errorResponse)(user = implicitUser))
+        val result = await(service().extractReceiptData(createReturnModel(true), errorResponse)(user = implicitUser))
 
         result shouldBe Left(expectedResult)
       }
@@ -244,7 +224,9 @@ class ReceiptDataHelperSpec extends BaseSpec {
       "the user has no name" in {
         val expectedResult = UnknownError
 
-        val result = await(service.extractReceiptData(createReturnModel(true), successResponse(frs = true, noName = true))(user = implicitUser))
+        val result = await(service().extractReceiptData(
+          createReturnModel(true), successResponse(frs = true, noName = true)
+        )(user = implicitUser))
 
         result shouldBe Left(expectedResult)
       }
