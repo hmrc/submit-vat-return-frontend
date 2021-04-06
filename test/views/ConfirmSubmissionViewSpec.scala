@@ -20,6 +20,7 @@ import java.time.LocalDate
 
 import assets.CustomerDetailsTestAssets._
 import assets.messages.{ConfirmSubmissionMessages => viewMessages}
+import assets.messages.SubmitFormPageMessages._
 import models._
 import org.jsoup.Jsoup
 import org.jsoup.nodes.Document
@@ -163,30 +164,30 @@ class ConfirmSubmissionViewSpec extends ViewBaseSpec {
 
             "have the correct box numbers in the table" in {
               val expectedBoxes = Array(
-                viewMessages.box1Heading,
-                viewMessages.box2Heading,
-                viewMessages.box3Heading,
-                viewMessages.box4Heading,
-                viewMessages.box5Heading,
-                viewMessages.box6Heading,
-                viewMessages.box7Heading,
-                viewMessages.box8Heading,
-                viewMessages.box9Heading
+                box1,
+                box2,
+                box3,
+                box4,
+                box5,
+                box6,
+                box7,
+                box8,
+                box9
               )
               expectedBoxes.indices.foreach(i => elementText(boxElement(Selectors.boxes(i), 1)) shouldBe expectedBoxes(i))
             }
 
             "have the correct row descriptions in the table" in {
               val expectedDescriptions = Array(
-                viewMessages.box1Description,
-                viewMessages.box2Description,
-                viewMessages.box3Description,
-                viewMessages.box4Description,
-                viewMessages.box5Description,
-                viewMessages.box6DescriptionHasFRS,
-                viewMessages.box7Description,
-                viewMessages.box8Description,
-                viewMessages.box9Description
+                box1Text,
+                box2Text,
+                box3Text,
+                box4Text,
+                box5Text,
+                box6FlatRateSchemeText,
+                box7Text,
+                box8Text,
+                box9Text
               )
               expectedDescriptions.indices.foreach(i => elementText(boxElement(Selectors.boxes(i), 2)) shouldBe expectedDescriptions(i))
             }
@@ -382,15 +383,15 @@ class ConfirmSubmissionViewSpec extends ViewBaseSpec {
 
           "have the correct row descriptions in the table" in {
             val expectedDescriptions = Array(
-              viewMessages.box1Description,
-              viewMessages.box2DescriptionNIProtocol,
-              viewMessages.box3Description,
-              viewMessages.box4Description,
-              viewMessages.box5Description,
-              viewMessages.box6DescriptionHasFRS,
-              viewMessages.box7Description,
-              viewMessages.box8DescriptionNIProtocol,
-              viewMessages.box9DescriptionNIProtocol
+              box1TextNIProtocol,
+              box2TextNIProtocol,
+              box3TextNIProtocol,
+              box4TextNIProtocol,
+              box5TextNIProtocol,
+              box6FlatRateSchemeText,
+              box7TextNIProtocol,
+              box8TextNIProtocol,
+              box9TextNIProtocol
             )
             expectedDescriptions.indices.foreach(i => elementText(boxElement(Selectors.boxes(i), 2)) shouldBe expectedDescriptions(i))
           }
@@ -409,9 +410,8 @@ class ConfirmSubmissionViewSpec extends ViewBaseSpec {
       lazy val view = confirmSubmissionView(viewModel, isAgent = false, nIProtocolEnabled = false)(messages, mockAppConfig, user)
       lazy implicit val document: Document = Jsoup.parse(view.body)
 
-      s"box 6 description displays as ${viewMessages.box6DescriptionNoFRS}" in {
-        elementText(boxElement(Selectors.boxes(5), 2)) shouldBe
-          viewMessages.box6DescriptionNoFRS
+      s"box 6 description displays as ${box6NonFlatRateSchemeText}" in {
+        elementText(boxElement(Selectors.boxes(5), 2)) shouldBe box6NonFlatRateSchemeText
       }
 
     }

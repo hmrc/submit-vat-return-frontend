@@ -117,6 +117,10 @@
   }
 }
 
+@niProtocolSuffix = @{
+  if(nIProtocolEnabled) ".NIProtocol" else ""
+}
+
 @mainTemplate(
     messages("confirm_submission.title"),
     appConfig = appConfig,
@@ -142,17 +146,25 @@
 
     <dl class="form-group divider--bottom">
       <div class="form-group">
-        @boxRow("box-one", "box1", "confirm_submission.boxOne", "confirm_submission.boxOneDescription", viewModel.returnDetail.box1)
-        @if(nIProtocolEnabled) {
-          @boxRow("box-two", "box2", "confirm_submission.boxTwo", "confirm_submission.boxTwoDescription.NIProtocol", viewModel.returnDetail.box2)
-        } else {
-          @boxRow("box-two", "box2", "confirm_submission.boxTwo", "confirm_submission.boxTwoDescription", viewModel.returnDetail.box2)
-        }
+        @boxRow(
+          "box-one", "box1", "confirm_submission.boxOne",
+          s"confirm_submission.boxOneDescription$niProtocolSuffix", viewModel.returnDetail.box1
+        )
+        @boxRow(
+          "box-two", "box2", "confirm_submission.boxTwo",
+          s"confirm_submission.boxTwoDescription$niProtocolSuffix", viewModel.returnDetail.box2
+        )
       </div>
 
       <div class="form-group">
-        @boxRow("box-three", "box3", "confirm_submission.boxThree", "confirm_submission.boxThreeDescription", viewModel.returnDetail.box3)
-        @boxRow("box-four", "box4", "confirm_submission.boxFour", "confirm_submission.boxFourDescription", viewModel.returnDetail.box4)
+        @boxRow(
+          "box-three", "box3", "confirm_submission.boxThree",
+          s"confirm_submission.boxThreeDescription$niProtocolSuffix", viewModel.returnDetail.box3
+        )
+        @boxRow(
+          "box-four", "box4", "confirm_submission.boxFour",
+          s"confirm_submission.boxFourDescription$niProtocolSuffix", viewModel.returnDetail.box4
+        )
       </div>
 
       <div class="form-group">
@@ -161,7 +173,7 @@
             <strong class="bold-small">@messages("confirm_submission.boxFive")</strong>
           </dt>
           <dd class="column-one-half">
-            <strong class="bold-small">@messages("confirm_submission.boxFiveDescription")</strong>
+            <strong class="bold-small">@messages(s"confirm_submission.boxFiveDescription$niProtocolSuffix")</strong>
           </dd>
           <dd class="column-one-quarter text--right">
             <strong class="bold-small">@displayMoney(viewModel.returnDetail.box5)</strong>
@@ -176,18 +188,28 @@
     <dl class="form-group divider--bottom">
       <div class="form-group">
         @if(viewModel.returnDetail.flatRateScheme){
-          @boxRow("box-six", "box6", "confirm_submission.boxSix", "confirm_submission.boxSixFlatRate", viewModel.returnDetail.box6)
+          @boxRow(
+            "box-six", "box6", "confirm_submission.boxSix",
+            "confirm_submission.boxSixFlatRate", viewModel.returnDetail.box6
+          )
         } else {
-          @boxRow("box-six", "box6", "confirm_submission.boxSix", "confirm_submission.boxSixNoFlatRate", viewModel.returnDetail.box6)
+          @boxRow(
+            "box-six", "box6", "confirm_submission.boxSix",
+            "confirm_submission.boxSixNoFlatRate", viewModel.returnDetail.box6
+          )
         }
-          @boxRow("box-seven", "box7", "confirm_submission.boxSeven", "confirm_submission.boxSevenDescription", viewModel.returnDetail.box7)
-        @if(nIProtocolEnabled) {
-          @boxRow("box-eight", "box8", "confirm_submission.boxEight", "confirm_submission.boxEightDescription.NIProtocol", viewModel.returnDetail.box8)
-          @boxRow("box-nine", "box9", "confirm_submission.boxNine", "confirm_submission.boxNineDescription.NIProtocol", viewModel.returnDetail.box9)
-        } else {
-          @boxRow("box-eight", "box8", "confirm_submission.boxEight", "confirm_submission.boxEightDescription", viewModel.returnDetail.box8)
-          @boxRow("box-nine", "box9", "confirm_submission.boxNine", "confirm_submission.boxNineDescription", viewModel.returnDetail.box9)
-        }
+        @boxRow(
+          "box-seven", "box7", "confirm_submission.boxSeven",
+          s"confirm_submission.boxSevenDescription$niProtocolSuffix", viewModel.returnDetail.box7
+        )
+        @boxRow(
+          "box-eight", "box8", "confirm_submission.boxEight",
+          s"confirm_submission.boxEightDescription$niProtocolSuffix", viewModel.returnDetail.box8
+        )
+        @boxRow(
+          "box-nine", "box9", "confirm_submission.boxNine",
+          s"confirm_submission.boxNineDescription$niProtocolSuffix", viewModel.returnDetail.box9
+        )
       </div>
     </dl>
 

@@ -26,19 +26,33 @@ object SubmitFormPageMessages {
 
   val box1 = "Box 1"
   val box1Text = "VAT you charged on sales and other supplies"
+  val box1TextWelsh = "TAW a godwyd gennych ar werthiannau a chyflenwadau eraill"
+  val box1TextNIProtocol = "VAT due in the period on sales and other outputs"
+  val box1TextNIProtocolWelsh = "TAW sy’n ddyledus yn y cyfnod ar werthiannau ac allbynnau eraill"
 
   val box2 = "Box 2"
   val box2Text = "VAT you owe on goods purchased from EC countries and brought into the UK"
-  val box2TextNIProtocol = "VAT due in this period on intra-community acquisitions of goods made in Northern Ireland from EU Member States"
+  val box2TextWelsh = "TAW sydd arnoch ar nwyddau a brynwyd o wledydd y GE ac y daethpwyd â nhw i mewn i’r DU"
+  val box2TextNIProtocol = "VAT due in the period on acquisitions of goods made in Northern Ireland from EU Member States"
+  val box2TextNIProtocolWelsh = "TAW sy’n ddyledus yn y cyfnod ar gaffael nwyddau a wneir yng Ngogledd Iwerddon o Aelod-wladwriaethau’r UE"
 
   val box3 = "Box 3"
   val box3Text = "VAT you owe before deductions (this is the total of box 1 and 2)"
+  val box3TextWelsh = "TAW sydd arnoch cyn didyniadau (dyma gyfanswm blwch 1 a 2)"
+  val box3TextNIProtocol = "Total VAT due (this is the total of box 1 and 2)"
+  val box3TextNIProtocolWelsh = "Cyfanswm y TAW sy’n ddyledus (dyma gyfanswm blychau 1 a 2)"
 
   val box4 = "Box 4"
   val box4Text = "VAT you have claimed back"
+  val box4TextWelsh = "TAW yr ydych wedi’i hawlio’n ôl"
+  val box4TextNIProtocol = "VAT reclaimed in the period on purchases and other inputs (including acquisitions in Northern Ireland from EU member states)"
+  val box4TextNIProtocolWelsh = "TAW a adenillwyd yn y cyfnod ar bryniadau a mewnbynnau eraill (gan gynnwys caffaeliadau yng Ngogledd Iwerddon o Aelod-wladwriaethau’r UE)"
 
   val box5 = "Box 5"
   val box5Text = "Net VAT you owe HMRC or HMRC owes you (this is the difference between box 3 and 4)"
+  val box5TextWelsh = "TAW net sydd arnoch i CThEM neu sydd ar CThEM i chi (dyma’r gwahaniaeth rhwng Blychau 3 a 4)"
+  val box5TextNIProtocol = "Net VAT to pay to HMRC or reclaim (this is the difference between box 3 and 4)"
+  val box5TextNIProtocolWelsh = "TAW net i dalu i CThEM neu ei hadennill (dyma’r gwahaniaeth rhwng blychau 3 a 4)"
 
   val additionalInformation = "Additional information"
 
@@ -48,14 +62,21 @@ object SubmitFormPageMessages {
 
   val box7 = "Box 7"
   val box7Text = "Total value of purchases and other expenses, excluding VAT"
+  val box7TextWelsh = "Cyfanswm gwerth y pryniannau a threuliau eraill, ac eithrio TAW"
+  val box7TextNIProtocol = "Total value of purchases and all other inputs excluding any VAT"
+  val box7TextNIProtocolWelsh = "Cyfanswm gwerth y pryniadau a’r holl fewnbynnau eraill, heb gynnwys TAW"
 
   val box8 = "Box 8"
   val box8Text = "Total value of supplied goods to EC countries and related costs (excluding VAT)"
-  val box8TextNIProtocol = "Total value of intra-community dispatches of goods and related costs (excluding VAT) from Northern Ireland to EU Member States"
+  val box8TextWelsh = "Cyfanswm gwerth y nwyddau a gyflenwyd i wledydd y GE a chostau perthynol (ac eithrio TAW)"
+  val box8TextNIProtocol = "Total value of dispatches of goods and related costs (excluding VAT) from Northern Ireland to EU Member States"
+  val box8TextNIProtocolWelsh = "Cyfanswm gwerth anfon y nwyddau a’r costau cysylltiedig (ac eithrio TAW) o Ogledd Iwerddon i Aelod-wladwriaethau’r UE"
 
   val box9 = "Box 9"
   val box9Text = "Total value of goods purchased from EC countries and brought into the UK, as well as any related costs (excluding VAT)"
-  val box9TextNIProtocol = "Total value of intra-community acquisitions of goods and related costs (excluding VAT) from Northern Ireland to EU Member States"
+  val box9TextWelsh = "Cyfanswm gwerth y nwyddau a brynwyd o wledydd y GE ac y daethpwyd â nhw i mewn i’r DU, yn ogystal ag unrhyw gostau perthynol (ac eithrio TAW)"
+  val box9TextNIProtocol = "Total value of acquisitions of goods and related costs (excluding VAT) made in Northern Ireland from EU Member States"
+  val box9TextNIProtocolWelsh = "Cyfanswm gwerth caffael y nwyddau a’r costau cysylltiedig (ac eithrio TAW) a wneir yng Ngogledd Iwerddon o Aelod-wladwriaethau’r UE"
 
   val nextScreen = "You can submit your return on the next screen."
 
