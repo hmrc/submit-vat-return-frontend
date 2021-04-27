@@ -121,3 +121,7 @@ display: Flex
   right: 4px;
   bottom: 4px;
 }
+
+.hmrc-currency-input__unit {
+  pointer-events: none;
+}
