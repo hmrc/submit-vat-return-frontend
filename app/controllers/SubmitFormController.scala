@@ -142,7 +142,7 @@ class SubmitFormController @Inject()(mcc: MessagesControllerComponents,
                 )).addingToSession(SessionKeys.viewModel -> Json.toJson(viewModel).toString())
 
               } else {
-                Logger.debug("[SubmitFormController][renderViewWithoutSessionData] " +
+                Logger.warn("[SubmitFormController][renderViewWithoutSessionData] " +
                   s"Obligation end date for period $periodKey has not yet passed.")
                 errorHandler.showBadRequestError
               }
@@ -234,7 +234,7 @@ class SubmitFormController @Inject()(mcc: MessagesControllerComponents,
                   .addingToSession(SessionKeys.returnData -> Json.toJson(sessionModel).toString())
                   .removingFromSession(SessionKeys.viewModel)
               } else {
-                Logger.debug(s"[SubmitFormController][submitSuccess] Obligation end date for period $periodKey has not yet passed.")
+                Logger.warn(s"[SubmitFormController][submitSuccess] Obligation end date for period $periodKey has not yet passed.")
                 errorHandler.showBadRequestError
               }
             case _ =>
