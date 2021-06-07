@@ -31,11 +31,12 @@ hmrcReportTechnicalIssue: HmrcReportTechnicalIssue,
 trackingConsentSnippet: TrackingConsentSnippet)
 
 @(pageTitle: String,
+  appConfig: AppConfig,
   serviceName: Option[String] = None,
   showLogout: Boolean = true,
   feedbackOnSignOut: Boolean = true,
   serviceInfoContent: Html = HtmlFormat.empty,
-  user: Option[User[_]] = None)(mainContent: Html)(implicit request: Request[_], messages: Messages, appConfig: AppConfig)
+  user: Option[User[_]] = None)(mainContent: Html)(implicit request: Request[_], messages: Messages)
 
 @titleServiceName = @{
   user.fold(messages("navTitle.vat"))(u => if(u.isAgent) messages("navTitle.agent") else messages("navTitle.nonAgent"))
