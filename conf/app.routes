@@ -20,3 +20,6 @@ GET        /sign-out                            controllers.SignOutController.si
 GET        /time-out                            controllers.SignOutController.timeout
 
 GET        /language/:lang                      controllers.LanguageController.switchToLanguage(lang: String)
+
+->         /govuk-frontend                                   govuk.Routes
+->         /hmrc-frontend                                    hmrcfrontend.Routes
