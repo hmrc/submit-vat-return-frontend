@@ -105,7 +105,7 @@ serviceUrl = Some("#"),
 navigation =
 if(showLogout)
 Some(Seq(HeaderNavigation(
-text = Some(messages("base.signOut")),
+text = Some(messages("common.signOut")),
 href = Some(routes.SignOutController.signOut(feedbackOnSignOut).url)
 )))
 else None
@@ -120,7 +120,7 @@ else None
 }
 
 @govukLayout(
-pageTitle = Some(messages("base.pageTitle", pageTitle, titleServiceName)),
+pageTitle = Some(messages("common.pageTitle", pageTitle, titleServiceName)),
 headBlock = Some(head),
 headerBlock = Some(header),
 beforeContentBlock = Some(beforeContentHtml),

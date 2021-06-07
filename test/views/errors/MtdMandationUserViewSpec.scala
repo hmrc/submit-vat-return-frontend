@@ -34,9 +34,9 @@ class MtdMandationUserViewSpec extends ViewBaseSpec {
 
     object Selectors {
       val serviceName = ".header__menu__proposition-name"
-      val pageHeading = "#content article h1"
-      val instructions = "#content article p"
-      val instructionsLink = "#content article a"
+      val pageHeading = "#content > h1"
+      val instructions = "#content > p"
+      val instructionsLink = "#content > a"
     }
 
     "the user is a non agent" should {
