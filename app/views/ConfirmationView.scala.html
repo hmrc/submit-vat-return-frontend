@@ -21,7 +21,8 @@
 
 @this(mainTemplate: MainTemplate,
       formAction: FormWithCSRF,
-      govukPanel: GovukPanel)
+      govukPanel: GovukPanel,
+      govukButton : GovukButton)
 
 @()(implicit messages: Messages, appConfig: AppConfig, user: User[_])
 
@@ -64,5 +65,16 @@ title = Text(messages("confirmation_view.heading")),
           @vatAccountText
         </button>
       }
+
     </div>
+
+<div class="govuk-button-group">
+
+    @govukButton(Button(
+    content = Text(messages("confirmation_view.viewVATReturn"))
+    ))
+    @govukButton(Button(
+    content = Text(vatAccountText),
+    ))
+</div>
 }
