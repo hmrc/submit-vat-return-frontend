@@ -14,50 +14,100 @@
  * limitations under the License.
  *@
 
-@import config.AppConfig
+@import play.twirl.api.HtmlFormat
+@import uk.gov.hmrc.hmrcfrontend.views.html.helpers._
 @import models.auth.User
-@import uk.gov.hmrc.play.views.html.layouts.Sidebar
-@import uk.gov.hmrc.play.views.html.layouts.Article
+@import config.AppConfig
+@import uk.gov.hmrc.hmrcfrontend.views.config.StandardBetaBanner
 
-@this(govUkWrapper: GovUkWrapper,
-      article: Article,
-      sidebar: Sidebar)
+@this(govukLayout: GovukLayout,
+hmrcLanguageSelect: HmrcLanguageSelect,
+hmrcTimeoutDialog: HmrcTimeoutDialog,
+standardBetaBanner: StandardBetaBanner,
+govukHeader: GovukHeader,
+hmrcStandardHeader: HmrcStandardHeader,
+hmrcStandardFooter: HmrcStandardFooter,
+hmrcReportTechnicalIssue: HmrcReportTechnicalIssue,
+hmrcTrackingConsentSnippet: HmrcTrackingConsentSnippet)
 
 @(pageTitle: String,
   appConfig: AppConfig,
-  sidebarLinks: Option[Html] = None,
-  contentHeader: Option[Html] = None,
-  bodyClasses: Option[String] = None,
-  mainClass: Option[String] = None,
-  showSignOut: Boolean = true,
+  serviceName: Option[String] = None,
+  showLogout: Boolean = true,
   feedbackOnSignOut: Boolean = true,
-  scriptElem: Option[Html] = None,
-  user: Option[User[_]] = None
-)(mainContent: Html)(implicit request: Request[_], messages: Messages)
+  serviceInfoContent: Html = HtmlFormat.empty,
+  user: Option[User[_]] = None)(mainContent: Html)(implicit request: Request[_], messages: Messages)
 
-@serviceInfoContent = {}
-
-@sidebarContent = {
-  @if(sidebarLinks.isDefined) {
-    @sidebar(sidebarLinks.get, Some("sidebar"))
-  }
+@titleServiceName = @{
+  user.fold(messages("navTitle.vat"))(u => if(u.isAgent) messages("navTitle.agent") else messages("navTitle.nonAgent"))
 }
 
-@titleServiceName = {@{
-  user.fold(messages("navTitle.mtdfv"))(u => if(u.isAgent) messages("navTitle.agent") else messages("navTitle.nonAgent"))
-}}
+@scripts = {
+ <script src='@routes.Assets.at("lib/govuk-frontend/govuk/all.js")'></script>
+ <script src='@routes.Assets.at("lib/hmrc-frontend/hmrc/all.js")'></script>
+ <script>window.GOVUKFrontend.initAll();</script>
+ <script>window.HMRCFrontend.initAll();</script>
+}
 
-@govUkWrapper(
-  appConfig = appConfig,
-  title = messages("common.pageTitle", pageTitle, titleServiceName),
-  mainClass = mainClass,
-  bodyClasses = bodyClasses,
-  sidebar = sidebarContent,
-  contentHeader = contentHeader,
-  mainBody = article(mainContent),
-  serviceInfoContent = serviceInfoContent,
-  showSignOut = showSignOut,
-  feedbackOnSignOut = feedbackOnSignOut,
-  scriptElem = scriptElem,
-  user = user
-)
+@getHelpHtml = @{
+hmrcReportTechnicalIssue(ReportTechnicalIssue(
+language = if (messages.lang.code == "cy") Cy else En
+))
+}
+
+@languageSelect = {
+ @hmrcLanguageSelect(LanguageSelect(
+  language = if (messages.lang.language == "en") En else Cy,
+  languageLinks =
+ En -> appConfig.routeToSwitchLanguage("english").url,
+ Cy -> appConfig.routeToSwitchLanguage("cymraeg").url
+ ))
+}
+
+@beforeContentHtml = {
+<div class="govuk-body govuk-!-margin-bottom-0">
+    @serviceInfoContent
+</div>
+@languageSelect
+}
+
+@head = {
+@hmrcTrackingConsentSnippet()
+
+<link rel="stylesheet" type="text/css" href='@routes.Assets.at("stylesheets/application.css")'>
+
+@if(showLogout) {
+@hmrcTimeoutDialog(TimeoutDialog(
+timeout = Some(appConfig.timeoutPeriod),
+countdown = Some(appConfig.timeoutCountdown),
+signOutUrl = Some(routes.SignOutController.signOut(feedbackOnSignOut).url),
+keepAliveUrl = Some("#"),
+signOutButtonText = Some(messages("base.signOut"))
+))
+}
+}
+
+@header = @{
+hmrcStandardHeader(
+    serviceName = Some(titleServiceName),
+    signOutUrl = if(showLogout) Some(routes.SignOutController.signOut(feedbackOnSignOut).url) else None,
+    phaseBanner = Some(standardBetaBanner(url = appConfig.betaFeedbackUrl)),
+    displayHmrcBanner = false
+    )
+}
+
+@content = {
+<div id="content" class="govuk-!-margin-bottom-6">
+    @mainContent
+</div>
+@getHelpHtml
+}
+
+@govukLayout(
+pageTitle = Some(messages("common.pageTitle", pageTitle, titleServiceName)),
+headBlock = Some(head),
+headerBlock = Some(header),
+beforeContentBlock = Some(beforeContentHtml),
+footerBlock = Some(hmrcStandardFooter(accessibilityStatementUrl = Some(appConfig.accessibilityLinkUrl))),
+bodyEndBlock = Some(scripts)
+)(content)

@@ -18,8 +18,7 @@
 @import models.auth.User
 @import views.html.templates.Heading
 
-@this(mainTemplate: MainTemplate,
-      heading: Heading)
+@this(mainTemplate: MainTemplate, heading: Heading)
 
 @()(implicit appConfig: AppConfig, messages: Messages, user: User[_])
 
@@ -29,9 +28,9 @@
   user = Some(user)
 ) {
 
-  @heading(messages("incorrect_mandation.heading"))
+<h1 class="govuk-heading-l">@messages("incorrect_mandation.heading")</h1>
 
-  <p>@messages("incorrect_mandation.paragraph")
+  <p class ="govuk-body">@messages("incorrect_mandation.paragraph")
       @if(user.isAgent) {
           @messages("incorrect_mandation.agent.text")
       } else {
@@ -40,8 +39,8 @@
   </p>
 
   @if(user.isAgent) {
-      <a href="@appConfig.agentActionUrl">@messages("incorrect_mandation.agent.client.link")</a>
+<p class ="govuk-body"><a class ="govuk-link" id="client-options-link" href="@appConfig.agentActionUrl">@messages("incorrect_mandation.agent.client.link")</a></p>
   } else {
-      <a href="@appConfig.returnDeadlinesUrl">@messages("incorrect_mandation.nonAgent.link")</a>
+<p class ="govuk-body"> <a class ="govuk-link" href="@appConfig.returnDeadlinesUrl">@messages("incorrect_mandation.nonAgent.link")</a></p>
   }
 }

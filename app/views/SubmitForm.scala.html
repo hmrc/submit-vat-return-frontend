@@ -22,7 +22,7 @@
 @import uk.gov.hmrc.play.views.html.helpers.FormWithCSRF
 @import views.html.templates.ErrorSummary
 
-@this(mainTemplate: MainTemplate,
+@this(mainTemplate: MainTemplateOriginal,
       formAction: FormWithCSRF,
       errorSummary: ErrorSummary,
       moneyInput: MoneyInput,
@@ -60,14 +60,6 @@
             </div>
         }
   </div>
-}
-
-@handleSingleError(field: Field) = {
-  @field.errors.headOption.map { error =>
-    <span class="error-message" role="tooltip">
-      @messages(error.message, error.args: _*)
-    </span>
-  }
 }
 
 @title = @{

@@ -27,17 +27,15 @@
   user = Some(user)
 ) {
 
-    <header>
-        <h1 class="heading-xlarge">@messages("submissionError.heading")</h1>
-    </header>
+    <h1 class="govuk-heading-l">@messages("submissionError.heading")</h1>
 
-    <p>@messages("submissionError.p1")</p>
+    <p class="govuk-body">@messages("submissionError.p1")</p>
 
-    <p>@messages("submissionError.p2")</p>
+    <p class="govuk-body">@messages("submissionError.p2")</p>
 
     @if(user.isAgent){
-        <a href="@appConfig.agentActionUrl">@messages("submissionError.agentLink")</a>
+    <p class ="govuk-body"><a class ="govuk-link" id="client-options-link" href ="@appConfig.agentActionUrl">@messages("submissionError.agentLink")</a></p>
     } else {
-        <a href="@appConfig.vatSummaryUrl">@messages("submissionError.userLink")</a>
+    <p class ="govuk-body"><a class ="govuk-link" href="@appConfig.vatSummaryUrl">@messages("submissionError.userLink")</a></p>
     }
 }
