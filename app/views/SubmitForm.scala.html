@@ -62,14 +62,6 @@
   </div>
 }
 
-@handleSingleError(field: Field) = {
-  @field.errors.headOption.map { error =>
-    <span class="error-message" role="tooltip">
-      @messages(error.message, error.args: _*)
-    </span>
-  }
-}
-
 @title = @{
   if(form.errors.nonEmpty) {
     messages("common.error.titlePrefix", messages("submit_form.title"))

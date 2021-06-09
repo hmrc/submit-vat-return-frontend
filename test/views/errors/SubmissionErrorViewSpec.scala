@@ -36,7 +36,7 @@ class SubmissionErrorViewSpec extends ViewBaseSpec {
       val pageHeading = "#content > h1"
       val p1 = "#content > p:nth-child(2)"
       val p2 = "#content > p:nth-child(3)"
-      val userLink = "#content > a"
+      val userLink = "#content > p > a"
     }
 
     "the user is a non agent" should {
