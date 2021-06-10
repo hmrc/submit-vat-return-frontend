@@ -4,7 +4,6 @@ navTitle.agent = Your client’s VAT details
 navTitle.mtdfv = Making Tax Digital for VAT
 navTitle.vat = VAT
 common.fullStop = .
-common.signOut = Sign out
 common.finish = Finish
 common.submit = Submit
 common.dateRangeSeparator = to

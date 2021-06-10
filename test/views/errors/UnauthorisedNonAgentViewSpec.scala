@@ -29,11 +29,10 @@ class UnauthorisedNonAgentViewSpec extends ViewBaseSpec {
   "Rendering the unauthorised page for non-agents" should {
 
     object Selectors {
-      val serviceName = ".header__menu__proposition-name"
       val pageHeading = "#content h1"
-      val instructions = "#content article p"
-      val instructionsLink = "#content article p > a"
-      val button = "#content .button"
+      val instructions = "#content p"
+      val instructionsLink = "#content p > a"
+      val button = "#content .govuk-button"
     }
 
     lazy val view = unauthorisedNonAgentView()(fakeRequest, messages, mockAppConfig)
@@ -64,4 +63,3 @@ class UnauthorisedNonAgentViewSpec extends ViewBaseSpec {
     }
   }
 }
-

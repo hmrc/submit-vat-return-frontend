@@ -33,7 +33,6 @@ class MtdMandationUserViewSpec extends ViewBaseSpec {
   "Rendering the mtd mandation user view" when {
 
     object Selectors {
-      val serviceName = ".header__menu__proposition-name"
       val pageHeading = "#content > h1"
       val instructions = "#content > p"
       val instructionsLink = "#content > p > a"
