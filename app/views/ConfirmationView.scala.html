@@ -55,26 +55,19 @@ title = Text(messages("confirmation_view.heading")),
   <h2 class="govuk-heading-m">@messages("confirmation_view.subHeading")</h2>
   <p class="govuk-body">@messages("confirmation_view.paragraph")</p>
 
-    <div id="displayFlex">
-      <a class="button" role="button" id="view-vat-return-button" href=@viewSubmittedReturnUrl>
-        @messages("confirmation_view.viewVATReturn")
-      </a>
-
-      @formAction(action = controllers.routes.ConfirmationController.submit) {
-        <button class="button" role="button" id="finish-button2" type="submit">
-          @vatAccountText
-        </button>
-      }
-
-    </div>
-
 <div class="govuk-button-group">
-
+    <div>
     @govukButton(Button(
-    content = Text(messages("confirmation_view.viewVATReturn"))
+    content = Text(messages("confirmation_view.viewVATReturn")),
+    href = Some(s"$viewSubmittedReturnUrl")
     ))
-    @govukButton(Button(
-    content = Text(vatAccountText),
-    ))
+    </div>
+    <div>
+        @formAction(action = controllers.routes.ConfirmationController.submit) {
+        @govukButton(Button(
+        content = Text(vatAccountText)
+        ))
+        }
+    </div>
 </div>
 }
