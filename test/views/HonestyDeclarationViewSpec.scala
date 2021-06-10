@@ -36,8 +36,8 @@ class HonestyDeclarationViewSpec extends ViewBaseSpec {
       lazy implicit val document: Document = Jsoup.parse(view.body)
 
       "have the back link" in {
-        element(".link-back").text() shouldBe messages("common.back")
-        element(".link-back").attr("href") shouldBe mockAppConfig.returnDeadlinesUrl
+        elementText(".govuk-back-link") shouldBe messages("common.back")
+        element(".govuk-back-link").attr("href") shouldBe mockAppConfig.returnDeadlinesUrl
       }
 
       s"have the correct page title 'Honesty declaration'" in {
@@ -45,15 +45,15 @@ class HonestyDeclarationViewSpec extends ViewBaseSpec {
       }
 
       s"have the title ${messages("honesty_declaration.title")}" in {
-        element("#page-heading").text() shouldBe messages("honesty_declaration.title")
+        elementText("#content h1") shouldBe messages("honesty_declaration.title")
       }
 
       "display no error heading" in {
-        elementExists("#error-summary-display") shouldBe false
+        elementExists(".govuk-error-summary") shouldBe false
       }
 
       "display no error message" in {
-        elementExists(".error-message") shouldBe false
+        elementExists(".govuk-error-message") shouldBe false
       }
 
       "has the checkbox unchecked" in {
@@ -61,11 +61,11 @@ class HonestyDeclarationViewSpec extends ViewBaseSpec {
       }
 
       "have the correct declaration" in {
-        element(".multiple-choice > label").text() shouldBe messages("honesty_declaration.statement")
+        elementText(".govuk-checkboxes__item:nth-of-type(1) > label") shouldBe messages("honesty_declaration.statement")
       }
 
       "have a continue button" in {
-        element(".button").attr("value") shouldBe messages("common.continue")
+        elementText(".govuk-button") shouldBe messages("common.continue")
       }
 
       "have the correct action attributed to the form" in {
@@ -83,8 +83,8 @@ class HonestyDeclarationViewSpec extends ViewBaseSpec {
       lazy implicit val document: Document = Jsoup.parse(view.body)
 
       "have the back link" in {
-        element(".link-back").text() shouldBe messages("common.back")
-        element(".link-back").attr("href") shouldBe mockAppConfig.returnDeadlinesUrl
+        elementText(".govuk-back-link") shouldBe messages("common.back")
+        element(".govuk-back-link").attr("href") shouldBe mockAppConfig.returnDeadlinesUrl
       }
 
       s"have the correct page title 'Honesty declaration'" in {
@@ -92,15 +92,15 @@ class HonestyDeclarationViewSpec extends ViewBaseSpec {
       }
 
       s"have the title ${messages("honesty_declaration.title")}" in {
-        element("#page-heading").text() shouldBe messages("honesty_declaration.title")
+        elementText("#content h1") shouldBe messages("honesty_declaration.title")
       }
 
       "display the error heading" in {
-        elementExists("#error-summary-display") shouldBe false
+        elementExists(".govuk-error-summary") shouldBe false
       }
 
       "display the error message" in {
-        elementExists(".error-message") shouldBe false
+        elementExists(".govuk-error-message") shouldBe false
       }
 
       "has the checkbox unchecked" in {
@@ -108,11 +108,11 @@ class HonestyDeclarationViewSpec extends ViewBaseSpec {
       }
 
       "have the correct declaration" in {
-        element(".multiple-choice > label").text() shouldBe messages("honesty_declaration.agentStatement")
+        elementText(".govuk-checkboxes__item:nth-of-type(1) > label") shouldBe messages("honesty_declaration.agentStatement")
       }
 
       "have a continue button" in {
-        element(".button").attr("value") shouldBe messages("common.continue")
+        elementText(".govuk-button") shouldBe messages("common.continue")
       }
 
       "have the correct action attributed to the form" in {
@@ -135,20 +135,20 @@ class HonestyDeclarationViewSpec extends ViewBaseSpec {
     }
 
     "have the back link" in {
-      element(".link-back").text() shouldBe messages("common.back")
-      element(".link-back").attr("href") shouldBe mockAppConfig.returnDeadlinesUrl
+      elementText(".govuk-back-link") shouldBe messages("common.back")
+      element(".govuk-back-link").attr("href") shouldBe mockAppConfig.returnDeadlinesUrl
     }
 
     s"have the title ${messages("honesty_declaration.title")}" in {
-      element("#page-heading").text() shouldBe messages("honesty_declaration.title")
+      elementText("#content h1") shouldBe messages("honesty_declaration.title")
     }
 
     "display the error heading" in {
-      elementText("#error-summary-display") shouldBe s"${messages("error.summary.title")} ${messages("honesty_declaration.required")}"
+      elementText(".govuk-error-summary") shouldBe s"${messages("error.summary.title")} ${messages("honesty_declaration.required")}"
     }
 
     "display the error message" in {
-      elementText(".error-message") shouldBe messages("common.error") + " " + messages("honesty_declaration.required")
+      elementText(".govuk-error-message") shouldBe messages("common.error") + " " + messages("honesty_declaration.required")
     }
 
     "has the checkbox unchecked" in {
@@ -156,11 +156,11 @@ class HonestyDeclarationViewSpec extends ViewBaseSpec {
     }
 
     "have the correct declaration" in {
-      element(".multiple-choice > label").text() shouldBe messages("honesty_declaration.statement")
+      elementText(".govuk-checkboxes__item:nth-of-type(1) > label") shouldBe messages("honesty_declaration.statement")
     }
 
     "have a continue button" in {
-      element(".button").attr("value") shouldBe messages("common.continue")
+      elementText(".govuk-button") shouldBe messages("common.continue")
     }
 
     "have the correct action attributed to the form" in {
