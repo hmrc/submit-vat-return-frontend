@@ -143,10 +143,6 @@ confirmation_view.viewAccount = Bwrw golwg dros eich cyfrif TAW
 confirmation_view.viewVATReturn = Bwrw golwg dros y Ffurflen TAW
 confirmation_view.viewClientAccount = Yn ôl i fanylion y cleient
 
-breadcrumbs.yourVatDetails = Eich manylion TAW
-breadcrumbs.submitVatReturn = Cyflwyno Ffurflen TAW
-breadcrumbs.submitReturnForDate = Cyflwyno Ffurflen TAW {0}
-
 incorrect_mandation.title = Cyflwyno Ffurflen TAW
 incorrect_mandation.heading = Mae’r busnes yn cyflwyno Ffurflenni TAW drwy ddefnyddio’r cynllun Troi Treth yn Ddigidol
 incorrect_mandation.paragraph = Mae’r busnes wedi cofrestru ar gyfer y gwasanaeth Troi Treth yn Ddigidol.

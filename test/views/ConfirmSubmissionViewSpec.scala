@@ -36,30 +36,25 @@ class ConfirmSubmissionViewSpec extends ViewBaseSpec {
       "#box-four", "#box-five", "#box-six",
       "#box-seven", "#box-eight", "#box-nine"
     )
-    val backLink = "#content > article > a"
-    val returnTotalHeading = "#content > article > section > section > div > h3"
-    val returnDueDate = "#content > article > section > section > div > p"
-    val changeReturnLink = "#content > article > section > section > div > a"
+    val backLink = "#content > a"
+    val returnTotalHeading = "#content > h2:nth-child(10)"
+    val returnDueDate = "#content > h1 > span.govuk-caption-m"
+    val changeReturnLink = "#change"
     val submitVatReturnHeading = "#content > article > section > h3.bold-medium"
     val submitReturnInformation = "#content > article > section > p"
-    val submitButton = "#content > article > section > form > button"
+    val submitButton = "#content > form > button"
 
-    val breadcrumbOne = "div.breadcrumbs li:nth-of-type(1)"
-    val breadcrumbOneLink = "div.breadcrumbs li:nth-of-type(1) a"
-    val breadcrumbTwo = "div.breadcrumbs li:nth-of-type(2)"
-    val breadcrumbTwoLink = "div.breadcrumbs li:nth-of-type(2) a"
-    val breadcrumbCurrentPage = "div.breadcrumbs li:nth-of-type(3)"
-    val declarationHeader = "#content > article > section > div > h3"
-    val nonAgentDeclarationText = "#content > article > section > div.notice.form-group > strong"
-    val agentDeclarationText = "#content > article > section > p"
-    val noticeImage = "#content > article > section > div.notice.form-group > i"
-    val noticeText = "#content > article > section > div.notice.form-group > i > span"
+    val declarationHeader = "#content > h2.govuk-heading-m"
+    val nonAgentDeclarationText = "#content > div > strong"
+    val agentDeclarationText = "#content > p:nth-child(15)"
+    val noticeImage = "#content > div > span"
+    val noticeText = "#content > div > strong > span"
 
-    val warningHeader = "div.grid-row.panel.panel-border-wide > p:nth-child(1)"
-    val listHeader = "div.grid-row.panel.panel-border-wide > p:nth-child(2)"
-    val listItem1 = "div.grid-row.panel.panel-border-wide > ul > li:nth-child(1)"
-    val listItem2 = "div.grid-row.panel.panel-border-wide > ul > li:nth-child(2)"
-    val bottomText = "div.grid-row.panel.panel-border-wide > p:nth-child(4)"
+    val warningHeader = "#content > div.govuk-inset-text > p:nth-child(1)"
+    val listHeader = "#content > div.govuk-inset-text > p:nth-child(2)"
+    val listItem1 = "#content > div.govuk-inset-text > ul > li:nth-child(1)"
+    val listItem2 = "#content > div.govuk-inset-text > ul > li:nth-child(2)"
+    val bottomText = "#content > div.govuk-inset-text > p:nth-child(4)"
   }
 
   def boxElement(box: String, column: Int): String = {
@@ -143,11 +138,11 @@ class ConfirmSubmissionViewSpec extends ViewBaseSpec {
             }
 
             s"the smaller ${viewMessages.returnDueDate} heading" in {
-              elementText("#content > article > section > h1 > p") shouldBe s"${viewMessages.returnDueDate} 12 May 2019"
+              elementText("#content > h1 > span.govuk-caption-m") shouldBe s"${viewMessages.returnDueDate} 12 May 2019"
             }
 
             s"the heading is displayed as ${viewMessages.heading}" in {
-              elementText("#content > article > section > h1 > span") shouldBe viewMessages.heading
+              elementText("#content > h1 > span.govuk-caption-xl") shouldBe viewMessages.heading
             }
 
             "the obligation period is displayed" in {
@@ -237,7 +232,7 @@ class ConfirmSubmissionViewSpec extends ViewBaseSpec {
               "display the warning notice which" should {
 
                 "display the image" in {
-                  element(Selectors.noticeImage).hasClass("icon icon-important") shouldBe true
+                  element(Selectors.noticeImage).hasClass("govuk-warning-text__icon") shouldBe true
                 }
 
                 "display the hidden text" in {
@@ -246,11 +241,11 @@ class ConfirmSubmissionViewSpec extends ViewBaseSpec {
               }
 
               "display the correct text" in {
-                elementText(Selectors.nonAgentDeclarationText) shouldBe viewMessages.nonAgentDeclarationText
+                elementText(Selectors.nonAgentDeclarationText) shouldBe viewMessages.warningNonAgentDeclarationText
               }
 
               "display the text in bold" in {
-                element(Selectors.nonAgentDeclarationText).hasClass("bold-small") shouldBe true
+                element(Selectors.nonAgentDeclarationText).hasClass("govuk-warning-text__text") shouldBe true
               }
             }
 
@@ -431,10 +426,6 @@ class ConfirmSubmissionViewSpec extends ViewBaseSpec {
         document.title() shouldBe viewMessages.agentTitle
       }
 
-      "not render breadcrumbs" in {
-        document.select(Selectors.breadcrumbOne) shouldBe empty
-      }
-
       "display the correct declaration which" should {
 
         "display the correct text" in {
@@ -442,7 +433,7 @@ class ConfirmSubmissionViewSpec extends ViewBaseSpec {
         }
 
         "not display the text in bold" in {
-          element(Selectors.agentDeclarationText).hasClass("bold-small") shouldBe false
+          element(Selectors.agentDeclarationText).hasClass("govuk-body") shouldBe true
         }
       }
     }
