@@ -16,9 +16,8 @@
 
 @import config.AppConfig
 @import models.auth.User
-@import views.html.templates.Heading
 
-@this(mainTemplate: MainTemplate, heading: Heading)
+@this(mainTemplate: MainTemplate)
 
 @()(implicit appConfig: AppConfig, messages: Messages, user: User[_])
 
