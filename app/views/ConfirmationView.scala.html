@@ -42,6 +42,16 @@
   }
 }
 
+@vatSummaryUrl = @{
+    if(user.isAgent){
+    appConfig.manageClientUrl
+    } else {
+    appConfig.vatSummaryUrl
+}
+}
+
+
+
 @mainTemplate(
   messages("confirmation_view.title"),
   appConfig = appConfig,
@@ -56,18 +66,15 @@ title = Text(messages("confirmation_view.heading")),
   <p class="govuk-body">@messages("confirmation_view.paragraph")</p>
 
 <div class="govuk-button-group">
-    <div>
+
     @govukButton(Button(
     content = Text(messages("confirmation_view.viewVATReturn")),
     href = Some(s"$viewSubmittedReturnUrl")
     ))
+    @govukButton(Button(
+    content = Text(vatAccountText),
+    href = Some(vatSummaryUrl)
+    ))
     </div>
-    <div>
-        @formAction(action = controllers.routes.ConfirmationController.submit) {
-        @govukButton(Button(
-        content = Text(vatAccountText)
-        ))
-        }
-    </div>
-</div>
+
 }
