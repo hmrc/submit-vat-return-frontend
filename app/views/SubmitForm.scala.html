@@ -27,6 +27,7 @@
       displayDate: DisplayDate,
       formAction: FormWithCSRF,
       govukErrorSummary: GovukErrorSummary,
+      govukInput : GovukInput,
       govukBackLink: GovukBackLink,
       govukButton: GovukButton)
 
@@ -99,7 +100,15 @@
               @messages(s"confirm_submission.boxOneDescription$niProtocolSuffix")
           </dd>
           <dd class="govuk-summary-list__actions govuk-hint">
-              Amount
+              @govukInput(Input(
+                id = "cost",
+                name = "cost",
+                classes = "govuk-input--width-5",
+                spellcheck = Some(false),
+                prefix = Some(PrefixOrSuffix(
+                  content = Text("£")
+                ))
+              ))
           </dd>
         </div>
         <div class="govuk-summary-list__row" id="box-two">
@@ -110,7 +119,15 @@
               @messages(s"confirm_submission.boxTwoDescription$niProtocolSuffix")
           </dd>
           <dd class="govuk-summary-list__actions govuk-hint">
-              Amount
+              @govukInput(Input(
+                id = "cost",
+                name = "cost",
+                classes = "govuk-input--width-5",
+                spellcheck = Some(false),
+                prefix = Some(PrefixOrSuffix(
+                    content = Text("£")
+                ))
+              ))
           </dd>
         </div>
         <div class="govuk-summary-list__row" id="box-three">
@@ -132,7 +149,15 @@
                 @messages(s"confirm_submission.boxFourDescription$niProtocolSuffix")
             </dd>
             <dd class="govuk-summary-list__actions govuk-hint">
-                Amount
+                @govukInput(Input(
+                    id = "cost",
+                    name = "cost",
+                    classes = "govuk-input--width-5",
+                    spellcheck = Some(false),
+                    prefix = Some(PrefixOrSuffix(
+                        content = Text("£")
+                    ))
+                ))
             </dd>
         </div>
         <div class="govuk-summary-list__row" id="box-five">
@@ -161,7 +186,15 @@
                 @messages(s"confirm_submission$boxSixSubmissionSuffix")
             </dd>
             <dd class="govuk-summary-list__actions govuk-hint">
-                Amount
+                @govukInput(Input(
+                    id = "cost",
+                    name = "cost",
+                    classes = "govuk-input--width-5",
+                    spellcheck = Some(false),
+                    prefix = Some(PrefixOrSuffix(
+                        content = Text("£")
+                    ))
+                ))
             </dd>
         </div>
         <div class="govuk-summary-list__row" id="box-seven">
@@ -172,7 +205,15 @@
                 @messages(s"confirm_submission.boxSevenDescription$niProtocolSuffix")
             </dd>
             <dd class="govuk-summary-list__actions govuk-hint">
-                Amount
+                @govukInput(Input(
+                    id = "cost",
+                    name = "cost",
+                    classes = "govuk-input--width-5",
+                    spellcheck = Some(false),
+                    prefix = Some(PrefixOrSuffix(
+                        content = Text("£")
+                    ))
+                ))
             </dd>
         </div>
         <div class="govuk-summary-list__row" id="box-eight">
@@ -183,7 +224,15 @@
                 @messages(s"confirm_submission.boxEightDescription$niProtocolSuffix")
             </dd>
             <dd class="govuk-summary-list__actions govuk-hint">
-                Amount
+                @govukInput(Input(
+                    id = "cost",
+                    name = "cost",
+                    classes = "govuk-input--width-5",
+                    spellcheck = Some(false),
+                    prefix = Some(PrefixOrSuffix(
+                        content = Text("£")
+                    ))
+                ))
             </dd>
         </div>
         <div class="govuk-summary-list__row" id="box-nine">
@@ -194,7 +243,15 @@
                 @messages(s"confirm_submission.boxNineDescription$niProtocolSuffix")
             </dd>
             <dd class="govuk-summary-list__actions govuk-hint">
-                Amount
+                @govukInput(Input(
+                    id = "cost",
+                    name = "cost",
+                    classes = "govuk-input--width-5",
+                    spellcheck = Some(false),
+                    prefix = Some(PrefixOrSuffix(
+                        content = Text("£")
+                    ))
+                ))
             </dd>
         </div>
 
