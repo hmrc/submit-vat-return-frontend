@@ -134,27 +134,27 @@
       <div class="govuk-summary-list_row" id="box-one">
           <dt class="govuk-summary-list__key govuk-hint">@messages("confirm_submission.boxOne")</dt>
           <dd class="govuk-summary-list__value govuk-hint">@messages(s"confirm_submission.boxOneDescription$niProtocolSuffix")</dd>
-          <dd class="govuk-summary-list__value govuk-hint">@displayMoney(viewModel.returnDetail.box1)</dd>
+          <dd class="govuk-summary-list__actions govuk-hint">@displayMoney(viewModel.returnDetail.box1)</dd>
       </div>
       <div class="govuk-summary-list_row" id="box-two">
           <dt class="govuk-summary-list__key govuk-hint">@messages("confirm_submission.boxTwo")</dt>
           <dd class="govuk-summary-list__value govuk-hint">@messages(s"confirm_submission.boxTwoDescription$niProtocolSuffix")</dd>
-          <dd class="govuk-summary-list__value govuk-hint">@displayMoney(viewModel.returnDetail.box2)</dd>
+          <dd class="govuk-summary-list__actions govuk-hint">@displayMoney(viewModel.returnDetail.box2)</dd>
       </div>
       <div class="govuk-summary-list_row" id="box-three">
           <dt class="govuk-summary-list__key govuk-hint">@messages("confirm_submission.boxThree")</dt>
           <dd class="govuk-summary-list__value govuk-hint">@messages(s"confirm_submission.boxThreeDescription$niProtocolSuffix")</dd>
-          <dd class="govuk-summary-list__value govuk-hint">@displayMoney(viewModel.returnDetail.box3)</dd>
+          <dd class="govuk-summary-list__actions govuk-hint">@displayMoney(viewModel.returnDetail.box3)</dd>
       </div>
       <div class="govuk-summary-list_row" id="box-four">
           <dt class="govuk-summary-list__key govuk-hint">@messages("confirm_submission.boxFour")</dt>
           <dd class="govuk-summary-list__value govuk-hint">@messages(s"confirm_submission.boxFourDescription$niProtocolSuffix")</dd>
-          <dd class="govuk-summary-list__value govuk-hint">@displayMoney(viewModel.returnDetail.box4)</dd>
+          <dd class="govuk-summary-list__actions govuk-hint">@displayMoney(viewModel.returnDetail.box4)</dd>
       </div>
       <div class="govuk-summary-list_row" id="box-five">
-          <dt class="govuk-summary-list__key govuk-hint"><strong>@messages("confirm_submission.boxFive")</strong></dt>
-          <dd class="govuk-summary-list__value govuk-hint"><strong>@messages(s"confirm_submission.boxFiveDescription$niProtocolSuffix")</strong></dd>
-          <dd class="govuk-summary-list__value govuk-hint"><strong>@displayMoney(viewModel.returnDetail.box5)</strong></dd>
+          <dt class="govuk-summary-list__key"><strong>@messages("confirm_submission.boxFive")</strong></dt>
+          <dd class="govuk-summary-list__value"><strong>@messages(s"confirm_submission.boxFiveDescription$niProtocolSuffix")</strong></dd>
+          <dd class="govuk-summary-list__actions"><strong>@displayMoney(viewModel.returnDetail.box5)</strong></dd>
       </div>
     </dl>
 
@@ -169,22 +169,22 @@
           } else {
           <dd class="govuk-summary-list__value govuk-hint">@messages("confirm_submission.boxSixNoFlatRate")</dd>
           }
-          <dd class="govuk-summary-list__value govuk-hint">@displayMoney(viewModel.returnDetail.box6)</dd>
+          <dd class="govuk-summary-list__actions govuk-hint">@displayMoney(viewModel.returnDetail.box6)</dd>
       </div>
       <div class="govuk-summary-list_row" id="box-seven">
           <dt class="govuk-summary-list__key govuk-hint">@messages("confirm_submission.boxSeven")</dt>
           <dd class="govuk-summary-list__value govuk-hint">@messages(s"confirm_submission.boxSevenDescription$niProtocolSuffix")</dd>
-          <dd class="govuk-summary-list__value govuk-hint">@displayMoney(viewModel.returnDetail.box7)</dd>
+          <dd class="govuk-summary-list__actions govuk-hint">@displayMoney(viewModel.returnDetail.box7)</dd>
       </div>
       <div class="govuk-summary-list_row" id="box-eight">
           <dt class="govuk-summary-list__key govuk-hint">@messages("confirm_submission.boxEight")</dt>
           <dd class="govuk-summary-list__value govuk-hint">@messages(s"confirm_submission.boxEightDescription$niProtocolSuffix")</dd>
-          <dd class="govuk-summary-list__value govuk-hint">@displayMoney(viewModel.returnDetail.box8)</dd>
+          <dd class="govuk-summary-list__actions govuk-hint">@displayMoney(viewModel.returnDetail.box8)</dd>
       </div>
       <div class="govuk-summary-list_row" id="box-nine">
           <dt class="govuk-summary-list__key govuk-hint">@messages("confirm_submission.boxNine")</dt>
           <dd class="govuk-summary-list__value govuk-hint">@messages(s"confirm_submission.boxNineDescription$niProtocolSuffix")</dd>
-          <dd class="govuk-summary-list__value govuk-hint">@displayMoney(viewModel.returnDetail.box9)</dd>
+          <dd class="govuk-summary-list__actions govuk-hint">@displayMoney(viewModel.returnDetail.box9)</dd>
       </div>
     </dl>
 
@@ -206,5 +206,4 @@
     @formWithCSRF(action = controllers.routes.ConfirmSubmissionController.submit(viewModel.periodKey)) {
       @govukButton(Button(content = Text(messages("confirm_submission.acceptAndSend"))))
     }
-
 }
