@@ -16,27 +16,15 @@
 
 @this()
 
-@(field: Field,
-  label: String,
-  labelHidden: Boolean = true,
-  decimalPlace: Boolean,
-  hint: Option[String] = None)()
-
-<div class="form-group @if(field.hasErrors){form-field--error}">
-
-  <label for="@field.id" class="form-label @if(labelHidden){visuallyhidden}">
-    @label
-  </label>
-
-  @hint.map { hint =>
-    <span class="form-hint">
-      @hint
-    </span>
-  }
-
-    <div class="hmrc-currency-input__wrapper">
-        <span class="hmrc-currency-input__unit" aria-hidden="true">£</span>
-        <input class="govuk-input govuk-input--width-10@if(field.hasErrors){ error-field-thin}" id="@field.id" name="@field.name" value="@field.value" type="text"
-               aria-describedby="@field.id" autocomplete="off"/>
+<div class="govuk-form-group">
+    <h1 class="govuk-label-wrapper"><label class="govuk-label govuk-label--l" for="cost">
+        What is the cost in pounds?
+    </label>
+    </h1>
+    <div class="govuk-input__wrapper">
+        <div class="govuk-input__prefix" aria-hidden="true">£</div>
+        <input class="govuk-input govuk-input--width-5" id="cost" name="cost" type="text" spellcheck="false">
     </div>
 </div>
+
+
