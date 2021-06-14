@@ -57,25 +57,20 @@ class ConfirmationViewSpec extends ViewBaseSpec {
       }
 
       s"display the paragraph text as ${viewMessages.paragraph}" in {
-        elementText("#content article p") shouldBe viewMessages.paragraph
+        elementText("#content > p") shouldBe viewMessages.paragraph
       }
 
       "display a View Return button" should {
 
         s"have the button text as ${viewMessages.button}" in {
-          elementText("#view-vat-return-button") shouldBe viewMessages.button
-        }
-
-        "have the correct redirect link" in {
-          element("#view-vat-return-button").attr("href") shouldBe
-            mockAppConfig.viewSubmittedReturnUrl + s"/$submitYear/$periodKey"
+          elementText("#content > div.govuk-button-group > a:nth-child(1)") shouldBe viewMessages.button
         }
       }
 
       "display a Finish button" should {
 
         s"have the button text as ${viewMessages.button2}" in {
-          elementText("#finish-button2") shouldBe viewMessages.button2
+          elementText("#content > div.govuk-button-group > a:nth-child(2)") shouldBe viewMessages.button2
         }
       }
     }
@@ -91,7 +86,7 @@ class ConfirmationViewSpec extends ViewBaseSpec {
       "display a View Return button" should {
 
         "have the correct redirect link" in {
-          element("#view-vat-return-button").attr("href") shouldBe mockAppConfig.viewSubmittedReturnUrl
+          element("#content > div.govuk-button-group > a:nth-child(1)").attr("href") shouldBe mockAppConfig.viewSubmittedReturnUrl
         }
       }
     }
@@ -106,7 +101,7 @@ class ConfirmationViewSpec extends ViewBaseSpec {
       "display the Agent Finish button" should {
 
         s"have the button text as ${viewMessages.agentFinishButton}" in {
-          elementText("#finish-button2") shouldBe viewMessages.agentFinishButton
+          elementText("#content > div.govuk-button-group > a:nth-child(2)") shouldBe viewMessages.agentFinishButton
         }
       }
     }
