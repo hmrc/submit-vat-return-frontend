@@ -145,10 +145,6 @@ confirmation_view.viewAccount = View your VAT account
 confirmation_view.viewVATReturn = View VAT Return
 confirmation_view.viewClientAccount = Back to client’s details
 
-breadcrumbs.yourVatDetails = Your VAT details
-breadcrumbs.submitVatReturn = Submit VAT Return
-breadcrumbs.submitReturnForDate = Submit {0} return
-
 incorrect_mandation.title = Submit VAT Return
 incorrect_mandation.heading = The business submits VAT Returns using Making Tax Digital
 incorrect_mandation.paragraph = The business has signed up to the Making Tax Digital service.

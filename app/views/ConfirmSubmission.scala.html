@@ -18,13 +18,14 @@
 @import models.auth.User
 @import views.html.templates.formatters.dates.{DisplayDateRange, DisplayDate}
 @import views.html.templates.formatters.money.DisplayMoney
-@import uk.gov.hmrc.play.views.html.helpers.FormWithCSRF
 
-@this(mainTemplate: MainTemplateOriginal,
-      formAction: FormWithCSRF,
+@this(mainTemplate: MainTemplate,
+      formWithCSRF: FormWithCSRF,
       displayMoney: DisplayMoney,
       displayDateRange: DisplayDateRange,
-      displayDate: DisplayDate)
+      displayDate: DisplayDate,
+      govukButton: GovukButton,
+      govukBackLink: GovukBackLink)
 
 @(viewModel: ConfirmSubmissionViewModel,
   isAgent: Boolean,
@@ -63,16 +64,16 @@
 }
 
 @warningDisplay(firstBoxIssue: Option[Int] = None, secondBoxIssue: Option[Int] = None) = {
-  <div class="grid-row panel panel-border-wide">
-    <p>@boxDependantMessage("header", firstBoxIssue, secondBoxIssue)</p>
-    <p>@messages("confirm_submission.warning.common.listHeading")</p>
-    <ul class="list list-bullet">
+  <div class="govuk-inset-text">
+    <p class="govuk-body">@boxDependantMessage("header", firstBoxIssue, secondBoxIssue)</p>
+    <p class="govuk-body">@messages("confirm_submission.warning.common.listHeading")</p>
+    <ul class="govuk-list govuk-list--bullet">
       <li>@messages("confirm_submission.warning.common.adjustPrevious")</li>
       <li>@boxDependantMessage("additional", secondBoxIssue)</li>
     </ul>
-    <p>
+    <p class="govuk-body">
       @messages("confirm_submission.warning.common.checkFigures.part1")
-      <a href=@controllers.routes.SubmitFormController.show(viewModel.periodKey)>
+      <a href="@controllers.routes.SubmitFormController.show(viewModel.periodKey)" class="govuk-link">
         @messages("confirm_submission.warning.common.checkFigures.part2")
       </a>
       @messages("confirm_submission.warning.common.checkFigures.part3")
@@ -89,30 +90,20 @@
   }
 }
 
-@boxRow(divID: String, formID: String, boxTitle: String, boxDescription: String, boxAmount: BigDecimal) = {
-  <div class="grid-row" id=@divID>
-    <dt class="column-one-quarter form-hint">@messages(boxTitle)</dt>
-    <dd class="column-one-half form-hint">@messages(boxDescription)</dd>
-    <dd class="column-one-quarter form-hint text--right">@displayMoney(boxAmount)</dd>
-  </div>
-}
-
 @declaration(isAgent: Boolean) = {
 
-  <div class="form-group">
-    <h3 class="bold-medium">@messages("confirm_submission.declarationHeading")</h3>
-  </div>
+    <h2 class="govuk-heading-m">@messages("confirm_submission.declarationHeading")</h2>
 
   @if(isAgent) {
-    <p>@messages("confirm_submission.agentDeclaration")</p>
+    <p class="govuk-body">@messages("confirm_submission.agentDeclaration")</p>
   } else {
 
-    <div class="notice form-group">
-      <i class="icon icon-important">
-        <span class="visually-hidden">@messages("common.warning")</span>
-      </i>
-
-      <strong class="bold-small">@messages("confirm_submission.nonAgentDeclaration")</strong>
+    <div class="govuk-warning-text">
+        <span class="govuk-warning-text__icon" aria-hidden="true">!</span>
+        <strong class="govuk-warning-text__text">
+            <span class="govuk-warning-text__assistive">@messages("common.warning")</span>
+            @messages("confirm_submission.nonAgentDeclaration")
+        </strong>
     </div>
   }
 }
@@ -121,119 +112,98 @@
   if(nIProtocolEnabled) ".NIProtocol" else ""
 }
 
-@mainTemplate(
-    messages("confirm_submission.title"),
-    appConfig = appConfig,
-    user = Some(user)
-) {
+@mainTemplate(pageTitle = messages("confirm_submission.title"), appConfig = appConfig, user = Some(user)) {
 
-  @if(!isAgent) {
-    <a class="link-back" href="@controllers.routes.SubmitFormController.show(viewModel.periodKey)">@messages("common.back")</a>
-  }
+  @govukBackLink(BackLink(
+    content = Text(messages("common.back")),
+    href = controllers.routes.SubmitFormController.show(viewModel.periodKey).url
+  ))
 
-  <section>
-    <h1 class="heading-xlarge">
-      <span class="heading-secondary">@messages("confirm_submission.heading")</span>
+    <h1 class="govuk-heading-xl">
+    <span class="govuk-caption-xl">@messages("confirm_submission.heading")</span>
         @displayDateRange(viewModel.returnDetail.start, viewModel.returnDetail.end, useShortDayFormat = true)
-      <p class="form-hint heading-small">@messages("confirm_submission.returnDueDate", displayDate(viewModel.returnDetail.due))</p>
+    <span class="govuk-caption-m">@messages("confirm_submission.returnDueDate", displayDate(viewModel.returnDetail.due))</span>
     </h1>
 
     @validationWarning
 
-    <h2 class="heading-large">@viewModel.userName</h2>
+    <h2 class="govuk-heading-l">@viewModel.userName</h2>
+    <h3 class="govuk-heading-s">@messages("confirm_submission.vatDetails")</h3>
 
-    <h3 class="bold-small form-group">@messages("confirm_submission.vatDetails")</h3>
-
-    <dl class="form-group divider--bottom">
-      <div class="form-group">
-        @boxRow(
-          "box-one", "box1", "confirm_submission.boxOne",
-          s"confirm_submission.boxOneDescription$niProtocolSuffix", viewModel.returnDetail.box1
-        )
-        @boxRow(
-          "box-two", "box2", "confirm_submission.boxTwo",
-          s"confirm_submission.boxTwoDescription$niProtocolSuffix", viewModel.returnDetail.box2
-        )
+    <dl class="govuk-summary-list govuk-summary-list--no-border">
+      <div class="govuk-summary-list_row" id="box-one">
+          <dt class="govuk-summary-list__key govuk-hint">@messages("confirm_submission.boxOne")</dt>
+          <dd class="govuk-summary-list__value govuk-hint">@messages(s"confirm_submission.boxOneDescription$niProtocolSuffix")</dd>
+          <dd class="govuk-summary-list__actions govuk-hint">@displayMoney(viewModel.returnDetail.box1)</dd>
       </div>
-
-      <div class="form-group">
-        @boxRow(
-          "box-three", "box3", "confirm_submission.boxThree",
-          s"confirm_submission.boxThreeDescription$niProtocolSuffix", viewModel.returnDetail.box3
-        )
-        @boxRow(
-          "box-four", "box4", "confirm_submission.boxFour",
-          s"confirm_submission.boxFourDescription$niProtocolSuffix", viewModel.returnDetail.box4
-        )
+      <div class="govuk-summary-list_row" id="box-two">
+          <dt class="govuk-summary-list__key govuk-hint">@messages("confirm_submission.boxTwo")</dt>
+          <dd class="govuk-summary-list__value govuk-hint">@messages(s"confirm_submission.boxTwoDescription$niProtocolSuffix")</dd>
+          <dd class="govuk-summary-list__actions govuk-hint">@displayMoney(viewModel.returnDetail.box2)</dd>
       </div>
-
-      <div class="form-group">
-        <div class="grid-row" id="box-five">
-          <dt class="column-one-quarter">
-            <strong class="bold-small">@messages("confirm_submission.boxFive")</strong>
-          </dt>
-          <dd class="column-one-half">
-            <strong class="bold-small">@messages(s"confirm_submission.boxFiveDescription$niProtocolSuffix")</strong>
-          </dd>
-          <dd class="column-one-quarter text--right">
-            <strong class="bold-small">@displayMoney(viewModel.returnDetail.box5)</strong>
-          </dd>
-        </div>
+      <div class="govuk-summary-list_row" id="box-three">
+          <dt class="govuk-summary-list__key govuk-hint">@messages("confirm_submission.boxThree")</dt>
+          <dd class="govuk-summary-list__value govuk-hint">@messages(s"confirm_submission.boxThreeDescription$niProtocolSuffix")</dd>
+          <dd class="govuk-summary-list__actions govuk-hint">@displayMoney(viewModel.returnDetail.box3)</dd>
       </div>
-
-    </dl>
-
-    <h3 class="bold-small form-group">@messages("confirm_submission.additionalInfo")</h3>
-
-    <dl class="form-group divider--bottom">
-      <div class="form-group">
-        @if(viewModel.returnDetail.flatRateScheme){
-          @boxRow(
-            "box-six", "box6", "confirm_submission.boxSix",
-            "confirm_submission.boxSixFlatRate", viewModel.returnDetail.box6
-          )
-        } else {
-          @boxRow(
-            "box-six", "box6", "confirm_submission.boxSix",
-            "confirm_submission.boxSixNoFlatRate", viewModel.returnDetail.box6
-          )
-        }
-        @boxRow(
-          "box-seven", "box7", "confirm_submission.boxSeven",
-          s"confirm_submission.boxSevenDescription$niProtocolSuffix", viewModel.returnDetail.box7
-        )
-        @boxRow(
-          "box-eight", "box8", "confirm_submission.boxEight",
-          s"confirm_submission.boxEightDescription$niProtocolSuffix", viewModel.returnDetail.box8
-        )
-        @boxRow(
-          "box-nine", "box9", "confirm_submission.boxNine",
-          s"confirm_submission.boxNineDescription$niProtocolSuffix", viewModel.returnDetail.box9
-        )
+      <div class="govuk-summary-list_row" id="box-four">
+          <dt class="govuk-summary-list__key govuk-hint">@messages("confirm_submission.boxFour")</dt>
+          <dd class="govuk-summary-list__value govuk-hint">@messages(s"confirm_submission.boxFourDescription$niProtocolSuffix")</dd>
+          <dd class="govuk-summary-list__actions govuk-hint">@displayMoney(viewModel.returnDetail.box4)</dd>
+      </div>
+      <div class="govuk-summary-list_row" id="box-five">
+          <dt class="govuk-summary-list__key"><strong>@messages("confirm_submission.boxFive")</strong></dt>
+          <dd class="govuk-summary-list__value"><strong>@messages(s"confirm_submission.boxFiveDescription$niProtocolSuffix")</strong></dd>
+          <dd class="govuk-summary-list__actions"><strong>@displayMoney(viewModel.returnDetail.box5)</strong></dd>
       </div>
     </dl>
 
-    <section class="form-group divider--bottom">
-      <div class="form-group">
-        <h3 class="bold-large">@messages("confirm_submission.returnTotal")@displayMoney(viewModel.returnDetail.box5)</h3>
-        <p>@messages("confirm_submission.returnDueDate", displayDate(viewModel.returnDetail.due))</p>
-        <a
-          href=@controllers.routes.SubmitFormController.show(viewModel.periodKey)>
+    <hr class="govuk-section-break govuk-section-break--l govuk-section-break--visible">
+    <h3 class="govuk-heading-s">@messages("confirm_submission.additionalInfo")</h3>
+
+    <dl class="govuk-summary-list govuk-summary-list--no-border">
+      <div class="govuk-summary-list_row" id="box-six">
+          <dt class="govuk-summary-list__key govuk-hint">@messages("confirm_submission.boxSix")</dt>
+          @if(viewModel.returnDetail.flatRateScheme) {
+          <dd class="govuk-summary-list__value govuk-hint">@messages("confirm_submission.boxSixFlatRate")</dd>
+          } else {
+          <dd class="govuk-summary-list__value govuk-hint">@messages("confirm_submission.boxSixNoFlatRate")</dd>
+          }
+          <dd class="govuk-summary-list__actions govuk-hint">@displayMoney(viewModel.returnDetail.box6)</dd>
+      </div>
+      <div class="govuk-summary-list_row" id="box-seven">
+          <dt class="govuk-summary-list__key govuk-hint">@messages("confirm_submission.boxSeven")</dt>
+          <dd class="govuk-summary-list__value govuk-hint">@messages(s"confirm_submission.boxSevenDescription$niProtocolSuffix")</dd>
+          <dd class="govuk-summary-list__actions govuk-hint">@displayMoney(viewModel.returnDetail.box7)</dd>
+      </div>
+      <div class="govuk-summary-list_row" id="box-eight">
+          <dt class="govuk-summary-list__key govuk-hint">@messages("confirm_submission.boxEight")</dt>
+          <dd class="govuk-summary-list__value govuk-hint">@messages(s"confirm_submission.boxEightDescription$niProtocolSuffix")</dd>
+          <dd class="govuk-summary-list__actions govuk-hint">@displayMoney(viewModel.returnDetail.box8)</dd>
+      </div>
+      <div class="govuk-summary-list_row" id="box-nine">
+          <dt class="govuk-summary-list__key govuk-hint">@messages("confirm_submission.boxNine")</dt>
+          <dd class="govuk-summary-list__value govuk-hint">@messages(s"confirm_submission.boxNineDescription$niProtocolSuffix")</dd>
+          <dd class="govuk-summary-list__actions govuk-hint">@displayMoney(viewModel.returnDetail.box9)</dd>
+      </div>
+    </dl>
+
+    <hr class="govuk-section-break govuk-section-break--l govuk-section-break--visible">
+
+     <h2 class="govuk-heading-l">@messages("confirm_submission.returnTotal")@displayMoney(viewModel.returnDetail.box5)</h2>
+     <p class="govuk-body">@messages("confirm_submission.returnDueDate", displayDate(viewModel.returnDetail.due))</p>
+     <p class="govuk-body">
+        <a class ="govuk-link" id="change"
+          href='@controllers.routes.SubmitFormController.show(viewModel.periodKey)'>
           @messages("confirm_submission.changeDetail")
         </a>
-      </div>
-    </section>
+     </p>
+
+    <hr class="govuk-section-break govuk-section-break--l govuk-section-break--visible">
 
     @declaration(isAgent: Boolean)
 
-    @formAction(action = controllers.routes.ConfirmSubmissionController.submit(viewModel.periodKey)) {
-      <button
-        class="button"
-        type ="submit">
-        @messages("confirm_submission.acceptAndSend")
-      </button>
+    @formWithCSRF(action = controllers.routes.ConfirmSubmissionController.submit(viewModel.periodKey)) {
+      @govukButton(Button(content = Text(messages("confirm_submission.acceptAndSend"))))
     }
-
-  </section>
-
 }
