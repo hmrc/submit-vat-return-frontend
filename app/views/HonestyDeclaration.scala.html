@@ -16,14 +16,14 @@
 
 @import config.AppConfig
 @import models.auth.User
-@import views.html.templates.inputs.CheckboxHelper
-@import views.html.templates.ErrorSummary
-@import uk.gov.hmrc.play.views.html.helpers.FormWithCSRF
 
-@this(mainTemplate: MainTemplateOriginal,
-      errorSummary: ErrorSummary,
-      formAction: FormWithCSRF,
-      checkboxHelper: CheckboxHelper)
+@this(mainTemplate: MainTemplate,
+    govukCheckboxes : GovukCheckboxes,
+    govukErrorSummary: GovukErrorSummary,
+    govukInput: GovukInput,
+    govukBackLink: GovukBackLink,
+    govukButton: GovukButton,
+    formWithCSRF: FormWithCSRF)
 
 @(periodKey: String, form: Form[Boolean])(implicit messages: Messages, appConfig: AppConfig, user: User[_])
 
@@ -35,40 +35,57 @@
   }
 }
 
-@title = @{
-  if(form.errors.nonEmpty) {
-    messages("common.error.titlePrefix", messages("honesty_declaration.title"))
-  } else {
-    messages("honesty_declaration.title")
-  }
-}
-
 @mainTemplate(
-  pageTitle = title,
-  appConfig = appConfig,
-  user = Some(user)
-) {
+    if(form.errors.nonEmpty) messages("common.error.titlePrefix",
+        messages("honesty_declaration.title")) else messages("honesty_declaration.title"),
+    appConfig = appConfig,
+    user = Some(user)) {
 
-  <a class="link-back" href="@appConfig.returnDeadlinesUrl">@messages("common.back")</a>
 
-  @errorSummary(messages("error.summary.title"), form)
+    @govukBackLink(BackLink(
+        content = Text(messages("common.back")),
+        href = appConfig.returnDeadlinesUrl
+    ))
 
-  @formAction(action = controllers.routes.HonestyDeclarationController.submit(periodKey)){
-    <div class="form-group">
-      @checkboxHelper(
-        form = form,
-          Seq(
-            "checkbox" -> s"$statement"
-          ),
-          messages("honesty_declaration.title"))
-    </div>
+    @if(form.hasErrors) {
+        @govukErrorSummary(ErrorSummary(
+            title = Text(messages("error.summary.title")),
+            errorList = form.errors.map { error =>
+            ErrorLink(
+            href = Some("#checkbox"),
+            content = Text(messages(error.message))
+            )
+         }
+        ))
+    }
 
-    <div class="form-group">
-      <input id="continue"
-             type="submit"
-             class="button"
-             role="button"
-             value="@messages("common.continue")" >
-    </div>
+  @formWithCSRF(action = controllers.routes.HonestyDeclarationController.submit(periodKey)){
+        @govukCheckboxes(Checkboxes(
+            fieldset = Some(Fieldset(
+            legend = Some(Legend(
+            content = Text(messages("honesty_declaration.title")),
+            classes = "govuk-fieldset__legend--l",
+            isPageHeading = true
+            ))
+        )),
+        name = "honestyDeclaration",
+        items = Seq(
+            CheckboxItem(
+                id = Some("checkbox"),
+                name = Some("checkbox"),
+                content = HtmlContent(statement),
+                value = "true",
+                checked = form("checkbox").value.contains("true")
+            )
+        ),
+        errorMessage = form.errors.headOption.map { error =>
+        ErrorMessage(content = Text(messages(error.message)))
+        }
+    ))
+
+        @govukButton(Button(
+            content = Text(messages("common.continue"))
+        ))
+
   }
 }
