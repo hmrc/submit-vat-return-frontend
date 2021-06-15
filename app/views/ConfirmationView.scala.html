@@ -72,6 +72,7 @@ title = Text(messages("confirmation_view.heading")),
     href = Some(s"$viewSubmittedReturnUrl")
     ))
     @govukButton(Button(
+    classes = "govuk-button--secondary",
     content = Text(vatAccountText),
     href = Some(vatSummaryUrl)
     ))
