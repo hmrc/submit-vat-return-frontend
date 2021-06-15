@@ -36,17 +36,22 @@ class SubmitFormViewSpec extends ViewBaseSpec {
       "#box-four", "#box-five", "#box-six",
       "#box-seven", "#box-eight", "#box-nine"
     )
-    val backLink = "#content > article > a"
+    val backLink = "#content > a"
     val returnTotalHeading = "#content > article > section > section:nth-child(6) > div > h3"
     val returnDueDate = "#content > article > section > section:nth-child(6) > div > p"
     val changeReturnLink = "#content > article > section > section:nth-child(6) > div > a"
     val submitVatReturnHeading = "#content > article > section > h3.bold-medium"
     val submitReturnInformation = "#content > article > section > p"
-    val submitButton = "#content > article > section > form > button"
+    val submitButton = "#content > form > button"
   }
 
   def boxElement(box: String, column: Int): String = {
-    s"$box > div:nth-child($column)"
+    if (column == 1) {
+      s"$box > dt:nth-child(1)"
+    }
+    else {
+      s"$box > dd:nth-of-type(${column - 1})"
+    }
   }
 
   val periodKey = "18AA"
@@ -132,11 +137,11 @@ class SubmitFormViewSpec extends ViewBaseSpec {
       }
 
       "state that you can submit your return on the next screen" in {
-        elementText("#content article p") shouldBe nextScreen
+        document.getElementById("next-screen-submit").text shouldBe nextScreen
       }
 
       "have the continue button" in {
-        document.getElementById("continue").attr("value") shouldBe continue
+        elementText(".govuk-button") shouldBe continue
       }
     }
 

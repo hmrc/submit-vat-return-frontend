@@ -16,13 +16,11 @@
 
 @import config.AppConfig
 @import models.auth.User
-@import templates.inputs.MoneyInput
 @import templates.formatters.dates.DisplayDate
 @import templates.formatters.dates.DisplayDateRange
 @import uk.gov.hmrc.govukfrontend.views.html.components._
 
 @this(mainTemplate: MainTemplate,
-      moneyInput: MoneyInput,
       displayDateRange: DisplayDateRange,
       displayDate: DisplayDate,
       formAction: FormWithCSRF,
@@ -73,7 +71,7 @@
         errorList = form.errors.map { error =>
         ErrorLink(content = Text(messages(error.message)), href = Some(s"#box"))
     },
-    title = Text(messages("common.error.heading"))
+    title = Text(messages("error.summary.title"))
     ))
   }
 
@@ -174,7 +172,7 @@
 
     </dl>
     <hr class="govuk-section-break govuk-section-break--l govuk-section-break--visible">
-    <h3 class="govuk-heading-s">@messages("submit_form.additionalInformation")</h3>
+    <h3 class="govuk-heading-s" id="additionalInfo">@messages("submit_form.additionalInformation")</h3>
 
     <dl class="govuk-summary-list">
 
@@ -257,9 +255,9 @@
 
     </dl>
 
-      <p class="govuk-body">@messages("submit_form.submitReturn")</p>
+    <p class="govuk-body" id="next-screen-submit">@messages("submit_form.submitReturn")</p>
 
-      @govukButton(Button(content = Text(messages("common.continue"))))
+    @govukButton(Button(content = Text(messages("common.continue"))))
 
     }
 
