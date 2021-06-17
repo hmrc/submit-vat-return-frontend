@@ -37,6 +37,36 @@
   isAgent: Boolean,
   nIProtocolEnabled: Boolean)(implicit messages: Messages, appConfig: AppConfig, user: User[_])
 
+@boxRow(divID: String, formID: String, boxTitle: String, boxDescription: String, boxAmount: String, autoCalculated: Boolean = false) = {
+<div class="govuk-summary-list__row" id=@divID>
+    <dt class="govuk-summary-list__key govuk-hint">@messages(boxTitle)</dt>
+    <dd class="govuk-summary-list__value govuk-hint">@messages(boxDescription)</dd>
+    @if(autoCalculated) {
+    <dd class="govuk-summary-list__actions govuk-hint">
+            @messages("submit_form.calculatedValue")
+    </dd>
+    } else {
+    <dd class="govuk-summary-list__actions govuk-hint">
+        @govukInput(Input(
+            id = formID,
+            name = formID,
+            label = Label(
+                isPageHeading = false,
+                classes = "govuk-visually-hidden",
+                content = Text(if(messages.lang.language == "cy") messages(boxAmount) + " " + messages(boxDescription)
+                            else messages(boxTitle) + " " + messages(boxDescription) + " " + messages("confirm_submission.amount"))
+            ),
+            classes = "govuk-input--width-5",
+            spellcheck = Some(false),
+            prefix = Some(PrefixOrSuffix(
+                content = Text("£")
+            ))
+        ))
+    </dd>
+    }
+</div>
+}
+
 @title = @{
   if(form.errors.nonEmpty) {
     messages("common.error.titlePrefix", messages("submit_form.title"))
@@ -93,86 +123,26 @@
 
     <dl class="govuk-summary-list">
 
-        <div class="govuk-summary-list__row" id="box-one">
-          <dt class="govuk-summary-list__key govuk-hint">
-              @messages("confirm_submission.boxOne")
-          </dt>
-          <dd class="govuk-summary-list__value govuk-hint">
-              @messages(s"confirm_submission.boxOneDescription$niProtocolSuffix")
-          </dd>
-          <dd class="govuk-summary-list__actions govuk-hint">
-              <div class="govuk-form-group">
-                  <div class="govuk-input__wrapper">
-                      <div class="govuk-input__prefix" aria-hidden="true">£</div>
-                      <span class="govuk-visually-hidden">
-                          @if(messages.lang.language == "cy"){messages(confirm_submission.boxOneAmt) messages(s"confirm_submission.boxOneDescription$niProtocolSuffix")}
-                        else{@messages("confirm_submission.boxOne") @messages(s"confirm_submission.boxOneDescription$niProtocolSuffix") @messages("confirm_submission.amount")}
-                      </span>
-                      <input class="govuk-input govuk-input--width-5" id="box1" name="box2" type="text" spellcheck="false">
-                  </div>
-              </div>
-          </dd>
-        </div>
-        <div class="govuk-summary-list__row" id="box-two">
-          <dt class="govuk-summary-list__key govuk-hint">
-              @messages("confirm_submission.boxTwo")
-          </dt>
-          <dd class="govuk-summary-list__value govuk-hint">
-              @messages(s"confirm_submission.boxTwoDescription$niProtocolSuffix")
-          </dd>
-          <dd class="govuk-summary-list__actions govuk-hint">
-              @govukInput(Input(
-                id = "box2",
-                name = "box2",
-                classes = "govuk-input--width-5",
-                spellcheck = Some(false),
-                prefix = Some(PrefixOrSuffix(
-                    content = Text("£")
-                ))
-              ))
-          </dd>
-        </div>
-        <div class="govuk-summary-list__row" id="box-three">
-            <dt class="govuk-summary-list__key govuk-hint">
-                @messages("confirm_submission.boxThree")
-            </dt>
-            <dd class="govuk-summary-list__value govuk-hint">
-                @messages(s"confirm_submission.boxThreeDescription$niProtocolSuffix")
-            </dd>
-            <dd class="govuk-summary-list__actions govuk-hint">
-                @messages("submit_form.calculatedValue")
-            </dd>
-        </div>
-        <div class="govuk-summary-list__row" id="box-four">
-            <dt class="govuk-summary-list__key govuk-hint">
-                @messages("confirm_submission.boxFour")
-            </dt>
-            <dd class="govuk-summary-list__value govuk-hint">
-                @messages(s"confirm_submission.boxFourDescription$niProtocolSuffix")
-            </dd>
-            <dd class="govuk-summary-list__actions govuk-hint">
-                @govukInput(Input(
-                    id = "box4",
-                    name = "box4",
-                    classes = "govuk-input--width-5",
-                    spellcheck = Some(false),
-                    prefix = Some(PrefixOrSuffix(
-                        content = Text("£")
-                    ))
-                ))
-            </dd>
-        </div>
-        <div class="govuk-summary-list__row" id="box-five">
-            <dt class="govuk-summary-list__key govuk-hint">
-                @messages("confirm_submission.boxFive")
-            </dt>
-            <dd class="govuk-summary-list__value govuk-hint">
-                @messages(s"confirm_submission.boxFiveDescription$niProtocolSuffix")
-            </dd>
-            <dd class="govuk-summary-list__actions govuk-hint">
-                @messages("submit_form.calculatedValue")
-            </dd>
-        </div>
+        @boxRow(
+            "box-one", "box1", "confirm_submission.boxOne",
+            s"confirm_submission.boxOneDescription$niProtocolSuffix", "confirm_submission.boxOneAmt"
+        )
+        @boxRow(
+            "box-two", "box2", "confirm_submission.boxTwo",
+            s"confirm_submission.boxTwoDescription$niProtocolSuffix", "confirm_submission.boxTwoAmt"
+        )
+        @boxRow(
+            "box-three", "box3", "confirm_submission.boxThree",
+            s"confirm_submission.boxThreeDescription$niProtocolSuffix", "confirm_submission.boxThreeAmt", autoCalculated = true
+        )
+        @boxRow(
+            "box-four", "box4", "confirm_submission.boxFour",
+            s"confirm_submission.boxFourDescription$niProtocolSuffix", "confirm_submission.boxFourAmt"
+        )
+        @boxRow(
+            "box-five", "box5", "confirm_submission.boxFive",
+            s"confirm_submission.boxFiveDescription$niProtocolSuffix", "confirm_submission.boxFiveAmt", autoCalculated = true
+        )
 
     </dl>
     <hr class="govuk-section-break govuk-section-break--l govuk-section-break--visible">
@@ -180,82 +150,30 @@
 
     <dl class="govuk-summary-list">
 
-        <div class="govuk-summary-list__row" id="box-six">
-            <dt class="govuk-summary-list__key govuk-hint">
-                @messages("confirm_submission.boxSix")
-            </dt>
-            <dd class="govuk-summary-list__value govuk-hint">
-                @messages(s"confirm_submission$boxSixSubmissionSuffix")
-            </dd>
-            <dd class="govuk-summary-list__actions govuk-hint">
-                @govukInput(Input(
-                    id = "box6",
-                    name = "box6",
-                    classes = "govuk-input--width-5",
-                    spellcheck = Some(false),
-                    prefix = Some(PrefixOrSuffix(
-                        content = Text("£")
-                    ))
-                ))
-            </dd>
-        </div>
-        <div class="govuk-summary-list__row" id="box-seven">
-            <dt class="govuk-summary-list__key govuk-hint">
-                @messages("confirm_submission.boxSeven")
-            </dt>
-            <dd class="govuk-summary-list__value govuk-hint">
-                @messages(s"confirm_submission.boxSevenDescription$niProtocolSuffix")
-            </dd>
-            <dd class="govuk-summary-list__actions govuk-hint">
-                @govukInput(Input(
-                    id = "box7",
-                    name = "box7",
-                    classes = "govuk-input--width-5",
-                    spellcheck = Some(false),
-                    prefix = Some(PrefixOrSuffix(
-                        content = Text("£")
-                    ))
-                ))
-            </dd>
-        </div>
-        <div class="govuk-summary-list__row" id="box-eight">
-            <dt class="govuk-summary-list__key govuk-hint">
-                @messages("confirm_submission.boxEight")
-            </dt>
-            <dd class="govuk-summary-list__value govuk-hint">
-                @messages(s"confirm_submission.boxEightDescription$niProtocolSuffix")
-            </dd>
-            <dd class="govuk-summary-list__actions govuk-hint">
-                @govukInput(Input(
-                    id = "box8",
-                    name = "box8",
-                    classes = "govuk-input--width-5",
-                    spellcheck = Some(false),
-                    prefix = Some(PrefixOrSuffix(
-                        content = Text("£")
-                    ))
-                ))
-            </dd>
-        </div>
-        <div class="govuk-summary-list__row" id="box-nine">
-            <dt class="govuk-summary-list__key govuk-hint">
-                @messages("confirm_submission.boxNine")
-            </dt>
-            <dd class="govuk-summary-list__value govuk-hint">
-                @messages(s"confirm_submission.boxNineDescription$niProtocolSuffix")
-            </dd>
-            <dd class="govuk-summary-list__actions govuk-hint">
-                @govukInput(Input(
-                    id = "box9",
-                    name = "box9",
-                    classes = "govuk-input--width-5",
-                    spellcheck = Some(false),
-                    prefix = Some(PrefixOrSuffix(
-                        content = Text("£")
-                    ))
-                ))
-            </dd>
-        </div>
+        @if(flatRateScheme) {
+            @boxRow(
+                "box-six", "box6", "confirm_submission.boxSix",
+                "confirm_submission.boxSixFlatRate", "confirm_submission.boxSixAmt"
+            )
+        } else {
+            @boxRow(
+                "box-six", "box6", "confirm_submission.boxSix",
+                "confirm_submission.boxSixNoFlatRate", "confirm_submission.boxSixAmt"
+            )
+        }
+
+        @boxRow(
+            "box-seven", "box7", "confirm_submission.boxSeven",
+            s"confirm_submission.boxSevenDescription$niProtocolSuffix", "confirm_submission.boxSevenAmt"
+        )
+        @boxRow(
+            "box-eight", "box8", "confirm_submission.boxEight",
+            s"confirm_submission.boxEightDescription$niProtocolSuffix", "confirm_submission.boxEightAmt"
+        )
+        @boxRow(
+            "box-nine", "box9", "confirm_submission.boxNine",
+            s"confirm_submission.boxNineDescription$niProtocolSuffix", "confirm_submission.boxNineAmt"
+        )
 
     </dl>
 
