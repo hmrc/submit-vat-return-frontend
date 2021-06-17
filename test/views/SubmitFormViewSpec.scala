@@ -207,7 +207,7 @@ class SubmitFormViewSpec extends ViewBaseSpec {
       }
 
       "display an error summary" in {
-        elementText("#error-summary-display h2") shouldBe "There is a problem"
+        elementText(".govuk-error-summary") shouldBe "There is a problem"
       }
     }
 
