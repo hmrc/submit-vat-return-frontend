@@ -15,38 +15,35 @@
  *@
 
 @import testOnly.models.StubAgentClientLookupModel
-@import uk.gov.hmrc.play.views.html.helpers.Input
-@import uk.gov.hmrc.play.views.html.helpers.FormWithCSRF
 
-@this(mainTemplate: MainTemplateOriginal, input: Input, formWithCSRF: FormWithCSRF)
+@this(mainTemplate: MainTemplate,
+      formWithCSRF: FormWithCSRF,
+      govukInput: GovukInput,
+      govukButton: GovukButton)
 
-@(form: Form[StubAgentClientLookupModel], redirectUrl: Option[String])(implicit request: Request[_], messages: Messages, appConfig: config.AppConfig)
+@(form: Form[StubAgentClientLookupModel],
+  redirectUrl: Option[String])(implicit request: Request[_], messages: Messages, appConfig: config.AppConfig)
 
-@mainTemplate(pageTitle = "Stub Agent Client Lookup Frontend", bodyClasses = None, appConfig = appConfig) {
+@mainTemplate(pageTitle = "Stub Agent Client Lookup Frontend", appConfig = appConfig) {
 
-    @formWithCSRF(action = testOnly.controllers.routes.StubAgentClientLookupController.post) {
+  @formWithCSRF(action = testOnly.controllers.routes.StubAgentClientLookupController.post) {
 
-        <fieldset>
+    @govukInput(Input(
+      id = "vrn",
+      name = "vrn",
+      label = Label(
+        isPageHeading = true,
+        classes = "govuk-label--m",
+        content = Text("Client VRN")
+      )
+    ))
 
-            <h2>Client VRN</h2>
+    @govukButton(Button(
+      content = Text("Submit")
+    ))
 
-            <div class="form-field">
-                @input(
-                    form("vrn"),
-                    '_label -> "Client VRN",
-                    '_labelTextClass -> "form-label visuallyhidden",
-                    '_inputClass -> "form-control input--no-spinner"
-                )
-            </div>
+    <h4 class="govuk-heading-s">Redirect Url:</h4>
+    <input class="govuk-input" name="redirectUrl" value="@redirectUrl.getOrElse("/")" style="border:none;" readonly>
 
-        </fieldset>
-
-        <div class="form-group">
-            <button class="button" type="submit" id="continue-button">Submit</button>
-        </div>
-
-        <label><h4>RedirectUrl:</h4></label>
-        <input type="text" name="redirectUrl" id="redirectUrl" value="@redirectUrl.getOrElse("/")" style="width:100%;border:none;" readonly>
-
-    }
+  }
 }

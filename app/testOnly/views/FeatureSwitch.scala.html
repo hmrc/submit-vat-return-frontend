@@ -16,27 +16,49 @@
 
 @import testOnly.models.FeatureSwitchModel
 @import common.ConfigKeys
-@import uk.gov.hmrc.play.views.html.helpers.FormWithCSRF
 
-@this(mainTemplate: MainTemplateOriginal, form: FormWithCSRF)
+@this(mainTemplate: MainTemplate,
+      form: FormWithCSRF,
+      govukCheckboxes: GovukCheckboxes,
+      govukButton: GovukButton)
 
-@(featureSwitchForm: Form[FeatureSwitchModel])(implicit request: Request[_], messages: Messages, appConfig: config.AppConfig)
+@(featureSwitchForm: Form[FeatureSwitchModel])(implicit request: Request[_],
+                                                        messages: Messages,
+                                                        appConfig: config.AppConfig)
 
-@mainTemplate(pageTitle = "Feature switches", bodyClasses = None, appConfig = appConfig) {
+@mainTemplate(pageTitle = "Feature switches", appConfig = appConfig) {
 
-    @form(action = testOnly.controllers.routes.FeatureSwitchController.submitFeatureSwitch) {
-        <div class="form-group">
-            <fieldset>
-                <legend>
-                    <h1 class="heading-medium">Features</h1>
-                </legend>
+  @form(action = testOnly.controllers.routes.FeatureSwitchController.submitFeatureSwitch) {
 
-                @singleCheckbox(featureSwitchForm(ConfigKeys.staticDateEnabledFeature), "Use static date (2018-05-01)")
-                @singleCheckbox(featureSwitchForm(ConfigKeys.nineBoxNIProtocolContentEnabled), "Enable NI protocol nine box content")
+    @govukCheckboxes(Checkboxes(
+      name = "feature-switch",
+      fieldset = Some(Fieldset(
+        legend = Some(Legend(
+          content = Text("Features"),
+          classes = "govuk-fieldset__legend govuk-fieldset__legend--m",
+          isPageHeading = true
+        )),
+      )),
+      items = Seq(
+        CheckboxItem(
+          id = Some(featureSwitchForm(ConfigKeys.staticDateEnabledFeature).name),
+          name = Some(featureSwitchForm(ConfigKeys.staticDateEnabledFeature).name),
+          content = Text("Use static date (2018-05-01)"),
+          value = "true",
+          checked = featureSwitchForm(ConfigKeys.staticDateEnabledFeature).value.contains("true")
+        ),
+        CheckboxItem(
+          id = Some(featureSwitchForm(ConfigKeys.nineBoxNIProtocolContentEnabled).name),
+          name = Some(featureSwitchForm(ConfigKeys.nineBoxNIProtocolContentEnabled).name),
+          content = Text("Enable NI protocol nine box content"),
+          value = "true",
+          checked = featureSwitchForm(ConfigKeys.nineBoxNIProtocolContentEnabled).value.contains("true")
+        )
+      )
+    ))
 
-            </fieldset>
-        </div>
-
-        <button class="button" type="submit" id="continue-button">Submit</button>
-    }
+    @govukButton(Button(
+      content = Text("Submit")
+    ))
+  }
 }
