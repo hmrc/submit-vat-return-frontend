@@ -75,6 +75,9 @@
     ))
   }
 
+
+
+
   <div>
 
     <h1 class="govuk-heading-xl">
@@ -98,15 +101,16 @@
               @messages(s"confirm_submission.boxOneDescription$niProtocolSuffix")
           </dd>
           <dd class="govuk-summary-list__actions govuk-hint">
-              @govukInput(Input(
-                id = "cost",
-                name = "cost",
-                classes = "govuk-input--width-5",
-                spellcheck = Some(false),
-                prefix = Some(PrefixOrSuffix(
-                  content = Text("£")
-                ))
-              ))
+              <div class="govuk-form-group">
+                  <div class="govuk-input__wrapper">
+                      <div class="govuk-input__prefix" aria-hidden="true">£</div>
+                      <span class="govuk-visually-hidden">
+                          @if(messages.lang.language == "cy"){messages(confirm_submission.boxOneAmt) messages(s"confirm_submission.boxOneDescription$niProtocolSuffix")}
+                        else{@messages("confirm_submission.boxOne") @messages(s"confirm_submission.boxOneDescription$niProtocolSuffix") @messages("confirm_submission.amount")}
+                      </span>
+                      <input class="govuk-input govuk-input--width-5" id="box1" name="box2" type="text" spellcheck="false">
+                  </div>
+              </div>
           </dd>
         </div>
         <div class="govuk-summary-list__row" id="box-two">
@@ -118,8 +122,8 @@
           </dd>
           <dd class="govuk-summary-list__actions govuk-hint">
               @govukInput(Input(
-                id = "cost",
-                name = "cost",
+                id = "box2",
+                name = "box2",
                 classes = "govuk-input--width-5",
                 spellcheck = Some(false),
                 prefix = Some(PrefixOrSuffix(
@@ -148,8 +152,8 @@
             </dd>
             <dd class="govuk-summary-list__actions govuk-hint">
                 @govukInput(Input(
-                    id = "cost",
-                    name = "cost",
+                    id = "box4",
+                    name = "box4",
                     classes = "govuk-input--width-5",
                     spellcheck = Some(false),
                     prefix = Some(PrefixOrSuffix(
@@ -185,8 +189,8 @@
             </dd>
             <dd class="govuk-summary-list__actions govuk-hint">
                 @govukInput(Input(
-                    id = "cost",
-                    name = "cost",
+                    id = "box6",
+                    name = "box6",
                     classes = "govuk-input--width-5",
                     spellcheck = Some(false),
                     prefix = Some(PrefixOrSuffix(
@@ -204,8 +208,8 @@
             </dd>
             <dd class="govuk-summary-list__actions govuk-hint">
                 @govukInput(Input(
-                    id = "cost",
-                    name = "cost",
+                    id = "box7",
+                    name = "box7",
                     classes = "govuk-input--width-5",
                     spellcheck = Some(false),
                     prefix = Some(PrefixOrSuffix(
@@ -223,8 +227,8 @@
             </dd>
             <dd class="govuk-summary-list__actions govuk-hint">
                 @govukInput(Input(
-                    id = "cost",
-                    name = "cost",
+                    id = "box8",
+                    name = "box8",
                     classes = "govuk-input--width-5",
                     spellcheck = Some(false),
                     prefix = Some(PrefixOrSuffix(
@@ -242,8 +246,8 @@
             </dd>
             <dd class="govuk-summary-list__actions govuk-hint">
                 @govukInput(Input(
-                    id = "cost",
-                    name = "cost",
+                    id = "box9",
+                    name = "box9",
                     classes = "govuk-input--width-5",
                     spellcheck = Some(false),
                     prefix = Some(PrefixOrSuffix(
