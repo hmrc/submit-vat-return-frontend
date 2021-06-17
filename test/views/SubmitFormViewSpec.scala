@@ -158,7 +158,7 @@ class SubmitFormViewSpec extends ViewBaseSpec {
       lazy implicit val document: Document = Jsoup.parse(view.body)
 
       "display the non flat rate scheme text ofr box 6" in {
-        elementText("#box-six > div:nth-of-type(2)") shouldBe box6NonFlatRateSchemeText
+        elementText("#box-six > dd:nth-of-type(1)") shouldBe box6NonFlatRateSchemeText
       }
     }
 
@@ -207,7 +207,7 @@ class SubmitFormViewSpec extends ViewBaseSpec {
       }
 
       "display an error summary" in {
-        elementText(".govuk-error-summary") shouldBe "There is a problem"
+        elementText(".govuk-error-summary h2") shouldBe "There is a problem"
       }
     }
 
