@@ -56,6 +56,7 @@
                 content = Text(if(messages.lang.language == "cy") messages(boxAmount) + " " + messages(boxDescription)
                             else messages(boxTitle) + " " + messages(boxDescription) + " " + messages("confirm_submission.amount"))
             ),
+            value = form(formID).value,
             classes = "govuk-input--width-5",
             spellcheck = Some(false),
             prefix = Some(PrefixOrSuffix(
