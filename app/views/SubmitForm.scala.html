@@ -41,7 +41,7 @@
     <dt class="govuk-summary-list__key govuk-hint">@messages(boxTitle)</dt>
     <dd class="govuk-summary-list__value govuk-hint">@messages(boxDescription)</dd>
     @if(autoCalculated) {
-    <dd class="govuk-summary-list__actions govuk-hint"><strong>
+    <dd class="govuk-summary-list__actions"><strong>
             @messages("submit_form.calculatedValue")
     </strong></dd>
     } else {
@@ -113,7 +113,7 @@
     </h1>
 
     <h2 class="govuk-heading-l">@clientName</h2>
-    <h3 class="govuk-heading-s govuk-form-group">@messages("confirm_submission.vatDetails")</h3>
+    <h3 class="govuk-heading-s">@messages("confirm_submission.vatDetails")</h3>
 
     @formAction(action = controllers.routes.SubmitFormController.submit(periodKey)){
 
