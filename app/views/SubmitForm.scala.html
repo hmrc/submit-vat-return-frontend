@@ -117,7 +117,7 @@
 
     @formAction(action = controllers.routes.SubmitFormController.submit(periodKey)){
 
-    <dl class="govuk-summary-list">
+    <dl class="govuk-summary-list govuk-summary-list--no-border">
 
         @boxRow(
             "box-one", "box1", "confirm_submission.boxOne",
@@ -144,7 +144,7 @@
     <hr class="govuk-section-break govuk-section-break--l govuk-section-break--visible">
     <h3 class="govuk-heading-s" id="additionalInfo">@messages("submit_form.additionalInformation")</h3>
 
-    <dl class="govuk-summary-list">
+    <dl class="govuk-summary-list govuk-summary-list--no-border">
 
         @if(flatRateScheme) {
             @boxRow(
