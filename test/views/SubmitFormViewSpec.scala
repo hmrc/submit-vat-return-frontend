@@ -196,18 +196,45 @@ class SubmitFormViewSpec extends ViewBaseSpec {
         Some("ABC Studios"),
         flatRateScheme = true,
         obligation,
-        SubmitVatReturnForm().nineBoxForm.bind(Map("" -> "")),
+        SubmitVatReturnForm().nineBoxForm.bind(Map(
+          "box1" -> "",
+          "box2" -> "",
+          "box4" -> "",
+          "box6" -> "",
+          "box7" -> "",
+          "box8" -> "",
+          "box9" -> ""
+        )),
         isAgent = false,
         nIProtocolEnabled = false
       )(messages, mockAppConfig, user)
       lazy implicit val document: Document = Jsoup.parse(view.body)
 
-      s"have the correct page title" in {
+      "have the correct page title" in {
         document.title shouldBe "Error: Your VAT Return - Business tax account - GOV.UK"
       }
 
       "display an error summary" in {
         elementText(".govuk-error-summary h2") shouldBe "There is a problem"
+      }
+
+      "have a list of errors" which {
+
+        val errorSummaryElements = (1 to 7).map(i => element(s".govuk-list > li:nth-child($i) > a:nth-child(1)"))
+        val boxNumbers = Seq(1, 2, 4, 6, 7, 8, 9)
+        val data = errorSummaryElements zip boxNumbers
+
+        "has the correct error messages" in {
+          for ((element, boxNum) <- data) {
+            element.text() shouldBe s"Enter a number in box $boxNum"
+          }
+        }
+
+        "has the correct links to the input boxes" in {
+          for ((element, boxNum) <- data) {
+            element.attr("href") shouldBe s"#box$boxNum"
+          }
+        }
       }
     }
 

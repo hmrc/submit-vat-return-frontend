@@ -15,15 +15,15 @@ common.pageTitle = {0} - {1} - GOV.UK
 common.error.titlePrefix = Error: {0}
 common.error = Error:
 
-standardError.title = There is a problem with the service - VAT - GOV.UK
+standardError.title = There is a problem with the service
 standardError.heading = Sorry, there is a problem with the service
 standardError.message = Try again later.
 
-notFound.title = Page not found - VAT - GOV.UK
+notFound.title = Page not found
 notFound.heading = This page cannot be found
 notFound.message = Please check that you have entered the correct web address.
 
-badRequest.title = Bad request - VAT - GOV.UK
+badRequest.title = Bad request
 badRequest.heading = Bad request
 badRequest.message = Please check that you have entered the correct web address.
 
