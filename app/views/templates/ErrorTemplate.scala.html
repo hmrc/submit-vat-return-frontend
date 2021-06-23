@@ -16,21 +16,11 @@
 
 @import config.AppConfig
 
-@this(govUkWrapper: GovUkWrapper)
+@this(mainTemplate: MainTemplate)
 
 @(pageTitle: String, heading: String, message: String)(implicit request: Request[_], messages: Messages, appConfig: AppConfig)
 
-@contentHeader = {
-  <h1>@messages(heading)</h1>
+@mainTemplate(appConfig = appConfig, pageTitle = messages(pageTitle)) {
+ <h1 class="govuk-heading-xl">@messages(heading)</h1>
+ <p class="govuk-body">@messages(message)</p>
 }
-
-@mainContent = {
-  <p>@messages(message)</p>
-}
-
-@govUkWrapper(
- appConfig = appConfig,
- title = messages(pageTitle),
- contentHeader = Some(contentHeader),
- mainBody = mainContent
-)

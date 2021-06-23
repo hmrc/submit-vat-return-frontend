@@ -39,13 +39,13 @@
 @boxRow(divID: String, formID: String, boxTitle: String, boxDescription: String, boxAmount: String, autoCalculated: Boolean = false) = {
 <div class="govuk-summary-list__row" id=@divID>
     <dt class="govuk-summary-list__key govuk-hint">@messages(boxTitle)</dt>
-    <dd class="govuk-summary-list__value govuk-hint">@messages(boxDescription)</dd>
+    <dd class="govuk-summary-list__value govuk-hint govuk-!-width-one-half">@messages(boxDescription)</dd>
     @if(autoCalculated) {
-    <dd class="govuk-summary-list__actions"><strong>
+    <dd class="govuk-summary-list__actions govuk-!-width-one-third"><strong>
             @messages("submit_form.calculatedValue")
     </strong></dd>
     } else {
-    <dd class="govuk-summary-list__actions govuk-hint">
+    <dd class="govuk-summary-list__actions govuk-hint govuk-!-width-one-third">
         @govukInput(Input(
             id = formID,
             name = formID,
@@ -56,11 +56,12 @@
                             else messages(boxTitle) + " " + messages(boxDescription) + " " + messages("confirm_submission.amount"))
             ),
             value = form(formID).value,
-            classes = "govuk-input--width-5",
+            classes = "govuk-input--width-10",
             spellcheck = Some(false),
             prefix = Some(PrefixOrSuffix(
                 content = Text("£")
-            ))
+            )),
+            errorMessage = if(form(formID).hasErrors) Some(ErrorMessage()) else None
         ))
     </dd>
     }
@@ -79,29 +80,23 @@
   if(nIProtocolEnabled) ".NIProtocol" else ""
 }
 
-@boxSixSubmissionSuffix = @{
-  if(flatRateScheme) ".boxSixFlatRate" else ".boxSixNoFlatRate"
-}
-
 @mainTemplate(
     pageTitle = title,
     appConfig = appConfig,
     user = Some(user)
 ) {
 
-  @if(!isAgent) {
-    @govukBackLink(BackLink(
-        href = controllers.routes.HonestyDeclarationController.show(periodKey).url,
-        content = Text(messages("common.back"))
-    ))
-  }
+  @govukBackLink(BackLink(
+      href = controllers.routes.HonestyDeclarationController.show(periodKey).url,
+      content = Text(messages("common.back"))
+  ))
 
   @if(form.hasErrors) {
     @govukErrorSummary(ErrorSummary(
-        errorList = form.errors.map { error =>
-        ErrorLink(content = Text(messages(error.message)), href = Some(s"#box"))
-    },
-    title = Text(messages("error.summary.title"))
+      errorList = form.errors.map { error =>
+        ErrorLink(content = Text(messages(error.message)), href = Some(s"#${error.key}"))
+      },
+      title = Text(messages("error.summary.title"))
     ))
   }
 
