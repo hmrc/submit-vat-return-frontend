@@ -17,6 +17,7 @@
 package controllers.predicates
 
 import config.{AppConfig, ErrorHandler}
+
 import javax.inject.Inject
 import play.api.Logger
 import play.api.i18n.{I18nSupport, MessagesApi}
@@ -24,9 +25,9 @@ import play.api.mvc.{ActionRefiner, Result}
 import play.api.mvc.Results.{Forbidden, Redirect}
 import services.MandationStatusService
 import uk.gov.hmrc.http.HeaderCarrier
-import uk.gov.hmrc.play.HeaderCarrierConverter
 import common.{MandationStatuses, SessionKeys}
 import models.auth.User
+import uk.gov.hmrc.play.http.HeaderCarrierConverter
 import views.html.errors.MtdMandatedUser
 
 import scala.concurrent.{ExecutionContext, Future}
@@ -40,15 +41,17 @@ class MandationStatusPredicate @Inject()(mandationStatusService: MandationStatus
 
   override def refine[A](request: User[A]): Future[Either[Result, User[A]]] = {
 
-    implicit val hc: HeaderCarrier = HeaderCarrierConverter.fromHeadersAndSession(request.headers, Some(request.session))
+    implicit val hc: HeaderCarrier = HeaderCarrierConverter.fromRequestAndSession(request, request.session)
     implicit val req: User[A] = request
-    val supportedMandationStatuses = List(MandationStatuses.nonMTDfB, MandationStatuses.nonDigital, MandationStatuses.MTDfBExempt)
+    val supportedMandationStatuses =
+      List(MandationStatuses.nonMTDfB, MandationStatuses.nonDigital, MandationStatuses.MTDfBExempt)
 
     req.session.get(SessionKeys.mandationStatus) match {
       case Some(status) if supportedMandationStatuses.contains(status) => Future.successful(Right(request))
       case Some(unsupportedMandationStatus) =>
-          Logger.debug(s"[MandationStatusPredicate][refine] - User has a non 'non MTDfB' status received. Status returned was: $unsupportedMandationStatus")
-          Future.successful(Left(Forbidden(mtdMandatedUser())))
+        Logger.debug("[MandationStatusPredicate][refine] - User has a non 'non MTDfB' status received. " +
+          s"Status returned was: $unsupportedMandationStatus")
+        Future.successful(Left(Forbidden(mtdMandatedUser())))
       case None => getMandationStatus
     }
   }
