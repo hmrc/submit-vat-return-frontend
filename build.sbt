@@ -14,12 +14,10 @@
  * limitations under the License.
  */
 
-import play.core.PlayVersion
 import play.sbt.routes.RoutesKeys
 import sbt.Tests.{Group, SubProcess}
 import uk.gov.hmrc.DefaultBuildSettings.{addTestReportOption, defaultSettings, scalaSettings}
 import uk.gov.hmrc.sbtdistributables.SbtDistributablesPlugin.publishingSettings
-import uk.gov.hmrc.versioning.SbtGitVersioning.autoImport.majorVersion
 
 lazy val appDependencies: Seq[ModuleID] = compile ++ test
 val appName = "submit-vat-return-frontend"
@@ -30,8 +28,6 @@ lazy val coverageSettings: Seq[Setting[_]] = {
   val excludedPackages = Seq(
     "<empty>",
     ".*Reverse.*",
-    ".*standardError*.*",
-    ".*GovUkWrapper*.*",
     ".*MainTemplate*.*",
     "uk.gov.hmrc.BuildInfo",
     "testOnlyDoNotUseInAppConf.*",
@@ -55,10 +51,10 @@ lazy val coverageSettings: Seq[Setting[_]] = {
 
 val compile = Seq(
   play.sbt.PlayImport.ws,
-  "uk.gov.hmrc"       %% "play-ui"                    % "9.0.0-play-26",
+  "uk.gov.hmrc"       %% "play-ui"                    % "9.6.0-play-26",
   "uk.gov.hmrc"       %% "play-frontend-govuk"        % "0.77.0-play-26",
   "uk.gov.hmrc"       %% "play-frontend-hmrc"         % "0.76.0-play-26",
-  "uk.gov.hmrc"       %% "bootstrap-frontend-play-26" % "3.4.0",
+  "uk.gov.hmrc"       %% "bootstrap-frontend-play-26" % "5.4.0",
   "uk.gov.hmrc"       %% "play-language"              % "5.1.0-play-26",
   "uk.gov.hmrc"       %% "domain"                     % "5.11.0-play-26",
   "com.typesafe.play" %% "play-json-joda"             % "2.9.1"
@@ -70,7 +66,6 @@ val test = Seq(
   "org.scalatestplus.play" %% "scalatestplus-play"          % "3.1.3",
   "org.pegdown"             % "pegdown"                     % "1.6.0",
   "org.jsoup"               % "jsoup"                       % "1.13.1",
-  "com.typesafe.play"      %% "play-test"                   % PlayVersion.current,
   "org.scalamock"          %% "scalamock-scalatest-support" % "3.6.0",
   "com.github.tomakehurst"  % "wiremock-jre8"               % "2.27.2"
 ).map(_ % s"$Test, $IntegrationTest")
@@ -90,7 +85,7 @@ def oneForkedJvmPerTest(tests: Seq[TestDefinition]): Seq[Group] = tests map {
 }
 
 lazy val microservice: Project = Project(appName, file("."))
-  .enablePlugins(play.sbt.PlayScala, SbtAutoBuildPlugin, SbtGitVersioning, SbtDistributablesPlugin)
+  .enablePlugins(play.sbt.PlayScala, SbtDistributablesPlugin)
   .disablePlugins(JUnitXmlReportPlugin)
   .settings(PlayKeys.playDefaultPort := 9147)
   .settings(coverageSettings: _*)
@@ -115,8 +110,5 @@ lazy val microservice: Project = Project(appName, file("."))
     addTestReportOption(IntegrationTest, "int-test-reports"),
     testGrouping in IntegrationTest := oneForkedJvmPerTest((definedTests in IntegrationTest).value),
     parallelExecution in IntegrationTest := false,
-    resourceDirectory in IntegrationTest := baseDirectory.value / "it" / "resources")
-  .settings(resolvers ++= Seq(
-    Resolver.bintrayRepo("hmrc", "releases"),
-    Resolver.jcenterRepo
-  ))
+    resourceDirectory in IntegrationTest := baseDirectory.value / "it" / "resources"
+  )

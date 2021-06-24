@@ -51,7 +51,7 @@ class VatSubscriptionConnectorSpec extends BaseSpec with MockHttp {
       "a successful response is returned" should {
 
         "return a CustomerDetailsModel" in {
-          setupMockHttpGet(TestVatSubscriptionConnector.vatSubscriptionUrl(vrn, "customer-details"))(Right(customerDetailsModel))
+          setupMockHttpGet(Right(customerDetailsModel))
           await(result) shouldBe Right(customerDetailsModel)
         }
       }
@@ -59,7 +59,7 @@ class VatSubscriptionConnectorSpec extends BaseSpec with MockHttp {
       "given an error should" should {
 
         "return a Left with an ErrorModel" in {
-          setupMockHttpGet(TestVatSubscriptionConnector.vatSubscriptionUrl(vrn, "customer-details"))(Left(errorModel))
+          setupMockHttpGet(Left(errorModel))
           await(result) shouldBe Left(errorModel)
         }
       }
@@ -72,7 +72,7 @@ class VatSubscriptionConnectorSpec extends BaseSpec with MockHttp {
       "a successful response is returned" should {
 
         "return a mandation status" in {
-          setupMockHttpGet(TestVatSubscriptionConnector.vatSubscriptionUrl(vrn, "mandation-status"))(Right(MandationStatus(nonMTDfB)))
+          setupMockHttpGet(Right(MandationStatus(nonMTDfB)))
           await(result) shouldBe Right(MandationStatus(nonMTDfB))
         }
       }
@@ -80,7 +80,7 @@ class VatSubscriptionConnectorSpec extends BaseSpec with MockHttp {
       "an error is returned" should {
 
         "return a Left with an ErrorModel" in {
-          setupMockHttpGet(TestVatSubscriptionConnector.vatSubscriptionUrl(vrn, "mandation-status"))(Left(errorModel))
+          setupMockHttpGet(Left(errorModel))
           await(result) shouldBe Left(errorModel)
         }
       }

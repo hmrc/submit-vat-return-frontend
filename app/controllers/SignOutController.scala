@@ -24,8 +24,8 @@ import services.EnrolmentsAuthService
 import uk.gov.hmrc.auth.core.retrieve.v2.Retrievals
 import uk.gov.hmrc.auth.core.{AffinityGroup, AuthorisationException}
 import uk.gov.hmrc.http.HeaderCarrier
-import uk.gov.hmrc.play.HeaderCarrierConverter
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendController
+import uk.gov.hmrc.play.http.HeaderCarrierConverter
 
 import scala.concurrent.{ExecutionContext, Future}
 
@@ -38,7 +38,7 @@ class SignOutController @Inject()(mcc: MessagesControllerComponents,
   def signOut(feedbackOnSignOut: Boolean) : Action[AnyContent] = Action.async { implicit request =>
 
     implicit val hc: HeaderCarrier =
-      HeaderCarrierConverter.fromHeadersAndSession(request.headers, Some(request.session))
+      HeaderCarrierConverter.fromRequestAndSession(request, request.session)
 
     if(feedbackOnSignOut) {
       enrolmentsAuthService.authorised.retrieve(Retrievals.affinityGroup) {

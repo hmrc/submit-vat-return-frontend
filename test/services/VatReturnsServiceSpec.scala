@@ -27,8 +27,7 @@ import play.api.mvc.AnyContentAsEmpty
 import play.api.test.FakeRequest
 import assets.NrsTestData.IdentityDataTestData.{correctModel => testIdentityModel}
 import assets.NrsTestData.ReceiptTestData.{correctModel => testReceiptDataModel}
-import uk.gov.hmrc.http.HeaderCarrier
-import uk.gov.hmrc.http.logging.Authorization
+import uk.gov.hmrc.http.{Authorization, HeaderCarrier}
 
 import scala.concurrent.{ExecutionContext, Future}
 
