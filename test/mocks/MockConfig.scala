@@ -61,4 +61,7 @@ class MockConfig(implicit val runModeConfiguration: Configuration) extends AppCo
   override val maximum9BoxReturnBoxRatio: Double = 5.714
 
   override val gtmContainer: String = "x"
+
+  override val platformHost: String = "platform.host"
+  override val vatSummaryHost: String = "vat-summary-frontend.host"
 }

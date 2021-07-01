@@ -19,14 +19,15 @@ package controllers
 import base.BaseSpec
 import common.{MandationStatuses, SessionKeys}
 import forms.HonestyDeclarationForm
-import mocks.{MockAuth, MockMandationPredicate}
+import mocks.{MockAuth, MockDDInterruptPredicate, MockMandationPredicate}
 import play.api.data.Form
 import play.api.http.Status
+import play.api.test.FakeRequest
 import play.api.test.Helpers.contentType
 import play.api.test.Helpers._
 import views.html.HonestyDeclaration
 
-class HonestyDeclarationControllerSpec extends BaseSpec with MockAuth with MockMandationPredicate {
+class HonestyDeclarationControllerSpec extends BaseSpec with MockAuth with MockMandationPredicate with MockDDInterruptPredicate {
 
   val honestyDeclaration: HonestyDeclaration = inject[HonestyDeclaration]
 
@@ -36,6 +37,7 @@ class HonestyDeclarationControllerSpec extends BaseSpec with MockAuth with MockM
     mockAuthPredicate,
     mcc,
     honestyDeclaration,
+    mockDDInterruptPredicate,
     mockAppConfig
   )
 
@@ -49,7 +51,8 @@ class HonestyDeclarationControllerSpec extends BaseSpec with MockAuth with MockM
         TestHonestyDeclarationController.show("18AA")(fakeRequest
           .withSession(
             SessionKeys.mandationStatus -> MandationStatuses.nonMTDfB,
-            SessionKeys.HonestyDeclaration.key -> "true"
+            SessionKeys.HonestyDeclaration.key -> "true",
+            SessionKeys.viewedDDInterrupt -> "true"
           )
         )
       }
@@ -69,6 +72,28 @@ class HonestyDeclarationControllerSpec extends BaseSpec with MockAuth with MockM
 
       "return the correct view" in {
         contentAsString(result) shouldBe viewAsString(HonestyDeclarationForm.honestyDeclarationForm)
+      }
+    }
+
+    "user has no viewDDInterrupt in session" should {
+
+      lazy val result = {
+        TestHonestyDeclarationController.show("18BB")(fakeRequest
+          .withSession(
+            SessionKeys.mandationStatus -> MandationStatuses.nonMTDfB,
+            SessionKeys.HonestyDeclaration.key -> "true",
+          )
+        )
+      }
+
+      "return 303" in {
+        mockAuthorise(mtdVatAuthorisedResponse)
+        status(result) shouldBe Status.SEE_OTHER
+      }
+
+      "redirect to the correct redirect location" in {
+        redirectLocation(result) shouldBe Some(mockAppConfig.vatSummaryHost + "/vat-through-software/direct-debit-interrupt?redirectUrl="
+          + mockAppConfig.platformHost)
       }
     }
 

@@ -14,22 +14,19 @@
  * limitations under the License.
  */
 
-package common
+package mocks
 
-object SessionKeys {
+import base.BaseSpec
+import controllers.predicates.DDInterruptPredicate
 
-  val mandationStatus = "mtdVatMandationStatus"
-  val returnData = "mtdNineBoxReturnData"
-  val viewModel = "mtdReturnInformation"
-  val submissionYear = "submissionYear"
-  val inSessionPeriodKey = "inSessionPeriodKey"
-  val insolventWithoutAccessKey: String = "insolventWithoutAccess"
-  val futureInsolvencyBlock: String = "futureInsolvencyBlock"
-  val viewedDDInterrupt: String = "vatViewChangeHasViewedDDInterrupt"
+trait MockDDInterruptPredicate extends BaseSpec {
 
-  object HonestyDeclaration {
-    val key = "mtdVatHonestyDeclaration"
-    def format(vrn: String, periodKey: String): String = s"$vrn-$periodKey"
-  }
+  lazy val mockDDInterruptPredicate: DDInterruptPredicate = new DDInterruptPredicate(
+      messagesApi,
+      ec,
+      mockAppConfig
+    )
+
+
 
 }

@@ -18,8 +18,9 @@ package controllers
 
 import common.SessionKeys.{HonestyDeclaration => SessionKeys}
 import config.{AppConfig, ErrorHandler}
-import controllers.predicates.{AuthPredicate, MandationStatusPredicate}
+import controllers.predicates.{AuthPredicate, DDInterruptPredicate, MandationStatusPredicate}
 import forms.HonestyDeclarationForm
+
 import javax.inject.{Inject, Singleton}
 import play.api.i18n.I18nSupport
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
@@ -34,9 +35,10 @@ class HonestyDeclarationController @Inject()(val mandationStatusCheck: Mandation
                                              authPredicate: AuthPredicate,
                                              mcc: MessagesControllerComponents,
                                              honestyDeclaration: HonestyDeclaration,
+                                             ddInterrupt: DDInterruptPredicate,
                                              implicit val appConfig: AppConfig) extends FrontendController(mcc) with I18nSupport {
 
-  def show(periodKey: String): Action[AnyContent] = (authPredicate andThen mandationStatusCheck).async { implicit user =>
+  def show(periodKey: String): Action[AnyContent] = (authPredicate andThen mandationStatusCheck andThen ddInterrupt).async { implicit user =>
     Future.successful(Ok(honestyDeclaration(periodKey, HonestyDeclarationForm.honestyDeclarationForm))
       .removingFromSession(SessionKeys.key))
   }
