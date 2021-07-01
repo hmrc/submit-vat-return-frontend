@@ -65,7 +65,7 @@ submit_form.error.box3Error = Ychwanegwch y rhif o flwch 1 at y rhif o flwch 2, 
 submit_form.error.box5Error = Tynnwch y rhif ym mlwch 4 o’r rhif ym mlwch 3, a rhowch y canlyniad fan hyn
 
 confirm_submission.title = Cadarnhau’ch Ffurflen TAW
-confirm_submission.heading = Cyflwyno Ffurflen TAW
+confirm_submission.heading = Cadarnhau manylion y Ffurflen TAW
 confirm_submission.returnDueDate = Dyddiad cau ar gyfer cyflwyno’r Ffurflen TAW: {0}
 confirm_submission.vatDetails = Manylion TAW
 confirm_submission.returnTotal = Cyfanswm y Ffurflen TAW:

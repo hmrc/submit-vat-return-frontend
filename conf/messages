@@ -67,7 +67,7 @@ submit_form.error.box3Error = Add the number from box 1 to the number from box 2
 submit_form.error.box5Error = Subtract the number in box 4 away from the number in box 3 and write it here
 
 confirm_submission.title = Confirm your VAT Return
-confirm_submission.heading = Submit return
+confirm_submission.heading = Confirm return details
 confirm_submission.returnDueDate = Return due date: {0}
 confirm_submission.vatDetails = VAT details
 confirm_submission.returnTotal = Return total:
