@@ -53,7 +53,6 @@ honesty_declaration.statement = By checking this box I commit to providing hones
 honesty_declaration.agentStatement = By checking this box I commit to providing honest and accurate information that has been approved as being correct and complete by my client.
 honesty_declaration.required = You must check the box to continue.
 
-submit_form.title = Your VAT Return
 submit_form.heading = Submit return
 submit_form.additionalInformation = Additional information
 submit_form.submitReturn = You can submit your return on the next screen.

@@ -69,10 +69,12 @@
 }
 
 @title = @{
+  val combinedTitle =
+    s"${messages("submit_form.heading")} ${displayDateRange(obligation.start, obligation.end, useShortDayFormat = true)}"
   if(form.errors.nonEmpty) {
-    messages("common.error.titlePrefix", messages("submit_form.title"))
+    messages("common.error.titlePrefix", combinedTitle)
   } else {
-    messages("submit_form.title")
+    combinedTitle
   }
 }
 
@@ -104,15 +106,16 @@
     <h1 class="govuk-heading-xl">
       <span class="govuk-caption-xl">@messages("submit_form.heading")</span>
       <span>@{displayDateRange(obligation.start, obligation.end, useShortDayFormat = true)}</span>
-      <span class="govuk-hint">@messages("confirm_submission.returnDueDate", displayDate(obligation.due))</span>
     </h1>
 
     <h2 class="govuk-heading-l">@clientName</h2>
+    <p class="govuk-body">@messages("confirm_submission.returnDueDate", displayDate(obligation.due))</p>
     <h3 class="govuk-heading-s">@messages("confirm_submission.vatDetails")</h3>
+    <hr class="govuk-section-break govuk-section-break--visible">
 
     @formAction(action = controllers.routes.SubmitFormController.submit(periodKey)){
 
-    <dl class="govuk-summary-list govuk-summary-list--no-border">
+    <dl class="govuk-summary-list">
 
         @boxRow(
             "box-one", "box1", "confirm_submission.boxOne",
@@ -136,10 +139,9 @@
         )
 
     </dl>
-    <hr class="govuk-section-break govuk-section-break--l govuk-section-break--visible">
     <h3 class="govuk-heading-s" id="additionalInfo">@messages("submit_form.additionalInformation")</h3>
-
-    <dl class="govuk-summary-list govuk-summary-list--no-border">
+    <hr class="govuk-section-break govuk-section-break--visible">
+    <dl class="govuk-summary-list">
 
         @if(flatRateScheme) {
             @boxRow(
@@ -167,7 +169,6 @@
         )
 
     </dl>
-    <hr class="govuk-section-break govuk-section-break--l govuk-section-break--visible">
 
     <p class="govuk-body" id="next-screen-submit">@messages("submit_form.submitReturn")</p>
 

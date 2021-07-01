@@ -79,13 +79,12 @@ class SubmitFormViewSpec extends ViewBaseSpec {
       }
 
       "have the correct page title" in {
-        document.title shouldBe "Your VAT Return - Business tax account - GOV.UK"
+        document.title shouldBe s"$submitReturn 12 Jan to 12 Apr 2019 - Business tax account - GOV.UK"
       }
 
       "have the correct title" in {
         elementText("h1 > span:nth-of-type(1)") shouldBe submitReturn
         elementText("h1 > span:nth-of-type(2)") shouldBe "12 Jan to 12 Apr 2019"
-        elementText("h1 > span:nth-of-type(3)") shouldBe returnDue("12 May 2019")
       }
 
       s"the back link is displayed with the correct href" in {
@@ -96,6 +95,10 @@ class SubmitFormViewSpec extends ViewBaseSpec {
 
       "display the business name" in {
         elementText("h2") shouldBe "ABC Studios"
+      }
+
+      "display the return due date" in {
+        elementText("p.govuk-body:nth-child(4)") shouldBe returnDue("12 May 2019")
       }
 
       "state 'VAT details'" in {
@@ -211,7 +214,7 @@ class SubmitFormViewSpec extends ViewBaseSpec {
       lazy implicit val document: Document = Jsoup.parse(view.body)
 
       "have the correct page title" in {
-        document.title shouldBe "Error: Your VAT Return - Business tax account - GOV.UK"
+        document.title shouldBe s"Error: $submitReturn 12 Jan to 12 Apr 2019 - Business tax account - GOV.UK"
       }
 
       "display an error summary" in {
