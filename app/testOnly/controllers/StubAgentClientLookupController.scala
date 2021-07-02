@@ -17,7 +17,9 @@
 package testOnly.controllers
 
 import auth.AuthKeys
+import common.SessionKeys
 import config.AppConfig
+
 import javax.inject.Inject
 import play.api.i18n.I18nSupport
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
@@ -49,7 +51,7 @@ class StubAgentClientLookupController @Inject()(mcc: MessagesControllerComponent
     StubAgentClientLookupForm.form.bindFromRequest().fold(
       error => InternalServerError(s"Failed to bind model. Error: $error"),
       success => Redirect(success.redirectUrl)
-        .addingToSession(AuthKeys.agentSessionVrn -> success.vrn)
+        .addingToSession(AuthKeys.agentSessionVrn -> success.vrn, SessionKeys.viewedDDInterrupt -> "true")
     )
   }
 }
