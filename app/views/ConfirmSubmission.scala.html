@@ -112,12 +112,15 @@
   if(nIProtocolEnabled) ".NIProtocol" else ""
 }
 
-@mainTemplate(pageTitle = messages("confirm_submission.title"), appConfig = appConfig, user = Some(user)) {
+@govUkBackLink = {
+@govukBackLink(BackLink(
+content = Text(messages("common.back")),
+href = controllers.routes.SubmitFormController.show(viewModel.periodKey).url
+))
+}
 
-  @govukBackLink(BackLink(
-    content = Text(messages("common.back")),
-    href = controllers.routes.SubmitFormController.show(viewModel.periodKey).url
-  ))
+
+@mainTemplate(pageTitle = messages("confirm_submission.title"), appConfig = appConfig, backLinkContent = Some(govUkBackLink), user = Some(user)) {
 
     <h1 class="govuk-heading-xl">
     <span class="govuk-caption-xl">@messages("confirm_submission.heading")</span>
