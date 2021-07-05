@@ -63,5 +63,5 @@ class MockConfig(implicit val runModeConfiguration: Configuration) extends AppCo
   override val gtmContainer: String = "x"
 
   override val platformHost: String = "platform.host"
-  override val vatSummaryHost: String = "vat-summary-frontend.host"
+  override val directDebitInterruptUrl: String = "/directDebitUrl"
 }

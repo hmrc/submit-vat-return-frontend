@@ -34,7 +34,7 @@ class DDInterruptPredicate @Inject()(val messagesApi: MessagesApi,
       if(request.session.get(viewedDDInterrupt).isDefined) {
         Future.successful(Right(request))
       } else {
-        Future.successful(Left(Redirect(appConfig.vatSummaryHost + "/vat-through-software/direct-debit-interrupt?redirectUrl="
+        Future.successful(Left(Redirect(s"${appConfig.directDebitInterruptUrl}?redirectUrl="
           + appConfig.platformHost + request.uri)))
       }
 }

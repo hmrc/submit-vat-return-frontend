@@ -22,7 +22,6 @@ import forms.HonestyDeclarationForm
 import mocks.{MockAuth, MockDDInterruptPredicate, MockMandationPredicate}
 import play.api.data.Form
 import play.api.http.Status
-import play.api.test.FakeRequest
 import play.api.test.Helpers.contentType
 import play.api.test.Helpers._
 import views.html.HonestyDeclaration
@@ -92,8 +91,7 @@ class HonestyDeclarationControllerSpec extends BaseSpec with MockAuth with MockM
       }
 
       "redirect to the correct redirect location" in {
-        redirectLocation(result) shouldBe Some(mockAppConfig.vatSummaryHost + "/vat-through-software/direct-debit-interrupt?redirectUrl="
-          + mockAppConfig.platformHost)
+        redirectLocation(result) shouldBe Some(s"${mockAppConfig.directDebitInterruptUrl}?redirectUrl=${mockAppConfig.platformHost}")
       }
     }
 
