@@ -35,17 +35,19 @@
   }
 }
 
+@govUkBackLink = {
+@govukBackLink(BackLink(
+content = Text(messages("common.back")),
+href = appConfig.returnDeadlinesUrl
+))
+}
+
 @mainTemplate(
     if(form.errors.nonEmpty) messages("common.error.titlePrefix",
         messages("honesty_declaration.title")) else messages("honesty_declaration.title"),
     appConfig = appConfig,
+    backLinkContent = Some(govUkBackLink),
     user = Some(user)) {
-
-
-    @govukBackLink(BackLink(
-        content = Text(messages("common.back")),
-        href = appConfig.returnDeadlinesUrl
-    ))
 
     @if(form.hasErrors) {
         @govukErrorSummary(ErrorSummary(

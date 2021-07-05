@@ -36,8 +36,8 @@ class ConfirmSubmissionViewSpec extends ViewBaseSpec {
       "#box-four", "#box-five", "#box-six",
       "#box-seven", "#box-eight", "#box-nine"
     )
-    val backLink = "#content > a"
-    val returnTotalHeading = "#content > h2:nth-child(10)"
+    val backLink = "body > div > a"
+    val returnTotalHeading = "#content > h2:nth-child(9)"
     val returnDueDate = "#content > h1 > span.govuk-caption-m"
     val changeReturnLink = "#change"
     val submitVatReturnHeading = "#content > article > section > h3.bold-medium"
@@ -46,7 +46,7 @@ class ConfirmSubmissionViewSpec extends ViewBaseSpec {
 
     val declarationHeader = "#content > h2.govuk-heading-m"
     val nonAgentDeclarationText = "#content > div > strong"
-    val agentDeclarationText = "#content > p:nth-child(15)"
+    val agentDeclarationText = "#content > p:nth-child(14)"
     val noticeImage = "#content > div > span"
     val noticeText = "#content > div > strong > span"
 

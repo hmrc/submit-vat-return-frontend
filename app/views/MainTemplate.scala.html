@@ -32,6 +32,7 @@ hmrcTrackingConsentSnippet: HmrcTrackingConsentSnippet)
 
 @(pageTitle: String,
   appConfig: AppConfig,
+  backLinkContent: Option[Html] = None,
   serviceName: Option[String] = None,
   showLogout: Boolean = true,
   feedbackOnSignOut: Boolean = true,
@@ -68,7 +69,8 @@ language = if (messages.lang.code == "cy") Cy else En
 <div class="govuk-body govuk-!-margin-bottom-0">
     @serviceInfoContent
 </div>
-@languageSelect
+    @languageSelect
+    @backLinkContent
 }
 
 @head = {

@@ -81,17 +81,19 @@
 @niProtocolSuffix = @{
   if(nIProtocolEnabled) ".NIProtocol" else ""
 }
+@govUkBackLink = {
+@govukBackLink(BackLink(
+href = controllers.routes.HonestyDeclarationController.show(periodKey).url,
+content = Text(messages("common.back"))
+))
+}
 
 @mainTemplate(
     pageTitle = title,
     appConfig = appConfig,
+    backLinkContent = Some(govUkBackLink),
     user = Some(user)
 ) {
-
-  @govukBackLink(BackLink(
-      href = controllers.routes.HonestyDeclarationController.show(periodKey).url,
-      content = Text(messages("common.back"))
-  ))
 
   @if(form.hasErrors) {
     @govukErrorSummary(ErrorSummary(
