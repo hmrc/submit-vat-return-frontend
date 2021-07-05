@@ -36,9 +36,9 @@ class SubmitFormViewSpec extends ViewBaseSpec {
       "#box-four", "#box-five", "#box-six",
       "#box-seven", "#box-eight", "#box-nine"
     )
-    val backLink = "#content > a"
+    val backLink = "body > div > a"
     val returnTotalHeading = "#content > article > section > section:nth-child(6) > div > h3"
-    val returnDueDate = "#content > article > section > section:nth-child(6) > div > p"
+    val returnDueDate = "#content > article > section > section:nth-child(5) > div > p"
     val changeReturnLink = "#content > article > section > section:nth-child(6) > div > a"
     val submitVatReturnHeading = "#content > article > section > h3.bold-medium"
     val submitReturnInformation = "#content > article > section > p"
@@ -98,7 +98,7 @@ class SubmitFormViewSpec extends ViewBaseSpec {
       }
 
       "display the return due date" in {
-        elementText("p.govuk-body:nth-child(4)") shouldBe returnDue("12 May 2019")
+        elementText("#content > p") shouldBe returnDue("12 May 2019")
       }
 
       "state 'VAT details'" in {
