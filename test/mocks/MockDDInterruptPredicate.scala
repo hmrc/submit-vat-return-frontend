@@ -18,15 +18,8 @@ package mocks
 
 import base.BaseSpec
 import controllers.predicates.DDInterruptPredicate
-
 trait MockDDInterruptPredicate extends BaseSpec {
-
   lazy val mockDDInterruptPredicate: DDInterruptPredicate = new DDInterruptPredicate(
-      messagesApi,
-      ec,
-      mockAppConfig
-    )
-
-
-
+    mcc
+  )
 }

@@ -18,23 +18,21 @@ package controllers.predicates
 
 import common.SessionKeys.viewedDDInterrupt
 import config.AppConfig
-import controllers.Assets.Redirect
-import models.auth.User
-import play.api.i18n.{I18nSupport, MessagesApi}
-import play.api.mvc.{ActionRefiner, Result}
+import play.api.mvc.{AnyContent, MessagesControllerComponents, Request, Result}
+import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendController
 
 import javax.inject.Inject
-import scala.concurrent.{ExecutionContext, Future}
+import scala.concurrent.Future
 
 
-class DDInterruptPredicate @Inject()(val messagesApi: MessagesApi,
-                                     implicit val executionContext: ExecutionContext,
-                                     implicit val appConfig: AppConfig) extends ActionRefiner[User, User] with I18nSupport {
-    override def refine[A](request: User[A]): Future[Either[Result, User[A]]] =
-      if(request.session.get(viewedDDInterrupt).isDefined) {
-        Future.successful(Right(request))
-      } else {
-        Future.successful(Left(Redirect(s"${appConfig.directDebitInterruptUrl}?redirectUrl="
-          + appConfig.platformHost + request.uri)))
-      }
+class DDInterruptPredicate @Inject()(val mcc: MessagesControllerComponents)(implicit appConfig: AppConfig) extends FrontendController(mcc) {
+  def interruptCheck(block: Request[AnyContent] => Future[Result])
+                    (implicit request: Request[AnyContent]): Future[Result] = {
+    if (request.session.get(viewedDDInterrupt).isDefined) {
+      block(request)
+    } else {
+      Future.successful(Redirect(s"${appConfig.directDebitInterruptUrl}?redirectUrl="
+        + appConfig.platformHost + request.uri))
+    }
+  }
 }

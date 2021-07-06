@@ -15,26 +15,41 @@
  */
 
 package controllers.predicates
-
-import common.SessionKeys
-import controllers.Assets.Redirect
 import mocks.{MockAuth, MockDDInterruptPredicate}
-import models.auth.User
-
+import play.api.mvc.{AnyContent, Request, Result}
+import play.mvc.Http.Status
+import play.api.test.Helpers._
+import play.api.test.FakeRequest
+import play.api.mvc.Results.Ok
+import scala.concurrent.Future
 class DDInterruptPredicateSpec extends MockAuth with MockDDInterruptPredicate {
 
-  "The DDInterruptPredicate" should {
+  def target(request: Request[AnyContent]): Future[Result] = mockDDInterruptPredicate.interruptCheck({
+    _ => Ok("Welcome")
+  })(request)
 
-    "allow the request to pass through when the user has the DD session value" in {
-      val userWithSession =
-        User("999999999", arn = Some("XARN1234567"))(fakeRequest.withSession(SessionKeys.viewedDDInterrupt -> "true"))
-      await(mockDDInterruptPredicate.refine(userWithSession)) shouldBe Right(userWithSession)
+  ".interruptCheck" when {
+
+    "the user has the DDInterrupt viewed value of true in session" should {
+
+      "allow the user to pass through the predicate" in {
+
+        val result = target(ddRequest)
+        status(result) shouldBe Status.OK
+      }
     }
 
-    "redirect the request to the DDInterruptController when the user does not have the DD session value" in {
-      await(mockDDInterruptPredicate.refine(user)) shouldBe
-        Left(Redirect(s"${mockAppConfig.directDebitInterruptUrl}?redirectUrl=${mockAppConfig.platformHost}"))
+    "the user has no interrupt value in session" should {
+
+      lazy val result = target(FakeRequest("GET","/homepage"))
+
+      "the user should be redirected" in {
+        status(result) shouldBe Status.SEE_OTHER
+      }
+
+      "check the redirect location" in {
+        redirectLocation(result) shouldBe Some(s"${mockAppConfig.directDebitInterruptUrl}?redirectUrl=${mockAppConfig.platformHost}/homepage")
+      }
     }
   }
-
 }

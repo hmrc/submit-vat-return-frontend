@@ -38,9 +38,11 @@ class HonestyDeclarationController @Inject()(val mandationStatusCheck: Mandation
                                              ddInterrupt: DDInterruptPredicate,
                                              implicit val appConfig: AppConfig) extends FrontendController(mcc) with I18nSupport {
 
-  def show(periodKey: String): Action[AnyContent] = (authPredicate andThen mandationStatusCheck andThen ddInterrupt).async { implicit user =>
-    Future.successful(Ok(honestyDeclaration(periodKey, HonestyDeclarationForm.honestyDeclarationForm))
-      .removingFromSession(SessionKeys.key))
+  def show(periodKey: String): Action[AnyContent] = (authPredicate andThen mandationStatusCheck).async {
+    implicit user => ddInterrupt.interruptCheck { _ =>
+      Future.successful(Ok(honestyDeclaration(periodKey, HonestyDeclarationForm.honestyDeclarationForm))
+        .removingFromSession(SessionKeys.key))
+    }
   }
 
   def submit(periodKey: String): Action[AnyContent] = (authPredicate andThen mandationStatusCheck).async { implicit user =>
