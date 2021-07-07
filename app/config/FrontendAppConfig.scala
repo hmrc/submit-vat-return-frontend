@@ -58,6 +58,8 @@ trait AppConfig {
   val vatSubscriptionBaseUrl: String
   val maximum9BoxReturnBoxRatio: Double
   val gtmContainer: String
+  val platformHost: String
+  val directDebitInterruptUrl : String
 }
 
 @Singleton
@@ -108,12 +110,13 @@ class FrontendAppConfig @Inject()(configuration: Configuration, servicesConfig: 
     s"$governmentGatewayHost/bas-gateway/sign-out-without-state?continue=${exitSurveyUrl(identifier)}"
 
   override lazy val vatSummaryUrl: String = getString(ConfigKeys.vatSummaryHost) + getString(ConfigKeys.vatSummaryUrl)
+  override lazy val directDebitInterruptUrl: String = getString(ConfigKeys.vatSummaryHost) + getString(ConfigKeys.vatSummaryDirectDebitUrl)
   override lazy val returnDeadlinesUrl: String = getString(ConfigKeys.viewVatReturnsHost) + getString(ConfigKeys.returnDeadlinesUrl)
 
   override lazy val viewSubmittedReturnUrl: String = getString(ConfigKeys.viewVatReturnsHost) + getString(ConfigKeys.submittedReturnsUrl)
 
   // Agent Client Lookup
-  private lazy val platformHost = getString(ConfigKeys.platformHost)
+  override lazy val platformHost = getString(ConfigKeys.platformHost)
   private lazy val agentClientLookupRedirectUrl: String => String = uri => SafeRedirectUrl(platformHost + uri).encodedUrl
   private lazy val agentClientLookupHost = getString(ConfigKeys.vatAgentClientLookupFrontendHost)
   override lazy val agentClientLookupStartUrl: String => String = uri =>

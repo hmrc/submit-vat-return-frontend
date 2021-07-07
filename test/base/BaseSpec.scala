@@ -57,6 +57,8 @@ trait BaseSpec extends WordSpec with Matchers with GuiceOneAppPerSuite with Mock
     FakeRequest().withSession(SessionKeys.insolventWithoutAccessKey -> "true")
   lazy val futureInsolvencyRequest: FakeRequest[AnyContentAsEmpty.type] =
     FakeRequest().withSession(SessionKeys.insolventWithoutAccessKey -> "false", SessionKeys.futureInsolvencyBlock -> "true")
+  lazy val ddRequest: FakeRequest[AnyContentAsEmpty.type] =
+    FakeRequest().withSession(SessionKeys.viewedDDInterrupt -> "true")
 
   val vrn: String = "999999999"
   val arn = "ABCD12345678901"
