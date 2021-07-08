@@ -34,7 +34,7 @@ case class SubmitVatReturnForm ()(implicit messages: Messages){
   val minBox5Value: BigDecimal      = 0.00
   val maxBox5Value: BigDecimal      = 99999999999.99
 
-  private def toBigDecimal(boxId : Int): String => BigDecimal = (text: String) => BigDecimal.apply(text)
+  private def toBigDecimal(boxId : Int): String => BigDecimal = (text: String) => BigDecimal.apply(text.stripPrefix("£"))
   private def fromBigDecimal(boxId : Int): BigDecimal => String = (bd: BigDecimal) => bd.toString()
   private def validNumber(boxId : Int): Constraint[String] = validBigDecimal(messages("submit_form.error.emptyError", boxId),
     messages("submit_form.error.formatCheckError", boxId))
