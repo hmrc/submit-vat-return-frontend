@@ -28,24 +28,6 @@ notFound.message = Gwiriwch eich bod wedi nodi’r cyfeiriad gwe cywir.
 error.required = Nodwch werth
 error.summary.title = Mae problem wedi codi
 
-banner.newService = Gwasanaeth newydd yw hwn – bydd eich
-banner.feedback = adborth
-banner.feedbackImprove = yn ein helpu i’w wella.
-banner.phaseName = BETA
-
-breadcrumbs.bta = Cyfrif Treth Busnes
-
-btaNavLinks.home = Hafan
-btaNavLinks.manageAccount = Rheoli’r cyfrif
-btaNavLinks.messages = Negeseuon
-btaNavLinks.helpAndContact = Cymorth a chysylltu
-
-session_expired.title = Mae’ch sesiwn wedi’i therfynu
-session_expired.heading = Mae’ch sesiwn wedi’i therfynu
-session_expired.helpOne = Bydd yn rhaid i chi
-session_expired.helpTwo = fewngofnodi
-session_expired.helpThree = gan ddefnyddio’ch Dynodydd Defnyddiwr (ID) ar gyfer Porth y Llywodraeth.
-
 honesty_declaration.title = Datganiad gonestrwydd
 honesty_declaration.statement = Drwy roi tic yn y blwch hwn, rwy’n ymrwymo i ddarparu gwybodaeth onest a chywir.
 honesty_declaration.agentStatement = Drwy roi tic yn y blwch hwn, rwy’n ymrwymo i ddarparu gwybodaeth onest a chywir y mae fy nghleient wedi cadarnhau ei bod yn gywir a chyflawn.

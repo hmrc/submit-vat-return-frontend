@@ -30,24 +30,6 @@ badRequest.message = Please check that you have entered the correct web address.
 error.required = Please enter a value
 error.summary.title = There is a problem
 
-banner.newService = This is a new service – your
-banner.feedback = feedback
-banner.feedbackImprove = will help us to improve it.
-banner.phaseName = BETA
-
-breadcrumbs.bta = Business tax account
-
-btaNavLinks.home = Home
-btaNavLinks.manageAccount = Manage account
-btaNavLinks.messages = Messages
-btaNavLinks.helpAndContact = Help and contact
-
-session_expired.title = Your session has timed out
-session_expired.heading = Your session has timed out
-session_expired.helpOne = You’ll have to
-session_expired.helpTwo = sign in
-session_expired.helpThree = using your Government Gateway ID.
-
 honesty_declaration.title = Honesty declaration
 honesty_declaration.statement = By checking this box I commit to providing honest and accurate information.
 honesty_declaration.agentStatement = By checking this box I commit to providing honest and accurate information that has been approved as being correct and complete by my client.
