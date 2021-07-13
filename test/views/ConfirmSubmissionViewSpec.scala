@@ -36,17 +36,17 @@ class ConfirmSubmissionViewSpec extends ViewBaseSpec {
       "#box-four", "#box-five", "#box-six",
       "#box-seven", "#box-eight", "#box-nine"
     )
-    val backLink = "body > div > a"
-    val returnTotalHeading = "#content > h2:nth-child(9)"
+    val backLink = ".govuk-back-link"
     val returnDueDate = "#content > h1 > span.govuk-caption-m"
+    val returnTotalHeading = "#return-total-heading"
     val changeReturnLink = "#change"
     val submitVatReturnHeading = "#content > article > section > h3.bold-medium"
     val submitReturnInformation = "#content > article > section > p"
     val submitButton = "#content > form > button"
 
-    val declarationHeader = "#content > h2.govuk-heading-m"
+    val declarationHeader = "#declaration-heading"
     val nonAgentDeclarationText = "#content > div > strong"
-    val agentDeclarationText = "#content > p:nth-child(14)"
+    val agentDeclarationText = "#agent-declaration"
     val noticeImage = "#content > div > span"
     val noticeText = "#content > div > strong > span"
 
@@ -127,33 +127,29 @@ class ConfirmSubmissionViewSpec extends ViewBaseSpec {
               messages, mockAppConfig, user)
             lazy implicit val document: Document = Jsoup.parse(view.body)
 
-            s"the title is displayed as ${viewMessages.title}" in {
-              document.title shouldBe viewMessages.title
+            s"display the title as ${viewMessages.principalTitle}" in {
+              document.title shouldBe viewMessages.principalTitle
             }
 
-            s"the back link is displayed with the correct href" in {
+            s"display the back link with the correct href" in {
               elementText(Selectors.backLink) shouldBe viewMessages.back
               element(Selectors.backLink).attr("href") shouldBe
                 controllers.routes.SubmitFormController.show(periodKey).url
             }
 
-            s"the smaller ${viewMessages.returnDueDate} heading" in {
-              elementText("#content > h1 > span.govuk-caption-m") shouldBe s"${viewMessages.returnDueDate} 12 May 2019"
-            }
-
-            s"the heading is displayed as ${viewMessages.heading}" in {
+            s"display the heading as ${viewMessages.heading}" in {
               elementText("#content > h1 > span.govuk-caption-xl") shouldBe viewMessages.heading
             }
 
-            "the obligation period is displayed" in {
+            "display the obligation period" in {
               elementText("h1") contains "12 Jan to 12 Apr 2019"
             }
 
-            s"the name is displayed as ${viewModel.userName}" in {
+            s"display the name as ${viewModel.userName}" in {
               elementText("h2") shouldBe viewModel.userName.getOrElse("")
             }
 
-            s"the subheading vat detail is displayed as ${viewMessages.subHeadingVatDetails}" in {
+            s"display the subheading vat detail is ${viewMessages.subHeadingVatDetails}" in {
               elementText("h3") shouldBe viewMessages.subHeadingVatDetails
             }
 
@@ -202,18 +198,13 @@ class ConfirmSubmissionViewSpec extends ViewBaseSpec {
               expectedInformation.indices.foreach(i => elementText(boxElement(Selectors.boxes(i), 3)) shouldBe expectedInformation(i))
             }
 
-            s"the return total heading is shown as ${viewMessages.returnTotal} ${viewModel.returnDetail.box5}" in {
+            s"show the return total heading as ${viewMessages.returnTotal} ${viewModel.returnDetail.box5}" in {
               elementText(Selectors.returnTotalHeading) shouldBe s"${viewMessages.returnTotal} £12,000.02"
             }
 
-            s"the return due date is shown as ${viewMessages.returnDueDate}" in {
-              elementText(Selectors.returnDueDate) shouldBe s"${viewMessages.returnDueDate} 12 May 2019"
-            }
-
-
             "have the change return details link which" should {
 
-              s"the redirect url to ${controllers.routes.SubmitFormController.show(periodKey).url}" in {
+              s"have the redirect url to ${controllers.routes.SubmitFormController.show(periodKey).url}" in {
                 element(Selectors.changeReturnLink).attr("href") shouldBe
                   controllers.routes.SubmitFormController.show(periodKey).url
               }
@@ -227,24 +218,24 @@ class ConfirmSubmissionViewSpec extends ViewBaseSpec {
               elementText(Selectors.declarationHeader) shouldBe viewMessages.declarationHeading
             }
 
-            "display the correct declaration which" should {
+            "display the correct declaration" which {
 
-              "display the warning notice which" should {
+              "displays the warning notice" which {
 
-                "display the image" in {
+                "displays the image" in {
                   element(Selectors.noticeImage).hasClass("govuk-warning-text__icon") shouldBe true
                 }
 
-                "display the hidden text" in {
+                "displays the hidden text" in {
                   elementText(Selectors.noticeText) shouldBe viewMessages.warning
                 }
               }
 
-              "display the correct text" in {
+              "displays the correct text" in {
                 elementText(Selectors.nonAgentDeclarationText) shouldBe viewMessages.warningNonAgentDeclarationText
               }
 
-              "display the text in bold" in {
+              "displays the text in bold" in {
                 element(Selectors.nonAgentDeclarationText).hasClass("govuk-warning-text__text") shouldBe true
               }
             }
@@ -405,13 +396,13 @@ class ConfirmSubmissionViewSpec extends ViewBaseSpec {
       lazy val view = confirmSubmissionView(viewModel, isAgent = false, nIProtocolEnabled = false)(messages, mockAppConfig, user)
       lazy implicit val document: Document = Jsoup.parse(view.body)
 
-      s"box 6 description displays as ${box6NonFlatRateSchemeText}" in {
+      s"display the box 6 description as ${box6NonFlatRateSchemeText}" in {
         elementText(boxElement(Selectors.boxes(5), 2)) shouldBe box6NonFlatRateSchemeText
       }
 
     }
 
-    "user is an agent" should {
+    "the user is an agent" should {
 
       val viewModel: ConfirmSubmissionViewModel = ConfirmSubmissionViewModel(
         vatReturnValid(false),
@@ -426,13 +417,13 @@ class ConfirmSubmissionViewSpec extends ViewBaseSpec {
         document.title() shouldBe viewMessages.agentTitle
       }
 
-      "display the correct declaration which" should {
+      "display the correct declaration" which {
 
-        "display the correct text" in {
+        "displays the correct text" in {
           elementText(Selectors.agentDeclarationText) shouldBe viewMessages.agentDeclarationText
         }
 
-        "not display the text in bold" in {
+        "does not display the text in bold" in {
           element(Selectors.agentDeclarationText).hasClass("govuk-body") shouldBe true
         }
       }
