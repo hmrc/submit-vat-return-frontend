@@ -21,95 +21,95 @@
 @import uk.gov.hmrc.hmrcfrontend.views.config.StandardBetaBanner
 
 @this(govukLayout: GovukLayout,
-hmrcLanguageSelect: HmrcLanguageSelect,
-hmrcTimeoutDialog: HmrcTimeoutDialog,
-standardBetaBanner: StandardBetaBanner,
-govukHeader: GovukHeader,
-hmrcStandardHeader: HmrcStandardHeader,
-hmrcStandardFooter: HmrcStandardFooter,
-hmrcReportTechnicalIssue: HmrcReportTechnicalIssue,
-hmrcTrackingConsentSnippet: HmrcTrackingConsentSnippet)
+      hmrcLanguageSelect: HmrcLanguageSelect,
+      hmrcTimeoutDialog: HmrcTimeoutDialog,
+      standardBetaBanner: StandardBetaBanner,
+      hmrcStandardHeader: HmrcStandardHeader,
+      hmrcStandardFooter: HmrcStandardFooter,
+      hmrcReportTechnicalIssue: HmrcReportTechnicalIssue,
+      hmrcTrackingConsentSnippet: HmrcTrackingConsentSnippet)
 
 @(pageTitle: String,
-  appConfig: AppConfig,
-  backLinkContent: Option[Html] = None,
-  serviceName: Option[String] = None,
-  showLogout: Boolean = true,
-  feedbackOnSignOut: Boolean = true,
-  serviceInfoContent: Html = HtmlFormat.empty,
-  user: Option[User[_]] = None)(mainContent: Html)(implicit request: Request[_], messages: Messages)
+    appConfig: AppConfig,
+    backLinkContent: Option[Html] = None,
+    serviceName: Option[String] = None,
+    showLogout: Boolean = true,
+    feedbackOnSignOut: Boolean = true,
+    serviceInfoContent: Html = HtmlFormat.empty,
+    user: Option[User[_]] = None)(mainContent: Html)(implicit request: Request[_], messages: Messages)
 
 @titleServiceName = @{
-  user.fold(messages("navTitle.vat"))(u => if(u.isAgent) messages("navTitle.agent") else messages("navTitle.nonAgent"))
+    user.fold(messages("navTitle.vat"))(u => if(u.isAgent) messages("navTitle.agent") else messages("navTitle.nonAgent"))
 }
 
 @scripts = {
- <script src='@routes.Assets.at("lib/govuk-frontend/govuk/all.js")'></script>
- <script src='@routes.Assets.at("lib/hmrc-frontend/hmrc/all.js")'></script>
- <script>window.GOVUKFrontend.initAll();</script>
- <script>window.HMRCFrontend.initAll();</script>
+    <script src='@routes.Assets.at("lib/govuk-frontend/govuk/all.js")'></script>
+    <script src='@routes.Assets.at("lib/hmrc-frontend/hmrc/all.js")'></script>
+    <script>window.GOVUKFrontend.initAll();</script>
+    <script>window.HMRCFrontend.initAll();</script>
 }
 
 @getHelpHtml = @{
-hmrcReportTechnicalIssue(ReportTechnicalIssue(
-language = if (messages.lang.code == "cy") Cy else En
-))
+    hmrcReportTechnicalIssue(ReportTechnicalIssue(
+      language = if (messages.lang.code == "cy") Cy else En
+    ))
 }
 
 @languageSelect = {
- @hmrcLanguageSelect(LanguageSelect(
-  language = if (messages.lang.language == "en") En else Cy,
-  languageLinks =
- En -> appConfig.routeToSwitchLanguage("english").url,
- Cy -> appConfig.routeToSwitchLanguage("cymraeg").url
- ))
+    @hmrcLanguageSelect(LanguageSelect(
+      language = if (messages.lang.language == "en") En else Cy,
+      languageLinks =
+      En -> appConfig.routeToSwitchLanguage("english").url,
+      Cy -> appConfig.routeToSwitchLanguage("cymraeg").url
+    ))
 }
 
 @beforeContentHtml = {
-<div class="govuk-body govuk-!-margin-bottom-0">
-    @serviceInfoContent
-</div>
+    <div class="govuk-body govuk-!-margin-bottom-0">
+        @serviceInfoContent
+    </div>
     @languageSelect
     @backLinkContent
 }
 
 @head = {
-@hmrcTrackingConsentSnippet()
+    @hmrcTrackingConsentSnippet()
 
-<link rel="stylesheet" type="text/css" href='@routes.Assets.at("stylesheets/application.css")'>
+    <link rel="stylesheet" type="text/css" href='@routes.Assets.at("stylesheets/application.css")'>
 
-@if(showLogout) {
-@hmrcTimeoutDialog(TimeoutDialog(
-timeout = Some(appConfig.timeoutPeriod),
-countdown = Some(appConfig.timeoutCountdown),
-signOutUrl = Some(routes.SignOutController.signOut(feedbackOnSignOut).url),
-keepAliveUrl = Some("#"),
-signOutButtonText = Some(messages("base.sign-out"))
-))
-}
+    @if(showLogout) {
+        @hmrcTimeoutDialog(TimeoutDialog(
+          timeout = Some(appConfig.timeoutPeriod),
+          countdown = Some(appConfig.timeoutCountdown),
+          signOutUrl = Some(routes.SignOutController.signOut(feedbackOnSignOut).url),
+          keepAliveUrl = Some("#"),
+          signOutButtonText = Some(messages("base.sign-out"))
+        ))
+    }
 }
 
 @header = @{
-hmrcStandardHeader(
-    serviceName = Some(titleServiceName),
-    signOutUrl = if(showLogout) Some(routes.SignOutController.signOut(feedbackOnSignOut).url) else None,
-    phaseBanner = Some(standardBetaBanner(url = appConfig.betaFeedbackUrl)),
-    displayHmrcBanner = false
+    hmrcStandardHeader(
+      serviceName = Some(titleServiceName),
+      signOutUrl = if(showLogout) Some(routes.SignOutController.signOut(feedbackOnSignOut).url) else None,
+      phaseBanner = Some(standardBetaBanner(url = appConfig.betaFeedbackUrl)),
+      displayHmrcBanner = false
     )
 }
 
 @content = {
-<div id="content" class="govuk-!-margin-bottom-6">
-    @mainContent
-</div>
-@getHelpHtml
+    <div id="content" class="govuk-!-margin-bottom-6">
+        @mainContent
+    </div>
+
+    @getHelpHtml
 }
 
 @govukLayout(
-pageTitle = Some(messages("common.pageTitle", pageTitle, titleServiceName)),
-headBlock = Some(head),
-headerBlock = Some(header),
-beforeContentBlock = Some(beforeContentHtml),
-footerBlock = Some(hmrcStandardFooter(accessibilityStatementUrl = Some(appConfig.accessibilityLinkUrl))),
-bodyEndBlock = Some(scripts)
+    pageTitle = Some(messages("common.pageTitle", pageTitle, titleServiceName)),
+    headBlock = Some(head),
+    headerBlock = Some(header),
+    beforeContentBlock = Some(beforeContentHtml),
+    footerBlock = Some(hmrcStandardFooter(accessibilityStatementUrl = Some(appConfig.accessibilityLinkUrl))),
+    bodyEndBlock = Some(scripts)
 )(content)
