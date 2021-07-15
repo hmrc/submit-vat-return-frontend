@@ -26,8 +26,6 @@ class MockConfig(implicit val runModeConfiguration: Configuration) extends AppCo
 
   override val reportAProblemPartialUrl: String = ""
   override val reportAProblemNonJSUrl: String = ""
-  override val betaFeedbackUrl: String = ""
-  override val betaFeedbackUnauthenticatedUrl: String = ""
   override val signInUrl: String = "sign-in-url"
   override def signOutUrl(identifier: String): String = s"/some-gg-signout-url/$identifier"
   override def exitSurveyUrl(identifier: String): String = s"/some-survey-url/$identifier"
