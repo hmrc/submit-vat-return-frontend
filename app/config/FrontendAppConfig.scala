@@ -28,8 +28,6 @@ import uk.gov.hmrc.play.bootstrap.config.ServicesConfig
 trait AppConfig {
   val reportAProblemPartialUrl: String
   val reportAProblemNonJSUrl: String
-  val betaFeedbackUrl: String
-  val betaFeedbackUnauthenticatedUrl: String
   val signInUrl: String
   val timeoutPeriod: Int
   val timeoutCountdown: Int
@@ -74,8 +72,6 @@ class FrontendAppConfig @Inject()(configuration: Configuration, servicesConfig: 
 
   lazy val reportAProblemPartialUrl = s"$contactHost/contact/problem_reports_ajax?service=$contactFormServiceIdentifier"
   lazy val reportAProblemNonJSUrl = s"$contactHost/contact/problem_reports_nonjs?service=$contactFormServiceIdentifier"
-  override lazy val betaFeedbackUrl = s"$contactHost/contact/beta-feedback"
-  override lazy val betaFeedbackUnauthenticatedUrl = s"$contactHost/contact/beta-feedback-unauthenticated"
 
   // Gov.uk guidance
   override lazy val govUkGuidanceMtdVat: String = getString(ConfigKeys.govUkGuidanceMtdVat)
@@ -116,7 +112,7 @@ class FrontendAppConfig @Inject()(configuration: Configuration, servicesConfig: 
   override lazy val viewSubmittedReturnUrl: String = getString(ConfigKeys.viewVatReturnsHost) + getString(ConfigKeys.submittedReturnsUrl)
 
   // Agent Client Lookup
-  override lazy val platformHost = getString(ConfigKeys.platformHost)
+  override lazy val platformHost: String = getString(ConfigKeys.platformHost)
   private lazy val agentClientLookupRedirectUrl: String => String = uri => SafeRedirectUrl(platformHost + uri).encodedUrl
   private lazy val agentClientLookupHost = getString(ConfigKeys.vatAgentClientLookupFrontendHost)
   override lazy val agentClientLookupStartUrl: String => String = uri =>
@@ -141,8 +137,8 @@ class FrontendAppConfig @Inject()(configuration: Configuration, servicesConfig: 
   override val features = new Features(configuration)
   override lazy val staticDateValue: String = getString(ConfigKeys.staticDateValue)
 
-  override def feedbackUrl(redirectUrl: String): String = {s"$contactHost/contact/beta-feedback?service=$contactFormServiceIdentifier" +
-    s"&backUrl=${SafeRedirectUrl(platformHost + redirectUrl).encodedUrl}"}
+  override def feedbackUrl(redirectUrl: String): String = s"$contactHost/contact/beta-feedback?service=$contactFormServiceIdentifier" +
+    s"&backUrl=${SafeRedirectUrl(platformHost + redirectUrl).encodedUrl}"
 
   override val accessibilityLinkUrl: String = getString(ConfigKeys.vatSummaryHost) + getString(ConfigKeys.vatSummaryAccessibilityUrl)
 
