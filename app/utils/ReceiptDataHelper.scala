@@ -24,7 +24,6 @@ import models.nrs.{Declaration, _}
 import models.{CustomerDetails, SubmitVatReturnModel}
 import play.api.i18n.{Messages, MessagesApi}
 import play.api.{Logger, Play}
-import uk.gov.hmrc.play.views.helpers.MoneyPounds
 
 @Singleton
 class ReceiptDataHelper @Inject()(implicit val messages: MessagesApi,
@@ -38,7 +37,7 @@ class ReceiptDataHelper @Inject()(implicit val messages: MessagesApi,
       case None => EN
     }
     
-    extractDeclaration(submitModel, customerDetails, messages.preferred(user)) match {
+    extractDeclaration(customerDetails, messages.preferred(user)) match {
       case Right(declaration) =>
         Right(ReceiptData(
           language,
@@ -72,7 +71,8 @@ class ReceiptDataHelper @Inject()(implicit val messages: MessagesApi,
     ))
   }
 
-  private def extractDeclaration(submitModel: SubmitVatReturnModel, customerDetails: Either[HttpError, CustomerDetails], messages: Messages)
+  private def extractDeclaration(customerDetails: Either[HttpError,
+                                 CustomerDetails], messages: Messages)
                                 (implicit user: User[_]): Either[HttpError, Declaration] = {
 
     val declarationAgentOrNonAgent = if (user.isAgent) "agentDeclaration" else "nonAgentDeclaration"
