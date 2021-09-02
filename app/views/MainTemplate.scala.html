@@ -42,6 +42,10 @@
     user.fold(messages("navTitle.vat"))(u => if(u.isAgent) messages("navTitle.agent") else messages("navTitle.nonAgent"))
 }
 
+@titleServiceUrl = @{
+    user.fold[Option[String]](None)(u => if(u.isAgent) Some(appConfig.manageClientUrl) else Some(appConfig.btaHomeUrl))
+}
+
 @scripts = {
     <script src='@routes.Assets.at("lib/govuk-frontend/govuk/all.js")'></script>
     <script src='@routes.Assets.at("lib/hmrc-frontend/hmrc/all.js")'></script>
@@ -91,6 +95,7 @@
 @header = @{
     hmrcStandardHeader(
       serviceName = Some(titleServiceName),
+      serviceUrl = titleServiceUrl,
       signOutUrl = if(showLogout) Some(routes.SignOutController.signOut(feedbackOnSignOut).url) else None,
       phaseBanner = Some(standardBetaBanner(url = appConfig.feedbackUrl(request.uri))),
       displayHmrcBanner = false
