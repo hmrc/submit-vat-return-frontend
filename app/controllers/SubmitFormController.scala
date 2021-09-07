@@ -93,8 +93,7 @@ class SubmitFormController @Inject()(mcc: MessagesControllerComponents,
           sessionData.flatRateScheme,
           VatObligation(sessionData.start, sessionData.end, sessionData.due, periodKey),
           SubmitVatReturnForm().nineBoxForm.fill(nineBoxModel),
-          isAgent = user.isAgent,
-          appConfig.features.nineBoxNIProtocolContentEnabled()
+          isAgent = user.isAgent
         ))
       case _ =>
         Ok(submitForm(
@@ -103,8 +102,7 @@ class SubmitFormController @Inject()(mcc: MessagesControllerComponents,
           sessionData.flatRateScheme,
           VatObligation(sessionData.start, sessionData.end, sessionData.due, periodKey),
           SubmitVatReturnForm().nineBoxForm.fill(nineBoxModel),
-          isAgent = user.isAgent,
-          appConfig.features.nineBoxNIProtocolContentEnabled()
+          isAgent = user.isAgent
         ))
     }
   }
@@ -137,8 +135,7 @@ class SubmitFormController @Inject()(mcc: MessagesControllerComponents,
                   customerDetails.hasFlatRateScheme,
                   obligation,
                   form,
-                  user.isAgent,
-                  appConfig.features.nineBoxNIProtocolContentEnabled()
+                  user.isAgent
                 )).addingToSession(SessionKeys.viewModel -> Json.toJson(viewModel).toString())
 
               } else {
@@ -178,8 +175,7 @@ class SubmitFormController @Inject()(mcc: MessagesControllerComponents,
                   sessionData.hasFlatRateScheme,
                   VatObligation(sessionData.start, sessionData.end, sessionData.due, periodKey),
                   failure,
-                  user.isAgent,
-                  appConfig.features.nineBoxNIProtocolContentEnabled())
+                  user.isAgent)
                 )
               case _ =>
                 BadRequest(submitForm(
@@ -188,8 +184,7 @@ class SubmitFormController @Inject()(mcc: MessagesControllerComponents,
                   sessionData.hasFlatRateScheme,
                   VatObligation(sessionData.start, sessionData.end, sessionData.due, periodKey),
                   failure,
-                  isAgent = user.isAgent,
-                  appConfig.features.nineBoxNIProtocolContentEnabled())
+                  isAgent = user.isAgent)
                 )
             }
           case _ => renderViewWithoutSessionData(periodKey, failure)

@@ -28,8 +28,7 @@
       govukBackLink: GovukBackLink)
 
 @(viewModel: ConfirmSubmissionViewModel,
-  isAgent: Boolean,
-  nIProtocolEnabled: Boolean)(implicit messages: Messages,
+  isAgent: Boolean)(implicit messages: Messages,
                                        appConfig: AppConfig,
                                        user: User[_])
 
@@ -109,7 +108,7 @@
 }
 
 @niProtocolSuffix = @{
-  if(nIProtocolEnabled) ".NIProtocol" else ""
+ ".NIProtocol"
 }
 
 @govUkBackLink = {

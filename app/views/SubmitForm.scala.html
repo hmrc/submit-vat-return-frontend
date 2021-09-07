@@ -33,8 +33,7 @@
   flatRateScheme: Boolean,
   obligation: VatObligation,
   form: Form[NineBoxModel],
-  isAgent: Boolean,
-  nIProtocolEnabled: Boolean)(implicit messages: Messages, appConfig: AppConfig, user: User[_])
+  isAgent: Boolean)(implicit messages: Messages, appConfig: AppConfig, user: User[_])
 
 @boxRow(divID: String, formID: String, boxTitle: String, boxDescription: String, boxAmount: String, autoCalculated: Boolean = false) = {
 <div class="govuk-summary-list__row" id=@divID>
@@ -79,7 +78,7 @@
 }
 
 @niProtocolSuffix = @{
-  if(nIProtocolEnabled) ".NIProtocol" else ""
+  ".NIProtocol"
 }
 @govUkBackLink = {
 @govukBackLink(BackLink(

@@ -33,8 +33,7 @@ class FeatureSwitchController @Inject()(mcc: MessagesControllerComponents,
   def featureSwitch: Action[AnyContent] = Action { implicit request =>
     Ok(featureSwitch(FeatureSwitchForm.form.fill(
       FeatureSwitchModel(
-        staticDateEnabled = appConfig.features.staticDateEnabled(),
-        niProtocolEnabled = appConfig.features.nineBoxNIProtocolContentEnabled()
+        staticDateEnabled = appConfig.features.staticDateEnabled()
       )
     )))
   }
@@ -48,7 +47,6 @@ class FeatureSwitchController @Inject()(mcc: MessagesControllerComponents,
 
   def handleSuccess(model: FeatureSwitchModel): Result = {
     appConfig.features.staticDateEnabled(model.staticDateEnabled)
-    appConfig.features.nineBoxNIProtocolContentEnabled(model.niProtocolEnabled)
     Redirect(routes.FeatureSwitchController.featureSwitch())
   }
 }

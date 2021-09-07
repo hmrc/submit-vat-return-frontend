@@ -50,7 +50,7 @@ class ReceiptDataHelper @Inject()(implicit val messages: MessagesApi,
 
   private def extractAnswers(submitModel: SubmitVatReturnModel)(implicit messages: Messages): Seq[Answers] = {
     val boxSixSearchKey = if (submitModel.flatRateScheme) "boxSixFlatRate" else "boxSixNoFlatRate"
-    val niProtocolSuffix = if(appConfig.features.nineBoxNIProtocolContentEnabled()) ".NIProtocol" else ""
+    val niProtocolSuffix = ".NIProtocol"
     val answerSeq = Seq(
       ("box1", messages(s"confirm_submission.boxOneDescription$niProtocolSuffix"), submitModel.box1),
       ("box2", messages(s"confirm_submission.boxTwoDescription$niProtocolSuffix"), submitModel.box2),
