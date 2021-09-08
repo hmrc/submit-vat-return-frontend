@@ -46,13 +46,6 @@
           content = Text("Use static date (2018-05-01)"),
           value = "true",
           checked = featureSwitchForm(ConfigKeys.staticDateEnabledFeature).value.contains("true")
-        ),
-        CheckboxItem(
-          id = Some(featureSwitchForm(ConfigKeys.nineBoxNIProtocolContentEnabled).name),
-          name = Some(featureSwitchForm(ConfigKeys.nineBoxNIProtocolContentEnabled).name),
-          content = Text("Enable NI protocol nine box content"),
-          value = "true",
-          checked = featureSwitchForm(ConfigKeys.nineBoxNIProtocolContentEnabled).value.contains("true")
         )
       )
     ))

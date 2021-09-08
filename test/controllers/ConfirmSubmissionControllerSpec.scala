@@ -88,7 +88,7 @@ class ConfirmSubmissionControllerSpec extends BaseSpec
   )
 
   def viewAsString(model: ConfirmSubmissionViewModel): String =
-    confirmSubmission(model, isAgent = false, nIProtocolEnabled = false)(messages, mockAppConfig, user).toString
+    confirmSubmission(model, isAgent = false)(messages, mockAppConfig, user).toString
 
   def errorViewAsString(): String = submissionError()(mockAppConfig, messages, user).toString
 
@@ -112,7 +112,6 @@ class ConfirmSubmissionControllerSpec extends BaseSpec
             ))
 
           lazy val result: Future[Result] = {
-            mockAppConfig.features.nineBoxNIProtocolContentEnabled(false)
             setupVatSubscriptionService(successCustomerInfoResponse)
             TestConfirmSubmissionController.show("18AA")(requestWithSessionData)
           }
@@ -148,7 +147,6 @@ class ConfirmSubmissionControllerSpec extends BaseSpec
             ))
 
           lazy val result: Future[Result] = {
-            mockAppConfig.features.nineBoxNIProtocolContentEnabled(false)
             setupVatSubscriptionService(vatSubscriptionResponse)
             TestConfirmSubmissionController.show("18AA")(requestWithSessionData)
           }

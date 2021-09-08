@@ -93,8 +93,7 @@ class SubmitFormControllerSpec extends BaseSpec
     flatRateScheme = true,
     obligations.obligations.head,
     form,
-    isAgent = false,
-    nIProtocolEnabled = false
+    isAgent = false
   )(messages, mockAppConfig, user).toString
 
   "SubmitFormController .show" when {
@@ -143,7 +142,6 @@ class SubmitFormControllerSpec extends BaseSpec
           ))
 
           lazy val result: Future[Result] = {
-            mockAppConfig.features.nineBoxNIProtocolContentEnabled(false)
             TestSubmitFormController.show("18AA")(requestWithSessionData)
           }
 
