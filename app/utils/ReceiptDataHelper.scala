@@ -50,17 +50,16 @@ class ReceiptDataHelper @Inject()(implicit val messages: MessagesApi,
 
   private def extractAnswers(submitModel: SubmitVatReturnModel)(implicit messages: Messages): Seq[Answers] = {
     val boxSixSearchKey = if (submitModel.flatRateScheme) "boxSixFlatRate" else "boxSixNoFlatRate"
-    val niProtocolSuffix = ".NIProtocol"
     val answerSeq = Seq(
-      ("box1", messages(s"confirm_submission.boxOneDescription$niProtocolSuffix"), submitModel.box1),
-      ("box2", messages(s"confirm_submission.boxTwoDescription$niProtocolSuffix"), submitModel.box2),
-      ("box3", messages(s"confirm_submission.boxThreeDescription$niProtocolSuffix"), submitModel.box3),
-      ("box4", messages(s"confirm_submission.boxFourDescription$niProtocolSuffix"), submitModel.box4),
-      ("box5", messages(s"confirm_submission.boxFiveDescription$niProtocolSuffix"), submitModel.box5),
+      ("box1", messages(s"confirm_submission.boxOneDescription"), submitModel.box1),
+      ("box2", messages(s"confirm_submission.boxTwoDescription"), submitModel.box2),
+      ("box3", messages(s"confirm_submission.boxThreeDescription"), submitModel.box3),
+      ("box4", messages(s"confirm_submission.boxFourDescription"), submitModel.box4),
+      ("box5", messages(s"confirm_submission.boxFiveDescription"), submitModel.box5),
       ("box6", messages(s"confirm_submission.$boxSixSearchKey"), submitModel.box6),
-      ("box7", messages(s"confirm_submission.boxSevenDescription$niProtocolSuffix"), submitModel.box7),
-      ("box8", messages(s"confirm_submission.boxEightDescription$niProtocolSuffix"), submitModel.box8),
-      ("box9", messages(s"confirm_submission.boxNineDescription$niProtocolSuffix"), submitModel.box9)
+      ("box7", messages(s"confirm_submission.boxSevenDescription"), submitModel.box7),
+      ("box8", messages(s"confirm_submission.boxEightDescription"), submitModel.box8),
+      ("box9", messages(s"confirm_submission.boxNineDescription"), submitModel.box9)
     ).map { case (questionId, question, answer) =>
       Answer(questionId, question, Some("£" + MoneyPounds(answer, 2).quantity))
     }

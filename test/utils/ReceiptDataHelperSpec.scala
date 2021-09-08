@@ -56,15 +56,15 @@ class ReceiptDataHelperSpec extends BaseSpec {
   def expectedAnswers(frs: Boolean, language: Language): Seq[Answers] = {
     def ifEnglishElse(ifEnglish: String, ifWelsh: String): String = if (language == EN) ifEnglish else ifWelsh
 
-    val box1ExpectedNIProtocol = ifEnglishElse(box1TextNIProtocol, box1TextNIProtocolWelsh)
+    val box1ExpectedNIProtocol = ifEnglishElse(box1Text, box1TextWelsh)
 
-    val box2ExpectedNIProtocol = ifEnglishElse(box2TextNIProtocol, box2TextNIProtocolWelsh)
+    val box2ExpectedNIProtocol = ifEnglishElse(box2Text, box2TextWelsh)
 
-    val box3ExpectedNIProtocol = ifEnglishElse(box3TextNIProtocol, box3TextNIProtocolWelsh)
+    val box3ExpectedNIProtocol = ifEnglishElse(box3Text, box3TextWelsh)
 
-    val box4ExpectedNIProtocol = ifEnglishElse(box4TextNIProtocol, box4TextNIProtocolWelsh)
+    val box4ExpectedNIProtocol = ifEnglishElse(box4Text, box4TextWelsh)
 
-    val box5ExpectedNIProtocol = ifEnglishElse(box5TextNIProtocol, box5TextNIProtocolWelsh)
+    val box5ExpectedNIProtocol = ifEnglishElse(box5Text, box5TextWelsh)
 
 
     val box6Expected = (frs, language) match {
@@ -74,11 +74,11 @@ class ReceiptDataHelperSpec extends BaseSpec {
       case (_, _) => "Cyfanswm gwerth y gwerthiannau a chyflenwadau eraill, ac eithrio TAW"
     }
 
-    val box7ExpectedNIProtocol = ifEnglishElse(box7TextNIProtocol, box7TextNIProtocolWelsh)
+    val box7ExpectedNIProtocol = ifEnglishElse(box7Text, box7TextWelsh)
 
-    val box8ExpectedNIProtocol = ifEnglishElse(box8TextNIProtocol, box8TextNIProtocolWelsh)
+    val box8ExpectedNIProtocol = ifEnglishElse(box8Text, box8TextWelsh)
 
-    val box9ExpectedNIProtocol = ifEnglishElse(box9TextNIProtocol, box9TextNIProtocolWelsh)
+    val box9ExpectedNIProtocol = ifEnglishElse(box9Text, box9TextWelsh)
 
     val pageTitle = ifEnglishElse(
       "You have submitted a VAT Return",

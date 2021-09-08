@@ -77,9 +77,6 @@
   }
 }
 
-@niProtocolSuffix = @{
-  ".NIProtocol"
-}
 @govUkBackLink = {
 @govukBackLink(BackLink(
 href = controllers.routes.HonestyDeclarationController.show(periodKey).url,
@@ -120,23 +117,23 @@ content = Text(messages("common.back"))
 
         @boxRow(
             "box-one", "box1", "confirm_submission.boxOne",
-            s"confirm_submission.boxOneDescription$niProtocolSuffix", "confirm_submission.boxOneAmt"
+            s"confirm_submission.boxOneDescription", "confirm_submission.boxOneAmt"
         )
         @boxRow(
             "box-two", "box2", "confirm_submission.boxTwo",
-            s"confirm_submission.boxTwoDescription$niProtocolSuffix", "confirm_submission.boxTwoAmt"
+            s"confirm_submission.boxTwoDescription", "confirm_submission.boxTwoAmt"
         )
         @boxRow(
             "box-three", "box3", "confirm_submission.boxThree",
-            s"confirm_submission.boxThreeDescription$niProtocolSuffix", "confirm_submission.boxThreeAmt", autoCalculated = true
+            s"confirm_submission.boxThreeDescription", "confirm_submission.boxThreeAmt", autoCalculated = true
         )
         @boxRow(
             "box-four", "box4", "confirm_submission.boxFour",
-            s"confirm_submission.boxFourDescription$niProtocolSuffix", "confirm_submission.boxFourAmt"
+            s"confirm_submission.boxFourDescription", "confirm_submission.boxFourAmt"
         )
         @boxRow(
             "box-five", "box5", "confirm_submission.boxFive",
-            s"confirm_submission.boxFiveDescription$niProtocolSuffix", "confirm_submission.boxFiveAmt", autoCalculated = true
+            s"confirm_submission.boxFiveDescription", "confirm_submission.boxFiveAmt", autoCalculated = true
         )
 
     </dl>
@@ -158,15 +155,15 @@ content = Text(messages("common.back"))
 
         @boxRow(
             "box-seven", "box7", "confirm_submission.boxSeven",
-            s"confirm_submission.boxSevenDescription$niProtocolSuffix", "confirm_submission.boxSevenAmt"
+            s"confirm_submission.boxSevenDescription", "confirm_submission.boxSevenAmt"
         )
         @boxRow(
             "box-eight", "box8", "confirm_submission.boxEight",
-            s"confirm_submission.boxEightDescription$niProtocolSuffix", "confirm_submission.boxEightAmt"
+            s"confirm_submission.boxEightDescription", "confirm_submission.boxEightAmt"
         )
         @boxRow(
             "box-nine", "box9", "confirm_submission.boxNine",
-            s"confirm_submission.boxNineDescription$niProtocolSuffix", "confirm_submission.boxNineAmt"
+            s"confirm_submission.boxNineDescription", "confirm_submission.boxNineAmt"
         )
 
     </dl>

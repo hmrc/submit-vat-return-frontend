@@ -19,7 +19,6 @@ package views
 import java.time.LocalDate
 
 import assets.CustomerDetailsTestAssets._
-import assets.messages.{ConfirmSubmissionMessages => viewMessages}
 import assets.messages.SubmitFormPageMessages._
 import models._
 import org.jsoup.Jsoup
@@ -125,15 +124,15 @@ class ConfirmSubmissionViewSpec extends ViewBaseSpec {
 
         "have the correct row descriptions in the table" in {
           val expectedDescriptions = Array(
-            box1TextNIProtocol,
-            box2TextNIProtocol,
-            box3TextNIProtocol,
-            box4TextNIProtocol,
-            box5TextNIProtocol,
+            box1Text,
+            box2Text,
+            box3Text,
+            box4Text,
+            box5Text,
             box6FlatRateSchemeText,
-            box7TextNIProtocol,
-            box8TextNIProtocol,
-            box9TextNIProtocol
+            box7Text,
+            box8Text,
+            box9Text
           )
           expectedDescriptions.indices.foreach(i => elementText(boxElement(Selectors.boxes(i), 2)) shouldBe expectedDescriptions(i))
         }
