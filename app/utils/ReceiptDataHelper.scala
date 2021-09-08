@@ -16,7 +16,6 @@
 
 package utils
 
-import config.AppConfig
 import javax.inject.{Inject, Singleton}
 import models.auth.User
 import models.errors.{HttpError, UnknownError}
@@ -26,8 +25,7 @@ import play.api.i18n.{Messages, MessagesApi}
 import play.api.{Logger, Play}
 
 @Singleton
-class ReceiptDataHelper @Inject()(implicit val messages: MessagesApi,
-                                               appConfig: AppConfig) {
+class ReceiptDataHelper @Inject()(implicit val messages: MessagesApi) {
 
   def extractReceiptData(submitModel: SubmitVatReturnModel, customerDetails: Either[HttpError, CustomerDetails])
                         (implicit user: User[_]): Either[HttpError, ReceiptData] = {

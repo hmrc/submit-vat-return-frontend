@@ -30,7 +30,7 @@ import play.api.mvc.{AnyContentAsEmpty, Cookie}
 class ReceiptDataHelperSpec extends BaseSpec {
 
   def service: ReceiptDataHelper = {
-    new ReceiptDataHelper()(messagesApi, mockAppConfig)
+    new ReceiptDataHelper()(messagesApi)
   }
 
   val dateToUse: LocalDate = LocalDate.now()
@@ -56,15 +56,15 @@ class ReceiptDataHelperSpec extends BaseSpec {
   def expectedAnswers(frs: Boolean, language: Language): Seq[Answers] = {
     def ifEnglishElse(ifEnglish: String, ifWelsh: String): String = if (language == EN) ifEnglish else ifWelsh
 
-    val box1ExpectedNIProtocol = ifEnglishElse(box1Text, box1TextWelsh)
+    val box1Expected = ifEnglishElse(box1Text, box1TextWelsh)
 
-    val box2ExpectedNIProtocol = ifEnglishElse(box2Text, box2TextWelsh)
+    val box2Expected = ifEnglishElse(box2Text, box2TextWelsh)
 
-    val box3ExpectedNIProtocol = ifEnglishElse(box3Text, box3TextWelsh)
+    val box3Expected = ifEnglishElse(box3Text, box3TextWelsh)
 
-    val box4ExpectedNIProtocol = ifEnglishElse(box4Text, box4TextWelsh)
+    val box4Expected = ifEnglishElse(box4Text, box4TextWelsh)
 
-    val box5ExpectedNIProtocol = ifEnglishElse(box5Text, box5TextWelsh)
+    val box5Expected = ifEnglishElse(box5Text, box5TextWelsh)
 
 
     val box6Expected = (frs, language) match {
@@ -74,11 +74,11 @@ class ReceiptDataHelperSpec extends BaseSpec {
       case (_, _) => "Cyfanswm gwerth y gwerthiannau a chyflenwadau eraill, ac eithrio TAW"
     }
 
-    val box7ExpectedNIProtocol = ifEnglishElse(box7Text, box7TextWelsh)
+    val box7Expected = ifEnglishElse(box7Text, box7TextWelsh)
 
-    val box8ExpectedNIProtocol = ifEnglishElse(box8Text, box8TextWelsh)
+    val box8Expected = ifEnglishElse(box8Text, box8TextWelsh)
 
-    val box9ExpectedNIProtocol = ifEnglishElse(box9Text, box9TextWelsh)
+    val box9Expected = ifEnglishElse(box9Text, box9TextWelsh)
 
     val pageTitle = ifEnglishElse(
       "You have submitted a VAT Return",
@@ -88,15 +88,15 @@ class ReceiptDataHelperSpec extends BaseSpec {
     Seq(Answers(
       pageTitle,
         Seq(
-          ("box1", box1ExpectedNIProtocol, Some("£10.00"), None),
-          ("box2", box2ExpectedNIProtocol, Some("£25.55"), None),
-          ("box3", box3ExpectedNIProtocol, Some("£33.00"), None),
-          ("box4", box4ExpectedNIProtocol, Some("£74.00"), None),
-          ("box5", box5ExpectedNIProtocol, Some("£95.06"), None),
+          ("box1", box1Expected, Some("£10.00"), None),
+          ("box2", box2Expected, Some("£25.55"), None),
+          ("box3", box3Expected, Some("£33.00"), None),
+          ("box4", box4Expected, Some("£74.00"), None),
+          ("box5", box5Expected, Some("£95.06"), None),
           ("box6", box6Expected, Some("£1,006.00"), None),
-          ("box7", box7ExpectedNIProtocol, Some("£1,006.66"), None),
-          ("box8", box8ExpectedNIProtocol, Some("£889.90"), None),
-          ("box9", box9ExpectedNIProtocol, Some("£900.00"), None)
+          ("box7", box7Expected, Some("£1,006.66"), None),
+          ("box8", box8Expected, Some("£889.90"), None),
+          ("box9", box9Expected, Some("£900.00"), None)
         ).map((Answer.apply _).tupled(_))))
   }
 
