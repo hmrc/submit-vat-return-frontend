@@ -61,7 +61,12 @@ class SubmitFormViewSpec extends ViewBaseSpec {
 
   "Rendering the submit_form page" when {
 
-    "the user is on the flat rate scheme" should {
+    "rendering the submit_form page in welsh" should {
+      val languageOption: Lang = Lang.apply(CY.languageCode)
+
+      "have the language set as welsh" in {
+        languageOption.language shouldBe "cy"
+      }
 
       lazy val view = submitFormView(
         periodKey,
@@ -70,57 +75,12 @@ class SubmitFormViewSpec extends ViewBaseSpec {
         obligation,
         SubmitVatReturnForm().nineBoxForm,
         isAgent = false,
-        nIProtocolEnabled = false
       )(messages, mockAppConfig, user)
+
       lazy implicit val document: Document = Jsoup.parse(view.body)
 
-      "have the correct hidden label for box 1" in {
-        elementText("label[for=box1]") shouldBe "Box 1 VAT you charged on sales and other supplies amount"
-      }
-
-      "have the correct page title" in {
-        document.title shouldBe s"$submitReturn 12 Jan to 12 Apr 2019 - Business tax account - GOV.UK"
-      }
-
-      "have the correct title" in {
-        elementText("h1 > span:nth-of-type(1)") shouldBe submitReturn
-        elementText("h1 > span:nth-of-type(2)") shouldBe "12 Jan to 12 Apr 2019"
-      }
-
-      s"the back link is displayed with the correct href" in {
-        elementText(Selectors.backLink) shouldBe back
-        element(Selectors.backLink).attr("href") shouldBe
-          controllers.routes.HonestyDeclarationController.show(periodKey).url
-      }
-
-      "display the business name" in {
-        elementText("h2") shouldBe "ABC Studios"
-      }
-
-      "display the return due date" in {
-        elementText("#content > p") shouldBe returnDue("12 May 2019")
-      }
-
-      "state 'VAT details'" in {
-        elementText("h3:nth-of-type(1)") shouldBe vatDetails
-      }
-
-      "have the correct box numbers in the table" in {
-        val expectedBoxes = Array(
-          box1,
-          box2,
-          box3,
-          box4,
-          box5,
-          box6,
-          box7,
-          box8,
-          box9
-        )
-        expectedBoxes.indices.foreach(i => elementText(boxElement(Selectors.boxes(i), 1)) shouldBe expectedBoxes(i))
-      }
-
       "have the correct row descriptions in the table" in {
+
         val expectedDescriptions = Array(
           box1Text,
           box2Text,
@@ -131,142 +91,6 @@ class SubmitFormViewSpec extends ViewBaseSpec {
           box7Text,
           box8Text,
           box9Text
-        )
-        expectedDescriptions.indices.foreach(i => elementText(boxElement(Selectors.boxes(i), 2)) shouldBe expectedDescriptions(i))
-      }
-
-      "state 'Additional information'" in {
-        document.getElementById("additionalInfo").text shouldBe additionalInformation
-      }
-
-      "state that you can submit your return on the next screen" in {
-        document.getElementById("next-screen-submit").text shouldBe nextScreen
-      }
-
-      "have the continue button" in {
-        elementText(".govuk-button") shouldBe continue
-      }
-    }
-
-    "the user is not on the flat rate scheme" should {
-      lazy val view = submitFormView(
-        "18AA",
-        Some("ABC Studios"),
-        flatRateScheme = false,
-        obligation,
-        SubmitVatReturnForm().nineBoxForm,
-        isAgent = false,
-        nIProtocolEnabled = false
-      )(messages, mockAppConfig, user)
-      lazy implicit val document: Document = Jsoup.parse(view.body)
-
-      "display the non flat rate scheme text ofr box 6" in {
-        elementText("#box-six > dd:nth-of-type(1)") shouldBe box6NonFlatRateSchemeText
-      }
-    }
-
-    "rendering the submit_form page in welsh" should {
-      val languageOption: Lang = Lang.apply(CY.languageCode)
-
-      "have the language set as welsh" in {
-        languageOption.language shouldBe "cy"
-      }
-
-      lazy val view = submitFormView(
-        "18AA",
-        Some("ABC Studios"),
-        flatRateScheme = true,
-        obligation,
-        SubmitVatReturnForm().nineBoxForm,
-        isAgent = false,
-        nIProtocolEnabled = false
-      )(welshMessages, mockAppConfig, user)
-      lazy implicit val document: Document = Jsoup.parse(view.body)
-
-      "have the welsh messages file" in {
-        welshMessages.lang.toString shouldBe "Lang(cy)"
-      }
-
-      "have the correct hidden label for box 1" in {
-        elementText("label[for=box1]") shouldBe "Swm Blwch 1 TAW a godwyd gennych ar werthiannau a chyflenwadau eraill"
-      }
-    }
-
-    "page has errors" should {
-
-      lazy val view = submitFormView(
-        periodKey,
-        Some("ABC Studios"),
-        flatRateScheme = true,
-        obligation,
-        SubmitVatReturnForm().nineBoxForm.bind(Map(
-          "box1" -> "",
-          "box2" -> "",
-          "box4" -> "",
-          "box6" -> "",
-          "box7" -> "",
-          "box8" -> "",
-          "box9" -> ""
-        )),
-        isAgent = false,
-        nIProtocolEnabled = false
-      )(messages, mockAppConfig, user)
-      lazy implicit val document: Document = Jsoup.parse(view.body)
-
-      "have the correct page title" in {
-        document.title shouldBe s"Error: $submitReturn 12 Jan to 12 Apr 2019 - Business tax account - GOV.UK"
-      }
-
-      "display an error summary" in {
-        elementText(".govuk-error-summary h2") shouldBe "There is a problem"
-      }
-
-      "have a list of errors" which {
-
-        val errorSummaryElements = (1 to 7).map(i => element(s".govuk-list > li:nth-child($i) > a:nth-child(1)"))
-        val boxNumbers = Seq(1, 2, 4, 6, 7, 8, 9)
-        val data = errorSummaryElements zip boxNumbers
-
-        "has the correct error messages" in {
-          for ((element, boxNum) <- data) {
-            element.text() shouldBe s"Enter a number in box $boxNum"
-          }
-        }
-
-        "has the correct links to the input boxes" in {
-          for ((element, boxNum) <- data) {
-            element.attr("href") shouldBe s"#box$boxNum"
-          }
-        }
-      }
-    }
-
-    "the NI protocol feature switch is on" should {
-
-      lazy val view = submitFormView(
-        periodKey,
-        Some("ABC Studios"),
-        flatRateScheme = true,
-        obligation,
-        SubmitVatReturnForm().nineBoxForm,
-        isAgent = false,
-        nIProtocolEnabled = true
-      )(messages, mockAppConfig, user)
-
-      lazy implicit val document: Document = Jsoup.parse(view.body)
-
-      "have the correct row descriptions in the table" in {
-
-        val expectedDescriptions = Array(
-          box1TextNIProtocol,
-          box2TextNIProtocol,
-          box3TextNIProtocol,
-          box4TextNIProtocol,
-          box5TextNIProtocol,
-          box6FlatRateSchemeText,
-          box7TextNIProtocol,
-          box8TextNIProtocol,
-          box9TextNIProtocol
         )
         expectedDescriptions.indices.foreach(i => elementText(boxElement(Selectors.boxes(i), 2)) shouldBe expectedDescriptions(i))
       }

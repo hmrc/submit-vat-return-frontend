@@ -29,9 +29,8 @@ import play.api.mvc.{AnyContentAsEmpty, Cookie}
 
 class ReceiptDataHelperSpec extends BaseSpec {
 
-  def service(niProtocolEnabled: Boolean = false): ReceiptDataHelper = {
-    mockAppConfig.features.nineBoxNIProtocolContentEnabled(niProtocolEnabled)
-    new ReceiptDataHelper()(messagesApi, mockAppConfig)
+  def service: ReceiptDataHelper = {
+    new ReceiptDataHelper()(messagesApi)
   }
 
   val dateToUse: LocalDate = LocalDate.now()
@@ -58,19 +57,14 @@ class ReceiptDataHelperSpec extends BaseSpec {
     def ifEnglishElse(ifEnglish: String, ifWelsh: String): String = if (language == EN) ifEnglish else ifWelsh
 
     val box1Expected = ifEnglishElse(box1Text, box1TextWelsh)
-    val box1ExpectedNIProtocol = ifEnglishElse(box1TextNIProtocol, box1TextNIProtocolWelsh)
 
     val box2Expected = ifEnglishElse(box2Text, box2TextWelsh)
-    val box2ExpectedNIProtocol = ifEnglishElse(box2TextNIProtocol, box2TextNIProtocolWelsh)
 
     val box3Expected = ifEnglishElse(box3Text, box3TextWelsh)
-    val box3ExpectedNIProtocol = ifEnglishElse(box3TextNIProtocol, box3TextNIProtocolWelsh)
 
     val box4Expected = ifEnglishElse(box4Text, box4TextWelsh)
-    val box4ExpectedNIProtocol = ifEnglishElse(box4TextNIProtocol, box4TextNIProtocolWelsh)
 
     val box5Expected = ifEnglishElse(box5Text, box5TextWelsh)
-    val box5ExpectedNIProtocol = ifEnglishElse(box5TextNIProtocol, box5TextNIProtocolWelsh)
 
 
     val box6Expected = (frs, language) match {
@@ -81,13 +75,10 @@ class ReceiptDataHelperSpec extends BaseSpec {
     }
 
     val box7Expected = ifEnglishElse(box7Text, box7TextWelsh)
-    val box7ExpectedNIProtocol = ifEnglishElse(box7TextNIProtocol, box7TextNIProtocolWelsh)
 
     val box8Expected = ifEnglishElse(box8Text, box8TextWelsh)
-    val box8ExpectedNIProtocol = ifEnglishElse(box8TextNIProtocol, box8TextNIProtocolWelsh)
 
     val box9Expected = ifEnglishElse(box9Text, box9TextWelsh)
-    val box9ExpectedNIProtocol = ifEnglishElse(box9TextNIProtocol, box9TextNIProtocolWelsh)
 
     val pageTitle = ifEnglishElse(
       "You have submitted a VAT Return",
@@ -96,19 +87,6 @@ class ReceiptDataHelperSpec extends BaseSpec {
 
     Seq(Answers(
       pageTitle,
-      if(mockAppConfig.features.nineBoxNIProtocolContentEnabled()) {
-        Seq(
-          ("box1", box1ExpectedNIProtocol, Some("£10.00"), None),
-          ("box2", box2ExpectedNIProtocol, Some("£25.55"), None),
-          ("box3", box3ExpectedNIProtocol, Some("£33.00"), None),
-          ("box4", box4ExpectedNIProtocol, Some("£74.00"), None),
-          ("box5", box5ExpectedNIProtocol, Some("£95.06"), None),
-          ("box6", box6Expected, Some("£1,006.00"), None),
-          ("box7", box7ExpectedNIProtocol, Some("£1,006.66"), None),
-          ("box8", box8ExpectedNIProtocol, Some("£889.90"), None),
-          ("box9", box9ExpectedNIProtocol, Some("£900.00"), None)
-        ).map((Answer.apply _).tupled(_))
-      } else {
         Seq(
           ("box1", box1Expected, Some("£10.00"), None),
           ("box2", box2Expected, Some("£25.55"), None),
@@ -119,8 +97,7 @@ class ReceiptDataHelperSpec extends BaseSpec {
           ("box7", box7Expected, Some("£1,006.66"), None),
           ("box8", box8Expected, Some("£889.90"), None),
           ("box9", box9Expected, Some("£900.00"), None)
-        ).map((Answer.apply _).tupled(_))
-      }))
+        ).map((Answer.apply _).tupled(_))))
   }
 
   def expectedDeclaration(isAgent: Boolean, language: Language): Declaration = {
@@ -165,7 +142,7 @@ class ReceiptDataHelperSpec extends BaseSpec {
       "the user is an agent, with frs and english selected" in {
         val agentUser = agentUserWithCookie(EN.languageCode)
 
-        val result = await(service().extractReceiptData(createReturnModel(true), successResponse(frs = true))(agentUser))
+        val result = await(service.extractReceiptData(createReturnModel(true), successResponse(frs = true))(agentUser))
 
         result shouldBe Right(
           ReceiptData(EN, expectedAnswers(frs = true, EN), expectedDeclaration(isAgent = true, EN))
@@ -173,7 +150,7 @@ class ReceiptDataHelperSpec extends BaseSpec {
       }
 
       "the user is an individual, without frs and welsh selected" in {
-        val result = await(service().extractReceiptData(createReturnModel(false), successResponse(frs = false))(welshUser))
+        val result = await(service.extractReceiptData(createReturnModel(false), successResponse(frs = false))(welshUser))
 
         result shouldBe Right(
           ReceiptData(CY, expectedAnswers(frs = false, CY), expectedDeclaration(isAgent = false, CY))
@@ -181,7 +158,7 @@ class ReceiptDataHelperSpec extends BaseSpec {
       }
 
       "the user has no language cookie" in {
-        val result = await(service().extractReceiptData(createReturnModel(false), successResponse(frs = false))(user))
+        val result = await(service.extractReceiptData(createReturnModel(false), successResponse(frs = false))(user))
 
         result shouldBe Right(
           ReceiptData(EN, expectedAnswers(frs = false, EN), expectedDeclaration(isAgent = false, EN))
@@ -189,7 +166,7 @@ class ReceiptDataHelperSpec extends BaseSpec {
       }
 
       "the NI protocol feature switch is on, with english selected" in {
-        val result = await(service(niProtocolEnabled = true).extractReceiptData(
+        val result = await(service.extractReceiptData(
           createReturnModel(false), successResponse(frs = false)
         )(user))
 
@@ -199,7 +176,7 @@ class ReceiptDataHelperSpec extends BaseSpec {
       }
 
       "the NI protocol feature switch is on, with welsh selected" in {
-        val result = await(service(niProtocolEnabled = true).extractReceiptData(
+        val result = await(service.extractReceiptData(
           createReturnModel(false), successResponse(frs = false)
         )(welshUser))
 
@@ -216,7 +193,7 @@ class ReceiptDataHelperSpec extends BaseSpec {
       "there is an error from vat subscription" in {
         val expectedResult = BadRequestError("Bad Request", "There has been a bad request")
 
-        val result = await(service().extractReceiptData(createReturnModel(true), errorResponse)(user = implicitUser))
+        val result = await(service.extractReceiptData(createReturnModel(true), errorResponse)(user = implicitUser))
 
         result shouldBe Left(expectedResult)
       }
@@ -224,7 +201,7 @@ class ReceiptDataHelperSpec extends BaseSpec {
       "the user has no name" in {
         val expectedResult = UnknownError
 
-        val result = await(service().extractReceiptData(
+        val result = await(service.extractReceiptData(
           createReturnModel(true), successResponse(frs = true, noName = true)
         )(user = implicitUser))
 

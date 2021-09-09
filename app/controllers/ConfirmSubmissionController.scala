@@ -98,7 +98,7 @@ class ConfirmSubmissionController @Inject()(mandationStatusCheck: MandationStatu
     }
     val viewModel = ConfirmSubmissionViewModel(sessionData, periodKey, clientName)
 
-    confirmSubmission(viewModel, user.isAgent, appConfig.features.nineBoxNIProtocolContentEnabled())
+    confirmSubmission(viewModel, user.isAgent)
   }
 
   def submit(periodKey: String): Action[AnyContent] = (authPredicate
