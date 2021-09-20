@@ -22,17 +22,20 @@ import models.NineBoxModel
 class SubmitVatReturnFormSpec extends BaseSpec {
 
   object MessageLookup {
-    def tooManyCharacters(boxId : Int): String = s"Enter a maximum of 13 digits for pounds in box $boxId.\nEnter a maximum of 2 decimal places for pence.\nYou can use a negative amount eg -13.2"
-    def tooManyCharactersNonDecimal(boxId : Int): String = s"Enter a maximum of 13 digits for pounds in box $boxId.\nYou can use a negative amount eg -13"
-    def tooManyCharactersNonNegative(boxId : Int): String = s"Enter a maximum of 11 digits for pounds in box $boxId.\nEnter a maximum of 2 decimal places for pence.\n" +
-      "Do not use a negative amount eg -13.2"
+    def tooManyCharacters(boxId : Int): String = s"Enter a maximum of 13 digits for pounds in box $boxId.\n" +
+      "Enter a maximum of 2 decimal places for pence.\nYou can use a negative amount eg -13.2"
+    def tooManyCharactersNonDecimal(boxId : Int): String = s"Enter a maximum of 13 digits for pounds in box $boxId.\n" +
+      "You can use a negative amount eg -13"
+    def tooManyCharactersNonNegative(boxId : Int): String = s"Enter a maximum of 11 digits for pounds in box $boxId.\n" +
+      "Enter a maximum of 2 decimal places for pence.\nDo not use a negative amount eg -13.2"
+    val wholePounds = "Only enter whole pounds"
     def enterANumber(boxId : Int): String = s"Enter a number in box $boxId"
     def invalidNumber(boxId : Int): String = s"Enter a number in the correct format in box $boxId"
     val box3Sum: String = "Add the number from box 1 to the number from box 2 and write it here"
     val box5Sum: String = "Subtract the number in box 4 away from the number in box 3 and write it here"
   }
 
-  val form: SubmitVatReturnForm =  SubmitVatReturnForm()
+  val form: SubmitVatReturnForm = SubmitVatReturnForm()
 
   "Binding a NineBoxForm" when {
 
@@ -444,9 +447,9 @@ class SubmitVatReturnFormSpec extends BaseSpec {
             )
           )
 
-          s"return a form field error with message ${MessageLookup.tooManyCharactersNonDecimal(6)}" in {
+          s"return a form field error with message ${MessageLookup.wholePounds}" in {
             val messageKey = formWithValues.error("box6").get.message
-            messages(messageKey) shouldBe MessageLookup.tooManyCharactersNonDecimal(6)
+            messages(messageKey) shouldBe MessageLookup.wholePounds
           }
         }
 
@@ -557,9 +560,9 @@ class SubmitVatReturnFormSpec extends BaseSpec {
             )
           )
 
-          s"return a form field error with message ${MessageLookup.tooManyCharactersNonDecimal(7)}" in {
+          s"return a form field error with message ${MessageLookup.wholePounds}" in {
             val messageKey = formWithValues.error("box7").get.message
-            messages(messageKey) shouldBe MessageLookup.tooManyCharactersNonDecimal(7)
+            messages(messageKey) shouldBe MessageLookup.wholePounds
           }
         }
 
@@ -670,9 +673,9 @@ class SubmitVatReturnFormSpec extends BaseSpec {
             )
           )
 
-          s"return a form field error with message ${MessageLookup.tooManyCharactersNonDecimal(8)}" in {
+          s"return a form field error with message ${MessageLookup.wholePounds}" in {
             val messageKey = formWithValues.error("box8").get.message
-            messages(messageKey) shouldBe MessageLookup.tooManyCharactersNonDecimal(8)
+            messages(messageKey) shouldBe MessageLookup.wholePounds
           }
         }
 
@@ -783,9 +786,9 @@ class SubmitVatReturnFormSpec extends BaseSpec {
             )
           )
 
-          s"return a form field error with message ${MessageLookup.tooManyCharactersNonDecimal(9)}" in {
+          s"return a form field error with message ${MessageLookup.wholePounds}" in {
             val messageKey = formWithValues.error("box9").get.message
-            messages(messageKey) shouldBe MessageLookup.tooManyCharactersNonDecimal(9)
+            messages(messageKey) shouldBe MessageLookup.wholePounds
           }
         }
 
