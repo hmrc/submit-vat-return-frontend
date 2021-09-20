@@ -43,7 +43,7 @@ lazy val coverageSettings: Seq[Setting[_]] = {
 
   Seq(
     ScoverageKeys.coverageExcludedPackages := excludedPackages.mkString(";"),
-    ScoverageKeys.coverageMinimum := 95,
+    ScoverageKeys.coverageMinimumStmtTotal := 95,
     ScoverageKeys.coverageFailOnMinimum := true,
     ScoverageKeys.coverageHighlighting := true
   )
@@ -51,10 +51,10 @@ lazy val coverageSettings: Seq[Setting[_]] = {
 
 val compile = Seq(
   play.sbt.PlayImport.ws,
-  "uk.gov.hmrc"       %% "play-frontend-hmrc"         % "1.4.0-play-26",
-  "uk.gov.hmrc"       %% "bootstrap-frontend-play-26" % "5.12.0",
+  "uk.gov.hmrc"       %% "play-frontend-hmrc"         % "1.9.0-play-26",
+  "uk.gov.hmrc"       %% "bootstrap-frontend-play-26" % "5.14.0",
   "uk.gov.hmrc"       %% "play-language"              % "5.1.0-play-26",
-  "uk.gov.hmrc"       %% "domain"                     % "6.1.0-play-26",
+  "uk.gov.hmrc"       %% "domain"                     % "6.2.0-play-26",
   "com.typesafe.play" %% "play-json-joda"             % "2.9.2"
 )
 

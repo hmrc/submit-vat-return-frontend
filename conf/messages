@@ -47,6 +47,7 @@ submit_form.error.formatCheckError = Enter a number in the correct format in box
 submit_form.error.negativeError = Enter a maximum of 11 digits for pounds in box {0}.\nEnter a maximum of 2 decimal places for pence.\nDo not use a negative amount eg -13.2
 submit_form.error.box3Error = Add the number from box 1 to the number from box 2 and write it here
 submit_form.error.box5Error = Subtract the number in box 4 away from the number in box 3 and write it here
+submit_form.error.wholePounds = Only enter whole pounds
 
 confirm_submission.title = Confirm your VAT Return
 confirm_submission.heading = Confirm return details

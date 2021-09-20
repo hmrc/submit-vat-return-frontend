@@ -45,6 +45,7 @@ submit_form.error.formatCheckError = Nodwch rif yn y fformat cywir ym mwlch {0}
 submit_form.error.negativeError = Nodwch uchafswm o 11 digid ar gyfer punnoedd ym mwlch {0}.\nNodwch uchafswm o 2 le degol ar gyfer ceiniogau.\nPeidiwch â defnyddio swm negyddol e.e. -13.2
 submit_form.error.box3Error = Ychwanegwch y rhif o flwch 1 at y rhif o flwch 2, a rhowch y canlyniad fan hyn
 submit_form.error.box5Error = Tynnwch y rhif ym mlwch 4 o’r rhif ym mlwch 3, a rhowch y canlyniad fan hyn
+submit_form.error.wholePounds = Nodwch bunnoedd cyfan yn unig
 
 confirm_submission.title = Cadarnhau’ch Ffurflen TAW
 confirm_submission.heading = Cadarnhau manylion y Ffurflen TAW

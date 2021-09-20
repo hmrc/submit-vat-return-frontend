@@ -25,7 +25,7 @@ import play.api.data.{Form, Mapping}
 import play.api.i18n.Messages
 
 @Singleton
-case class SubmitVatReturnForm ()(implicit messages: Messages){
+case class SubmitVatReturnForm()(implicit messages: Messages) {
 
   val minDecimalValue: BigDecimal   = -9999999999999.99
   val minNoDecimalValue: BigDecimal = -9999999999999.00
@@ -34,30 +34,28 @@ case class SubmitVatReturnForm ()(implicit messages: Messages){
   val minBox5Value: BigDecimal      = 0.00
   val maxBox5Value: BigDecimal      = 99999999999.99
 
-  private def toBigDecimal(boxId : Int): String => BigDecimal = (text: String) => BigDecimal.apply(text.stripPrefix("£"))
-  private def fromBigDecimal(boxId : Int): BigDecimal => String = (bd: BigDecimal) => bd.toString()
+  private def toBigDecimal: String => BigDecimal = (text: String) => BigDecimal.apply(text.stripPrefix("£"))
+  private def fromBigDecimal: BigDecimal => String = (bd: BigDecimal) => bd.toString()
   private def validNumber(boxId : Int): Constraint[String] = validBigDecimal(messages("submit_form.error.emptyError", boxId),
     messages("submit_form.error.formatCheckError", boxId))
 
-  private def box1To4Validation(boxId: Int): (Mapping[BigDecimal]) = {
+  private def box1To4Validation(boxId: Int): Mapping[BigDecimal] =
     text.verifying(validNumber(boxId))
-      .transform(toBigDecimal(boxId), fromBigDecimal(boxId))
+      .transform(toBigDecimal, fromBigDecimal)
       .verifying(
         max(maxDecimalValue, messages("submit_form.error.tooManyCharacters", boxId)),
         min(minDecimalValue, messages("submit_form.error.tooManyCharacters", boxId)),
         twoDecimalPlaces(messages("submit_form.error.tooManyCharacters", boxId))
       )
-  }
 
-  private def box6To9Validation(boxId: Int): (Mapping[BigDecimal]) = {
+  private def box6To9Validation(boxId: Int): Mapping[BigDecimal] =
     text.verifying(validNumber(boxId))
-      .transform(toBigDecimal(boxId), fromBigDecimal(boxId))
+      .transform(toBigDecimal, fromBigDecimal)
       .verifying(
         max(maxNoDecimalValue, messages("submit_form.error.tooManyCharactersNoDecimal", boxId)),
         min(minNoDecimalValue, messages("submit_form.error.tooManyCharactersNoDecimal", boxId)),
-        noDecimalPlaces(messages("submit_form.error.tooManyCharactersNoDecimal", boxId))
+        noDecimalPlaces(messages("submit_form.error.wholePounds", boxId))
       )
-  }
 
   val nineBoxForm: Form[NineBoxModel] = Form(
     mapping(
@@ -70,5 +68,4 @@ case class SubmitVatReturnForm ()(implicit messages: Messages){
       "box9" -> box6To9Validation(9)
     )(NineBoxModel.apply)(NineBoxModel.unapply)
   )
-
 }
