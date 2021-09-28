@@ -23,6 +23,7 @@ import play.api.data.Forms._
 import play.api.data.validation.Constraint
 import play.api.data.{Form, Mapping}
 import play.api.i18n.Messages
+import utils.StripCharUtil._
 
 @Singleton
 case class SubmitVatReturnForm()(implicit messages: Messages) {
@@ -34,7 +35,7 @@ case class SubmitVatReturnForm()(implicit messages: Messages) {
   val minBox5Value: BigDecimal      = 0.00
   val maxBox5Value: BigDecimal      = 99999999999.99
 
-  private def toBigDecimal: String => BigDecimal = (text: String) => BigDecimal.apply(text.stripPrefix("£"))
+  private def toBigDecimal: String => BigDecimal = (text: String) => BigDecimal.apply(stripAll(text, "£ , ."))
   private def fromBigDecimal: BigDecimal => String = (bd: BigDecimal) => bd.toString()
   private def validNumber(boxId : Int): Constraint[String] = validBigDecimal(messages("submit_form.error.emptyError", boxId),
     messages("submit_form.error.formatCheckError", boxId))

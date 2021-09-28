@@ -18,6 +18,7 @@ package forms
 
 import play.api.data.validation.{Constraint, Invalid, Valid}
 import scala.util.{Failure, Success, Try}
+import utils.StripCharUtil._
 
 object Constraints {
 
@@ -43,7 +44,7 @@ object Constraints {
 
   def validBigDecimal(emptyMessage: String, invalidMessage: String): Constraint[String] = Constraint[String]("validBigDecimal") { number =>
     if(number != "") {
-      Try(BigDecimal(number.stripPrefix("£"))) match {
+      Try(BigDecimal(stripAll(number,"£ , ."))) match {
         case Success(_) => Valid
         case Failure(_) => Invalid(invalidMessage)
       }
