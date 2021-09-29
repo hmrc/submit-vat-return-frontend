@@ -18,11 +18,17 @@ package assets.messages
 
 object SubmitFormPageMessages {
 
+  val title = "Submit return 12 Jan to 12 Apr 2019 - Business tax account - GOV.UK"
+  val heading = "Submit return 12 Jan to 12 Apr 2019"
   val submitReturn = "Submit return"
   val returnDue: String => String = date => "Return due date: " + date
   val vatDetails = "VAT details"
   val errorHeading = "There is a problem"
   val back: String = "Back"
+  val wholePounds = "Only enter whole pounds."
+  val calculatedValue = "Calculated value"
+  val errorPrefix = "Error:"
+  val enterNumberError = "Enter a number in"
 
   val box1 = "Box 1"
   val box1Text = "VAT due in the period on sales and other outputs"
