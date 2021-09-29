@@ -30,5 +30,11 @@ class StripCharUtilSpec extends UnitSpec {
   "return the expected string if pound signs, commas and a full stop is present" in {
     stripAll("£100.56,,,...","£ , .") shouldBe "100.56"
   }
+  "return the expected string if a pound sign is included in the middle and full stops and commas are present" in {
+    stripAll("£100£.56...,,","£ . ,") shouldBe "100.56"
+  }
+  "return the expected string when commas are present" in {
+    stripAll("£100,000,000","£") shouldBe "100000000"
+  }
 
 }

@@ -44,7 +44,7 @@ object Constraints {
 
   def validBigDecimal(emptyMessage: String, invalidMessage: String): Constraint[String] = Constraint[String]("validBigDecimal") { number =>
     if(number != "") {
-      Try(BigDecimal(stripAll(number,"£ , ."))) match {
+      Try(BigDecimal(stripAll(number,"£ , .").replaceAll(",",""))) match {
         case Success(_) => Valid
         case Failure(_) => Invalid(invalidMessage)
       }

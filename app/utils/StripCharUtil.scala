@@ -18,19 +18,26 @@ package utils
 
 object StripCharUtil {
 
-  def stripAll(word: String, charactersToStrip: String): String = {
+  def stripAll(text: String, charactersToRemove: String): String = {
     // scalastyle:off
-    @scala.annotation.tailrec def start(n: Int): String =
-      if (n == word.length) {""}
-      else if (charactersToStrip.indexOf(word.charAt(n)) < 0) end(n, word.length)
-      else start(1 + n)
+      @scala.annotation.tailrec def start(n: Int): String =
+        if (n == text.length) ""
+        else if (charactersToRemove.indexOf(text.charAt(n)) < 0) end(n, text.length)
+        else start(1 + n)
 
-    @scala.annotation.tailrec def end(a: Int, n: Int): String =
-      if (n <= a) word.substring(a, n)
-      else if (charactersToStrip.indexOf(word.charAt(n - 1)) < 0) word.substring(a, n)
-      else end(a, n - 1)
+      @scala.annotation.tailrec def end(a: Int, n: Int): String =
+        if (n <= a) text.substring(a, n)
+        else if (charactersToRemove.indexOf(text.charAt(n - 1)) < 0) text.substring(a, n)
+        else end(a, n - 1)
 
-    start(0)
+      val result = start(0)
+
+    result.replaceAll(",","")
+      .replaceAll("£","").trim
   }
+
+
+
+
 
 }
