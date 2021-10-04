@@ -21,17 +21,26 @@ import utils.StripCharUtil.stripAll
 
 class StripCharUtilSpec extends UnitSpec {
 
-  "return the expected string with no pound sign" in {
-    stripAll("£100") shouldBe "100"
-  }
-  "return the expected string if pound signs and commas are included" in {
-    stripAll("£100,000,000") shouldBe "100000000"
-  }
-  "return the expected string if pound signs, commas and a full stop is present" in {
-    stripAll("£100.56.") shouldBe "100.56"
-  }
-  "Nothing should change if the user enters the correct string" in {
-    stripAll("100.56") shouldBe "100.56"
+  "The stripAll function" should {
+
+    "return the expected string with no pound sign" in {
+      stripAll("£100") shouldBe "100"
+    }
+    "return the expected string if a pound sign is present at the start and commas exist" in {
+      stripAll("£100,000,000") shouldBe "100000000"
+    }
+    "return the expected string if a pound sign is present at the start and a full stop exists at the end" in {
+      stripAll("£100.56.") shouldBe "100.56"
+    }
+    "return the expected the expected string if whitspaces exist" in {
+      stripAll("£100   ") shouldBe "100"
+    }
+    "return expected string as normal if no characters or whitespaces are present" in {
+      stripAll("100.56") shouldBe "100.56"
+    }
+
   }
 
 }
+
+
