@@ -36,7 +36,10 @@
   if(viewModel.returnDetail.box6 > 0) {
     viewModel.returnDetail.box1 / viewModel.returnDetail.box6 < appConfig.maximum9BoxReturnBoxRatio
   } else {
-    false
+    (viewModel.returnDetail.box1 == 0, viewModel.returnDetail.box6 == 0) match {
+        case (true, true) => true
+        case _ => false
+    }
   }
 }
 
@@ -44,7 +47,10 @@
   if(viewModel.returnDetail.box7 > 0) {
     viewModel.returnDetail.box4 / viewModel.returnDetail.box7 < appConfig.maximum9BoxReturnBoxRatio
   } else {
-    false
+    (viewModel.returnDetail.box4 == 0, viewModel.returnDetail.box7 == 0) match {
+        case (true, true) => true
+        case _ => false
+    }
   }
 }
 
