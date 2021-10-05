@@ -32,8 +32,14 @@ class StripCharUtilSpec extends UnitSpec {
     "return the expected string if a pound sign is present at the start and a full stop exists at the end" in {
       stripAll("£100.56.") shouldBe "100.56"
     }
-    "return the expected the expected string if whitspaces exist" in {
+    "return the expected the expected string with leading whitespaces" in {
+      stripAll("   £100") shouldBe "100"
+    }
+    "return the expected the expected string with trailing white spaces" in {
       stripAll("£100   ") shouldBe "100"
+    }
+    "return the expected string if whitespaces, commas, pound signs and a full stop exist" in {
+      stripAll("     £100,000,000.    ") shouldBe "100000000"
     }
     "return expected string as normal if no characters or whitespaces are present" in {
       stripAll("100.56") shouldBe "100.56"
