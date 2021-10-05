@@ -43,9 +43,9 @@ class SubmitVatReturnFormSpec extends BaseSpec {
 
       val formWithValues = form.nineBoxForm.bind(
         Map(
-          "box1" -> "£1.01",
-          "box2" -> "£2.02",
-          "box4" -> "£4.04",
+          "box1" -> "£1.01,",
+          "box2" -> "£2.02.",
+          "box4" -> "£4.04,",
           "box6" -> "£6",
           "box7" -> "£7",
           "box8" -> "£8",
