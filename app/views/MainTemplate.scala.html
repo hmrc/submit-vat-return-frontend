@@ -43,7 +43,7 @@
 }
 
 @titleServiceUrl = @{
-    user.fold[Option[String]](None)(u => if(u.isAgent) Some(appConfig.manageClientUrl) else Some(appConfig.btaHomeUrl))
+    user.fold[Option[String]](None)(u => if(u.isAgent) Some(appConfig.manageClientUrl) else Some(appConfig.vatSummaryUrl))
 }
 
 @scripts = {

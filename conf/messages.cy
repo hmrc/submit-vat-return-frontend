@@ -1,5 +1,5 @@
 base.sign-out = Allgofnodi
-navTitle.nonAgent = Cyfrif treth busnes
+navTitle.nonAgent = Rheoli eich cyfrif TAW
 navTitle.agent = Manylion TAW y cleient
 navTitle.vat = TAW
 common.fullStop = .
