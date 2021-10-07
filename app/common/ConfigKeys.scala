@@ -57,8 +57,6 @@ object ConfigKeys {
   val manageClientUrl: String = "vat-agent-client-lookup-frontend.agentHubUrl"
   val nineBoxReturnAllowedRatio: String = "nine-box-return-box-ratio"
   val gtmContainer: String = "tracking-consent-frontend.gtm.container"
-  val btaHost: String = "business-tax-account.host"
-  val btaHomeUrl: String = "business-tax-account.url"
 
   val staticDateEnabledFeature: String = "features.staticDate.enabled"
   val staticDateValue: String = "date-service.staticDate.value"
