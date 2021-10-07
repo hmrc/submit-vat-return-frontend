@@ -18,7 +18,7 @@ package assets.messages
 
 trait BaseMessages {
 
-  val titleSuffix = " - Business tax account - GOV.UK"
+  val titleSuffix = " - Manage your VAT account - GOV.UK"
   val agentTitleSuffix = " - Your client’s VAT details - GOV.UK"
   val unauthorisedTitleSuffix = " - VAT - GOV.UK"
   val problemWithService = "Sorry, there is a problem with the service"

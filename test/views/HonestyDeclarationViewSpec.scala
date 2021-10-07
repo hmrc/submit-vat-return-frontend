@@ -41,7 +41,7 @@ class HonestyDeclarationViewSpec extends ViewBaseSpec {
       }
 
       s"have the correct page title 'Honesty declaration'" in {
-        document.title shouldBe "Honesty declaration - Business tax account - GOV.UK"
+        document.title shouldBe "Honesty declaration - Manage your VAT account - GOV.UK"
       }
 
       s"have the title ${messages("honesty_declaration.title")}" in {
@@ -131,7 +131,7 @@ class HonestyDeclarationViewSpec extends ViewBaseSpec {
     lazy implicit val document: Document = Jsoup.parse(view.body)
 
     s"have the correct page title 'Error: Honesty declaration'" in {
-      document.title shouldBe "Error: Honesty declaration - Business tax account - GOV.UK"
+      document.title shouldBe "Error: Honesty declaration - Manage your VAT account - GOV.UK"
     }
 
     "have the back link" in {

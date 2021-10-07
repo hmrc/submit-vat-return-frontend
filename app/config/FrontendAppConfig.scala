@@ -58,7 +58,6 @@ trait AppConfig {
   val gtmContainer: String
   val platformHost: String
   val directDebitInterruptUrl : String
-  val btaHomeUrl: String
 }
 
 @Singleton
@@ -111,9 +110,6 @@ class FrontendAppConfig @Inject()(configuration: Configuration, servicesConfig: 
   override lazy val returnDeadlinesUrl: String = getString(ConfigKeys.viewVatReturnsHost) + getString(ConfigKeys.returnDeadlinesUrl)
 
   override lazy val viewSubmittedReturnUrl: String = getString(ConfigKeys.viewVatReturnsHost) + getString(ConfigKeys.submittedReturnsUrl)
-
-  // Business Tax Account
-  override lazy val btaHomeUrl: String = getString(ConfigKeys.btaHost) + getString(ConfigKeys.btaHomeUrl)
 
   // Agent Client Lookup
   override lazy val platformHost: String = getString(ConfigKeys.platformHost)
