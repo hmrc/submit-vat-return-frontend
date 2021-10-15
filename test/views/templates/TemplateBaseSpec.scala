@@ -19,14 +19,16 @@ package views.templates
 import mocks.MockConfig
 import org.jsoup.Jsoup
 import org.scalamock.scalatest.MockFactory
+import org.scalatest.OptionValues
+import org.scalatest.matchers.should.Matchers
+import org.scalatest.wordspec.AnyWordSpecLike
 import org.scalatestplus.play.guice.GuiceOneAppPerSuite
 import play.api.Configuration
 import play.api.i18n.{Lang, Messages, MessagesApi, MessagesImpl}
 import play.api.test.Injecting
 import play.twirl.api.Html
-import uk.gov.hmrc.play.test.UnitSpec
 
-class TemplateBaseSpec extends UnitSpec with MockFactory with GuiceOneAppPerSuite with Injecting {
+class TemplateBaseSpec extends AnyWordSpecLike with Matchers with OptionValues with MockFactory with GuiceOneAppPerSuite with Injecting {
 
   implicit val config: Configuration = app.configuration
   implicit val mockAppConfig: MockConfig = new MockConfig

@@ -22,16 +22,18 @@ import models.errors.HttpError
 import models.nrs.ReceiptData
 import models.{CustomerDetails, SubmitVatReturnModel}
 import org.scalamock.scalatest.MockFactory
-import uk.gov.hmrc.play.test.UnitSpec
+import org.scalatest.OptionValues
+import org.scalatest.matchers.should.Matchers
+import org.scalatest.wordspec.AnyWordSpecLike
 import utils.ReceiptDataHelper
 
 import scala.concurrent.Future
 
-trait MockReceiptDataService extends UnitSpec with MockFactory {
+trait MockReceiptDataService extends AnyWordSpecLike with Matchers with OptionValues with MockFactory {
 
   val mockReceiptDataService: ReceiptDataHelper = mock[ReceiptDataHelper]
 
-  def mockExtractReceiptData[A](response: Future[Either[HttpError, ReceiptData]])(): Unit = {
+  def mockExtractReceiptData[A](response: Either[HttpError, ReceiptData])(): Unit = {
     (mockReceiptDataService
       .extractReceiptData(_: SubmitVatReturnModel, _: Either[HttpError, CustomerDetails])(_: User[A]))
       .expects(*, *, *)

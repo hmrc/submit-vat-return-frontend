@@ -16,10 +16,12 @@
 
 package utils
 
-import uk.gov.hmrc.play.test.UnitSpec
+import org.scalatest.OptionValues
+import org.scalatest.matchers.should.Matchers
+import org.scalatest.wordspec.AnyWordSpecLike
 import utils.StripCharUtil.stripAll
 
-class StripCharUtilSpec extends UnitSpec {
+class StripCharUtilSpec extends AnyWordSpecLike with Matchers with OptionValues {
 
   "The stripAll function" should {
 

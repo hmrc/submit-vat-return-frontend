@@ -24,18 +24,19 @@ import config.{AppConfig, ErrorHandler}
 import mocks.MockConfig
 import models.auth.User
 import org.scalamock.scalatest.MockFactory
-import org.scalatest.{BeforeAndAfterEach, Matchers, WordSpec}
+import org.scalatest.matchers.should.Matchers
+import org.scalatest.wordspec.AnyWordSpecLike
+import org.scalatest.{BeforeAndAfterEach, OptionValues}
 import org.scalatestplus.play.guice._
 import play.api.Configuration
 import play.api.i18n.{Lang, Messages, MessagesApi}
 import play.api.mvc.{AnyContentAsEmpty, MessagesControllerComponents}
 import play.api.test.{FakeRequest, Injecting}
 import uk.gov.hmrc.http.HeaderCarrier
-import uk.gov.hmrc.play.test.UnitSpec
 
 import scala.concurrent.ExecutionContext
 
-trait BaseSpec extends WordSpec with Matchers with GuiceOneAppPerSuite with MockFactory with UnitSpec with BeforeAndAfterEach
+trait BaseSpec extends AnyWordSpecLike with Matchers with OptionValues with GuiceOneAppPerSuite with MockFactory with BeforeAndAfterEach
   with Injecting {
 
   implicit val config: Configuration = app.configuration

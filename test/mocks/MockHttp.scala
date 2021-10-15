@@ -17,13 +17,15 @@
 package mocks
 
 import org.scalamock.scalatest.MockFactory
+import org.scalatest.OptionValues
+import org.scalatest.matchers.should.Matchers
+import org.scalatest.wordspec.AnyWordSpecLike
 import uk.gov.hmrc.http.{HeaderCarrier, HttpReads}
-import uk.gov.hmrc.play.test.UnitSpec
 import uk.gov.hmrc.http.HttpClient
 
-import scala.concurrent.ExecutionContext
+import scala.concurrent.{ExecutionContext, Future}
 
-trait MockHttp extends UnitSpec with MockFactory {
+trait MockHttp extends AnyWordSpecLike with Matchers with OptionValues with MockFactory {
 
   val mockHttp: HttpClient = mock[HttpClient]
 
@@ -31,5 +33,5 @@ trait MockHttp extends UnitSpec with MockFactory {
     (mockHttp.GET[T](_: String, _: Seq[(String, String)], _: Seq[(String, String)])
                     (_: HttpReads[T], _: HeaderCarrier, _: ExecutionContext))
       .expects(*, *, *, *, *, *)
-      .returns(response)
+      .returns(Future.successful(response))
 }

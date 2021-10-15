@@ -18,10 +18,12 @@ package mocks.service
 
 import java.time.LocalDate
 import org.scalamock.scalatest.MockFactory
+import org.scalatest.OptionValues
+import org.scalatest.matchers.should.Matchers
+import org.scalatest.wordspec.AnyWordSpecLike
 import services.DateService
-import uk.gov.hmrc.play.test.UnitSpec
 
-trait MockDateService extends UnitSpec with MockFactory {
+trait MockDateService extends AnyWordSpecLike with Matchers with OptionValues with MockFactory {
 
   val mockDateService: DateService = mock[DateService]
 

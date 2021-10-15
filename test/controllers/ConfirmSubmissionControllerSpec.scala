@@ -112,7 +112,7 @@ class ConfirmSubmissionControllerSpec extends BaseSpec
             ))
 
           lazy val result: Future[Result] = {
-            setupVatSubscriptionService(successCustomerInfoResponse)
+            setupVatSubscriptionService(successCustomerInfoResponse)()
             TestConfirmSubmissionController.show("18AA")(requestWithSessionData)
           }
 
@@ -147,7 +147,7 @@ class ConfirmSubmissionControllerSpec extends BaseSpec
             ))
 
           lazy val result: Future[Result] = {
-            setupVatSubscriptionService(vatSubscriptionResponse)
+            setupVatSubscriptionService(vatSubscriptionResponse)()
             TestConfirmSubmissionController.show("18AA")(requestWithSessionData)
           }
 
@@ -226,11 +226,11 @@ class ConfirmSubmissionControllerSpec extends BaseSpec
             "return 303" in {
               mockAuthorise(mtdVatAuthorisedResponse)
               mockDateHasPassed(response = true)
-              mockVatReturnSubmission(Future.successful(Right(SubmissionSuccessModel("12345"))))
-              setupVatSubscriptionService(successCustomerInfoResponse)
-              mockFullAuthResponse(agentFullInformationResponse)
-              mockNrsSubmission(Future.successful(Right(SuccessModel("1234567890"))))
-              mockExtractReceiptData(successReceiptDataResponse)
+              mockVatReturnSubmission(Future.successful(Right(SubmissionSuccessModel("12345"))))()
+              setupVatSubscriptionService(successCustomerInfoResponse)()
+              mockFullAuthResponse(Future.successful(agentFullInformationResponse))
+              mockNrsSubmission(Future.successful(Right(SuccessModel("1234567890"))))()
+              mockExtractReceiptData(await(successReceiptDataResponse))()
               setupAuditExtendedEvent
               setupAuditExtendedEvent
               setupAuditExtendedEvent
@@ -238,8 +238,8 @@ class ConfirmSubmissionControllerSpec extends BaseSpec
               status(result) shouldBe Status.SEE_OTHER
             }
 
-            s"redirect to ${controllers.routes.ConfirmationController.show()}" in {
-              redirectLocation(result) shouldBe Some(controllers.routes.ConfirmationController.show().url)
+            s"redirect to ${controllers.routes.ConfirmationController.show}" in {
+              redirectLocation(result) shouldBe Some(controllers.routes.ConfirmationController.show.url)
             }
           }
 
@@ -254,12 +254,12 @@ class ConfirmSubmissionControllerSpec extends BaseSpec
             "return 500" in {
               mockAuthorise(mtdVatAuthorisedResponse)
               mockDateHasPassed(true)
-              setupVatSubscriptionService(successCustomerInfoResponse)
-              mockExtractReceiptData(successReceiptDataResponse)
-              mockFullAuthResponse(agentFullInformationResponse)
-              mockNrsSubmission(Future.successful(Right(SuccessModel("1234567890"))))
+              setupVatSubscriptionService(successCustomerInfoResponse)()
+              mockExtractReceiptData(await(successReceiptDataResponse))()
+              mockFullAuthResponse(Future.successful(agentFullInformationResponse))
+              mockNrsSubmission(Future.successful(Right(SuccessModel("1234567890"))))()
               setupAuditExtendedEvent
-              mockVatReturnSubmission(Future.successful(Left(UnknownError)))
+              mockVatReturnSubmission(Future.successful(Left(UnknownError)))()
               setupAuditExtendedEvent
 
               status(result) shouldBe Status.INTERNAL_SERVER_ERROR
@@ -341,11 +341,11 @@ class ConfirmSubmissionControllerSpec extends BaseSpec
 
       "return a SEE_OTHER" in {
 
-        setupVatSubscriptionService(successCustomerInfoResponse)
-        mockFullAuthResponse(agentFullInformationResponse)
-        mockNrsSubmission(Future.successful(Right(SuccessModel("1234567890"))))
-        mockVatReturnSubmission(Future.successful(Right(SubmissionSuccessModel("12345"))))
-        mockExtractReceiptData(successReceiptDataResponse)
+        setupVatSubscriptionService(successCustomerInfoResponse)()
+        mockFullAuthResponse(Future.successful(agentFullInformationResponse))
+        mockNrsSubmission(Future.successful(Right(SuccessModel("1234567890"))))()
+        mockVatReturnSubmission(Future.successful(Right(SubmissionSuccessModel("12345"))))()
+        mockExtractReceiptData(await(successReceiptDataResponse))()
         setupAuditExtendedEvent
         setupAuditExtendedEvent
         setupAuditExtendedEvent
@@ -354,7 +354,7 @@ class ConfirmSubmissionControllerSpec extends BaseSpec
       }
 
       "redirect to Confirmation page" in {
-        redirectLocation(result) shouldBe Some(controllers.routes.ConfirmationController.show().url)
+        redirectLocation(result) shouldBe Some(controllers.routes.ConfirmationController.show.url)
       }
     }
 
@@ -363,8 +363,8 @@ class ConfirmSubmissionControllerSpec extends BaseSpec
       lazy val result = TestConfirmSubmissionController.submitToNrs("18AA", submitVatReturnModel)
 
       "return an ISE" in {
-        setupVatSubscriptionService(successCustomerInfoResponse)
-        mockExtractReceiptData(successReceiptDataResponse)
+        setupVatSubscriptionService(successCustomerInfoResponse)()
+        mockExtractReceiptData(await(successReceiptDataResponse))()
         mockFullAuthResponse(Future.failed(BearerTokenExpired()))
 
         status(result) shouldBe Status.INTERNAL_SERVER_ERROR
@@ -380,9 +380,9 @@ class ConfirmSubmissionControllerSpec extends BaseSpec
       lazy val result = TestConfirmSubmissionController.submitToNrs("18AA", submitVatReturnModel)
 
       "return an ISE" in {
-        setupVatSubscriptionService(successCustomerInfoResponse)
-        mockFullAuthResponse(agentFullInformationResponse)
-        mockExtractReceiptData(Future.successful(Left(UnknownError)))
+        setupVatSubscriptionService(successCustomerInfoResponse)()
+        mockFullAuthResponse(Future.successful(agentFullInformationResponse))
+        mockExtractReceiptData(Left(UnknownError))()
 
         status(result) shouldBe Status.INTERNAL_SERVER_ERROR
       }
@@ -397,10 +397,10 @@ class ConfirmSubmissionControllerSpec extends BaseSpec
       lazy val result = TestConfirmSubmissionController.submitToNrs("18AA", submitVatReturnModel)
 
       "return an ISE" in {
-        setupVatSubscriptionService(successCustomerInfoResponse)
-        mockFullAuthResponse(agentFullInformationResponse)
-        mockExtractReceiptData(successReceiptDataResponse)
-        mockNrsSubmission(Future.successful(Left(BadRequestError("400", "error message"))))
+        setupVatSubscriptionService(successCustomerInfoResponse)()
+        mockFullAuthResponse(Future.successful(agentFullInformationResponse))
+        mockExtractReceiptData(await(successReceiptDataResponse))()
+        mockNrsSubmission(Future.successful(Left(BadRequestError("400", "error message"))))()
         setupAuditExtendedEvent
 
         status(result) shouldBe Status.INTERNAL_SERVER_ERROR
@@ -419,7 +419,7 @@ class ConfirmSubmissionControllerSpec extends BaseSpec
       val expectedResponse = Right(IdentityDataTestData.correctModel)
 
       lazy val result = {
-        mockFullAuthResponse(agentFullInformationResponse)
+        mockFullAuthResponse(Future.successful(agentFullInformationResponse))
         TestConfirmSubmissionController.buildIdentityData()(user)
       }
 
@@ -436,11 +436,11 @@ class ConfirmSubmissionControllerSpec extends BaseSpec
       }
 
       "return an internal server error" in {
-        status(result.left.get) shouldBe 500
+        status(Future.successful(await(result).left.get)) shouldBe 500
       }
 
       "return the correct view" in {
-        contentAsString(result.left.get) shouldBe errorViewAsString()
+        contentAsString(Future.successful(await(result).left.get)) shouldBe errorViewAsString()
       }
     }
   }
@@ -496,7 +496,7 @@ class ConfirmSubmissionControllerSpec extends BaseSpec
     "return html if all parameters are provided" in {
 
       TestConfirmSubmissionController.renderConfirmSubmissionView(
-        vrn, submitVatReturnModel, successCustomerInfoResponse)(user).contentType shouldBe "text/html"
+        vrn, submitVatReturnModel, await(successCustomerInfoResponse))(user).contentType shouldBe "text/html"
     }
   }
 }

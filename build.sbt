@@ -50,21 +50,21 @@ lazy val coverageSettings: Seq[Setting[_]] = {
 
 val compile = Seq(
   play.sbt.PlayImport.ws,
-  "uk.gov.hmrc"       %% "play-frontend-hmrc"         % "1.16.0-play-26",
-  "uk.gov.hmrc"       %% "bootstrap-frontend-play-26" % "5.14.0",
-  "uk.gov.hmrc"       %% "play-language"              % "5.1.0-play-26",
-  "uk.gov.hmrc"       %% "domain"                     % "6.2.0-play-26",
+  "uk.gov.hmrc"       %% "play-frontend-hmrc"         % "1.19.0-play-28",
+  "uk.gov.hmrc"       %% "bootstrap-frontend-play-26" % "5.15.0",
+  "uk.gov.hmrc"       %% "play-language"              % "5.1.0-play-28",
+  "uk.gov.hmrc"       %% "domain"                     % "6.2.0-play-28",
   "com.typesafe.play" %% "play-json-joda"             % "2.9.2"
 )
 
 val test = Seq(
-  "uk.gov.hmrc"            %% "hmrctest"                    % "3.10.0-play-26",
-  "org.scalatest"          %% "scalatest"                   % "3.0.9",
-  "org.scalatestplus.play" %% "scalatestplus-play"          % "3.1.3",
+  "org.scalatest"          %% "scalatest"                   % "3.1.4",
+  "org.scalatestplus.play" %% "scalatestplus-play"          % "5.1.0",
   "org.pegdown"             % "pegdown"                     % "1.6.0",
   "org.jsoup"               % "jsoup"                       % "1.13.1",
   "org.scalamock"          %% "scalamock-scalatest-support" % "3.6.0",
-  "com.github.tomakehurst"  % "wiremock-jre8"               % "2.27.2"
+  "com.github.tomakehurst"  % "wiremock-jre8"               % "2.26.3",
+  "com.vladsch.flexmark"    %  "flexmark-all"               % "0.36.8"
 ).map(_ % s"$Test, $IntegrationTest")
 
 TwirlKeys.templateImports ++= Seq(

@@ -21,13 +21,15 @@ import models.auth.User
 import models.nrs.{IdentityData, ReceiptData, SuccessModel}
 import models.vatReturnSubmission.{SubmissionModel, SubmissionSuccessModel}
 import org.scalamock.scalatest.MockFactory
+import org.scalatest.OptionValues
+import org.scalatest.matchers.should.Matchers
+import org.scalatest.wordspec.AnyWordSpecLike
 import services.VatReturnsService
 import uk.gov.hmrc.http.HeaderCarrier
-import uk.gov.hmrc.play.test.UnitSpec
 
 import scala.concurrent.{ExecutionContext, Future}
 
-trait MockVatReturnsService extends UnitSpec with MockFactory {
+trait MockVatReturnsService extends AnyWordSpecLike with Matchers with OptionValues with MockFactory {
 
   val mockVatReturnsService: VatReturnsService = mock[VatReturnsService]
 

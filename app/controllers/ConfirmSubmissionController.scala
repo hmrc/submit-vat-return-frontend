@@ -19,20 +19,19 @@ package controllers
 import java.net.URLDecoder
 import java.time.format.DateTimeFormatter
 import java.time.{Instant, LocalDateTime, ZoneId}
-
 import audit.AuditService
 import audit.models.journey.{FailureAuditModel, SuccessAuditModel}
 import audit.models.{NrsErrorAuditModel, NrsSuccessAuditModel, SubmitVatReturnAuditModel}
 import common.SessionKeys
 import config.{AppConfig, ErrorHandler}
 import controllers.predicates.{AuthPredicate, HonestyDeclarationAction, MandationStatusPredicate}
+
 import javax.inject.{Inject, Singleton}
 import models.auth.User
 import models.errors.{BadRequestError, HttpError, ServerSideError}
 import models.nrs.{IdentityData, IdentityLoginTimes}
 import models.vatReturnSubmission.SubmissionModel
 import models.{ConfirmSubmissionViewModel, CustomerDetails, SubmitVatReturnModel}
-import play.api.Logger
 import play.api.i18n.I18nSupport
 import play.api.libs.json.Json
 import play.api.mvc.{Result, _}
@@ -42,7 +41,7 @@ import uk.gov.hmrc.auth.core.AuthorisationException
 import uk.gov.hmrc.auth.core.retrieve.v2.Retrievals
 import uk.gov.hmrc.auth.core.retrieve.{ItmpAddress, ItmpName, ~}
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendController
-import utils.{HashUtil, ReceiptDataHelper}
+import utils.{HashUtil, LoggerUtil, ReceiptDataHelper}
 import views.html.ConfirmSubmission
 import views.html.errors.SubmissionError
 
@@ -65,7 +64,7 @@ class ConfirmSubmissionController @Inject()(mandationStatusCheck: MandationStatu
                                             submissionError: SubmissionError,
                                             implicit val appConfig: AppConfig,
                                             implicit val executionContext: ExecutionContext) extends FrontendController(mcc)
-                                                                                             with I18nSupport {
+                                                                                             with I18nSupport with LoggerUtil {
 
   val dateTimeFormatter: DateTimeFormatter = DateTimeFormatter.ofPattern("YYYY")
 
@@ -113,17 +112,17 @@ class ConfirmSubmissionController @Inject()(mandationStatusCheck: MandationStatu
               if (dateService.dateHasPassed(model.end)) {
                 submitToNrs(periodKey, model)
               } else {
-                Logger.debug(s"[ConfirmSubmissionController][submit] Obligation end date for period $periodKey has not yet passed.")
+                logger.debug(s"[ConfirmSubmissionController][submit] Obligation end date for period $periodKey has not yet passed.")
                 Future.successful(errorHandler.showBadRequestError)
               }
             case Failure(error) =>
-              Logger.warn(s"[ConfirmSubmissionController][submit] Invalid session data found for key: ${SessionKeys.returnData}")
-              Logger.debug(s"[ConfirmSubmissionController][submit] Invalid session data found for key: ${SessionKeys.returnData}. Error: $error")
+              logger.warn(s"[ConfirmSubmissionController][submit] Invalid session data found for key: ${SessionKeys.returnData}")
+              logger.debug(s"[ConfirmSubmissionController][submit] Invalid session data found for key: ${SessionKeys.returnData}. Error: $error")
               Future.successful(Redirect(controllers.routes.SubmitFormController.show(periodKey))
                 .removingFromSession(SessionKeys.returnData))
           }
         case None =>
-          Logger.warn(s"[ConfirmSubmissionController][submit] Required session data not found for key: ${SessionKeys.returnData}." +
+          logger.warn(s"[ConfirmSubmissionController][submit] Required session data not found for key: ${SessionKeys.returnData}." +
             "Redirecting to 9 box entry page.")
           Future.successful(Redirect(controllers.routes.SubmitFormController.show(periodKey)))
       }
@@ -154,13 +153,13 @@ class ConfirmSubmissionController @Inject()(mandationStatusCheck: MandationStatu
           SuccessAuditModel(user.vrn, periodKey, user.arn),
           Some(controllers.routes.ConfirmSubmissionController.submit(periodKey).url)
         )
-        Redirect(controllers.routes.ConfirmationController.show().url).removingFromSession(SessionKeys.returnData)
+        Redirect(controllers.routes.ConfirmationController.show.url).removingFromSession(SessionKeys.returnData)
       case Left(error) =>
         auditService.audit(
           FailureAuditModel(user.vrn, periodKey, user.arn, error.message),
           Some(controllers.routes.ConfirmSubmissionController.submit(periodKey).url)
         )
-        Logger.warn(s"[ConfirmSubmissionController][submitVatReturn] Error returned from vat-returns service: $error")
+        logger.warn(s"[ConfirmSubmissionController][submitVatReturn] Error returned from vat-returns service: $error")
         InternalServerError(submissionError())
     }
   }
@@ -179,8 +178,8 @@ class ConfirmSubmissionController @Inject()(mandationStatusCheck: MandationStatu
 
           vatReturnsService.nrsSubmission(periodKey, htmlPayload, sha256Checksum, id, receipt) flatMap {
             case Left(error: BadRequestError) =>
-              Logger.debug(s"[ConfirmSubmissionController][submitToNRS] - NRS returned BAD_REQUEST: $error")
-              Logger.warn("[ConfirmSubmissionController][submitToNRS] - NRS returned BAD_REQUEST")
+              logger.debug(s"[ConfirmSubmissionController][submitToNRS] - NRS returned BAD_REQUEST: $error")
+              logger.warn("[ConfirmSubmissionController][submitToNRS] - NRS returned BAD_REQUEST")
               auditService.audit(
                 NrsErrorAuditModel(
                   user.vrn, user.arn.isDefined, user.arn, sessionData.start, sessionData.end, sessionData.due, error.code
@@ -203,14 +202,14 @@ class ConfirmSubmissionController @Inject()(mandationStatusCheck: MandationStatu
                 ),
                 Some(controllers.routes.ConfirmSubmissionController.submit(periodKey).url)
               )
-              Logger.debug(s"[ConfirmSubmissionController][submitToNRS] - NRS returned a server side error: $other")
-              Logger.warn("[ConfirmSubmissionController][submitToNRS] - NRS returned a server side error")
+              logger.debug(s"[ConfirmSubmissionController][submitToNRS] - NRS returned a server side error: $other")
+              logger.warn("[ConfirmSubmissionController][submitToNRS] - NRS returned a server side error")
               submitVatReturn(periodKey, sessionData)
           }
         case (Left(errorResult), _) => Future(errorResult)
         case (_, Left(error)) =>
-          Logger.debug(s"[ConfirmSubmissionController][submitToNRS] - extractReceiptData helper returned error of: $error")
-          Logger.warn("[ConfirmSubmissionController][submitToNRS] - extractReceiptData helper returned error")
+          logger.debug(s"[ConfirmSubmissionController][submitToNRS] - extractReceiptData helper returned error of: $error")
+          logger.warn("[ConfirmSubmissionController][submitToNRS] - extractReceiptData helper returned error")
           Future.successful(InternalServerError(submissionError()))
       }
     } yield result
@@ -257,7 +256,7 @@ class ConfirmSubmissionController @Inject()(mandationStatusCheck: MandationStatu
 
     } recover {
       case exception: AuthorisationException =>
-        Logger.warn(s"[ConfirmSubmissionController][buildIdentityData]" +
+        logger.warn(s"[ConfirmSubmissionController][buildIdentityData]" +
           s"Client authorisation failed due to internal server error. auth-client exception was $exception")
         Left(InternalServerError(submissionError()))
     }

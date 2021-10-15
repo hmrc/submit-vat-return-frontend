@@ -19,13 +19,15 @@ package mocks.service
 import connectors.httpParsers.ResponseHttpParsers.HttpGetResult
 import models.VatObligations
 import org.scalamock.scalatest.MockFactory
+import org.scalatest.OptionValues
+import org.scalatest.matchers.should.Matchers
+import org.scalatest.wordspec.AnyWordSpecLike
 import services.VatObligationsService
 import uk.gov.hmrc.http.HeaderCarrier
-import uk.gov.hmrc.play.test.UnitSpec
 
 import scala.concurrent.{ExecutionContext, Future}
 
-trait MockVatObligationsService extends UnitSpec with MockFactory {
+trait MockVatObligationsService extends AnyWordSpecLike with Matchers with OptionValues with MockFactory {
 
   val mockVatObligationsService: VatObligationsService = mock[VatObligationsService]
 

@@ -121,7 +121,7 @@ class ConfirmSubmissionPageSpec extends NrsAssets with GivenWhenThen {
               response.status shouldBe SEE_OTHER
 
               And("The redirect location is correct")
-              response.header("Location") shouldBe Some(controllers.routes.ConfirmationController.show().url)
+              response.header("Location") shouldBe Some(controllers.routes.ConfirmationController.show.url)
             }
           }
 
@@ -174,7 +174,7 @@ class ConfirmSubmissionPageSpec extends NrsAssets with GivenWhenThen {
               response.status shouldBe SEE_OTHER
 
               And("The redirect location is correct")
-              response.header("Location") shouldBe Some(controllers.routes.ConfirmationController.show().url)
+              response.header("Location") shouldBe Some(controllers.routes.ConfirmationController.show.url)
             }
           }
         }
@@ -237,7 +237,7 @@ class ConfirmSubmissionPageSpec extends NrsAssets with GivenWhenThen {
             response.status shouldBe SEE_OTHER
 
             And("The redirect location is correct")
-            response.header("Location") shouldBe Some(controllers.routes.ConfirmationController.show().url)
+            response.header("Location") shouldBe Some(controllers.routes.ConfirmationController.show.url)
           }
         }
       }

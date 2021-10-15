@@ -38,7 +38,7 @@ class VatSubscriptionServiceSpec extends BaseSpec {
           .expects("111111111", *, *)
           .returning(Future.successful(Right(expectedResult)))
 
-        val result = await(service.getCustomerDetails("111111111"))
+        val result = service.getCustomerDetails("111111111")
 
         result shouldBe Right(expectedResult)
       }
@@ -51,7 +51,7 @@ class VatSubscriptionServiceSpec extends BaseSpec {
           .expects("111111111", *, *)
           .returning(Future.successful(Left(expectedResult)))
 
-        val result = await(service.getCustomerDetails("111111111"))
+        val result = service.getCustomerDetails("111111111")
 
         result shouldBe Left(expectedResult)
       }

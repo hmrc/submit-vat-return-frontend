@@ -73,7 +73,7 @@ class AuthPredicateSpec extends MockAuth {
             }
 
             "render Agent unauthorised view" in {
-              Jsoup.parse(bodyOf(result)).title() shouldBe AuthMessages.unauthorisedTitle
+              Jsoup.parse(contentAsString(result)).title() shouldBe AuthMessages.unauthorisedTitle
             }
           }
         }
@@ -264,7 +264,7 @@ class AuthPredicateSpec extends MockAuth {
         }
 
         "render the unauthorised view" in {
-          Jsoup.parse(bodyOf(result)).title() shouldBe AuthMessages.unauthorisedTitle
+          Jsoup.parse(contentAsString(result)).title() shouldBe AuthMessages.unauthorisedTitle
         }
       }
     }
@@ -281,7 +281,7 @@ class AuthPredicateSpec extends MockAuth {
       }
 
       "render ISE page" in {
-        Jsoup.parse(bodyOf(result)).title() shouldBe "There is a problem with the service - VAT - GOV.UK"
+        Jsoup.parse(contentAsString(result)).title() shouldBe "There is a problem with the service - VAT - GOV.UK"
       }
     }
 
@@ -313,7 +313,7 @@ class AuthPredicateSpec extends MockAuth {
       }
 
       "render ISE page" in {
-        Jsoup.parse(bodyOf(result)).title() shouldBe "There is a problem with the service - VAT - GOV.UK"
+        Jsoup.parse(contentAsString(result)).title() shouldBe "There is a problem with the service - VAT - GOV.UK"
       }
     }
   }

@@ -19,13 +19,13 @@ package connectors.httpParsers
 import connectors.httpParsers.ResponseHttpParsers.HttpGetResult
 import models.VatObligations
 import models.errors.{ApiSingleError, ServerSideError, UnexpectedJsonFormat, UnexpectedStatusError}
-import play.api.Logger
 import play.api.http.Status.{BAD_REQUEST, NOT_FOUND, OK}
 import uk.gov.hmrc.http.{HttpReads, HttpResponse}
+import utils.LoggerUtil
 
 import scala.util.{Failure, Success, Try}
 
-object VatObligationsHttpParser extends ResponseHttpParsers {
+object VatObligationsHttpParser extends ResponseHttpParsers with LoggerUtil {
 
   implicit object VatObligationsReads extends HttpReads[HttpGetResult[VatObligations]] {
     override def read(method: String, url: String, response: HttpResponse): HttpGetResult[VatObligations] = {
@@ -33,18 +33,18 @@ object VatObligationsHttpParser extends ResponseHttpParsers {
         case OK => Try(response.json.as[VatObligations]) match {
           case Success(model) => Right(model)
           case Failure(_) =>
-            Logger.debug(s"[VatReturnObligationsReads][read] Could not parse JSON. Received: ${response.json}")
-            Logger.warn("[VatReturnObligationsReads][read] Unexpected JSON received.")
+            logger.debug(s"[VatReturnObligationsReads][read] Could not parse JSON. Received: ${response.json}")
+            logger.warn("[VatReturnObligationsReads][read] Unexpected JSON received.")
             Left(UnexpectedJsonFormat)
         }
         case NOT_FOUND => Right(VatObligations(Seq.empty))
-        case BAD_REQUEST => Logger.warn(s"[VatReturnObligationsReads][read] Unexpected response: $BAD_REQUEST")
+        case BAD_REQUEST => logger.warn(s"[VatReturnObligationsReads][read] Unexpected response: $BAD_REQUEST")
           handleBadRequest(response.json)(ApiSingleError.apiSingleErrorReads)
         case status if status >= 500 && status < 600 =>
-          Logger.warn(s"[VatReturnObligationsReads][read] Unexpected response: $status. Body: ${response.body}")
+          logger.warn(s"[VatReturnObligationsReads][read] Unexpected response: $status. Body: ${response.body}")
           Left(ServerSideError(response.status.toString, response.body))
         case status =>
-          Logger.warn(s"[VatReturnObligationsReads][read] Unexpected response: $status. Body: ${response.body}")
+          logger.warn(s"[VatReturnObligationsReads][read] Unexpected response: $status. Body: ${response.body}")
           Left(UnexpectedStatusError(status.toString, response.body))
       }
     }

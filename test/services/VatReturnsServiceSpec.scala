@@ -28,6 +28,7 @@ import play.api.test.FakeRequest
 import assets.NrsTestData.IdentityDataTestData.{correctModel => testIdentityModel}
 import assets.NrsTestData.ReceiptTestData.{correctModel => testReceiptDataModel}
 import uk.gov.hmrc.http.{Authorization, HeaderCarrier}
+import play.api.test.Helpers.{await, defaultAwaitTimeout}
 
 import scala.concurrent.{ExecutionContext, Future}
 

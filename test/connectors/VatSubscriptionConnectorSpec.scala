@@ -24,6 +24,7 @@ import models.{CustomerDetails, MandationStatus}
 import common.MandationStatuses.nonMTDfB
 import play.api.http.Status
 import uk.gov.hmrc.http.HttpResponse
+import play.api.test.Helpers.{await, defaultAwaitTimeout}
 
 import scala.concurrent.Future
 

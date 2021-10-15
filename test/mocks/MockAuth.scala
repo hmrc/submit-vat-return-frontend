@@ -24,7 +24,7 @@ import mocks.service.{MockDateService, MockVatSubscriptionService}
 import org.joda.time.DateTime
 import play.api.http.Status
 import play.api.mvc.{Action, AnyContent, Request}
-import play.api.test.Helpers.redirectLocation
+import play.api.test.Helpers.{redirectLocation, status}
 import services.EnrolmentsAuthService
 import uk.gov.hmrc.auth.core.AffinityGroup.{Agent, Individual}
 import uk.gov.hmrc.auth.core._
