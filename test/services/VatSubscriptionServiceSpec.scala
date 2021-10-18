@@ -20,6 +20,7 @@ import assets.CustomerDetailsTestAssets.customerDetailsModel
 import base.BaseSpec
 import connectors.VatSubscriptionConnector
 import models.errors.UnexpectedJsonFormat
+import play.api.test.Helpers.{await, defaultAwaitTimeout}
 import uk.gov.hmrc.http.HeaderCarrier
 
 import scala.concurrent.{ExecutionContext, Future}
@@ -38,7 +39,7 @@ class VatSubscriptionServiceSpec extends BaseSpec {
           .expects("111111111", *, *)
           .returning(Future.successful(Right(expectedResult)))
 
-        val result = service.getCustomerDetails("111111111")
+        val result = await(service.getCustomerDetails("111111111"))
 
         result shouldBe Right(expectedResult)
       }
@@ -51,7 +52,7 @@ class VatSubscriptionServiceSpec extends BaseSpec {
           .expects("111111111", *, *)
           .returning(Future.successful(Left(expectedResult)))
 
-        val result = service.getCustomerDetails("111111111")
+        val result = await(service.getCustomerDetails("111111111"))
 
         result shouldBe Left(expectedResult)
       }

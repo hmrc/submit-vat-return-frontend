@@ -17,7 +17,6 @@
 package base
 
 import akka.actor.ActorSystem
-import akka.stream.{ActorMaterializer, Materializer}
 import auth.AuthKeys
 import common.SessionKeys
 import config.{AppConfig, ErrorHandler}
@@ -69,7 +68,6 @@ trait BaseSpec extends AnyWordSpecLike with Matchers with OptionValues with Guic
 
 
   implicit val system: ActorSystem = ActorSystem()
-  implicit val materializer: Materializer = ActorMaterializer()
   implicit lazy val hc: HeaderCarrier = HeaderCarrier()
   implicit lazy val ec: ExecutionContext = inject[ExecutionContext]
 

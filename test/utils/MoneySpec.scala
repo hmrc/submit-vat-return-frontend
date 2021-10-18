@@ -14,10 +14,11 @@
  * limitations under the License.
  */
 
-import org.scalatest.{Matchers, WordSpec}
+import org.scalatest.wordspec.AnyWordSpecLike
+import org.scalatest.matchers.should.Matchers
 import utils.{MoneyPounds, RenderableMoneyMessage}
 
-class MoneyPoundsSpec extends WordSpec with Matchers {
+class MoneyPoundsSpec extends AnyWordSpecLike with Matchers {
 
   "quantity" should {
 

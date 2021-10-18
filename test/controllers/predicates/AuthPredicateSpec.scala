@@ -56,7 +56,7 @@ class AuthPredicateSpec extends MockAuth {
             lazy val result = target()(FakeRequest().withSession("CLIENT_VRN" -> "999999999"))
 
             "allow the request through" in {
-              mockAuthoriseAsAgent(authResponse, authResponse.b)
+              mockAuthoriseAsAgent(authResponse, Future.successful(agentServicesEnrolment))
               status(result) shouldBe Status.OK
             }
           }
