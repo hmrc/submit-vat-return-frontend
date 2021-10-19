@@ -54,13 +54,13 @@
   }
 }
 
-@boxDependentMessage(endPath: String, firstBoxIssue: Option[Int] = None, secondBoxIssue: Option[Int] = None) = {
+@boxDependentMessage(endPath: String, firstBoxIssue: Option[Int], secondBoxIssue: Option[Int]) = {
   @(firstBoxIssue, secondBoxIssue) match {
     case (Some(firstBox), Some(secondBox)) => {
       @messages("confirm_submission.warning.singleIssue." + endPath, firstBox, secondBox)
     }
-    case (Some(firstBox), None) => {
-      @messages("confirm_submission.warning.singleIssue." + endPath, firstBox)
+    case (None, Some(secondBox)) => {
+      @messages("confirm_submission.warning.singleIssue." + endPath, secondBox)
     }
     case _ => {
       @messages("confirm_submission.warning.multipleIssues." + endPath)
@@ -74,7 +74,7 @@
     <p class="govuk-body">@messages("confirm_submission.warning.common.listHeading")</p>
     <ul class="govuk-list govuk-list--bullet">
       <li>@messages("confirm_submission.warning.common.adjustPrevious")</li>
-      <li>@boxDependentMessage("additional", secondBoxIssue)</li>
+      <li>@boxDependentMessage("additional", None, secondBoxIssue)</li>
     </ul>
     <p class="govuk-body">
       @messages("confirm_submission.warning.common.checkFigures.part1")
