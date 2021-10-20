@@ -20,7 +20,6 @@ import base.BaseSpec
 import play.api.http.Status
 import play.api.test.FakeRequest
 import play.api.test.Helpers._
-import play.api.Play
 
 class LanguageControllerSpec extends BaseSpec {
 
@@ -37,7 +36,7 @@ class LanguageControllerSpec extends BaseSpec {
       }
 
       "use the English language" in {
-        cookies(result).get(Play.langCookieName(messagesApi)).get.value shouldBe "en"
+        cookies(result).get(messagesApi.langCookieName).get.value shouldBe "en"
       }
     }
 
@@ -50,7 +49,7 @@ class LanguageControllerSpec extends BaseSpec {
       }
 
       "use the Welsh language" in {
-        cookies(result).get(Play.langCookieName(messagesApi)).get.value shouldBe "cy"
+        cookies(result).get(messagesApi.langCookieName).get.value shouldBe "cy"
       }
     }
 
@@ -64,7 +63,7 @@ class LanguageControllerSpec extends BaseSpec {
       }
 
       "keep the current language" in {
-        cookies(result).get(Play.langCookieName(messagesApi)).get.value shouldBe "en"
+        cookies(result).get(messagesApi.langCookieName).get.value shouldBe "en"
       }
     }
   }

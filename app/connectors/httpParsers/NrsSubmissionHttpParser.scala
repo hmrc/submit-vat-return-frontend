@@ -19,13 +19,13 @@ package connectors.httpParsers
 import connectors.httpParsers.ResponseHttpParsers.HttpGetResult
 import models.errors.{BadRequestError, ServerSideError}
 import models.nrs.SuccessModel
-import play.api.Logger
 import play.api.http.Status._
 import uk.gov.hmrc.http.{HttpReads, HttpResponse}
+import utils.LoggerUtil
 
 import scala.util.{Failure, Success, Try}
 
-object NrsSubmissionHttpParser extends ResponseHttpParsers {
+object NrsSubmissionHttpParser extends ResponseHttpParsers with LoggerUtil {
 
   implicit object NrsSubmissionReads extends HttpReads[HttpGetResult[SuccessModel]] {
 
@@ -33,18 +33,18 @@ object NrsSubmissionHttpParser extends ResponseHttpParsers {
       response.status match {
         case ACCEPTED => Try(response.json.as[SuccessModel]) match {
           case Success(model) =>
-            Logger.debug(s"[NrsSubmissionHttpParser][NrsSubmissionReads]: Successful NRS submission. Submission id: ${model.nrSubmissionId}")
+            logger.debug(s"[NrsSubmissionHttpParser][NrsSubmissionReads]: Successful NRS submission. Submission id: ${model.nrSubmissionId}")
             Right(model)
           case Failure(_) =>
-            Logger.warn("[NrsSubmissionHttpParser][NrsSubmissionReads]: Successful NRS submission but nrSubmissionId not returned in body")
+            logger.warn("[NrsSubmissionHttpParser][NrsSubmissionReads]: Successful NRS submission but nrSubmissionId not returned in body")
             Right(SuccessModel(""))
         }
         case BAD_REQUEST =>
-          Logger.debug(s"[NrsSubmissionHttpParser][NrsSubmissionReads]: Bad Request response when submitting to NRS. Body: ${response.body}")
-          Logger.warn("[NrsSubmissionHttpParser][NrsSubmissionReads]: Bad Request response when submitting to NRS.")
+          logger.debug(s"[NrsSubmissionHttpParser][NrsSubmissionReads]: Bad Request response when submitting to NRS. Body: ${response.body}")
+          logger.warn("[NrsSubmissionHttpParser][NrsSubmissionReads]: Bad Request response when submitting to NRS.")
           Left(BadRequestError(BAD_REQUEST.toString, "Bad Request response when submitting to NRS."))
         case status =>
-          Logger.warn(s"[NrsSubmissionHttpParser][NrsSubmissionReads]: Unexpected response. Status $status. Body: ${response.body}")
+          logger.warn(s"[NrsSubmissionHttpParser][NrsSubmissionReads]: Unexpected response. Status $status. Body: ${response.body}")
           Left(ServerSideError(status.toString, "Received downstream error when submitting to NRS"))
       }
     }

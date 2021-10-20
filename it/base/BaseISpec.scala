@@ -19,7 +19,9 @@ package base
 import common.SessionKeys
 import config.AppConfig
 import models.auth.User
-import org.scalatest.{BeforeAndAfterAll, BeforeAndAfterEach, Matchers, WordSpec}
+import org.scalatest.matchers.should.Matchers
+import org.scalatest.wordspec.AnyWordSpecLike
+import org.scalatest.{BeforeAndAfterAll, BeforeAndAfterEach, OptionValues}
 import org.scalatestplus.play.guice.GuiceOneServerPerSuite
 import play.api.data.Form
 import play.api.http.HeaderNames
@@ -36,7 +38,7 @@ import utils.WireMockHelper
 import scala.concurrent.duration.Duration
 import scala.concurrent.{Await, Awaitable}
 
-trait BaseISpec extends WordSpec with WireMockHelper with Matchers with
+trait BaseISpec extends AnyWordSpecLike with WireMockHelper with Matchers with OptionValues with
   BeforeAndAfterAll with BeforeAndAfterEach with GuiceOneServerPerSuite {
 
   def servicesConfig: Map[String, String] = Map(

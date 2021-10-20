@@ -38,14 +38,14 @@ class HonestyDeclarationActionSpec extends BaseSpec {
           "mtdVatHonestyDeclaration" -> "123456789-19AA"
         ))
 
-        lazy val result = await(honestyDeclarationAction.authoriseForPeriodKey("19AA").invokeBlock(
+        lazy val result = honestyDeclarationAction.authoriseForPeriodKey("19AA").invokeBlock(
           request,
           block
-        ))
+        )
 
         "return the original request" in {
           status(result) shouldBe 200
-          bodyOf(result) shouldBe "Test"
+          contentAsString(result) shouldBe "Test"
         }
       }
 
@@ -55,10 +55,10 @@ class HonestyDeclarationActionSpec extends BaseSpec {
           "mtdVatHonestyDeclaration" -> "123456789-19AB"
         ))
 
-        lazy val result = await(honestyDeclarationAction.authoriseForPeriodKey("19AA").invokeBlock(
+        lazy val result = honestyDeclarationAction.authoriseForPeriodKey("19AA").invokeBlock(
           request,
           block
-        ))
+        )
 
         "redirect to /return-deadlines" in {
           status(result) shouldBe 303
@@ -66,7 +66,7 @@ class HonestyDeclarationActionSpec extends BaseSpec {
         }
 
         "remove value of current mtdVatHonestyDeclaration session key" in {
-          result.session.get("mtdVatHonestyDeclaration") shouldBe None
+          await(result).session.get("mtdVatHonestyDeclaration") shouldBe None
         }
       }
     }
@@ -77,10 +77,10 @@ class HonestyDeclarationActionSpec extends BaseSpec {
         "someOtherKey" -> "abcd"
       ))
 
-      lazy val result = await(honestyDeclarationAction.authoriseForPeriodKey("19AA").invokeBlock(
+      lazy val result = honestyDeclarationAction.authoriseForPeriodKey("19AA").invokeBlock(
         request,
         block
-      ))
+      )
 
       "redirect to /return-deadlines" in {
         status(result) shouldBe 303

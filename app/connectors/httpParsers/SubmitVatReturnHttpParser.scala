@@ -19,14 +19,14 @@ package connectors.httpParsers
 import connectors.httpParsers.ResponseHttpParsers.HttpGetResult
 import models.errors.{ServerSideError, UnexpectedJsonFormat}
 import models.vatReturnSubmission.SubmissionSuccessModel
-import play.api.Logger
 import play.api.http.Status._
 import uk.gov.hmrc.http.{HttpReads, HttpResponse}
+import utils.LoggerUtil
 
 import scala.util.{Failure, Success, Try}
 
 case class SubmitVatReturnHttpParser(vrn: String,
-                                     periodKey: String) extends ResponseHttpParsers {
+                                     periodKey: String) extends ResponseHttpParsers with LoggerUtil {
 
   implicit object SubmitVatReturnReads extends HttpReads[HttpGetResult[SubmissionSuccessModel]] {
 
@@ -35,12 +35,12 @@ case class SubmitVatReturnHttpParser(vrn: String,
         case OK => Try(response.json.as[SubmissionSuccessModel]) match {
           case Success(model) => Right(model)
           case Failure(exception) =>
-            Logger.debug(s"[SubmitVatReturnHttpParser][SubmitVatReturnReads]: Invalid Json returned. Exception: $exception")
-            Logger.warn("[SubmitVatReturnHttpParser][SubmitVatReturnReads]: Invalid Json returned")
+            logger.debug(s"[SubmitVatReturnHttpParser][SubmitVatReturnReads]: Invalid Json returned. Exception: $exception")
+            logger.warn("[SubmitVatReturnHttpParser][SubmitVatReturnReads]: Invalid Json returned")
             Left(UnexpectedJsonFormat)
         }
         case status =>
-          Logger.warn(s"[SubmitVatReturnHttpParser][SubmitVatReturnReads]: Unexpected response for VRN: $vrn with " +
+          logger.warn(s"[SubmitVatReturnHttpParser][SubmitVatReturnReads]: Unexpected response for VRN: $vrn with " +
             s"period key: $periodKey. Status: $status. Body: ${response.body}")
           Left(ServerSideError(s"$status", "Received downstream error when submitting VAT return."))
       }

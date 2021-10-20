@@ -25,7 +25,7 @@ import scala.concurrent.Future
 class DDInterruptPredicateSpec extends MockAuth with MockDDInterruptPredicate {
 
   def target(request: Request[AnyContent]): Future[Result] = mockDDInterruptPredicate.interruptCheck({
-    _ => Ok("Welcome")
+    _ => Future.successful(Ok("Welcome"))
   })(request)
 
   ".interruptCheck" when {

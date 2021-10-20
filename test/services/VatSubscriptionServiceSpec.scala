@@ -20,6 +20,7 @@ import assets.CustomerDetailsTestAssets.customerDetailsModel
 import base.BaseSpec
 import connectors.VatSubscriptionConnector
 import models.errors.UnexpectedJsonFormat
+import play.api.test.Helpers.{await, defaultAwaitTimeout}
 import uk.gov.hmrc.http.HeaderCarrier
 
 import scala.concurrent.{ExecutionContext, Future}

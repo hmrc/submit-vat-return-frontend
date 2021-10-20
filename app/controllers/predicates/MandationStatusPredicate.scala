@@ -19,7 +19,6 @@ package controllers.predicates
 import config.{AppConfig, ErrorHandler}
 
 import javax.inject.Inject
-import play.api.Logger
 import play.api.i18n.{I18nSupport, MessagesApi}
 import play.api.mvc.{ActionRefiner, Result}
 import play.api.mvc.Results.{Forbidden, Redirect}
@@ -28,6 +27,7 @@ import uk.gov.hmrc.http.HeaderCarrier
 import common.{MandationStatuses, SessionKeys}
 import models.auth.User
 import uk.gov.hmrc.play.http.HeaderCarrierConverter
+import utils.LoggerUtil
 import views.html.errors.MtdMandatedUser
 
 import scala.concurrent.{ExecutionContext, Future}
@@ -37,7 +37,8 @@ class MandationStatusPredicate @Inject()(mandationStatusService: MandationStatus
                                          val messagesApi: MessagesApi,
                                          mtdMandatedUser: MtdMandatedUser,
                                          implicit val appConfig: AppConfig,
-                                         implicit val executionContext: ExecutionContext) extends ActionRefiner[User, User] with I18nSupport {
+                                         implicit val executionContext: ExecutionContext) extends ActionRefiner[User, User]
+                                         with I18nSupport with LoggerUtil {
 
   override def refine[A](request: User[A]): Future[Either[Result, User[A]]] = {
 
@@ -49,7 +50,7 @@ class MandationStatusPredicate @Inject()(mandationStatusService: MandationStatus
     req.session.get(SessionKeys.mandationStatus) match {
       case Some(status) if supportedMandationStatuses.contains(status) => Future.successful(Right(request))
       case Some(unsupportedMandationStatus) =>
-        Logger.debug("[MandationStatusPredicate][refine] - User has a non 'non MTDfB' status received. " +
+        logger.debug("[MandationStatusPredicate][refine] - User has a non 'non MTDfB' status received. " +
           s"Status returned was: $unsupportedMandationStatus")
         Future.successful(Left(Forbidden(mtdMandatedUser())))
       case None => getMandationStatus
@@ -61,8 +62,8 @@ class MandationStatusPredicate @Inject()(mandationStatusService: MandationStatus
       case Right(status) =>
         Left(Redirect(user.uri).addingToSession(SessionKeys.mandationStatus -> status.mandationStatus))
       case Left(error) =>
-        Logger.info(s"[MandationStatusPredicate][refine] - Error has been received $error")
-        Logger.warn(s"[MandationStatusPredicate][refine] - Error has been received")
+        logger.info(s"[MandationStatusPredicate][refine] - Error has been received $error")
+        logger.warn(s"[MandationStatusPredicate][refine] - Error has been received")
         Left(errorHandler.showInternalServerError)
     }
   }

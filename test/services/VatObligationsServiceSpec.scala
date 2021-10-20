@@ -24,6 +24,7 @@ import connectors.httpParsers.ResponseHttpParsers.HttpGetResult
 import models.errors.UnexpectedJsonFormat
 import models.{VatObligation, VatObligations}
 import uk.gov.hmrc.http.HeaderCarrier
+import play.api.test.Helpers.{await, defaultAwaitTimeout}
 
 import scala.concurrent.{ExecutionContext, Future}
 

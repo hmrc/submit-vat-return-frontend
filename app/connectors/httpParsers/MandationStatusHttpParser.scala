@@ -19,13 +19,13 @@ package connectors.httpParsers
 import connectors.httpParsers.ResponseHttpParsers.HttpGetResult
 import models.MandationStatus
 import models.errors.{ApiSingleError, ServerSideError, UnexpectedJsonFormat, UnexpectedStatusError}
-import play.api.Logger
 import uk.gov.hmrc.http.{HttpReads, HttpResponse}
 import play.api.http.Status._
+import utils.LoggerUtil
 
 import scala.util.{Failure, Success, Try}
 
-object MandationStatusHttpParser extends ResponseHttpParsers {
+object MandationStatusHttpParser extends ResponseHttpParsers with LoggerUtil {
 
   implicit object MandationStatusReads extends HttpReads[HttpGetResult[MandationStatus]] {
     override def read(method: String, url: String, response: HttpResponse): HttpGetResult[MandationStatus] = {
@@ -35,8 +35,8 @@ object MandationStatusHttpParser extends ResponseHttpParsers {
         } match {
           case Success(parsedModel) => Right(parsedModel)
           case Failure(reason) =>
-            Logger.debug(s"[MandationStatusHttpParser][MandationStatusReads]: Invalid Json - $reason")
-            Logger.warn("[MandationStatusHttpParser][MandationStatusReads]: Invalid Json returned")
+            logger.debug(s"[MandationStatusHttpParser][MandationStatusReads]: Invalid Json - $reason")
+            logger.warn("[MandationStatusHttpParser][MandationStatusReads]: Invalid Json returned")
             Left(UnexpectedJsonFormat)
         }
         case BAD_REQUEST => handleBadRequest(response.json)(ApiSingleError.apiSingleErrorReads)

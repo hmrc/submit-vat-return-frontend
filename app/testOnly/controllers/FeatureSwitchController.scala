@@ -30,7 +30,7 @@ class FeatureSwitchController @Inject()(mcc: MessagesControllerComponents,
                                         implicit val appConfig: AppConfig)
   extends FrontendController(mcc) with I18nSupport {
 
-  def featureSwitch: Action[AnyContent] = Action { implicit request =>
+  def featureSwitch(): Action[AnyContent] = Action { implicit request =>
     Ok(featureSwitch(FeatureSwitchForm.form.fill(
       FeatureSwitchModel(
         staticDateEnabled = appConfig.features.staticDateEnabled()
@@ -38,15 +38,15 @@ class FeatureSwitchController @Inject()(mcc: MessagesControllerComponents,
     )))
   }
 
-  def submitFeatureSwitch: Action[AnyContent] = Action { implicit request =>
+  def submitFeatureSwitch(): Action[AnyContent] = Action { implicit request =>
     FeatureSwitchForm.form.bindFromRequest().fold(
-      _ => Redirect(routes.FeatureSwitchController.featureSwitch()),
+      _ => Redirect(routes.FeatureSwitchController.featureSwitch),
       success = handleSuccess
     )
   }
 
   def handleSuccess(model: FeatureSwitchModel): Result = {
     appConfig.features.staticDateEnabled(model.staticDateEnabled)
-    Redirect(routes.FeatureSwitchController.featureSwitch())
+    Redirect(routes.FeatureSwitchController.featureSwitch)
   }
 }

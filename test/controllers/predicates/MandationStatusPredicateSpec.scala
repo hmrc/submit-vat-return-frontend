@@ -30,6 +30,8 @@ import base.BaseSpec
 import play.api.test.FakeRequest
 import assets.messages.MtdMandationMessages
 
+import scala.concurrent.Future
+
 class MandationStatusPredicateSpec extends BaseSpec with MockMandationPredicate {
 
   "Mandation status predicate is called" when {
@@ -88,11 +90,11 @@ class MandationStatusPredicateSpec extends BaseSpec with MockMandationPredicate 
         }
 
         "return a forbidden" in {
-          status(result) shouldBe Status.FORBIDDEN
+          status(Future.successful(result)) shouldBe Status.FORBIDDEN
         }
 
         "show unsupported mandation status error view" in {
-          Jsoup.parse(bodyOf(result)).title shouldBe MtdMandationMessages.title
+          Jsoup.parse(contentAsString(Future.successful(result))).title shouldBe MtdMandationMessages.title
         }
       }
 
@@ -107,16 +109,16 @@ class MandationStatusPredicateSpec extends BaseSpec with MockMandationPredicate 
         lazy val userWithoutSession: User[AnyContentAsEmpty.type] = User[AnyContentAsEmpty.type]("123456789")(fakeRequestWithoutSession)
 
         lazy val result = {
-          setupMockMandationStatus(Right(MandationStatus(MandationStatuses.nonMTDfB)))
+          setupMockMandationStatus(Future.successful(Right(MandationStatus(MandationStatuses.nonMTDfB))))
           await(mockMandationStatusPredicate.refine(userWithoutSession)).left.get
         }
 
         "return a 303" in {
-          status(result) shouldBe SEE_OTHER
+          status(Future.successful(result)) shouldBe SEE_OTHER
         }
 
         s"redirect to ${userWithoutSession.uri}" in {
-          redirectLocation(result) shouldBe Some(userWithoutSession.uri)
+          redirectLocation(Future.successful(result)) shouldBe Some(userWithoutSession.uri)
         }
 
         "add the mandation status in session" in {
@@ -129,16 +131,16 @@ class MandationStatusPredicateSpec extends BaseSpec with MockMandationPredicate 
         lazy val userWithoutSession: User[AnyContentAsEmpty.type] = User[AnyContentAsEmpty.type]("123456789")(fakeRequestWithoutSession)
 
         lazy val result = {
-          setupMockMandationStatus(Left(BadRequestError(BAD_REQUEST.toString, "Error response")))
+          setupMockMandationStatus(Future.successful(Left(BadRequestError(BAD_REQUEST.toString, "Error response"))))
           await(mockMandationStatusPredicate.refine(userWithoutSession)).left.get
         }
 
         "return an internal server error" in {
-          status(result) shouldBe Status.INTERNAL_SERVER_ERROR
+          status(Future.successful(result)) shouldBe Status.INTERNAL_SERVER_ERROR
         }
 
         "display the internal sever error page" in {
-          Jsoup.parse(bodyOf(result)).title shouldBe "There is a problem with the service - VAT - GOV.UK"
+          Jsoup.parse(contentAsString(Future.successful(result))).title shouldBe "There is a problem with the service - VAT - GOV.UK"
         }
 
       }

@@ -62,7 +62,7 @@ class HonestyDeclarationControllerSpec extends BaseSpec with MockAuth with MockM
       }
 
       "remove the honesty declaration session key from session" in {
-        result.session.get(SessionKeys.HonestyDeclaration.key) shouldBe None
+        await(result).session.get(SessionKeys.HonestyDeclaration.key) shouldBe None
       }
 
       "return HTML" in {
@@ -120,7 +120,7 @@ class HonestyDeclarationControllerSpec extends BaseSpec with MockAuth with MockM
         }
 
         "save the honesty declaration session key to session" in {
-          result.session.get(SessionKeys.HonestyDeclaration.key) shouldBe Some(s"$vrn-18AA")
+          await(result).session.get(SessionKeys.HonestyDeclaration.key) shouldBe Some(s"$vrn-18AA")
         }
       }
 
