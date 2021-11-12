@@ -60,4 +60,8 @@ object ConfigKeys {
 
   val staticDateEnabledFeature: String = "features.staticDate.enabled"
   val staticDateValue: String = "date-service.staticDate.value"
+
+  val businessTaxAccountHost: String = "business-tax-account.host"
+  val businessTaxAccountUrl: String = "business-tax-account.homeUrl"
+
 }
