@@ -43,7 +43,8 @@ class AuthPredicate @Inject()(authService: EnrolmentsAuthService,
                               errorHandler: ErrorHandler,
                               mcc: MessagesControllerComponents,
                               unauthorisedAgent: UnauthorisedAgent,
-                              unauthorisedNonAgent: UnauthorisedNonAgent)
+                              unauthorisedNonAgent: UnauthorisedNonAgent,
+                              userInsolventError: UserInsolventError)
                              (implicit val executionContext: ExecutionContext,
                               implicit val appConfig: AppConfig) extends FrontendController(mcc)
                                                                  with I18nSupport
@@ -90,7 +91,7 @@ class AuthPredicate @Inject()(authService: EnrolmentsAuthService,
       case Some(vrn) =>
         val user = User(vrn)
         (request.session.get(SessionKeys.insolventWithoutAccessKey), request.session.get(SessionKeys.futureInsolvencyBlock)) match {
-          case (Some("true"), _) => Future.successful(Forbidden(unauthorisedNonAgent()))
+          case (Some("true"), _) => Future.successful(Forbidden(userInsolventError()(user,request2Messages,appConfig)))
           case (Some("false"), Some("true")) => Future.successful(errorHandler.showInternalServerError)
           case (Some("false"), Some("false")) => block(user)
           case _ => insolvencySubscriptionCall(user, block)
@@ -108,7 +109,7 @@ class AuthPredicate @Inject()(authService: EnrolmentsAuthService,
           case (true, futureDateBlock) =>
             logger.debug("[AuthPredicate][insolvencySubscriptionCall] - User is insolvent and not continuing to trade")
             Future.successful(
-              Forbidden(unauthorisedNonAgent()).addingToSession(
+              Forbidden(userInsolventError()(user, request2Messages, appConfig)).addingToSession(
                 SessionKeys.insolventWithoutAccessKey -> "true",
                 SessionKeys.futureInsolvencyBlock -> s"$futureDateBlock")
             )

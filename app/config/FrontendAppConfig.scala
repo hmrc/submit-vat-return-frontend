@@ -58,6 +58,7 @@ trait AppConfig {
   val gtmContainer: String
   val platformHost: String
   val directDebitInterruptUrl : String
+  val btaHomeUrl: String
 }
 
 @Singleton
@@ -147,4 +148,6 @@ class FrontendAppConfig @Inject()(configuration: Configuration, servicesConfig: 
   override val maximum9BoxReturnBoxRatio: Double = configuration.get[Double](ConfigKeys.nineBoxReturnAllowedRatio)
 
   override val gtmContainer: String = servicesConfig.getString(ConfigKeys.gtmContainer)
+  override lazy val btaHomeUrl: String =
+    servicesConfig.getString(ConfigKeys.businessTaxAccountHost) + servicesConfig.getString(ConfigKeys.businessTaxAccountUrl)
 }

@@ -111,6 +111,10 @@ unauthorised_non_agent.heading = You can’t use this service yet
 unauthorised_non_agent.text = You need to
 unauthorised_non_agent.link = sign up to use software to submit your VAT returns
 
+insolventError.title = Sorry, you cannot access this service
+insolventError.message = Your business has been declared insolvent.
+insolventError.buttonText = Go to your business tax account
+
 confirmation_view.title = You have submitted a VAT Return
 confirmation_view.heading = You have submitted a VAT Return
 confirmation_view.subHeading = What happens next

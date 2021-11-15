@@ -31,7 +31,7 @@ import uk.gov.hmrc.auth.core._
 import uk.gov.hmrc.auth.core.authorise.Predicate
 import uk.gov.hmrc.auth.core.retrieve.{LoginTimes, Retrieval, ~}
 import uk.gov.hmrc.http.HeaderCarrier
-import views.html.errors.{UnauthorisedAgent, UnauthorisedNonAgent}
+import views.html.errors.{UnauthorisedAgent, UnauthorisedNonAgent, UserInsolventError}
 
 import scala.concurrent.{ExecutionContext, Future}
 
@@ -42,6 +42,7 @@ trait MockAuth extends BaseSpec with MockVatSubscriptionService with MockDateSer
 
   val unauthorisedAgent: UnauthorisedAgent = inject[UnauthorisedAgent]
   val unauthorisedNonAgent: UnauthorisedNonAgent = inject[UnauthorisedNonAgent]
+  val userInsolventError: UserInsolventError = inject[UserInsolventError]
 
   lazy val mockAuthPredicate: AuthPredicate = new AuthPredicate(
     mockEnrolmentsAuthService,
@@ -50,7 +51,8 @@ trait MockAuth extends BaseSpec with MockVatSubscriptionService with MockDateSer
     errorHandler,
     mcc,
     unauthorisedAgent,
-    unauthorisedNonAgent
+    unauthorisedNonAgent,
+    userInsolventError
   )
 
   def mockAuthorise(authResponse: Future[~[Option[AffinityGroup], Enrolments]]): Unit = {

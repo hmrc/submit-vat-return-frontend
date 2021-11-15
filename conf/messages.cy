@@ -108,6 +108,10 @@ unauthorised_non_agent.heading = Ni allwch ddefnyddio’r gwasanaeth hwn eto
 unauthorised_non_agent.text = Mae angen i chi
 unauthorised_non_agent.link = sgofrestru i ddefnyddio meddalwedd er mwyn cyflwyno’ch Ffurflenni TAW
 
+insolventError.title = Mae’n ddrwg gennym - ni allwch gael mynediad at y gwasanaeth hwn
+insolventError.message = Mae’ch busnes wedi’i ddatgan yn ansolfent.
+insolventError.buttonText = Ewch i’ch cyfrif treth busnes
+
 confirmation_view.title = Rydych wedi cyflwyno Ffurflen TAW
 confirmation_view.heading = Rydych wedi cyflwyno Ffurflen TAW
 confirmation_view.subHeading = Yr hyn sy’n digwydd nesaf
