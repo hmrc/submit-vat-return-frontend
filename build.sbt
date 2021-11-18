@@ -14,6 +14,7 @@
  * limitations under the License.
  */
 
+import play.core.PlayVersion
 import play.sbt.routes.RoutesKeys
 import sbt.Tests.{Group, SubProcess}
 import uk.gov.hmrc.DefaultBuildSettings.{addTestReportOption, defaultSettings, scalaSettings}
@@ -62,9 +63,12 @@ val test = Seq(
   "org.scalatestplus.play" %% "scalatestplus-play"          % "5.1.0",
   "org.pegdown"             % "pegdown"                     % "1.6.0",
   "org.jsoup"               % "jsoup"                       % "1.13.1",
+  "com.typesafe.play"       %% "play-test"                  % PlayVersion.current,
   "org.scalamock"          %% "scalamock-scalatest-support" % "3.6.0",
   "com.github.tomakehurst"  % "wiremock-jre8"               % "2.26.3",
-  "com.vladsch.flexmark"    %  "flexmark-all"               % "0.36.8"
+  "org.mockito"             %  "mockito-core"               % "3.2.0",
+  "com.vladsch.flexmark"    %  "flexmark-all"               % "0.36.8",
+  "org.scalatestplus"      %% "scalatestplus-mockito"       % "1.0.0-M2"
 ).map(_ % s"$Test, $IntegrationTest")
 
 TwirlKeys.templateImports ++= Seq(

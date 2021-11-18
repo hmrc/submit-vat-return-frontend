@@ -16,6 +16,7 @@
 
 package controllers
 
+import auth.AuthKeys
 import base.BaseSpec
 import common.{MandationStatuses, SessionKeys}
 import mocks.{MockAuth, MockMandationPredicate}
@@ -23,6 +24,8 @@ import mocks.service.{MockVatObligationsService, MockVatSubscriptionService}
 import play.api.http.Status
 import play.api.test.Helpers._
 import views.html.ConfirmationView
+
+import scala.concurrent.Future
 
 class ConfirmationControllerSpec extends BaseSpec with MockVatSubscriptionService with MockVatObligationsService with MockAuth with MockMandationPredicate {
 
@@ -68,16 +71,20 @@ class ConfirmationControllerSpec extends BaseSpec with MockVatSubscriptionServic
     "user is authorised" should {
 
       lazy val result = {
-        mockAuthorise(agentAuthorisedResponse)
+        mockAuthoriseAsAgent(agentAuthorisedResponse, Future(agentServicesEnrolment))
         TestConfirmationController.submit()(fakeRequest
           .withSession(SessionKeys.mandationStatus -> MandationStatuses.nonMTDfB)
             .withSession(SessionKeys.inSessionPeriodKey -> "19AA")
             .withSession(SessionKeys.submissionYear -> "2019")
+          .withSession(AuthKeys.agentSessionVrn -> vrn)
         )
       }
 
       "return a see other response for .submit" in {
         status(result) shouldBe Status.SEE_OTHER
+      }
+      "return the redirect location" in {
+        redirectLocation(result) shouldBe Some("/agent-action")
       }
     }
 
