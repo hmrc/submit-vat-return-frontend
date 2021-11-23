@@ -17,7 +17,6 @@
 package connectors.httpParsers
 
 import models.errors._
-import play.api.http.Status
 import play.api.libs.json.{JsValue, Json, Reads}
 
 trait ResponseHttpParsers {
@@ -25,7 +24,6 @@ trait ResponseHttpParsers {
   protected def handleBadRequest(json: JsValue)(implicit reads: Reads[ApiSingleError]): Left[HttpError, Nothing] = {
 
     val errorResponse: Option[ApiError] = json.asOpt[ApiMultiError]
-      .orElse(json.asOpt[ApiMultiErrorFinancial])
       .orElse(json.asOpt[ApiSingleError])
     errorResponse
       .map(generateClientError)
@@ -37,8 +35,6 @@ trait ResponseHttpParsers {
       case ApiSingleError(code, message) => Left(BadRequestError(code, message))
       case ApiMultiError(code, _, errorResponse) =>
         Left(MultipleErrors(code, Json.toJson(errorResponse).toString()))
-      case ApiMultiErrorFinancial(errorResponse) =>
-        Left(MultipleErrors(Status.BAD_REQUEST.toString, Json.toJson(errorResponse).toString()))
     }
   }
 }

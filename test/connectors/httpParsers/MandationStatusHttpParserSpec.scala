@@ -36,7 +36,7 @@ class MandationStatusHttpParserSpec extends BaseSpec {
 
       "valid JSON is returned" in {
 
-        val httpResponse = HttpResponse(OK, validJson, Map.empty[String,Seq[String]])
+        val httpResponse = HttpResponse(OK, validJson, Map.empty[String, Seq[String]])
 
         val expectedResult = MandationStatus(nonMTDfB)
 
@@ -51,7 +51,7 @@ class MandationStatusHttpParserSpec extends BaseSpec {
 
       "invalid JSON is returned" in {
 
-        val httpResponse = HttpResponse(OK, invalidJson, Map.empty[String,Seq[String]])
+        val httpResponse = HttpResponse(OK, invalidJson, Map.empty[String, Seq[String]])
 
         val result = MandationStatusReads.read("", "", httpResponse)
 
@@ -62,7 +62,7 @@ class MandationStatusHttpParserSpec extends BaseSpec {
 
         val errorJson: JsObject = Json.obj()
 
-        val httpResponse = HttpResponse(INTERNAL_SERVER_ERROR, errorJson, Map.empty[String,Seq[String]])
+        val httpResponse = HttpResponse(INTERNAL_SERVER_ERROR, errorJson, Map.empty[String, Seq[String]])
 
         val expectedResult = Left(ServerSideError(INTERNAL_SERVER_ERROR.toString, "{ }"))
 
@@ -79,7 +79,7 @@ class MandationStatusHttpParserSpec extends BaseSpec {
             "message" -> "bad request"
           )
 
-          val httpResponse = HttpResponse(BAD_REQUEST, errorJson, Map.empty[String,Seq[String]])
+          val httpResponse = HttpResponse(BAD_REQUEST, errorJson, Map.empty[String, Seq[String]])
 
           val expectedResult = Left(BadRequestError(BAD_REQUEST.toString, "bad request"))
 
@@ -116,7 +116,7 @@ class MandationStatusHttpParserSpec extends BaseSpec {
             )
           )
 
-          val httpResponse = HttpResponse(BAD_REQUEST, errorJson, Map.empty[String,Seq[String]])
+          val httpResponse = HttpResponse(BAD_REQUEST, errorJson, Map.empty[String, Seq[String]])
 
           val expectedResult = Left(MultipleErrors(BAD_REQUEST.toString, Json.stringify(expectedBody)))
 
@@ -131,7 +131,7 @@ class MandationStatusHttpParserSpec extends BaseSpec {
 
         val errorJson: JsObject = Json.obj()
 
-        val httpResponse = HttpResponse(NOT_FOUND, errorJson, Map.empty[String,Seq[String]])
+        val httpResponse = HttpResponse(NOT_FOUND, errorJson, Map.empty[String, Seq[String]])
 
         val expectedResult = Left(UnexpectedStatusError(NOT_FOUND.toString, "{ }"))
 

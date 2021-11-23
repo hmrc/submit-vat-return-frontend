@@ -133,10 +133,23 @@ trait MockAuth extends BaseSpec with MockVatSubscriptionService with MockDateSer
     )
   )
 
+  def noArnEnrolment(key: String, delegatedAuthRule: Option[String] = None): Enrolments = Enrolments(
+    Set(
+      Enrolment(
+        key,
+        Seq(),
+        "Activated",
+        delegatedAuthRule
+      )
+    )
+  )
+
   val agentServicesEnrolment: Enrolments = createEnrolment("HMRC-AS-AGENT", "AgentReferenceNumber", "XAIT1234567", Some("mtd-vat-auth"))
   val agentServicesEnrolmentWithoutDelegatedAuth: Enrolments = createEnrolment("HMRC-AS-AGENT", "AgentReferenceNumber", "XAIT1234567", None)
   val mtdVatEnrolment: Enrolments = createEnrolment("HMRC-MTD-VAT", "VRN", "999999999")
   val otherEnrolment: Enrolments = createEnrolment("OTHER-ENROLMENT", "BLAH", "12345")
+  val forbiddenEnrolment: Enrolments = noArnEnrolment("HMRC-AS-AGENT", None)
+
   val mtdVatAuthorisedResponse: Future[~[Option[AffinityGroup], Enrolments]] = Future.successful(new ~(Some(Individual), mtdVatEnrolment))
   val agentAuthorisedResponse: Future[~[Option[AffinityGroup], Enrolments]] = Future.successful(new ~(Some(Agent), agentServicesEnrolment))
 

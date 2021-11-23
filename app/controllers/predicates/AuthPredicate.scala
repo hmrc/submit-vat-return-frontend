@@ -151,7 +151,7 @@ class AuthPredicate @Inject()(authService: EnrolmentsAuthService,
               } match {
                 case Some(arn) => block(User(vrn, Some(arn)))
                 case None =>
-                  logger.debug("[AuthPredicate][authoriseAsAgent] - Agent with no HMRC-AS-AGENT enrolment. Rendering unauthorised view.")
+                  logger.debug("[AuthPredicate][authoriseAsAgent] - Agent with no valid arn. Rendering unauthorised view.")
                   Future.successful(Forbidden(unauthorisedAgent()))
               }
           } recover {

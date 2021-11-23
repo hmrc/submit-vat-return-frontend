@@ -49,7 +49,7 @@ class AuditService @Inject()(appConfig: FrontendAppConfig, auditConnector: Audit
     handleAuditResult(auditConnector.sendExtendedEvent(extendedDataEvent))
   }
 
-  private def toExtendedDataEvent(appName: String, auditModel: ExtendedAuditModel, path: String)
+  def toExtendedDataEvent(appName: String, auditModel: ExtendedAuditModel, path: String)
                                  (implicit hc: HeaderCarrier): ExtendedDataEvent = {
 
     val details: JsValue =

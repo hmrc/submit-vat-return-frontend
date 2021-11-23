@@ -76,6 +76,21 @@ class AuthPredicateSpec extends MockAuth {
               Jsoup.parse(contentAsString(result)).title() shouldBe AuthMessages.unauthorisedTitle
             }
           }
+          "agent has HMRC-AS-AGENT enrolment but not a valid arn" should {
+
+            val authResponse = Future.successful(new ~(Some(Agent), forbiddenEnrolment))
+            lazy val result = target()(FakeRequest().withSession("CLIENT_VRN" -> "999999999"))
+
+            "return 403" in {
+              mockAuthoriseAsAgent(authResponse, Future(forbiddenEnrolment))
+
+              status(result) shouldBe Status.FORBIDDEN
+            }
+
+            "render Agent unauthorised view" in {
+              Jsoup.parse(contentAsString(result)).title() shouldBe AuthMessages.unauthorisedTitle
+            }
+          }
         }
 
         "agent does not have delegated authority for the VRN" when {
