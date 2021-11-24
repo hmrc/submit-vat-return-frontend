@@ -41,11 +41,20 @@ class ConfirmationController @Inject()(val mandationStatusCheck: MandationStatus
   val submit: Action[AnyContent] = (authPredicate andThen mandationStatusCheck).async { implicit user =>
     if (user.isAgent) {
       Future.successful(
-        Redirect(appConfig.manageClientUrl).removingFromSession(SessionKeys.inSessionPeriodKey, SessionKeys.submissionYear)
+        Redirect(appConfig.manageClientUrl).removingFromSession(
+          SessionKeys.inSessionPeriodKey,
+          SessionKeys.inSessionPeriodKeyDeprecated,
+          SessionKeys.submissionYear,
+          SessionKeys.submissionYearDeprecated
+        )
       )
     } else {
       Future.successful(
-        Redirect(appConfig.vatSummaryUrl).removingFromSession(SessionKeys.inSessionPeriodKey, SessionKeys.submissionYear)
+        Redirect(appConfig.vatSummaryUrl).removingFromSession(
+          SessionKeys.inSessionPeriodKey,
+          SessionKeys.inSessionPeriodKeyDeprecated,
+          SessionKeys.submissionYear,
+          SessionKeys.submissionYearDeprecated)
       )
     }
   }
