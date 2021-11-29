@@ -130,9 +130,7 @@ class ConfirmSubmissionControllerSpec extends BaseSpec
           }
 
           "add obligation data to session" in {
-            await(result).session.get("submissionYear").get shouldBe LocalDate.now().getYear.toString
             await(result).session.get("mtdVatvcSubmissionYear").get shouldBe LocalDate.now().getYear.toString
-            await(result).session.get("inSessionPeriodKey").get shouldBe "18AA"
             await(result).session.get("mtdVatvcInSessionPeriodKey").get shouldBe "18AA"
           }
         }
