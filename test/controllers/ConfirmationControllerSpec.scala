@@ -74,9 +74,9 @@ class ConfirmationControllerSpec extends BaseSpec with MockVatSubscriptionServic
         mockAuthoriseAsAgent(agentAuthorisedResponse, Future(agentServicesEnrolment))
         TestConfirmationController.submit()(fakeRequest
           .withSession(SessionKeys.mandationStatus -> MandationStatuses.nonMTDfB)
-            .withSession(SessionKeys.inSessionPeriodKey -> "19AA")
-            .withSession(SessionKeys.submissionYear -> "2019")
-          .withSession(AuthKeys.agentSessionVrn -> vrn)
+          .withSession(SessionKeys.inSessionPeriodKey -> "19AA")
+          .withSession(SessionKeys.submissionYear -> "2019")
+          .withSession(AuthKeys.agentSessionVrnDeprecated -> vrn)
         )
       }
 

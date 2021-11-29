@@ -80,8 +80,11 @@ class ConfirmSubmissionController @Inject()(mandationStatusCheck: MandationStatu
         vatSubscriptionService.getCustomerDetails(user.vrn) map { model =>
           val view = renderConfirmSubmissionView(periodKey, sessionData, model)
           Ok(view)
-            .addingToSession(SessionKeys.submissionYear -> sessionData.end.format(dateTimeFormatter))
-            .addingToSession(SessionKeys.inSessionPeriodKey -> periodKey)
+            .addingToSession(
+              SessionKeys.submissionYear -> sessionData.end.format(dateTimeFormatter),
+              SessionKeys.submissionYearDeprecated -> sessionData.end.format(dateTimeFormatter),
+              SessionKeys.inSessionPeriodKey -> periodKey,
+              SessionKeys.inSessionPeriodKeyDeprecated -> periodKey)
         }
       case _ => Future.successful(Redirect(controllers.routes.SubmitFormController.show(periodKey)))
     }

@@ -44,14 +44,17 @@ class StubAgentClientLookupController @Inject()(mcc: MessagesControllerComponent
 
   def unauthorised(redirectUrl: String): Action[AnyContent] = Action { implicit request =>
     Ok(stubAgentClientUnauth(redirectUrl))
-      .removingFromSession(AuthKeys.agentSessionVrn)
+      .removingFromSession(AuthKeys.agentSessionVrn, AuthKeys.agentSessionVrnDeprecated)
   }
 
   def post: Action[AnyContent] = Action { implicit request =>
     StubAgentClientLookupForm.form.bindFromRequest().fold(
       error => InternalServerError(s"Failed to bind model. Error: $error"),
       success => Redirect(success.redirectUrl)
-        .addingToSession(AuthKeys.agentSessionVrn -> success.vrn, SessionKeys.viewedDDInterrupt -> "true")
+        .addingToSession(
+          AuthKeys.agentSessionVrnDeprecated -> success.vrn,
+          AuthKeys.agentSessionVrn -> success.vrn,
+          SessionKeys.viewedDDInterrupt -> "true")
     )
   }
 }

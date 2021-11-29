@@ -24,6 +24,7 @@ object AuthKeys {
   val agentIdentifierId: String = "AgentReferenceNumber"
   val delegatedAuthRule: String = "mtd-vat-auth"
   val activated: String = "Activated"
-  val agentSessionVrn: String = "CLIENT_VRN"
+  val agentSessionVrnDeprecated: String = "CLIENT_VRN"
+  val agentSessionVrn: String = "mtdVatvcClientVrn"
 
 }
