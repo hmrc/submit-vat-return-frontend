@@ -76,7 +76,7 @@ class ConfirmationControllerSpec extends BaseSpec with MockVatSubscriptionServic
           .withSession(SessionKeys.mandationStatus -> MandationStatuses.nonMTDfB)
           .withSession(SessionKeys.inSessionPeriodKey -> "19AA")
           .withSession(SessionKeys.submissionYear -> "2019")
-          .withSession(AuthKeys.agentSessionVrnDeprecated -> vrn)
+          .withSession(AuthKeys.agentSessionVrn -> vrn)
         )
       }
 

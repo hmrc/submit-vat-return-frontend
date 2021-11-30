@@ -46,14 +46,14 @@ class AuthPredicateSpec extends MockAuth {
 
     "user is Agent" when {
 
-      "the session contains CLIENT_VRN" when {
+      "the session contains mtdVatvcClientVrn" when {
 
         "agent has delegated authority for the VRN" when {
 
           "agent has HMRC-AS-AGENT enrolment" should {
 
             val authResponse = Future.successful(new ~(Some(Agent), agentServicesEnrolment))
-            lazy val result = target()(FakeRequest().withSession("CLIENT_VRN" -> "999999999"))
+            lazy val result = target()(FakeRequest().withSession("mtdVatvcClientVrn" -> "999999999"))
 
             "allow the request through" in {
               mockAuthoriseAsAgent(authResponse, Future.successful(agentServicesEnrolment))
@@ -64,7 +64,7 @@ class AuthPredicateSpec extends MockAuth {
           "agent does not have HMRC-AS-AGENT enrolment" should {
 
             val authResponse = Future.successful(new ~(Some(Agent), otherEnrolment))
-            lazy val result = target()(FakeRequest().withSession("CLIENT_VRN" -> "999999999"))
+            lazy val result = target()(FakeRequest().withSession("mtdVatvcClientVrn" -> "999999999"))
 
             "return 403" in {
               mockAuthorise(authResponse)
@@ -79,7 +79,7 @@ class AuthPredicateSpec extends MockAuth {
           "agent has HMRC-AS-AGENT enrolment but not a valid arn" should {
 
             val authResponse = Future.successful(new ~(Some(Agent), forbiddenEnrolment))
-            lazy val result = target()(FakeRequest().withSession("CLIENT_VRN" -> "999999999"))
+            lazy val result = target()(FakeRequest().withSession("mtdVatvcClientVrn" -> "999999999"))
 
             "return 403" in {
               mockAuthoriseAsAgent(authResponse, Future(forbiddenEnrolment))
@@ -96,7 +96,7 @@ class AuthPredicateSpec extends MockAuth {
         "agent does not have delegated authority for the VRN" when {
 
           val authResponse = Future.successful(new ~(Some(Agent), agentServicesEnrolmentWithoutDelegatedAuth))
-          lazy val result = target()(FakeRequest().withSession("CLIENT_VRN" -> "999999999"))
+          lazy val result = target()(FakeRequest().withSession("mtdVatvcClientVrn" -> "999999999"))
 
           val redirectUrl = mockAppConfig.agentClientUnauthorisedUrl("/")
 
@@ -114,7 +114,7 @@ class AuthPredicateSpec extends MockAuth {
         "auth returns a NoActiveSession exception" should {
 
           val authResponse = Future.successful(new ~(Some(Agent), agentServicesEnrolmentWithoutDelegatedAuth))
-          lazy val result = target()(FakeRequest().withSession("CLIENT_VRN" -> "999999999"))
+          lazy val result = target()(FakeRequest().withSession("mtdVatvcClientVrn" -> "999999999"))
 
           "return 303" in {
             mockAuthoriseAsAgent(authResponse, Future.failed(BearerTokenExpired()))
@@ -128,7 +128,7 @@ class AuthPredicateSpec extends MockAuth {
         }
       }
 
-      "the session does not contain CLIENT_VRN" should {
+      "the session does not contain mtdVatvcClientVrn" should {
 
         val authResponse = Future.successful(new ~(Some(Agent), agentServicesEnrolment))
         lazy val result = target()(FakeRequest())
