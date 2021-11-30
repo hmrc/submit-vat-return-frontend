@@ -82,9 +82,8 @@ class ConfirmSubmissionController @Inject()(mandationStatusCheck: MandationStatu
           Ok(view)
             .addingToSession(
               SessionKeys.submissionYear -> sessionData.end.format(dateTimeFormatter),
-              SessionKeys.submissionYearDeprecated -> sessionData.end.format(dateTimeFormatter),
-              SessionKeys.inSessionPeriodKey -> periodKey,
-              SessionKeys.inSessionPeriodKeyDeprecated -> periodKey)
+              SessionKeys.inSessionPeriodKey -> periodKey
+            )
         }
       case _ => Future.successful(Redirect(controllers.routes.SubmitFormController.show(periodKey)))
     }

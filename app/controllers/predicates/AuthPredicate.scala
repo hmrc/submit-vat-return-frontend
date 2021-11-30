@@ -140,7 +140,7 @@ class AuthPredicate @Inject()(authService: EnrolmentsAuthService,
         .withIdentifier(vatIdentifierId, vrn)
         .withDelegatedAuthRule(delegatedAuthRule)
 
-    request.session.get(AuthKeys.agentSessionVrnDeprecated) match {
+    request.session.get(AuthKeys.agentSessionVrn) match {
       case Some(vrn) =>
         authService
           .authorised(agentDelegatedAuthorityRule(vrn))

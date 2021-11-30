@@ -43,18 +43,14 @@ class ConfirmationController @Inject()(val mandationStatusCheck: MandationStatus
       Future.successful(
         Redirect(appConfig.manageClientUrl).removingFromSession(
           SessionKeys.inSessionPeriodKey,
-          SessionKeys.inSessionPeriodKeyDeprecated,
-          SessionKeys.submissionYear,
-          SessionKeys.submissionYearDeprecated
+          SessionKeys.submissionYear
         )
       )
     } else {
       Future.successful(
         Redirect(appConfig.vatSummaryUrl).removingFromSession(
           SessionKeys.inSessionPeriodKey,
-          SessionKeys.inSessionPeriodKeyDeprecated,
-          SessionKeys.submissionYear,
-          SessionKeys.submissionYearDeprecated)
+          SessionKeys.submissionYear)
       )
     }
   }
