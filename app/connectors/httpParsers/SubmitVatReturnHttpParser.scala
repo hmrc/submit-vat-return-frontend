@@ -17,7 +17,7 @@
 package connectors.httpParsers
 
 import connectors.httpParsers.ResponseHttpParsers.HttpGetResult
-import models.errors.{ServerSideError, UnexpectedJsonFormat}
+import models.errors.ErrorModel
 import models.vatReturnSubmission.SubmissionSuccessModel
 import play.api.http.Status._
 import uk.gov.hmrc.http.{HttpReads, HttpResponse}
@@ -37,12 +37,12 @@ case class SubmitVatReturnHttpParser(vrn: String,
           case Failure(exception) =>
             logger.debug(s"[SubmitVatReturnHttpParser][SubmitVatReturnReads]: Invalid Json returned. Exception: $exception")
             logger.warn("[SubmitVatReturnHttpParser][SubmitVatReturnReads]: Invalid Json returned")
-            Left(UnexpectedJsonFormat)
+            Left(ErrorModel(INTERNAL_SERVER_ERROR, "The server you are connecting to returned unexpected JSON."))
         }
         case status =>
           logger.warn(s"[SubmitVatReturnHttpParser][SubmitVatReturnReads]: Unexpected response for VRN: $vrn with " +
             s"period key: $periodKey. Status: $status. Body: ${response.body}")
-          Left(ServerSideError(s"$status", "Received downstream error when submitting VAT return."))
+          Left(ErrorModel(status, "Received downstream error when submitting VAT return."))
       }
     }
   }

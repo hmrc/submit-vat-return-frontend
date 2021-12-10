@@ -17,7 +17,7 @@
 package connectors.httpParsers
 
 import connectors.httpParsers.ResponseHttpParsers.HttpGetResult
-import models.errors.{BadRequestError, ServerSideError}
+import models.errors.ErrorModel
 import models.nrs.SuccessModel
 import play.api.http.Status._
 import uk.gov.hmrc.http.{HttpReads, HttpResponse}
@@ -42,10 +42,10 @@ object NrsSubmissionHttpParser extends ResponseHttpParsers with LoggerUtil {
         case BAD_REQUEST =>
           logger.debug(s"[NrsSubmissionHttpParser][NrsSubmissionReads]: Bad Request response when submitting to NRS. Body: ${response.body}")
           logger.warn("[NrsSubmissionHttpParser][NrsSubmissionReads]: Bad Request response when submitting to NRS.")
-          Left(BadRequestError(BAD_REQUEST.toString, "Bad Request response when submitting to NRS."))
+          Left(ErrorModel(BAD_REQUEST, "Bad Request response when submitting to NRS."))
         case status =>
           logger.warn(s"[NrsSubmissionHttpParser][NrsSubmissionReads]: Unexpected response. Status $status. Body: ${response.body}")
-          Left(ServerSideError(status.toString, "Received downstream error when submitting to NRS"))
+          Left(ErrorModel(status, "Received downstream error when submitting to NRS"))
       }
     }
   }

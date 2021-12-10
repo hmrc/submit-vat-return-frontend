@@ -14,15 +14,12 @@
  * limitations under the License.
  */
 
-package connectors.httpParsers
+package models.errors
 
-import models.errors._
-import play.api.libs.json.{JsValue, Json, Reads}
+import play.api.libs.json.{Format, Json}
 
-trait ResponseHttpParsers {
-}
+case class ErrorModel(status: Int, message: String)
 
-object ResponseHttpParsers {
-  type HttpGetResult[T] = Either[ErrorModel, T]
-  type HttpPostResult[T] = Either[ErrorModel, T]
+object ErrorModel {
+  implicit val format: Format[ErrorModel] = Json.format[ErrorModel]
 }

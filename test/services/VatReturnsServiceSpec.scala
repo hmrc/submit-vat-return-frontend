@@ -20,7 +20,7 @@ import base.BaseSpec
 import connectors.VatReturnsConnector
 import connectors.httpParsers.ResponseHttpParsers.HttpGetResult
 import models.auth.User
-import models.errors.UnexpectedJsonFormat
+import models.errors.ErrorModel
 import models.nrs.{RequestModel, SearchKeys, SuccessModel}
 import models.vatReturnSubmission.{SubmissionModel, SubmissionSuccessModel}
 import play.api.mvc.AnyContentAsEmpty
@@ -29,6 +29,7 @@ import assets.NrsTestData.IdentityDataTestData.{correctModel => testIdentityMode
 import assets.NrsTestData.ReceiptTestData.{correctModel => testReceiptDataModel}
 import uk.gov.hmrc.http.{Authorization, HeaderCarrier}
 import play.api.test.Helpers.{await, defaultAwaitTimeout}
+import play.api.http.Status._
 
 import scala.concurrent.{ExecutionContext, Future}
 
@@ -70,7 +71,7 @@ class VatReturnsServiceSpec extends BaseSpec {
 
     "submission is unsuccessful" should {
 
-      val expectedResult = Left(UnexpectedJsonFormat)
+      val expectedResult = Left(ErrorModel(INTERNAL_SERVER_ERROR, ""))
 
       "return a HttpError" in {
         (mockConnector.submitVatReturn(_: String, _: SubmissionModel)(_: HeaderCarrier, _: ExecutionContext))
@@ -108,7 +109,7 @@ class VatReturnsServiceSpec extends BaseSpec {
 
     "submission is unsuccessful" should {
 
-      val expectedResult = Left(UnexpectedJsonFormat)
+      val expectedResult = Left(ErrorModel(INTERNAL_SERVER_ERROR, ""))
 
       "return a HttpError" in {
 

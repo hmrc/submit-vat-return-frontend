@@ -20,7 +20,7 @@ import common.{MandationStatuses, SessionKeys}
 import mocks.MockMandationPredicate
 import models.MandationStatus
 import models.auth.User
-import models.errors.BadRequestError
+import models.errors.ErrorModel
 import org.jsoup.Jsoup
 import play.api.http.Status.{BAD_REQUEST, SEE_OTHER}
 import play.api.mvc.AnyContentAsEmpty
@@ -131,7 +131,7 @@ class MandationStatusPredicateSpec extends BaseSpec with MockMandationPredicate 
         lazy val userWithoutSession: User[AnyContentAsEmpty.type] = User[AnyContentAsEmpty.type]("123456789")(fakeRequestWithoutSession)
 
         lazy val result = {
-          setupMockMandationStatus(Future.successful(Left(BadRequestError(BAD_REQUEST.toString, "Error response"))))
+          setupMockMandationStatus(Future.successful(Left(ErrorModel(BAD_REQUEST, "Error response"))))
           await(mockMandationStatusPredicate.refine(userWithoutSession)).left.get
         }
 

@@ -19,10 +19,11 @@ package connectors
 import base.BaseISpec
 import connectors.httpParsers.ResponseHttpParsers.HttpGetResult
 import models.CustomerDetails
-import models.errors.{ServerSideError, UnexpectedJsonFormat}
+import models.errors.ErrorModel
 import play.api.http.Status._
 import stubs.VatSubscriptionStub._
 import uk.gov.hmrc.http.HeaderCarrier
+
 import scala.concurrent.ExecutionContext.Implicits.global
 
 class VatSubscriptionConnectorISpec extends BaseISpec {
@@ -66,7 +67,7 @@ class VatSubscriptionConnectorISpec extends BaseISpec {
           stubGet(s"/vat-subscription/$vrn/customer-details", vatSubscriptionInvalidJson.toString(), OK)
 
           val result: HttpGetResult[CustomerDetails] = await(connector.getCustomerDetails(vrn))
-          result shouldBe Left(UnexpectedJsonFormat)
+          result shouldBe Left(ErrorModel(INTERNAL_SERVER_ERROR, "The server you are connecting to returned unexpected JSON."))
         }
       }
     }
@@ -78,7 +79,7 @@ class VatSubscriptionConnectorISpec extends BaseISpec {
         stubGet(s"/vat-subscription/$vrn/customer-details", "", SERVICE_UNAVAILABLE)
 
         val result: HttpGetResult[CustomerDetails] = await(connector.getCustomerDetails(vrn))
-        result shouldBe Left(ServerSideError("503", "Received downstream error when retrieving customer details."))
+        result shouldBe Left(ErrorModel(SERVICE_UNAVAILABLE, "Received downstream error when retrieving customer details."))
       }
     }
   }

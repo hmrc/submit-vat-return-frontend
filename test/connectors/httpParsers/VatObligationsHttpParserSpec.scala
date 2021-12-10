@@ -73,7 +73,7 @@ class VatObligationsHttpParserSpec extends BaseSpec {
           )
           val httpResponse = HttpResponse(OK, validJson, Map.empty[String,Seq[String]])
           val result = VatObligationsHttpParser.VatObligationsReads.read("", "", httpResponse)
-          val expectedResponse = Left(UnexpectedJsonFormat)
+          val expectedResponse = Left(ErrorModel(INTERNAL_SERVER_ERROR, "The server you are connecting to returned unexpected JSON."))
 
           result shouldBe expectedResponse
         }
@@ -93,77 +93,14 @@ class VatObligationsHttpParserSpec extends BaseSpec {
       }
     }
 
-    "response is 400" should {
+    "response is an error response other than 404" should {
 
-      "return BadRequestError" in {
-        val emptyReturn = Json.obj(
-          "code" -> "NOOO!",
-          "message" -> "summet gon messed up"
-        )
-
-        val httpResponse = HttpResponse(BAD_REQUEST, emptyReturn, Map.empty[String,Seq[String]])
-        val result = VatObligationsHttpParser.VatObligationsReads.read("", "", httpResponse)
-        val expectedResponse = Left(BadRequestError("NOOO!", "summet gon messed up"))
-
-        result shouldBe expectedResponse
-      }
-    }
-
-    "response is 500" should {
-
-      "return ServerSideError" in {
+      "return an error model" in {
         val emptyReturn = Json.obj()
 
         val httpResponse = HttpResponse(INTERNAL_SERVER_ERROR, emptyReturn, Map.empty[String,Seq[String]])
         val result = VatObligationsHttpParser.VatObligationsReads.read("", "", httpResponse)
-        val expectedResponse = Left(ServerSideError(s"$INTERNAL_SERVER_ERROR", "{ }"))
-
-        result shouldBe expectedResponse
-      }
-    }
-
-    "response is unexpected" should {
-      "return UnexpectedStatusError" in {
-        val emptyReturn = Json.obj()
-
-        val httpResponse = HttpResponse(PROXY_AUTHENTICATION_REQUIRED, emptyReturn, Map.empty[String,Seq[String]])
-        val result = VatObligationsHttpParser.VatObligationsReads.read("", "", httpResponse)
-        val expectedResponse = Left(UnexpectedStatusError(s"$PROXY_AUTHENTICATION_REQUIRED", "{ }"))
-
-        result shouldBe expectedResponse
-      }
-    }
-
-    s"response is $BAD_REQUEST and there are multiple errors" should {
-      "return MultipleErrors" in {
-        val multipleReturn = Json.obj(
-          "code" -> s"$BAD_REQUEST",
-          "message" -> "My god... What have I done?",
-          "errors" -> Json.arr(
-            Json.obj(
-              "code" -> "this did a thing",
-              "message" -> "the thing it did went really wrong in some way or another"
-            ),
-            Json.obj(
-              "code" -> "this is a second error code",
-              "message" -> "TWO ERRORS AT THE SAME TIME?! THE WORLD HAS GONE MAD!"
-            )
-          )
-        )
-        val expectedBody = Json.arr(
-          Json.obj(
-            "code" -> "this did a thing",
-            "message" -> "the thing it did went really wrong in some way or another"
-          ),
-          Json.obj(
-            "code" -> "this is a second error code",
-            "message" -> "TWO ERRORS AT THE SAME TIME?! THE WORLD HAS GONE MAD!"
-          )
-        )
-
-        val httpResponse = HttpResponse(BAD_REQUEST, multipleReturn, Map.empty[String,Seq[String]])
-        val result = VatObligationsHttpParser.VatObligationsReads.read("", "", httpResponse)
-        val expectedResponse = Left(MultipleErrors(s"$BAD_REQUEST", Json.stringify(expectedBody)))
+        val expectedResponse = Left(ErrorModel(INTERNAL_SERVER_ERROR, "{ }"))
 
         result shouldBe expectedResponse
       }

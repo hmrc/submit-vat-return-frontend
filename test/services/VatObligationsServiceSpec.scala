@@ -17,14 +17,14 @@
 package services
 
 import java.time.LocalDate
-
 import base.BaseSpec
 import connectors.VatObligationsConnector
 import connectors.httpParsers.ResponseHttpParsers.HttpGetResult
-import models.errors.UnexpectedJsonFormat
+import models.errors.ErrorModel
 import models.{VatObligation, VatObligations}
 import uk.gov.hmrc.http.HeaderCarrier
 import play.api.test.Helpers.{await, defaultAwaitTimeout}
+import play.api.http.Status._
 
 import scala.concurrent.{ExecutionContext, Future}
 
@@ -50,7 +50,7 @@ class VatObligationsServiceSpec extends BaseSpec {
     }
     "return an error" when {
       "an error is returned from the connector" in {
-        val expectedResult = Left(UnexpectedJsonFormat)
+        val expectedResult = Left(ErrorModel(INTERNAL_SERVER_ERROR, ""))
 
         (mockConnector.getObligations(_: String)(_: HeaderCarrier, _: ExecutionContext))
           .expects(*, *, *)

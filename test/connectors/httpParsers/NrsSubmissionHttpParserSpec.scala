@@ -18,7 +18,7 @@ package connectors.httpParsers
 
 import base.BaseSpec
 import connectors.httpParsers.NrsSubmissionHttpParser.NrsSubmissionReads
-import models.errors.{BadRequestError, ServerSideError}
+import models.errors.ErrorModel
 import models.nrs.SuccessModel
 import play.api.http.Status._
 import play.api.libs.json.{JsObject, Json}
@@ -69,11 +69,11 @@ class NrsSubmissionHttpParserSpec extends BaseSpec {
     "response is 400" should {
 
       val httpResponse = HttpResponse(BAD_REQUEST, badRequestResponseJson, Map.empty[String,Seq[String]])
-      val expectedResult = BadRequestError("400", "Bad Request response when submitting to NRS.")
+      val expectedResult = ErrorModel(BAD_REQUEST, "Bad Request response when submitting to NRS.")
 
       val result = NrsSubmissionReads.read("", "", httpResponse)
 
-      "return a BadRequestError" in {
+      "return an error model with status BadRequest" in {
         result shouldBe Left(expectedResult)
       }
     }
@@ -81,7 +81,7 @@ class NrsSubmissionHttpParserSpec extends BaseSpec {
     "response is any other status" should {
 
       val httpResponse = HttpResponse(SERVICE_UNAVAILABLE, "", Map.empty[String,Seq[String]])
-      val expectedResult = ServerSideError(SERVICE_UNAVAILABLE.toString, "Received downstream error when submitting to NRS")
+      val expectedResult = ErrorModel(SERVICE_UNAVAILABLE, "Received downstream error when submitting to NRS")
 
       val result = NrsSubmissionReads.read("", "", httpResponse)
 

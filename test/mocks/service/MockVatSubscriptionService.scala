@@ -19,13 +19,14 @@ package mocks.service
 import assets.CustomerDetailsTestAssets.{customerDetailsInsolvent, customerDetailsWithFRS}
 import connectors.httpParsers.ResponseHttpParsers.HttpGetResult
 import models.CustomerDetails
-import models.errors.UnknownError
+import models.errors.ErrorModel
 import org.scalamock.scalatest.MockFactory
 import org.scalatest.OptionValues
 import org.scalatest.matchers.should.Matchers
 import org.scalatest.wordspec.AnyWordSpecLike
 import services.VatSubscriptionService
 import uk.gov.hmrc.http.HeaderCarrier
+import play.api.http.Status._
 
 import scala.concurrent.{ExecutionContext, Future}
 
@@ -44,5 +45,5 @@ trait MockVatSubscriptionService extends AnyWordSpecLike with Matchers with Opti
   val customerInfoInsolventResponse: Future[HttpGetResult[CustomerDetails]] =
     Future.successful(Right(customerDetailsInsolvent))
   val customerInfoFailureResponse: Future[HttpGetResult[CustomerDetails]] =
-    Future.successful(Left(UnknownError))
+    Future.successful(Left(ErrorModel(INTERNAL_SERVER_ERROR, "")))
 }

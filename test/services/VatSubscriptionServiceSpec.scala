@@ -19,7 +19,8 @@ package services
 import assets.CustomerDetailsTestAssets.customerDetailsModel
 import base.BaseSpec
 import connectors.VatSubscriptionConnector
-import models.errors.UnexpectedJsonFormat
+import models.errors.ErrorModel
+import play.api.http.Status._
 import play.api.test.Helpers.{await, defaultAwaitTimeout}
 import uk.gov.hmrc.http.HeaderCarrier
 
@@ -46,7 +47,7 @@ class VatSubscriptionServiceSpec extends BaseSpec {
     }
     "return an error model" when {
       "an error is returned from the connector" in {
-        val expectedResult = UnexpectedJsonFormat
+        val expectedResult = ErrorModel(INTERNAL_SERVER_ERROR, "")
 
         (mockConnector.getCustomerDetails(_: String)(_: HeaderCarrier, _: ExecutionContext))
           .expects("111111111", *, *)

@@ -18,7 +18,7 @@ package mocks
 
 import assets.NrsTestData.ReceiptTestData.{correctModel => TestReceiptDataModel}
 import models.auth.User
-import models.errors.HttpError
+import models.errors.ErrorModel
 import models.nrs.ReceiptData
 import models.{CustomerDetails, SubmitVatReturnModel}
 import org.scalamock.scalatest.MockFactory
@@ -33,9 +33,9 @@ trait MockReceiptDataService extends AnyWordSpecLike with Matchers with OptionVa
 
   val mockReceiptDataService: ReceiptDataHelper = mock[ReceiptDataHelper]
 
-  def mockExtractReceiptData[A](response: Either[HttpError, ReceiptData])(): Unit = {
+  def mockExtractReceiptData[A](response: Either[ErrorModel, ReceiptData])(): Unit = {
     (mockReceiptDataService
-      .extractReceiptData(_: SubmitVatReturnModel, _: Either[HttpError, CustomerDetails])(_: User[A]))
+      .extractReceiptData(_: SubmitVatReturnModel, _: Either[ErrorModel, CustomerDetails])(_: User[A]))
       .expects(*, *, *)
       .returns(response)
   }

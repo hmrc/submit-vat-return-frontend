@@ -23,7 +23,7 @@ import common.MandationStatuses.nonMTDfB
 import connectors.httpParsers.MandationStatusHttpParser.MandationStatusReads
 import models.MandationStatus
 import models.errors._
-import play.api.http.Status.{BAD_REQUEST, INTERNAL_SERVER_ERROR, NOT_FOUND, OK}
+import play.api.http.Status._
 
 class MandationStatusHttpParserSpec extends BaseSpec {
 
@@ -55,7 +55,7 @@ class MandationStatusHttpParserSpec extends BaseSpec {
 
         val result = MandationStatusReads.read("", "", httpResponse)
 
-        result shouldBe Left(UnexpectedJsonFormat)
+        result shouldBe Left(ErrorModel(INTERNAL_SERVER_ERROR, "The server you are connecting to returned unexpected JSON."))
       }
 
       "a 500 (INTERNAL_SERVER_ERROR) response is returned" in {
@@ -64,67 +64,11 @@ class MandationStatusHttpParserSpec extends BaseSpec {
 
         val httpResponse = HttpResponse(INTERNAL_SERVER_ERROR, errorJson, Map.empty[String, Seq[String]])
 
-        val expectedResult = Left(ServerSideError(INTERNAL_SERVER_ERROR.toString, "{ }"))
+        val expectedResult = Left(ErrorModel(INTERNAL_SERVER_ERROR, "{ }"))
 
         val result = MandationStatusReads.read("", "", httpResponse)
 
         result shouldBe expectedResult
-      }
-
-      "a 400 (BAD_REQUEST) response is returned" when {
-
-        "a single error is returned" in {
-          val errorJson: JsObject = Json.obj(
-            "code" -> s"$BAD_REQUEST",
-            "message" -> "bad request"
-          )
-
-          val httpResponse = HttpResponse(BAD_REQUEST, errorJson, Map.empty[String, Seq[String]])
-
-          val expectedResult = Left(BadRequestError(BAD_REQUEST.toString, "bad request"))
-
-          val result = MandationStatusReads.read("", "", httpResponse)
-
-          result shouldBe expectedResult
-        }
-
-        "multiple errors are returned" in {
-
-          val errorJson: JsObject = Json.obj(
-            "code" -> s"$BAD_REQUEST",
-            "message" -> "bad request",
-            "errors" -> Json.arr(
-              Json.obj(
-                "code" -> s"$BAD_REQUEST",
-                "message" -> "this is a bad request"
-              ),
-              Json.obj(
-                "code" -> s"$BAD_REQUEST",
-                "message" -> "this is also a bad request"
-              )
-            )
-          )
-
-          val expectedBody = Json.arr(
-            Json.obj(
-              "code" -> s"$BAD_REQUEST",
-              "message" -> "this is a bad request"
-            ),
-            Json.obj(
-              "code" -> s"$BAD_REQUEST",
-              "message" -> "this is also a bad request"
-            )
-          )
-
-          val httpResponse = HttpResponse(BAD_REQUEST, errorJson, Map.empty[String, Seq[String]])
-
-          val expectedResult = Left(MultipleErrors(BAD_REQUEST.toString, Json.stringify(expectedBody)))
-
-          val result = MandationStatusReads.read("", "", httpResponse)
-
-          result shouldBe expectedResult
-
-        }
       }
 
       "an unexpected error is returned" in {
@@ -133,7 +77,7 @@ class MandationStatusHttpParserSpec extends BaseSpec {
 
         val httpResponse = HttpResponse(NOT_FOUND, errorJson, Map.empty[String, Seq[String]])
 
-        val expectedResult = Left(UnexpectedStatusError(NOT_FOUND.toString, "{ }"))
+        val expectedResult = Left(ErrorModel(NOT_FOUND, "{ }"))
 
         val result = MandationStatusReads.read("", "", httpResponse)
 

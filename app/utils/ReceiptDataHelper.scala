@@ -18,23 +18,23 @@ package utils
 
 import javax.inject.{Inject, Singleton}
 import models.auth.User
-import models.errors.{HttpError, UnknownError}
+import models.errors.ErrorModel
 import models.nrs.{Declaration, _}
 import models.{CustomerDetails, SubmitVatReturnModel}
 import play.api.i18n.{Messages, MessagesApi}
-import play.api.Play
+import play.api.http.Status._
 
 @Singleton
 class ReceiptDataHelper @Inject()(implicit val messages: MessagesApi) extends LoggerUtil {
 
-  def extractReceiptData(submitModel: SubmitVatReturnModel, customerDetails: Either[HttpError, CustomerDetails])
-                        (implicit user: User[_]): Either[HttpError, ReceiptData] = {
+  def extractReceiptData(submitModel: SubmitVatReturnModel, customerDetails: Either[ErrorModel, CustomerDetails])
+                        (implicit user: User[_]): Either[ErrorModel, ReceiptData] = {
 
-    val language: Language = user.cookies.get(Play.langCookieName) match {
+    val language: Language = user.cookies.get(messages.langCookieName) match {
       case Some(cookieValue) => Language.fromString(cookieValue.value)
       case None => EN
     }
-    
+
     extractDeclaration(customerDetails, messages.preferred(user)) match {
       case Right(declaration) =>
         Right(ReceiptData(
@@ -42,7 +42,7 @@ class ReceiptDataHelper @Inject()(implicit val messages: MessagesApi) extends Lo
           extractAnswers(submitModel)(messages.preferred(user)),
           declaration
         ))
-      case Left(error) => Left(error)
+      case Left(error) => Left(ErrorModel(error.status, error.message))
     }
   }
 
@@ -68,9 +68,9 @@ class ReceiptDataHelper @Inject()(implicit val messages: MessagesApi) extends Lo
     ))
   }
 
-  private def extractDeclaration(customerDetails: Either[HttpError,
+  private def extractDeclaration(customerDetails: Either[ErrorModel,
                                  CustomerDetails], messages: Messages)
-                                (implicit user: User[_]): Either[HttpError, Declaration] = {
+                                (implicit user: User[_]): Either[ErrorModel, Declaration] = {
 
     val declarationAgentOrNonAgent = if (user.isAgent) "agentDeclaration" else "nonAgentDeclaration"
 
@@ -86,12 +86,12 @@ class ReceiptDataHelper @Inject()(implicit val messages: MessagesApi) extends Lo
         )
         case None =>
           logger.warn("[ReceiptDataHelper][extractDeclaration] Client name missing")
-          Left(UnknownError)
+          Left(ErrorModel(INTERNAL_SERVER_ERROR, "Client name missing"))
       }
       case Left(error) =>
         logger.debug("[ReceiptDataHelper][extractDeclaration] Failed to retrieve customer details from vat-subscription\n" + error.message)
         logger.warn("[ReceiptDataHelper][extractDeclaration] Failed to retrieve customer details from vat-subscription")
-        Left(error)
+        Left(ErrorModel(error.status, error.message))
     }
   }
 }

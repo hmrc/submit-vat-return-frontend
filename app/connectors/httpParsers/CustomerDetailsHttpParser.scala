@@ -18,7 +18,7 @@ package connectors.httpParsers
 
 import connectors.httpParsers.ResponseHttpParsers.HttpGetResult
 import models.CustomerDetails
-import models.errors.{ServerSideError, UnexpectedJsonFormat}
+import models.errors.ErrorModel
 import play.api.http.Status._
 import uk.gov.hmrc.http.{HttpReads, HttpResponse}
 import utils.LoggerUtil
@@ -36,11 +36,11 @@ object CustomerDetailsHttpParser extends ResponseHttpParsers with LoggerUtil {
           case Failure(reason) =>
             logger.debug(s"[CustomerDetailsHttpParser][CustomerDetailsReads]: Invalid Json - $reason")
             logger.warn("[CustomerDetailsHttpParser][CustomerDetailsReads]: Invalid Json returned")
-            Left(UnexpectedJsonFormat)
+            Left(ErrorModel(INTERNAL_SERVER_ERROR, "The server you are connecting to returned unexpected JSON."))
         }
         case status =>
           logger.warn(s"[CustomerDetailsHttpParser][CustomerDetailsReads]: Unexpected Response, Status $status returned")
-          Left(ServerSideError(s"$status", "Received downstream error when retrieving customer details."))
+          Left(ErrorModel(status, "Received downstream error when retrieving customer details."))
       }
     }
   }
