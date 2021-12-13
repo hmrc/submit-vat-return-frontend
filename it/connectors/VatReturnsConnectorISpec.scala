@@ -18,7 +18,7 @@ package connectors
 
 import utils.NrsTestData
 import base.BaseISpec
-import models.errors.ErrorModel
+import models.errors.{ErrorModel, UnexpectedJsonError}
 import models.nrs.SuccessModel
 import models.vatReturnSubmission.{SubmissionModel, SubmissionSuccessModel}
 import play.api.http.Status._
@@ -94,7 +94,7 @@ class VatReturnsConnectorISpec extends BaseISpec {
           private val result = await(connector.submitVatReturn("999999999", model))
           VatReturnsStub.verifyVatReturnSubmission("999999999", postRequestJsonBody)
 
-          result shouldBe Left(ErrorModel(INTERNAL_SERVER_ERROR, "The server you are connecting to returned unexpected JSON."))
+          result shouldBe Left(UnexpectedJsonError)
         }
       }
     }

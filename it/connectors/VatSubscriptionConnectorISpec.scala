@@ -19,7 +19,7 @@ package connectors
 import base.BaseISpec
 import connectors.httpParsers.ResponseHttpParsers.HttpGetResult
 import models.CustomerDetails
-import models.errors.ErrorModel
+import models.errors.{ErrorModel, UnexpectedJsonError}
 import play.api.http.Status._
 import stubs.VatSubscriptionStub._
 import uk.gov.hmrc.http.HeaderCarrier
@@ -67,7 +67,7 @@ class VatSubscriptionConnectorISpec extends BaseISpec {
           stubGet(s"/vat-subscription/$vrn/customer-details", vatSubscriptionInvalidJson.toString(), OK)
 
           val result: HttpGetResult[CustomerDetails] = await(connector.getCustomerDetails(vrn))
-          result shouldBe Left(ErrorModel(INTERNAL_SERVER_ERROR, "The server you are connecting to returned unexpected JSON."))
+          result shouldBe Left(UnexpectedJsonError)
         }
       }
     }

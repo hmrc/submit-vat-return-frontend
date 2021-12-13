@@ -18,7 +18,7 @@ package connectors.httpParsers
 
 import connectors.httpParsers.ResponseHttpParsers.HttpGetResult
 import models.VatObligations
-import models.errors.ErrorModel
+import models.errors.{ErrorModel, UnexpectedJsonError}
 import play.api.http.Status._
 import uk.gov.hmrc.http.{HttpReads, HttpResponse}
 import utils.LoggerUtil
@@ -35,7 +35,7 @@ object VatObligationsHttpParser extends ResponseHttpParsers with LoggerUtil {
           case Failure(_) =>
             logger.debug(s"[VatReturnObligationsReads][read] Could not parse JSON. Received: ${response.json}")
             logger.warn("[VatReturnObligationsReads][read] Unexpected JSON received.")
-            Left(ErrorModel(INTERNAL_SERVER_ERROR, "The server you are connecting to returned unexpected JSON."))
+            Left(UnexpectedJsonError)
         }
         case NOT_FOUND => Right(VatObligations(Seq.empty))
         case status =>

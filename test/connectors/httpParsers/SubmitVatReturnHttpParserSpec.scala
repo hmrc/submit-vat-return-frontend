@@ -17,7 +17,7 @@
 package connectors.httpParsers
 
 import base.BaseSpec
-import models.errors.ErrorModel
+import models.errors.{ErrorModel, UnexpectedJsonError}
 import models.vatReturnSubmission.SubmissionSuccessModel
 import play.api.http.Status._
 import play.api.libs.json.{JsObject, Json}
@@ -71,7 +71,7 @@ class SubmitVatReturnHttpParserSpec extends BaseSpec {
           Map.empty[String,Seq[String]]
         )
 
-        val expectedResult = ErrorModel(INTERNAL_SERVER_ERROR, "The server you are connecting to returned unexpected JSON.")
+        val expectedResult = UnexpectedJsonError
 
         val result = submitVatReturnReads.read("", "", httpResponse)
 

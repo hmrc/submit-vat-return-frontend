@@ -55,7 +55,7 @@ class MandationStatusHttpParserSpec extends BaseSpec {
 
         val result = MandationStatusReads.read("", "", httpResponse)
 
-        result shouldBe Left(ErrorModel(INTERNAL_SERVER_ERROR, "The server you are connecting to returned unexpected JSON."))
+        result shouldBe Left(UnexpectedJsonError)
       }
 
       "a 500 (INTERNAL_SERVER_ERROR) response is returned" in {

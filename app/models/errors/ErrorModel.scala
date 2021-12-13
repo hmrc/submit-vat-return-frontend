@@ -17,9 +17,15 @@
 package models.errors
 
 import play.api.libs.json.{Format, Json}
+import play.api.http.Status._
 
 case class ErrorModel(status: Int, message: String)
 
 object ErrorModel {
   implicit val format: Format[ErrorModel] = Json.format[ErrorModel]
 }
+
+object UnexpectedJsonError extends ErrorModel(
+  status = INTERNAL_SERVER_ERROR,
+  message = "The server you are connecting to returned unexpected JSON."
+){implicit val format: Format[UnexpectedJsonError.type] = Json.format[UnexpectedJsonError.type]}

@@ -73,7 +73,7 @@ class VatObligationsHttpParserSpec extends BaseSpec {
           )
           val httpResponse = HttpResponse(OK, validJson, Map.empty[String,Seq[String]])
           val result = VatObligationsHttpParser.VatObligationsReads.read("", "", httpResponse)
-          val expectedResponse = Left(ErrorModel(INTERNAL_SERVER_ERROR, "The server you are connecting to returned unexpected JSON."))
+          val expectedResponse = Left(UnexpectedJsonError)
 
           result shouldBe expectedResponse
         }

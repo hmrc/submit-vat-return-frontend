@@ -19,7 +19,7 @@ package connectors.httpParsers
 import assets.CustomerDetailsTestAssets._
 import base.BaseSpec
 import connectors.httpParsers.CustomerDetailsHttpParser.CustomerDetailsReads
-import models.errors.ErrorModel
+import models.errors.{ErrorModel, UnexpectedJsonError}
 import play.api.http.Status._
 import uk.gov.hmrc.http.HttpResponse
 
@@ -62,7 +62,7 @@ class CustomerDetailsHttpParserSpec extends BaseSpec {
           Map.empty[String,Seq[String]]
         )
 
-        val expectedResult = ErrorModel(INTERNAL_SERVER_ERROR, "The server you are connecting to returned unexpected JSON.")
+        val expectedResult = UnexpectedJsonError
 
         val result = CustomerDetailsReads.read("", "", httpResponse)
 

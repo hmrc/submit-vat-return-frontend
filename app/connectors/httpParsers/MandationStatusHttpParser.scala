@@ -18,7 +18,7 @@ package connectors.httpParsers
 
 import connectors.httpParsers.ResponseHttpParsers.HttpGetResult
 import models.MandationStatus
-import models.errors.ErrorModel
+import models.errors.{ErrorModel, UnexpectedJsonError}
 import uk.gov.hmrc.http.{HttpReads, HttpResponse}
 import play.api.http.Status._
 import utils.LoggerUtil
@@ -37,7 +37,7 @@ object MandationStatusHttpParser extends ResponseHttpParsers with LoggerUtil {
           case Failure(reason) =>
             logger.debug(s"[MandationStatusHttpParser][MandationStatusReads]: Invalid Json - $reason")
             logger.warn("[MandationStatusHttpParser][MandationStatusReads]: Invalid Json returned")
-            Left(ErrorModel(INTERNAL_SERVER_ERROR, "The server you are connecting to returned unexpected JSON."))
+            Left(UnexpectedJsonError)
         }
         case _ => Left(ErrorModel(response.status, response.body))
       }
