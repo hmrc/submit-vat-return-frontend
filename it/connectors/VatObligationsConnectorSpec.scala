@@ -18,11 +18,12 @@ package connectors
 
 import java.time.LocalDate
 import base.BaseISpec
-import models.errors.UnknownError
+import models.errors.ErrorModel
 import models.{VatObligation, VatObligations}
 import play.api.http.Status._
 import play.api.libs.json.Json
 import uk.gov.hmrc.http.HeaderCarrier
+
 import scala.concurrent.ExecutionContext.Implicits.global
 
 class VatObligationsConnectorSpec extends BaseISpec {
@@ -49,8 +50,8 @@ class VatObligationsConnectorSpec extends BaseISpec {
 
     "response is 400" should {
 
-      "return a BadRequestError" in {
-        val expectedResults = UnknownError
+      "return an error model" in {
+        val expectedResults = ErrorModel(BAD_REQUEST, "{}")
 
         stubGet("/vat-obligations/999999999/obligations?status=O","{}",BAD_REQUEST)
 

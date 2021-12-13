@@ -14,14 +14,18 @@
  * limitations under the License.
  */
 
-package connectors.httpParsers
+package models.errors
 
-import models.errors._
+import play.api.libs.json.{Format, Json}
+import play.api.http.Status._
 
-trait ResponseHttpParsers {
+case class ErrorModel(status: Int, message: String)
+
+object ErrorModel {
+  implicit val format: Format[ErrorModel] = Json.format[ErrorModel]
 }
 
-object ResponseHttpParsers {
-  type HttpGetResult[T] = Either[ErrorModel, T]
-  type HttpPostResult[T] = Either[ErrorModel, T]
-}
+object UnexpectedJsonError extends ErrorModel(
+  status = INTERNAL_SERVER_ERROR,
+  message = "The server you are connecting to returned unexpected JSON."
+){implicit val format: Format[UnexpectedJsonError.type] = Json.format[UnexpectedJsonError.type]}

@@ -18,10 +18,10 @@ package connectors
 
 import utils.NrsTestData
 import base.BaseISpec
-import models.errors.{ServerSideError, UnexpectedJsonFormat}
+import models.errors.{ErrorModel, UnexpectedJsonError}
 import models.nrs.SuccessModel
 import models.vatReturnSubmission.{SubmissionModel, SubmissionSuccessModel}
-import play.api.http.Status
+import play.api.http.Status._
 import play.api.libs.json.{JsValue, Json}
 import stubs.VatReturnsStub
 import stubs.VatReturnsStub._
@@ -76,7 +76,7 @@ class VatReturnsConnectorISpec extends BaseISpec {
 
         "return a SuccessModel" in new Test {
 
-          VatReturnsStub.stubResponse(vatReturnUri("999999999"))(Status.OK, Json.obj("formBundleNumber" -> "12345"))
+          VatReturnsStub.stubResponse(vatReturnUri("999999999"))(OK, Json.obj("formBundleNumber" -> "12345"))
 
           private val result = await(connector.submitVatReturn("999999999", model))
           VatReturnsStub.verifyVatReturnSubmission("999999999", postRequestJsonBody)
@@ -89,12 +89,12 @@ class VatReturnsConnectorISpec extends BaseISpec {
 
         "return an InvalidJsonResponse" in new Test {
 
-          VatReturnsStub.stubResponse(vatReturnUri("999999999"))(Status.OK, Json.obj())
+          VatReturnsStub.stubResponse(vatReturnUri("999999999"))(OK, Json.obj())
 
           private val result = await(connector.submitVatReturn("999999999", model))
           VatReturnsStub.verifyVatReturnSubmission("999999999", postRequestJsonBody)
 
-          result shouldBe Left(UnexpectedJsonFormat)
+          result shouldBe Left(UnexpectedJsonError)
         }
       }
     }
@@ -104,14 +104,14 @@ class VatReturnsConnectorISpec extends BaseISpec {
       "return a ServerSideError" in new Test {
 
         VatReturnsStub.stubResponse(vatReturnUri("999999999"))(
-          Status.INTERNAL_SERVER_ERROR,
+          INTERNAL_SERVER_ERROR,
           Json.obj("code" -> "500", "reason" -> "DES")
         )
 
         private val result = await(connector.submitVatReturn("999999999", model))
         VatReturnsStub.verifyVatReturnSubmission("999999999", postRequestJsonBody)
 
-        result shouldBe Left(ServerSideError("500", "Received downstream error when submitting VAT return."))
+        result shouldBe Left(ErrorModel(INTERNAL_SERVER_ERROR, "Received downstream error when submitting VAT return."))
       }
     }
   }
@@ -127,7 +127,7 @@ class VatReturnsConnectorISpec extends BaseISpec {
 
         "return a SuccessModel" in new Test {
 
-          VatReturnsStub.stubResponse(nrsSubmissionUri)(Status.ACCEPTED, Json.obj("nrSubmissionId" -> "12345"))
+          VatReturnsStub.stubResponse(nrsSubmissionUri)(ACCEPTED, Json.obj("nrSubmissionId" -> "12345"))
 
           private val result = await(connector.nrsSubmission(postRequestModel, vrn))
           VatReturnsStub.verifyNrsSubmission(postRequestJsonBody)
@@ -140,7 +140,7 @@ class VatReturnsConnectorISpec extends BaseISpec {
 
         "return an InvalidJsonResponse" in new Test {
 
-          VatReturnsStub.stubResponse(nrsSubmissionUri)(Status.ACCEPTED, Json.obj("nope" -> "nope"))
+          VatReturnsStub.stubResponse(nrsSubmissionUri)(ACCEPTED, Json.obj("nope" -> "nope"))
 
           private val result = await(connector.nrsSubmission(postRequestModel, vrn))
           VatReturnsStub.verifyNrsSubmission(postRequestJsonBody)
@@ -152,17 +152,17 @@ class VatReturnsConnectorISpec extends BaseISpec {
 
     "response is unexpected" should {
 
-      "return a ServerSideError" in new Test {
+      "return an error model" in new Test {
 
         VatReturnsStub.stubResponse(nrsSubmissionUri)(
-          Status.INTERNAL_SERVER_ERROR,
+          INTERNAL_SERVER_ERROR,
           Json.obj("code" -> "500", "reason" -> "oh no")
         )
 
         private val result = await(connector.nrsSubmission(postRequestModel, vrn))
         VatReturnsStub.verifyNrsSubmission(postRequestJsonBody)
 
-        result shouldBe Left(ServerSideError("500", "Received downstream error when submitting to NRS"))
+        result shouldBe Left(ErrorModel(INTERNAL_SERVER_ERROR, "Received downstream error when submitting to NRS"))
       }
     }
   }

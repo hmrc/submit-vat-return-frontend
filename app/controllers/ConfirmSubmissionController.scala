@@ -28,7 +28,7 @@ import controllers.predicates.{AuthPredicate, HonestyDeclarationAction, Mandatio
 
 import javax.inject.{Inject, Singleton}
 import models.auth.User
-import models.errors.{BadRequestError, HttpError, ServerSideError}
+import models.errors.ErrorModel
 import models.nrs.{IdentityData, IdentityLoginTimes}
 import models.vatReturnSubmission.SubmissionModel
 import models.{ConfirmSubmissionViewModel, CustomerDetails, SubmitVatReturnModel}
@@ -91,7 +91,7 @@ class ConfirmSubmissionController @Inject()(mandationStatusCheck: MandationStatu
 
   private[controllers] def renderConfirmSubmissionView[A](periodKey: String,
                                                           sessionData: SubmitVatReturnModel,
-                                                          customerDetails: Either[HttpError, CustomerDetails])
+                                                          customerDetails: Either[ErrorModel, CustomerDetails])
                                                          (implicit user: User[A]): Html = {
     val clientName = customerDetails match {
       case Right(model) => model.clientName
@@ -179,12 +179,12 @@ class ConfirmSubmissionController @Inject()(mandationStatusCheck: MandationStatu
           val sha256Checksum = HashUtil.getHash(html.body)
 
           vatReturnsService.nrsSubmission(periodKey, htmlPayload, sha256Checksum, id, receipt) flatMap {
-            case Left(error: BadRequestError) =>
-              logger.debug(s"[ConfirmSubmissionController][submitToNRS] - NRS returned BAD_REQUEST: $error")
+            case Left(ErrorModel(BAD_REQUEST, _)) =>
+              logger.debug(s"[ConfirmSubmissionController][submitToNRS] - NRS returned BAD_REQUEST: ${BAD_REQUEST.toString}")
               logger.warn("[ConfirmSubmissionController][submitToNRS] - NRS returned BAD_REQUEST")
               auditService.audit(
                 NrsErrorAuditModel(
-                  user.vrn, user.arn.isDefined, user.arn, sessionData.start, sessionData.end, sessionData.due, error.code
+                  user.vrn, user.arn.isDefined, user.arn, sessionData.start, sessionData.end, sessionData.due, BAD_REQUEST.toString
                 ),
                 Some(controllers.routes.ConfirmSubmissionController.submit(periodKey).url)
               )
@@ -197,20 +197,20 @@ class ConfirmSubmissionController @Inject()(mandationStatusCheck: MandationStatu
                 Some(controllers.routes.ConfirmSubmissionController.submit(periodKey).url)
               )
               submitVatReturn(periodKey, sessionData)
-            case Left(other: ServerSideError) =>
+            case Left(error) =>
               auditService.audit(
                 NrsErrorAuditModel(
-                  user.vrn, user.arn.isDefined, user.arn, sessionData.start, sessionData.end, sessionData.due, other.code
+                  user.vrn, user.arn.isDefined, user.arn, sessionData.start, sessionData.end, sessionData.due, error.status.toString
                 ),
                 Some(controllers.routes.ConfirmSubmissionController.submit(periodKey).url)
               )
-              logger.debug(s"[ConfirmSubmissionController][submitToNRS] - NRS returned a server side error: $other")
+              logger.debug(s"[ConfirmSubmissionController][submitToNRS] - NRS returned a server side error: $error.status.toString")
               logger.warn("[ConfirmSubmissionController][submitToNRS] - NRS returned a server side error")
               submitVatReturn(periodKey, sessionData)
           }
         case (Left(errorResult), _) => Future(errorResult)
         case (_, Left(error)) =>
-          logger.debug(s"[ConfirmSubmissionController][submitToNRS] - extractReceiptData helper returned error of: $error")
+          logger.debug(s"[ConfirmSubmissionController][submitToNRS] - extractReceiptData helper returned error of: $error.status.toString")
           logger.warn("[ConfirmSubmissionController][submitToNRS] - extractReceiptData helper returned error")
           Future.successful(InternalServerError(submissionError()))
       }

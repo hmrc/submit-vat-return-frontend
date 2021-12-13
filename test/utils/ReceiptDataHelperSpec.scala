@@ -21,10 +21,11 @@ import assets.messages.SubmitFormPageMessages._
 import java.time.LocalDate
 import base.BaseSpec
 import models.auth.User
-import models.errors.{BadRequestError, UnknownError}
+import models.errors.ErrorModel
 import models.nrs._
 import models.{CustomerDetails, SubmitVatReturnModel}
 import play.api.mvc.{AnyContentAsEmpty, Cookie}
+import play.api.http.Status._
 
 
 class ReceiptDataHelperSpec extends BaseSpec {
@@ -115,7 +116,7 @@ class ReceiptDataHelperSpec extends BaseSpec {
     Declaration(declarationText, "Test Name", None, declarationConsent = true)
   }
 
-  val errorResponse = Left(BadRequestError("Bad Request", "There has been a bad request"))
+  val errorResponse = Left(ErrorModel(BAD_REQUEST, "There has been a bad request"))
 
   private def successResponse(frs: Boolean, noName: Boolean = false) = {
     Right(CustomerDetails(
@@ -191,7 +192,7 @@ class ReceiptDataHelperSpec extends BaseSpec {
       val implicitUser: User[AnyContentAsEmpty.type] = userWithCookie(EN.languageCode)
 
       "there is an error from vat subscription" in {
-        val expectedResult = BadRequestError("Bad Request", "There has been a bad request")
+        val expectedResult = ErrorModel(BAD_REQUEST, "There has been a bad request")
 
         val result = service.extractReceiptData(createReturnModel(true), errorResponse)(user = implicitUser)
 
@@ -199,7 +200,7 @@ class ReceiptDataHelperSpec extends BaseSpec {
       }
 
       "the user has no name" in {
-        val expectedResult = UnknownError
+        val expectedResult = ErrorModel(INTERNAL_SERVER_ERROR, "Client name missing")
 
         val result = service.extractReceiptData(
           createReturnModel(true), successResponse(frs = true, noName = true)

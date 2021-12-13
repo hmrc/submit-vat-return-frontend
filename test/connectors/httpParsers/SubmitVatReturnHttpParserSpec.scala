@@ -17,7 +17,7 @@
 package connectors.httpParsers
 
 import base.BaseSpec
-import models.errors.{ServerSideError, UnexpectedJsonFormat}
+import models.errors.{ErrorModel, UnexpectedJsonError}
 import models.vatReturnSubmission.SubmissionSuccessModel
 import play.api.http.Status._
 import play.api.libs.json.{JsObject, Json}
@@ -71,7 +71,7 @@ class SubmitVatReturnHttpParserSpec extends BaseSpec {
           Map.empty[String,Seq[String]]
         )
 
-        val expectedResult = UnexpectedJsonFormat
+        val expectedResult = UnexpectedJsonError
 
         val result = submitVatReturnReads.read("", "", httpResponse)
 
@@ -89,11 +89,11 @@ class SubmitVatReturnHttpParserSpec extends BaseSpec {
         Map.empty[String,Seq[String]]
       )
 
-      val expectedResult = ServerSideError(SERVICE_UNAVAILABLE.toString, "Received downstream error when submitting VAT return.")
+      val expectedResult = ErrorModel(SERVICE_UNAVAILABLE, "Received downstream error when submitting VAT return.")
 
       val result = submitVatReturnReads.read("", "", httpResponse)
 
-      "return a ServerSideError model" in {
+      "return an error model" in {
         result shouldBe Left(expectedResult)
       }
     }

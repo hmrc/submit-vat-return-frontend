@@ -25,7 +25,7 @@ import connectors.httpParsers.ResponseHttpParsers.HttpGetResult
 import mocks.service.{MockDateService, MockVatReturnsService, MockVatSubscriptionService}
 import mocks.{MockAuth, MockHonestyDeclarationAction, MockMandationPredicate, MockReceiptDataService}
 import models.auth.User
-import models.errors.{BadRequestError, UnexpectedJsonFormat, UnknownError}
+import models.errors.ErrorModel
 import models.nrs.SuccessModel
 import models.vatReturnSubmission.SubmissionSuccessModel
 import models.{ConfirmSubmissionViewModel, CustomerDetails, SubmitVatReturnModel}
@@ -137,7 +137,7 @@ class ConfirmSubmissionControllerSpec extends BaseSpec
 
         "an error response is returned from the vat subscription service" should {
 
-          val vatSubscriptionResponse: Future[HttpGetResult[CustomerDetails]] = Future.successful(Left(UnexpectedJsonFormat))
+          val vatSubscriptionResponse: Future[HttpGetResult[CustomerDetails]] = Future.successful(Left(ErrorModel(INTERNAL_SERVER_ERROR, "")))
 
           lazy val requestWithSessionData: User[AnyContentAsEmpty.type] =
             User[AnyContentAsEmpty.type]("123456789")(fakeRequest.withSession(
@@ -259,7 +259,7 @@ class ConfirmSubmissionControllerSpec extends BaseSpec
               mockFullAuthResponse(Future.successful(agentFullInformationResponse))
               mockNrsSubmission(Future.successful(Right(SuccessModel("1234567890"))))()
               setupAuditExtendedEvent
-              mockVatReturnSubmission(Future.successful(Left(UnknownError)))()
+              mockVatReturnSubmission(Future.successful(Left(ErrorModel(INTERNAL_SERVER_ERROR, ""))))()
               setupAuditExtendedEvent
 
               status(result) shouldBe Status.INTERNAL_SERVER_ERROR
@@ -382,7 +382,7 @@ class ConfirmSubmissionControllerSpec extends BaseSpec
       "return an ISE" in {
         setupVatSubscriptionService(successCustomerInfoResponse)()
         mockFullAuthResponse(Future.successful(agentFullInformationResponse))
-        mockExtractReceiptData(Left(UnknownError))()
+        mockExtractReceiptData(Left(ErrorModel(INTERNAL_SERVER_ERROR, "")))()
 
         status(result) shouldBe Status.INTERNAL_SERVER_ERROR
       }
@@ -400,7 +400,7 @@ class ConfirmSubmissionControllerSpec extends BaseSpec
         setupVatSubscriptionService(successCustomerInfoResponse)()
         mockFullAuthResponse(Future.successful(agentFullInformationResponse))
         mockExtractReceiptData(await(successReceiptDataResponse))()
-        mockNrsSubmission(Future.successful(Left(BadRequestError("400", "error message"))))()
+        mockNrsSubmission(Future.successful(Left(ErrorModel(BAD_REQUEST, "error message"))))()
         setupAuditExtendedEvent
 
         status(result) shouldBe Status.INTERNAL_SERVER_ERROR

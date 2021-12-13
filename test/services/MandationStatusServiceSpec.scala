@@ -21,9 +21,10 @@ import common.MandationStatuses.nonMTDfB
 import connectors.VatSubscriptionConnector
 import connectors.httpParsers.ResponseHttpParsers.HttpGetResult
 import models.MandationStatus
-import models.errors.UnexpectedJsonFormat
+import models.errors.ErrorModel
 import uk.gov.hmrc.http.HeaderCarrier
 import play.api.test.Helpers.{await, defaultAwaitTimeout}
+import play.api.http.Status._
 
 import scala.concurrent.{ExecutionContext, Future}
 
@@ -47,7 +48,7 @@ class MandationStatusServiceSpec extends BaseSpec {
     }
     "return an error" when {
       "an error is returned from the connector" in {
-        val expectedResult = Left(UnexpectedJsonFormat)
+        val expectedResult = Left(ErrorModel(INTERNAL_SERVER_ERROR, ""))
 
         (mockConnector.getCustomerMandationStatus(_: String)(_: HeaderCarrier, _: ExecutionContext))
           .expects(*, *, *)

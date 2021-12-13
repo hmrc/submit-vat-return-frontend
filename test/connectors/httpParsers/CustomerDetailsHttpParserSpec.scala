@@ -19,7 +19,7 @@ package connectors.httpParsers
 import assets.CustomerDetailsTestAssets._
 import base.BaseSpec
 import connectors.httpParsers.CustomerDetailsHttpParser.CustomerDetailsReads
-import models.errors.{ServerSideError, UnexpectedJsonFormat}
+import models.errors.{ErrorModel, UnexpectedJsonError}
 import play.api.http.Status._
 import uk.gov.hmrc.http.HttpResponse
 
@@ -62,7 +62,7 @@ class CustomerDetailsHttpParserSpec extends BaseSpec {
           Map.empty[String,Seq[String]]
         )
 
-        val expectedResult = UnexpectedJsonFormat
+        val expectedResult = UnexpectedJsonError
 
         val result = CustomerDetailsReads.read("", "", httpResponse)
 
@@ -74,7 +74,7 @@ class CustomerDetailsHttpParserSpec extends BaseSpec {
           ""
         )
 
-        val expectedResult = Left(ServerSideError("500", "Received downstream error when retrieving customer details."))
+        val expectedResult = Left(ErrorModel(INTERNAL_SERVER_ERROR, "Received downstream error when retrieving customer details."))
 
         val result = CustomerDetailsReads.read("", "", httpResponse)
 
