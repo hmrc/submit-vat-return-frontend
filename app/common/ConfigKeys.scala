@@ -42,7 +42,6 @@ object ConfigKeys {
   val vatSummaryHost: String = "vat-summary-frontend.host"
   val vatSummaryUrl: String = "vat-summary-frontend.url"
   val vatSummaryDirectDebitUrl: String = "vat-summary-frontend.directDebitInterruptUrl"
-  val vatSummaryAccessibilityUrl: String = "vat-summary-frontend.accessibilityUrl"
   val viewVatReturnsHost: String = "view-vat-returns-frontend.host"
   val returnDeadlinesUrl: String = "view-vat-returns-frontend.url"
   val submittedReturnsUrl: String = "view-vat-returns-frontend.submittedReturnsUrl"

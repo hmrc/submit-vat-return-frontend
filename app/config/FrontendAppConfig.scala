@@ -48,7 +48,6 @@ trait AppConfig {
   def submitReturnUrl(vrn: String): String
   val submitNrsUrl: String
   val agentActionUrl: String
-  val accessibilityLinkUrl: String
   def feedbackUrl(redirectUrl: String): String
   def routeToSwitchLanguage: String => Call
   def languageMap: Map[String, Lang]
@@ -141,7 +140,6 @@ class FrontendAppConfig @Inject()(configuration: Configuration, servicesConfig: 
   override def feedbackUrl(redirectUrl: String): String = s"$contactHost/contact/beta-feedback?service=$contactFormServiceIdentifier" +
     s"&backUrl=${SafeRedirectUrl(platformHost + redirectUrl).encodedUrl}"
 
-  override val accessibilityLinkUrl: String = getString(ConfigKeys.vatSummaryHost) + getString(ConfigKeys.vatSummaryAccessibilityUrl)
 
   override val vatObligationsBaseUrl: String = baseUrl("vat-obligations")
   override val vatSubscriptionBaseUrl: String = baseUrl("vat-subscription")
@@ -150,4 +148,5 @@ class FrontendAppConfig @Inject()(configuration: Configuration, servicesConfig: 
   override val gtmContainer: String = servicesConfig.getString(ConfigKeys.gtmContainer)
   override lazy val btaHomeUrl: String =
     servicesConfig.getString(ConfigKeys.businessTaxAccountHost) + servicesConfig.getString(ConfigKeys.businessTaxAccountUrl)
+
 }
