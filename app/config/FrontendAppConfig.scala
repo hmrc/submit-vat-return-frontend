@@ -58,7 +58,6 @@ trait AppConfig {
   val platformHost: String
   val directDebitInterruptUrl : String
   val btaHomeUrl: String
-  val accessibilityReportUrl: String
 }
 
 @Singleton
@@ -150,5 +149,4 @@ class FrontendAppConfig @Inject()(configuration: Configuration, servicesConfig: 
   override lazy val btaHomeUrl: String =
     servicesConfig.getString(ConfigKeys.businessTaxAccountHost) + servicesConfig.getString(ConfigKeys.businessTaxAccountUrl)
 
-  override lazy val accessibilityReportUrl: String = servicesConfig.getString(ConfigKeys.accessibilityReportUrl)
 }
