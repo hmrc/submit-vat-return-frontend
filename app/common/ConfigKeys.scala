@@ -19,6 +19,7 @@ package common
 object ConfigKeys {
 
   val contactFrontendService: String = "contact-frontend.host"
+  val contactFrontendIdentifier: String = "contact-frontend.serviceId"
 
   val vatObligationsHost: String = "microservice.services.vat-obligations.host"
   val vatObligationPort: String = "microservice.services.vat-obligations.port"

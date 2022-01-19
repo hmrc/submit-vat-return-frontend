@@ -68,7 +68,7 @@ class FrontendAppConfig @Inject()(configuration: Configuration, servicesConfig: 
   lazy val appName: String = getString(ConfigKeys.appName)
 
   private val contactHost = getString(ConfigKeys.contactFrontendService)
-  private val contactFormServiceIdentifier = "VATC"
+  private val contactFormServiceIdentifier = getString(ConfigKeys.contactFrontendIdentifier)
 
   lazy val reportAProblemPartialUrl = s"$contactHost/contact/problem_reports_ajax?service=$contactFormServiceIdentifier"
   lazy val reportAProblemNonJSUrl = s"$contactHost/contact/problem_reports_nonjs?service=$contactFormServiceIdentifier"
