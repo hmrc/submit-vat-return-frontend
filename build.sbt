@@ -51,8 +51,8 @@ lazy val coverageSettings: Seq[Setting[_]] = {
 
 val compile = Seq(
   play.sbt.PlayImport.ws,
-  "uk.gov.hmrc"       %% "play-frontend-hmrc"         % "1.31.0-play-28",
-  "uk.gov.hmrc"       %% "bootstrap-frontend-play-28" % "5.17.0",
+  "uk.gov.hmrc"       %% "play-frontend-hmrc"         % "2.0.0-play-28",
+  "uk.gov.hmrc"       %% "bootstrap-frontend-play-28" % "5.19.0",
   "uk.gov.hmrc"       %% "play-language"              % "5.1.0-play-28",
   "uk.gov.hmrc"       %% "domain"                     % "6.2.0-play-28",
   "com.typesafe.play" %% "play-json-joda"             % "2.9.2"
@@ -96,10 +96,9 @@ lazy val microservice: Project = Project(appName, file("."))
   .settings(
     Keys.fork in Test := true,
     javaOptions in Test += "-Dlogger.resource=logback-test.xml",
-    scalaVersion := "2.12.14",
+    scalaVersion := "2.12.15",
     libraryDependencies ++= appDependencies,
     retrieveManaged := true,
-    evictionWarningOptions in update := EvictionWarningOptions.default.withWarnScalaVersionEviction(false),
     RoutesKeys.routesImport := Seq.empty
   )
   .configs(IntegrationTest)
