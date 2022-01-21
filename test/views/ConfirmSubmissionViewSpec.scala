@@ -236,8 +236,12 @@ class ConfirmSubmissionViewSpec extends ViewBaseSpec {
           }
         }
 
-        s"display the ${viewMessages.submitButton} button" in {
+        "display the submit button with the correct button text" in {
           elementText(Selectors.submitButton) shouldBe viewMessages.submitButton
+        }
+
+        "have the prevent double click attribute on the submit button" in {
+          element(Selectors.submitButton).hasAttr("data-prevent-double-click") shouldBe true
         }
 
         "not display the warning" in {

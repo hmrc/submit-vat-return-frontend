@@ -212,6 +212,9 @@
     @declaration(isAgent: Boolean)
 
     @formWithCSRF(action = controllers.routes.ConfirmSubmissionController.submit(viewModel.periodKey)) {
-      @govukButton(Button(content = Text(messages("confirm_submission.acceptAndSend"))))
+      @govukButton(Button(
+        preventDoubleClick = true,
+        content = Text(messages("confirm_submission.acceptAndSend"))
+      ))
     }
 }
