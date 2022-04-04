@@ -241,6 +241,10 @@ class ConfirmSubmissionControllerSpec extends BaseSpec
             s"redirect to ${controllers.routes.ConfirmationController.show}" in {
               redirectLocation(result) shouldBe Some(controllers.routes.ConfirmationController.show.url)
             }
+
+            "save the submitted return session key to session" in {
+              await(result).session.get(SessionKeys.submittedReturn) shouldBe Some("true")
+            }
           }
 
           "submission to backend is unsuccessful" should {
@@ -356,6 +360,7 @@ class ConfirmSubmissionControllerSpec extends BaseSpec
       "redirect to Confirmation page" in {
         redirectLocation(result) shouldBe Some(controllers.routes.ConfirmationController.show.url)
       }
+
     }
 
     "a Left is returned from buildIdentityData" should {
