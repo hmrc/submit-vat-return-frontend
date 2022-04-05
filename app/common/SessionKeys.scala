@@ -23,6 +23,7 @@ object SessionKeys {
   val viewModel = "mtdVatvcReturnInformation"
   val submissionYear = "mtdVatvcSubmissionYear"
   val inSessionPeriodKey = "mtdVatvcInSessionPeriodKey"
+  val submittedReturn: String = "mtdVatvcSubmittedReturn"
   val insolventWithoutAccessKey: String = "insolventWithoutAccess"
   val futureInsolvencyBlock: String = "futureInsolvencyBlock"
   val viewedDDInterrupt: String = "vatViewChangeHasViewedDDInterrupt"
