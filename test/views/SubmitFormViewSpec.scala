@@ -31,6 +31,7 @@ class SubmitFormViewSpec extends ViewBaseSpec {
   object Selectors {
     val backLink = ".govuk-back-link"
     val heading = "h1"
+    val signUpToMTDBanner = "#mtd-sign-up-banner"
     val entityName = "h2"
     val vatDetails = "h3:nth-of-type(1)"
     val additionalDetails = "#additionalInfo"
@@ -59,157 +60,216 @@ class SubmitFormViewSpec extends ViewBaseSpec {
 
   "The submit form page" when {
 
-    "the user is on the flat rate scheme" should {
+    "the user is non-digital" when {
 
-      lazy val view = submitFormView(
-        periodKey,
-        Some(entityName),
-        flatRateScheme = true,
-        obligation,
-        SubmitVatReturnForm().nineBoxForm,
-        isAgent = false,
-      )(messages, mockAppConfig, user)
+      "the user is on the flat rate scheme" should {
 
-      lazy implicit val document: Document = Jsoup.parse(view.body)
+        lazy val view = submitFormView(
+          periodKey,
+          Some(entityName),
+          "Non Digital",
+          flatRateScheme = true,
+          obligation,
+          SubmitVatReturnForm().nineBoxForm,
+          isAgent = false,
+        )(messages, mockAppConfig, user)
 
-      "have the correct title" in {
-        document.title shouldBe title
+        lazy implicit val document: Document = Jsoup.parse(view.body)
+
+        "have the correct title" in {
+          document.title shouldBe title
+        }
+
+        "have the correct page heading" in {
+          elementText(Selectors.heading) shouldBe heading
+        }
+
+        "not display the sign up to MTD alert banner" in {
+          elementExists(Selectors.signUpToMTDBanner) shouldBe false
+        }
+
+        "have the entity name as a subheading" in {
+          elementText(Selectors.entityName) shouldBe entityName
+        }
+
+        "have the correct subheading for the first five boxes" in {
+          elementText(Selectors.vatDetails) shouldBe vatDetails
+        }
+
+        "have the return due date" in {
+          elementText(Selectors.returnDueDate) shouldBe returnDue("12 May 2019")
+        }
+
+        "have the correct subheading for the last four boxes" in {
+          elementText(Selectors.additionalDetails) shouldBe additionalInformation
+        }
+
+        "have an advice paragraph to only enter whole pounds for the last four boxes" in {
+          elementText(Selectors.wholePounds) shouldBe wholePounds
+        }
+
+        "have the correct box labels" in {
+
+          val expectedLabels = Seq(
+            box1,
+            box2,
+            box3,
+            box4,
+            box5,
+            box6,
+            box7,
+            box8,
+            box9
+          )
+          (1 to 9).foreach(i => elementText(Selectors.boxLabel(i)) shouldBe expectedLabels(i - 1))
+        }
+
+        "have the correct box descriptions" in {
+
+          val expectedDescriptions = Seq(
+            box1Text,
+            box2Text,
+            box3Text,
+            box4Text,
+            box5Text,
+            box6FlatRateSchemeText,
+            box7Text,
+            box8Text,
+            box9Text
+          )
+          (1 to 9).foreach(i => elementText(Selectors.boxDescription(i)) shouldBe expectedDescriptions(i - 1))
+        }
+
+        "have input fields for boxes 1, 2, 4, 6, 7, 8 and 9" in {
+          inputBoxes.foreach(i => element(Selectors.boxInput(i)))
+        }
+
+        "have set text instead of an input field for boxes 3 and 5" in {
+          val autoCalcBoxes: Seq[Int] = Seq(3, 5)
+          autoCalcBoxes.foreach(i => elementText(Selectors.boxCalculatedValue(i)) shouldBe calculatedValue)
+        }
+
+        "have a final paragraph to tell the user they can submit on the next screen" in {
+          elementText(Selectors.nextScreenSubmit) shouldBe nextScreen
+        }
+
+        "have a button with the correct text" in {
+          elementText(Selectors.submitButton) shouldBe continue
+        }
+
+        "have a form with the correct action" in {
+          element(Selectors.form).attr("action") shouldBe controllers.routes.SubmitFormController.submit(periodKey).url
+        }
       }
 
-      "have the correct page heading" in {
-        elementText(Selectors.heading) shouldBe heading
+      "the user is not on the flat rate scheme" should {
+
+        lazy val view = submitFormView(
+          periodKey,
+          Some(entityName),
+          "Non Digital",
+          flatRateScheme = false,
+          obligation,
+          SubmitVatReturnForm().nineBoxForm,
+          isAgent = false,
+        )(messages, mockAppConfig, user)
+
+        lazy implicit val document: Document = Jsoup.parse(view.body)
+
+        "not display the sign up to MTD alert banner" in {
+          elementExists(Selectors.signUpToMTDBanner) shouldBe false
+        }
+
+        "have the correct box description for box 6" in {
+          elementText(Selectors.boxDescription(6)) shouldBe box6NonFlatRateSchemeText
+        }
       }
 
-      "have the entity name as a subheading" in {
-        elementText(Selectors.entityName) shouldBe entityName
-      }
+      "there are errors in the form" should {
 
-      "have the correct subheading for the first five boxes" in {
-        elementText(Selectors.vatDetails) shouldBe vatDetails
-      }
+        lazy val view = submitFormView(
+          periodKey,
+          Some(entityName),
+          "Non Digital",
+          flatRateScheme = true,
+          obligation,
+          SubmitVatReturnForm().nineBoxForm.bind(Map(
+            "box1" -> "", "box2" -> "", "box4" -> "", "box6" -> "", "box7" -> "", "box8" -> "", "box9" -> ""
+          )),
+          isAgent = false,
+        )(messages, mockAppConfig, user)
 
-      "have the return due date" in {
-        elementText(Selectors.returnDueDate) shouldBe returnDue("12 May 2019")
-      }
+        lazy implicit val document: Document = Jsoup.parse(view.body)
 
-      "have the correct subheading for the last four boxes" in {
-        elementText(Selectors.additionalDetails) shouldBe additionalInformation
-      }
+        "have the correct title" in {
+          document.title shouldBe s"$errorPrefix $title"
+        }
 
-      "have an advice paragraph to only enter whole pounds for the last four boxes" in {
-        elementText(Selectors.wholePounds) shouldBe wholePounds
-      }
+        "not display the sign up to MTD alert banner" in {
+          elementExists(Selectors.signUpToMTDBanner) shouldBe false
+        }
 
-      "have the correct box labels" in {
+        "have an error summary" which {
 
-        val expectedLabels = Seq(
-          box1,
-          box2,
-          box3,
-          box4,
-          box5,
-          box6,
-          box7,
-          box8,
-          box9
-        )
-        (1 to 9).foreach(i => elementText(Selectors.boxLabel(i)) shouldBe expectedLabels(i - 1))
-      }
+          "has the correct heading" in {
+            elementText(Selectors.errorHeading) shouldBe errorHeading
+          }
 
-      "have the correct box descriptions" in {
+          "has the correct messages" in {
+            val expectedErrorMessages: Seq[String] = inputBoxes.map(i => s"$enterNumberError box $i")
+            (1 to 6).foreach(i => elementText(Selectors.errorSummaryMessage(i)) shouldBe expectedErrorMessages(i - 1))
+          }
 
-        val expectedDescriptions = Seq(
-          box1Text,
-          box2Text,
-          box3Text,
-          box4Text,
-          box5Text,
-          box6FlatRateSchemeText,
-          box7Text,
-          box8Text,
-          box9Text
-        )
-        (1 to 9).foreach(i => elementText(Selectors.boxDescription(i)) shouldBe expectedDescriptions(i - 1))
-      }
+          "has the correct links to the input boxes" in {
+            val expectedHrefs: Seq[String] = inputBoxes.map(i => s"#box$i")
+            (1 to 6).foreach(i => element(Selectors.errorSummaryMessage(i)).attr("href") shouldBe expectedHrefs(i - 1))
+          }
+        }
 
-      "have input fields for boxes 1, 2, 4, 6, 7, 8 and 9" in {
-        inputBoxes.foreach(i => element(Selectors.boxInput(i)))
-      }
-
-      "have set text instead of an input field for boxes 3 and 5" in {
-        val autoCalcBoxes: Seq[Int] = Seq(3, 5)
-        autoCalcBoxes.foreach(i => elementText(Selectors.boxCalculatedValue(i)) shouldBe calculatedValue)
-      }
-
-      "have a final paragraph to tell the user they can submit on the next screen" in {
-        elementText(Selectors.nextScreenSubmit) shouldBe nextScreen
-      }
-
-      "have a button with the correct text" in {
-        elementText(Selectors.submitButton) shouldBe continue
-      }
-
-      "have a form with the correct action" in {
-        element(Selectors.form).attr("action") shouldBe controllers.routes.SubmitFormController.submit(periodKey).url
+        "have the correct error messages above each input box" in {
+          inputBoxes.foreach(i => elementText(Selectors.boxErrorMessage(i)) shouldBe s"$errorPrefix $enterNumberError box $i")
+        }
       }
     }
 
-    "the user is not on the flat rate scheme" should {
+    "the user is opted out of MTD" when {
 
-      lazy val view = submitFormView(
-        periodKey,
-        Some(entityName),
-        flatRateScheme = false,
-        obligation,
-        SubmitVatReturnForm().nineBoxForm,
-        isAgent = false,
-      )(messages, mockAppConfig, user)
+      "the user is a principal user" should {
 
-      lazy implicit val document: Document = Jsoup.parse(view.body)
+        lazy val view = submitFormView(
+          periodKey,
+          Some(entityName),
+          "Non MTDfB",
+          flatRateScheme = true,
+          obligation,
+          SubmitVatReturnForm().nineBoxForm,
+          isAgent = false,
+        )(messages, mockAppConfig, user)
 
-      "have the correct box description for box 6" in {
-        elementText(Selectors.boxDescription(6)) shouldBe box6NonFlatRateSchemeText
-      }
-    }
+        lazy implicit val document: Document = Jsoup.parse(view.body)
 
-    "there are errors in the form" should {
-
-      lazy val view = submitFormView(
-        periodKey,
-        Some(entityName),
-        flatRateScheme = true,
-        obligation,
-        SubmitVatReturnForm().nineBoxForm.bind(Map(
-          "box1" -> "", "box2" -> "", "box4" -> "", "box6" -> "", "box7" -> "", "box8" -> "", "box9" -> ""
-        )),
-        isAgent = false,
-      )(messages, mockAppConfig, user)
-
-      lazy implicit val document: Document = Jsoup.parse(view.body)
-
-      "have the correct title" in {
-        document.title shouldBe s"$errorPrefix $title"
-      }
-
-      "have an error summary" which {
-
-        "has the correct heading" in {
-          elementText(Selectors.errorHeading) shouldBe errorHeading
-        }
-
-        "has the correct messages" in {
-          val expectedErrorMessages: Seq[String] = inputBoxes.map(i => s"$enterNumberError box $i")
-          (1 to 6).foreach(i => elementText(Selectors.errorSummaryMessage(i)) shouldBe expectedErrorMessages(i - 1))
-        }
-
-        "has the correct links to the input boxes" in {
-          val expectedHrefs: Seq[String] = inputBoxes.map(i => s"#box$i")
-          (1 to 6).foreach(i => element(Selectors.errorSummaryMessage(i)).attr("href") shouldBe expectedHrefs(i - 1))
+        "display the sign up to MTD alert banner" in {
+          elementExists(Selectors.signUpToMTDBanner)
         }
       }
 
-      "have the correct error messages above each input box" in {
-        inputBoxes.foreach(i => elementText(Selectors.boxErrorMessage(i)) shouldBe s"$errorPrefix $enterNumberError box $i")
+      "the user is an agent" should {
+
+        lazy val view = submitFormView(
+          periodKey,
+          Some(entityName),
+          "Non MTDfB",
+          flatRateScheme = true,
+          obligation,
+          SubmitVatReturnForm().nineBoxForm,
+          isAgent = false,
+        )(messages, mockAppConfig, agentUser)
+
+        lazy implicit val document: Document = Jsoup.parse(view.body)
+
+        "display the sign up to MTD alert banner" in {
+          elementExists(Selectors.signUpToMTDBanner)
+        }
       }
     }
   }

@@ -39,31 +39,34 @@ class ConfirmationControllerSpec extends BaseSpec with MockVatSubscriptionServic
     mockAppConfig
   )
 
-  def viewAsString: String = view()(messages, mockAppConfig, user).toString
+  def nonDigitalViewAsString: String = view("Non Digital")(messages, mockAppConfig, user).toString
 
   "ConfirmationController .show" when {
 
-    "user is authorised" should {
+    "the user is non-digital" when {
 
-      lazy val result = {
-        mockAuthorise(mtdVatAuthorisedResponse)
-        TestConfirmationController.show()(fakeRequest.withSession(SessionKeys.mandationStatus -> MandationStatuses.nonMTDfB))
+      "user is authorised" should {
+
+        lazy val result = {
+          mockAuthorise(mtdVatAuthorisedResponse)
+          TestConfirmationController.show()(fakeRequest.withSession(SessionKeys.mandationStatus -> MandationStatuses.nonDigital))
+        }
+
+        "return a success response for .show" in {
+          status(result) shouldBe Status.OK
+        }
+
+        "return HTML for .show" in {
+          contentType(result) shouldBe Some("text/html")
+        }
+
+        "return the correct view" in {
+          contentAsString(result) shouldBe nonDigitalViewAsString
+        }
       }
 
-      "return a success response for .show" in {
-        status(result) shouldBe Status.OK
-      }
-
-      "return HTML for .show" in {
-        contentType(result) shouldBe Some("text/html")
-      }
-
-      "return the correct view" in {
-        contentAsString(result) shouldBe viewAsString
-      }
+      authControllerChecks(TestConfirmationController.show(), fakeRequest)
     }
-
-    authControllerChecks(TestConfirmationController.show(), fakeRequest)
   }
 
   "ConfirmationController .submit as an agent" when {

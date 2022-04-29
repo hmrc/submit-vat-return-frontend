@@ -18,6 +18,7 @@
 @import models.auth.User
 @import templates.formatters.dates.DisplayDate
 @import templates.formatters.dates.DisplayDateRange
+@import views.html.templates.MTDSignUpBanner
 
 @this(mainTemplate: MainTemplate,
       displayDateRange: DisplayDateRange,
@@ -26,10 +27,12 @@
       govukErrorSummary: GovukErrorSummary,
       govukInput : GovukInput,
       govukBackLink: GovukBackLink,
-      govukButton: GovukButton)
+      govukButton: GovukButton,
+      mtdSignUpBanner: MTDSignUpBanner)
 
 @(periodKey: String,
   clientName: Option[String],
+  mandationStatus: String,
   flatRateScheme: Boolean,
   obligation: VatObligation,
   form: Form[NineBoxModel],
@@ -110,6 +113,8 @@
     <span class="govuk-caption-xl">@messages("submit_form.heading")</span>
     <span>@{displayDateRange(obligation.start, obligation.end, useShortDayFormat = true)}</span>
   </h1>
+
+  @mtdSignUpBanner(mandationStatus)
 
   <h2 class="govuk-heading-l">@clientName</h2>
   <h3 class="govuk-heading-m">@messages("confirm_submission.vatDetails")</h3>

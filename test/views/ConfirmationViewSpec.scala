@@ -30,80 +30,130 @@ class ConfirmationViewSpec extends ViewBaseSpec {
 
   "Confirmation view" when {
 
-    "year and period key are in session" should {
+    "the user is non-digital" when {
 
-      val submitYear = "2019"
-      val periodKey = "21BB"
+      "year and period key are in session" should {
 
-      lazy val userWithSession: User[AnyContentAsEmpty.type] = User[AnyContentAsEmpty.type](vrn)(fakeRequest.withSession(
-        SessionKeys.submissionYear -> submitYear,
-        SessionKeys.inSessionPeriodKey -> periodKey)
-      )
+        val submitYear = "2019"
+        val periodKey = "21BB"
 
-      lazy val view = confirmationView()(messages, mockAppConfig, userWithSession)
+        lazy val userWithSession: User[AnyContentAsEmpty.type] = User[AnyContentAsEmpty.type](vrn)(fakeRequest.withSession(
+          SessionKeys.submissionYear -> submitYear,
+          SessionKeys.inSessionPeriodKey -> periodKey)
+        )
 
-      lazy implicit val document: Document = Jsoup.parse(view.body)
+        lazy val view = confirmationView("Non Digital")(messages, mockAppConfig, userWithSession)
 
-      s"display the title as ${viewMessages.title}" in {
-        document.title shouldBe viewMessages.title
-      }
+        lazy implicit val document: Document = Jsoup.parse(view.body)
 
-      s"display the h1 as ${viewMessages.heading}" in {
-        elementText("h1") shouldBe viewMessages.heading
-      }
+        s"display the title as ${viewMessages.title}" in {
+          document.title shouldBe viewMessages.title
+        }
 
-      s"display the h2 as ${viewMessages.subHeading}" in {
-        elementText("h2") shouldBe viewMessages.subHeading
-      }
+        "not display the sign up to MTD alert banner" in {
+          elementExists("#mtd-sign-up-banner") shouldBe false
+        }
 
-      s"display the paragraph text as ${viewMessages.paragraph}" in {
-        elementText("#content > p") shouldBe viewMessages.paragraph
-      }
+        s"display the h1 as ${viewMessages.heading}" in {
+          elementText("h1") shouldBe viewMessages.heading
+        }
 
-      "display a View Return button" should {
+        s"display the h2 as ${viewMessages.subHeading}" in {
+          elementText("h2") shouldBe viewMessages.subHeading
+        }
 
-        s"have the button text as ${viewMessages.button}" in {
-          elementText("#content > div.govuk-button-group > a:nth-child(1)") shouldBe viewMessages.button
+        s"display the paragraph text as ${viewMessages.paragraph}" in {
+          elementText("#content > p") shouldBe viewMessages.paragraph
+        }
+
+        "display a View Return button" should {
+
+          s"have the button text as ${viewMessages.button}" in {
+            elementText("#content > div.govuk-button-group > a:nth-child(1)") shouldBe viewMessages.button
+          }
+        }
+
+        "display a Finish button" should {
+
+          s"have the button text as ${viewMessages.button2}" in {
+            elementText("#content > div.govuk-button-group > a:nth-child(2)") shouldBe viewMessages.button2
+          }
         }
       }
 
-      "display a Finish button" should {
+      "year and period key are not in session" should {
 
-        s"have the button text as ${viewMessages.button2}" in {
-          elementText("#content > div.govuk-button-group > a:nth-child(2)") shouldBe viewMessages.button2
+        lazy val userWithSession: User[AnyContentAsEmpty.type] = User[AnyContentAsEmpty.type](vrn)(fakeRequest)
+
+        lazy val view = confirmationView("Non Digital")(messages, mockAppConfig, userWithSession)
+
+        lazy implicit val document: Document = Jsoup.parse(view.body)
+
+        "not display the sign up to MTD alert banner" in {
+          elementExists("#mtd-sign-up-banner") shouldBe false
+        }
+
+        "display a View Return button" should {
+
+          "have the correct redirect link" in {
+            element("#content > div.govuk-button-group > a:nth-child(1)").attr("href") shouldBe mockAppConfig.viewSubmittedReturnUrl
+          }
+        }
+      }
+
+      "user is an Agent" should {
+
+        lazy val agent: User[AnyContentAsEmpty.type] = User[AnyContentAsEmpty.type]("999999999", Some("123456789"))
+        lazy val feature_view = confirmationView("Non Digital")(messages, mockAppConfig, agent)
+
+        lazy implicit val document: Document = Jsoup.parse(feature_view.body)
+
+        "not display the sign up to MTD alert banner" in {
+          elementExists("#mtd-sign-up-banner") shouldBe false
+        }
+
+        "display the Agent Finish button" should {
+
+          s"have the button text as ${viewMessages.agentFinishButton}" in {
+            elementText("#content > div.govuk-button-group > a:nth-child(2)") shouldBe viewMessages.agentFinishButton
+          }
         }
       }
     }
 
-    "year and period key are not in session" should {
+    "the user is opted out of MTD" when {
 
-      lazy val userWithSession: User[AnyContentAsEmpty.type] = User[AnyContentAsEmpty.type](vrn)(fakeRequest)
+      "the user is a principal user" should {
 
-      lazy val view = confirmationView()(messages, mockAppConfig, userWithSession)
+        val submitYear = "2019"
+        val periodKey = "21BB"
 
-      lazy implicit val document: Document = Jsoup.parse(view.body)
+        lazy val userWithSession: User[AnyContentAsEmpty.type] = User[AnyContentAsEmpty.type](vrn)(fakeRequest.withSession(
+          SessionKeys.submissionYear -> submitYear,
+          SessionKeys.inSessionPeriodKey -> periodKey)
+        )
 
-      "display a View Return button" should {
+        lazy val view = confirmationView("Non MTDfB")(messages, mockAppConfig, userWithSession)
 
-        "have the correct redirect link" in {
-          element("#content > div.govuk-button-group > a:nth-child(1)").attr("href") shouldBe mockAppConfig.viewSubmittedReturnUrl
+        lazy implicit val document: Document = Jsoup.parse(view.body)
+
+        "display the sign up to MTD alert banner" in {
+          elementExists("#mtd-sign-up-banner")
         }
       }
-    }
 
-    "user is an Agent" should {
+      "the user is an agent" should {
 
-      lazy val agent: User[AnyContentAsEmpty.type] = User[AnyContentAsEmpty.type]("999999999", Some("123456789"))
-      lazy val feature_view = confirmationView()(messages, mockAppConfig, agent)
+        lazy val agent: User[AnyContentAsEmpty.type] = User[AnyContentAsEmpty.type]("999999999", Some("123456789"))
+        lazy val feature_view = confirmationView("Non MTDfB")(messages, mockAppConfig, agent)
 
-      lazy implicit val document: Document = Jsoup.parse(feature_view.body)
+        lazy implicit val document: Document = Jsoup.parse(feature_view.body)
 
-      "display the Agent Finish button" should {
-
-        s"have the button text as ${viewMessages.agentFinishButton}" in {
-          elementText("#content > div.govuk-button-group > a:nth-child(2)") shouldBe viewMessages.agentFinishButton
+        "display the sign up to MTD alert banner" in {
+          elementExists("#mtd-sign-up-banner")
         }
       }
+
     }
   }
 }

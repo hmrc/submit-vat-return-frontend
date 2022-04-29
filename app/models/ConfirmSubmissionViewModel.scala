@@ -18,4 +18,5 @@ package models
 
 case class ConfirmSubmissionViewModel(returnDetail: SubmitVatReturnModel,
                                       periodKey: String,
-                                      userName: Option[String])
+                                      userName: Option[String],
+                                      mandationStatus: String)
