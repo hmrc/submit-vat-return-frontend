@@ -17,12 +17,14 @@
 @import config.AppConfig
 @import models.auth.User
 @import common.SessionKeys
+@import views.html.templates.MTDSignUpBanner
 
 @this(mainTemplate: MainTemplate,
       govukPanel: GovukPanel,
-      govukButton : GovukButton)
+      govukButton : GovukButton,
+      mtdSignUpBanner: MTDSignUpBanner)
 
-@()(implicit messages: Messages, appConfig: AppConfig, user: User[_])
+@(mandationStatus: String)(implicit messages: Messages, appConfig: AppConfig, user: User[_])
 
 @viewSubmittedReturnUrl = @{
   (user.session.get(SessionKeys.submissionYear), user.session.get(SessionKeys.inSessionPeriodKey)) match {
@@ -55,6 +57,8 @@
   appConfig = appConfig,
   user = Some(user)
 ) {
+
+@mtdSignUpBanner(mandationStatus)
 
 @govukPanel(Panel(
 title = Text(messages("confirmation_view.heading")),

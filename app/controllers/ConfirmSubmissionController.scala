@@ -78,7 +78,7 @@ class ConfirmSubmissionController @Inject()(mandationStatusCheck: MandationStatu
         val sessionData = Json.parse(model).as[SubmitVatReturnModel]
 
         vatSubscriptionService.getCustomerDetails(user.vrn) map { model =>
-          val view = renderConfirmSubmissionView(periodKey, sessionData, model)
+          val view = renderConfirmSubmissionView(periodKey, sessionData, model, user.session.get(SessionKeys.mandationStatus).getOrElse(""))
           Ok(view)
             .addingToSession(
               SessionKeys.submissionYear -> sessionData.end.format(dateTimeFormatter),
@@ -91,13 +91,14 @@ class ConfirmSubmissionController @Inject()(mandationStatusCheck: MandationStatu
 
   private[controllers] def renderConfirmSubmissionView[A](periodKey: String,
                                                           sessionData: SubmitVatReturnModel,
-                                                          customerDetails: Either[ErrorModel, CustomerDetails])
+                                                          customerDetails: Either[ErrorModel, CustomerDetails],
+                                                          mandationStatus: String)
                                                          (implicit user: User[A]): Html = {
     val clientName = customerDetails match {
       case Right(model) => model.clientName
       case _ => None
     }
-    val viewModel = ConfirmSubmissionViewModel(sessionData, periodKey, clientName)
+    val viewModel = ConfirmSubmissionViewModel(sessionData, periodKey, clientName, mandationStatus)
 
     confirmSubmission(viewModel, user.isAgent)
   }
@@ -177,7 +178,7 @@ class ConfirmSubmissionController @Inject()(mandationStatusCheck: MandationStatu
       identity <- buildIdentityData()
       result <- (identity, receiptData) match {
         case (Right(id), Right(receipt)) =>
-          val html = renderConfirmSubmissionView(periodKey, sessionData, customerDetails)
+          val html = renderConfirmSubmissionView(periodKey, sessionData, customerDetails, user.session.get(SessionKeys.mandationStatus).getOrElse(""))
           val htmlPayload = HashUtil.encode(html.body)
           val sha256Checksum = HashUtil.getHash(html.body)
 

@@ -18,6 +18,7 @@
 @import models.auth.User
 @import views.html.templates.formatters.dates.{DisplayDateRange, DisplayDate}
 @import views.html.templates.formatters.money.DisplayMoney
+@import views.html.templates.MTDSignUpBanner
 
 @this(mainTemplate: MainTemplate,
       formWithCSRF: FormWithCSRF,
@@ -25,7 +26,8 @@
       displayDateRange: DisplayDateRange,
       displayDate: DisplayDate,
       govukButton: GovukButton,
-      govukBackLink: GovukBackLink)
+      govukBackLink: GovukBackLink,
+      mtdSignUpBanner: MTDSignUpBanner)
 
 @(viewModel: ConfirmSubmissionViewModel,
   isAgent: Boolean)(implicit messages: Messages,
@@ -131,6 +133,8 @@
     <span class="govuk-caption-xl">@messages("confirm_submission.heading")</span>
     @displayDateRange(viewModel.returnDetail.start, viewModel.returnDetail.end, useShortDayFormat = true)
   </h1>
+
+  @mtdSignUpBanner(viewModel.mandationStatus)
 
   @validationWarning
 

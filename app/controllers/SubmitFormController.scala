@@ -64,13 +64,15 @@ class SubmitFormController @Inject()(mcc: MessagesControllerComponents,
       Some(controllers.routes.SubmitFormController.show(periodKey).url)
     )
 
+    val mandationStatus = user.session.get(SessionKeys.mandationStatus).getOrElse("")
+
     user.session.get(SessionKeys.returnData) match {
-      case Some(model) => renderViewWithSessionData(periodKey, model)
-      case _ => renderViewWithoutSessionData(periodKey, SubmitVatReturnForm().nineBoxForm)
+      case Some(model) => renderViewWithSessionData(periodKey, model, mandationStatus)
+      case _ => renderViewWithoutSessionData(periodKey, SubmitVatReturnForm().nineBoxForm, mandationStatus)
     }
   }
 
-  private def renderViewWithSessionData(periodKey: String, model: String)
+  private def renderViewWithSessionData(periodKey: String, model: String, mandationStatus: String)
                                        (implicit user: User[_], hc: HeaderCarrier, appConfig: AppConfig) = {
 
     val sessionData = Json.parse(model).as[SubmitVatReturnModel]
@@ -90,6 +92,7 @@ class SubmitFormController @Inject()(mcc: MessagesControllerComponents,
         Ok(submitForm(
           periodKey,
           customerDetails.clientName,
+          mandationStatus,
           sessionData.flatRateScheme,
           VatObligation(sessionData.start, sessionData.end, sessionData.due, periodKey),
           SubmitVatReturnForm().nineBoxForm.fill(nineBoxModel),
@@ -99,6 +102,7 @@ class SubmitFormController @Inject()(mcc: MessagesControllerComponents,
         Ok(submitForm(
           periodKey,
           None,
+          mandationStatus,
           sessionData.flatRateScheme,
           VatObligation(sessionData.start, sessionData.end, sessionData.due, periodKey),
           SubmitVatReturnForm().nineBoxForm.fill(nineBoxModel),
@@ -107,7 +111,7 @@ class SubmitFormController @Inject()(mcc: MessagesControllerComponents,
     }
   }
 
-  private def renderViewWithoutSessionData(periodKey: String, form: Form[NineBoxModel])
+  private def renderViewWithoutSessionData(periodKey: String, form: Form[NineBoxModel], mandationStatus: String)
                                           (implicit user: User[_], hc: HeaderCarrier) = {
 
     for {
@@ -132,6 +136,7 @@ class SubmitFormController @Inject()(mcc: MessagesControllerComponents,
                 Ok(submitForm(
                   periodKey,
                   customerDetails.clientName,
+                  mandationStatus,
                   customerDetails.hasFlatRateScheme,
                   obligation,
                   form,
@@ -158,6 +163,7 @@ class SubmitFormController @Inject()(mcc: MessagesControllerComponents,
   ).async { implicit user =>
 
     val form = SubmitVatReturnForm()
+    val mandationStatus = user.session.get(SessionKeys.mandationStatus).getOrElse("")
 
     form.nineBoxForm.bindFromRequest().fold(
       failure => {
@@ -172,6 +178,7 @@ class SubmitFormController @Inject()(mcc: MessagesControllerComponents,
                 BadRequest(submitForm(
                   periodKey,
                   customerDetails.clientName,
+                  mandationStatus,
                   sessionData.hasFlatRateScheme,
                   VatObligation(sessionData.start, sessionData.end, sessionData.due, periodKey),
                   failure,
@@ -181,13 +188,14 @@ class SubmitFormController @Inject()(mcc: MessagesControllerComponents,
                 BadRequest(submitForm(
                   periodKey,
                   None,
+                  mandationStatus,
                   sessionData.hasFlatRateScheme,
                   VatObligation(sessionData.start, sessionData.end, sessionData.due, periodKey),
                   failure,
                   isAgent = user.isAgent)
                 )
             }
-          case _ => renderViewWithoutSessionData(periodKey, failure)
+          case _ => renderViewWithoutSessionData(periodKey, failure, mandationStatus)
         }
       },
       success => {
