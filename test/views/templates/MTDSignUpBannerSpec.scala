@@ -49,21 +49,24 @@ class MTDSignUpBannerSpec extends ViewBaseSpec {
       }
 
       "have the correct banner heading" in {
-        elementText(Selectors.bannerHeading) shouldBe "The way you submit your VAT returns changed on 1 April due to Making Tax Digital"
+        elementText(Selectors.bannerHeading) shouldBe "The way to submit VAT returns changed on 1 April due to Making Tax Digital"
       }
 
       "have the correct banner text" in {
-        elementText(Selectors.bannerText) shouldBe "You cannot use this service to submit returns for accounting periods " +
-          "starting after 1 April 2022. Instead you’ll need to keep digital records and submit returns using HMRC compatible " +
-          "software. Find out when you need to sign up and start using Making Tax Digital for VAT (opens in a new tab)."
+        elementText(Selectors.bannerText) shouldBe "You cannot use this service to submit returns for accounting" +
+          " periods starting after 1 April 2022. Instead, digital records must be kept and returns must be submitted " +
+          "using HMRC compatible software. Find out when to sign up and start using Making Tax Digital for VAT " +
+          "(opens in a new tab)."
       }
 
       "have the correct link text" in {
-        elementText(Selectors.bannerLink) shouldBe "Find out when you need to sign up and start using Making Tax Digital for VAT (opens in a new tab)"
+        elementText(Selectors.bannerLink) shouldBe
+          "Find out when to sign up and start using Making Tax Digital for VAT (opens in a new tab)"
       }
 
       "has the correct href for the link" in {
-        element(Selectors.bannerLink).attr("href") shouldBe "https://www.gov.uk/guidance/when-to-start-using-making-tax-digital-for-vat-if-youve-not-before"
+        element(Selectors.bannerLink).attr("href") shouldBe
+          "https://www.gov.uk/guidance/when-to-start-using-making-tax-digital-for-vat-if-youve-not-before"
       }
     }
 

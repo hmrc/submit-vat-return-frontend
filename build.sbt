@@ -51,10 +51,10 @@ lazy val coverageSettings: Seq[Setting[_]] = {
 
 val compile = Seq(
   play.sbt.PlayImport.ws,
-  "uk.gov.hmrc"       %% "play-frontend-hmrc"         % "3.10.0-play-28",
+  "uk.gov.hmrc"       %% "play-frontend-hmrc"         % "3.17.0-play-28",
   "uk.gov.hmrc"       %% "bootstrap-frontend-play-28" % "5.20.0",
-  "uk.gov.hmrc"       %% "play-language"              % "5.2.0-play-28",
-  "uk.gov.hmrc"       %% "domain"                     % "8.0.0-play-28",
+  "uk.gov.hmrc"       %% "play-language"              % "5.3.0-play-28",
+  "uk.gov.hmrc"       %% "domain"                     % "8.1.0-play-28",
   "com.typesafe.play" %% "play-json-joda"             % "2.9.2"
 )
 
@@ -62,12 +62,12 @@ val test = Seq(
   "org.scalatest"          %% "scalatest"                   % "3.1.4",
   "org.scalatestplus.play" %% "scalatestplus-play"          % "5.1.0",
   "org.pegdown"             % "pegdown"                     % "1.6.0",
-  "org.jsoup"               % "jsoup"                       % "1.13.1",
-  "com.typesafe.play"       %% "play-test"                  % PlayVersion.current,
+  "org.jsoup"               % "jsoup"                       % "1.14.3",
+  "com.typesafe.play"      %% "play-test"                   % PlayVersion.current,
   "org.scalamock"          %% "scalamock-scalatest-support" % "3.6.0",
-  "com.github.tomakehurst"  % "wiremock-jre8"               % "2.26.3",
-  "org.mockito"             %  "mockito-core"               % "3.2.0",
-  "com.vladsch.flexmark"    %  "flexmark-all"               % "0.36.8",
+  "com.github.tomakehurst"  % "wiremock-jre8"               % "2.27.2",
+  "org.mockito"             % "mockito-core"                % "3.2.4",
+  "com.vladsch.flexmark"    % "flexmark-all"                % "0.36.8",
   "org.scalatestplus"      %% "scalatestplus-mockito"       % "1.0.0-M2"
 ).map(_ % s"$Test, $IntegrationTest")
 

@@ -162,6 +162,6 @@ month.short.11 = Tach
 month.short.12 = Rhag
 
 signUpForMTDBanner.title = Pwysig
-signUpForMTDBanner.heading = Newidiodd y ffordd yr ydych yn cyflwyno eich Ffurflenni TAW ar 1 Ebrill oherwydd y cynllun Troi Treth yn Ddigidol
-signUpForMTDBanner.paragraphText = Ni allwch ddefnyddio’r gwasanaeth hwn i gyflwyno Ffurflenni TAW ar gyfer cyfnodau cyfrifyddu sy’n dechrau ar ôl 1 Ebrill 2022. Yn lle hynny, bydd angen i chi gadw cofnodion digidol a chyflwyno Ffurflenni TAW gan ddefnyddio meddalwedd sy’n cydweddu â CThEM.
-signUpForMTDBanner.linkText = Dysgwch pryd y mae angen i chi gofrestru a dechrau defnyddio Troi Treth yn Ddigidol ar gyfer TAW (yn agor tab newydd)
+signUpForMTDBanner.heading = Newidiodd y ffordd i gyflwyno ffurflenni TAW ar 1 Ebrill oherwydd Troi Treth yn Ddigidol
+signUpForMTDBanner.paragraphText = Ni allwch ddefnyddio’r gwasanaeth hwn i gyflwyno datganiadau ar gyfer cyfnodau cyfrifyddu sy’n dechrau ar ôl 1 Ebrill 2022. Yn lle hynny, rhaid cadw cofnodion digidol a rhaid cyflwyno ffurflenni gan ddefnyddio meddalwedd sy’n gydnaws â CThEM.
+signUpForMTDBanner.linkText = Darganfod pryd i gofrestru a dechrau defnyddio Troi Treth yn Ddigidol ar gyfer TAW (yn agor tab newydd)
