@@ -253,8 +253,8 @@ class ConfirmSubmissionController @Inject()(mandationStatusCheck: MandationStatu
           itmpName = handleItmpName(itmpName), itmpDateOfBirth,
           itmpAddress = handleItmpAddress(itmpAddress), affinityGroup, credentialStrength,
           loginTimes = IdentityLoginTimes(
-            LocalDateTime.ofInstant(Instant.parse(loginTimes.currentLogin.toInstant.toString), ZoneId.of("UTC")),
-            loginTimes.previousLogin.map(dateTime => LocalDateTime.ofInstant(Instant.parse(dateTime.toInstant.toString), ZoneId.of("UTC")))
+            LocalDateTime.ofInstant(Instant.parse(loginTimes.currentLogin.toString), ZoneId.of("UTC")),
+            loginTimes.previousLogin.map(dateTime => LocalDateTime.ofInstant(Instant.parse(dateTime.toString), ZoneId.of("UTC")))
           )
         )
 

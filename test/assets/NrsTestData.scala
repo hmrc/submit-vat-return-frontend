@@ -16,10 +16,9 @@
 
 package assets
 
-import java.time.{Instant, LocalDateTime, ZoneId}
+import java.time.{Instant, LocalDateTime, LocalDate, ZoneId}
 
 import models.nrs._
-import org.joda.time.LocalDate
 import play.api.libs.json.{JsObject, JsValue, Json}
 import uk.gov.hmrc.auth.core.AffinityGroup.Agent
 import uk.gov.hmrc.auth.core.retrieve._

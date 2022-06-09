@@ -16,12 +16,13 @@
 
 package mocks
 
+import java.time.{LocalDateTime, ZoneOffset}
+
 import akka.util.Timeout
 import assets.NrsTestData.IdentityDataTestData
 import base.BaseSpec
 import controllers.predicates.AuthPredicate
 import mocks.service.{MockDateService, MockVatSubscriptionService}
-import org.joda.time.DateTime
 import play.api.http.Status
 import play.api.mvc.{Action, AnyContent, Request}
 import play.api.test.Helpers.{redirectLocation, status}
@@ -180,6 +181,9 @@ trait MockAuth extends BaseSpec with MockVatSubscriptionService with MockDateSer
       IdentityDataTestData.correctModel.itmpDateOfBirth),
       Some(IdentityDataTestData.correctModel.itmpAddress)),
       IdentityDataTestData.correctModel.credentialStrength),
-      LoginTimes(new DateTime("2016-11-27T09:00:00.000Z"), Some(new DateTime("2016-11-01T12:00:00.000Z")))
+      LoginTimes(
+        LocalDateTime.parse("2016-11-27T09:00:00.000Z").toInstant(ZoneOffset.MIN),
+        Some(LocalDateTime.parse("2016-11-01T12:00:00.000Z").toInstant(ZoneOffset.MIN))
+      )
     )
 }
