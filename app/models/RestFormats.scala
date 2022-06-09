@@ -17,7 +17,7 @@
 package models
 
 import java.time.format.DateTimeFormatter
-import java.time.{LocalDate, LocalDateTime}
+import java.time.{LocalDate, ZonedDateTime}
 
 import play.api.libs.json._
 
@@ -29,17 +29,17 @@ trait RestFormats {
 
   private val localDateRegex = """^(\d\d\d\d)-(\d\d)-(\d\d)$""".r
 
-  implicit val dateTimeRead: Reads[LocalDateTime] = {
+  implicit val dateTimeRead: Reads[ZonedDateTime] = {
     case JsString(s) =>
       Try {
-        JsSuccess(LocalDateTime.parse(s))
+        JsSuccess(ZonedDateTime.parse(s))
       }.getOrElse {
-        JsError(s"Could not parse $s as a DateTime with format ${DateTimeFormatter.ISO_LOCAL_DATE_TIME.toString}")
+        JsError(s"Could not parse $s as a DateTime with format ${DateTimeFormatter.ISO_ZONED_DATE_TIME.toString}")
       }
     case json => JsError(s"Expected value to be a string, was actually $json")
   }
 
-  implicit val dateTimeWrite: Writes[LocalDateTime] = dateTime => JsString(dateTime.toString)
+  implicit val dateTimeWrite: Writes[ZonedDateTime] = dateTime => JsString(dateTime.toString)
 
   implicit val localDateRead: Reads[LocalDate] = {
     case JsString(s@localDateRegex(y, m, d)) =>
@@ -55,7 +55,7 @@ trait RestFormats {
   implicit val localDateWrite: Writes[LocalDate] = date =>
     JsString("%04d-%02d-%02d".format(date.getYear, date.getMonth.getValue, date.getDayOfMonth))
 
-  implicit val dateTimeFormats  = Format(dateTimeRead, dateTimeWrite)
-  implicit val localDateFormats = Format(localDateRead, localDateWrite)
+  implicit val dateTimeFormats: Format[ZonedDateTime] = Format(dateTimeRead, dateTimeWrite)
+  implicit val localDateFormats: Format[LocalDate] = Format(localDateRead, localDateWrite)
 
 }

@@ -16,7 +16,7 @@
 
 package mocks
 
-import java.time.{LocalDateTime, ZoneOffset}
+import java.time.{LocalDateTime, ZoneOffset, ZonedDateTime}
 
 import akka.util.Timeout
 import assets.NrsTestData.IdentityDataTestData
@@ -182,8 +182,8 @@ trait MockAuth extends BaseSpec with MockVatSubscriptionService with MockDateSer
       Some(IdentityDataTestData.correctModel.itmpAddress)),
       IdentityDataTestData.correctModel.credentialStrength),
       LoginTimes(
-        LocalDateTime.parse("2016-11-27T09:00:00.000Z").toInstant(ZoneOffset.MIN),
-        Some(LocalDateTime.parse("2016-11-01T12:00:00.000Z").toInstant(ZoneOffset.MIN))
+        ZonedDateTime.parse("2016-11-27T09:00:00.000Z").toInstant,
+        Some(ZonedDateTime.parse("2016-11-01T12:00:00.000Z").toInstant)
       )
     )
 }
