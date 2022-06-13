@@ -16,7 +16,6 @@
 
 package base
 
-import akka.actor.ActorSystem
 import auth.AuthKeys
 import common.SessionKeys
 import config.{AppConfig, ErrorHandler}
@@ -35,8 +34,8 @@ import uk.gov.hmrc.http.HeaderCarrier
 
 import scala.concurrent.ExecutionContext
 
-trait BaseSpec extends AnyWordSpecLike with Matchers with OptionValues with GuiceOneAppPerSuite with MockFactory with BeforeAndAfterEach
-  with Injecting {
+trait BaseSpec extends AnyWordSpecLike with Matchers with OptionValues with GuiceOneAppPerSuite with MockFactory
+  with BeforeAndAfterEach with Injecting {
 
   implicit val config: Configuration = app.configuration
 
@@ -49,8 +48,10 @@ trait BaseSpec extends AnyWordSpecLike with Matchers with OptionValues with Guic
 
   lazy val errorHandler: ErrorHandler = inject[ErrorHandler]
 
-  implicit lazy val fakeRequest: FakeRequest[AnyContentAsEmpty.type] =
-    FakeRequest("", "").withSession(SessionKeys.insolventWithoutAccessKey -> "false", SessionKeys.futureInsolvencyBlock -> "false")
+  implicit lazy val fakeRequest: FakeRequest[AnyContentAsEmpty.type] = FakeRequest("", "")
+    .withSession(SessionKeys.insolventWithoutAccessKey -> "false", SessionKeys.futureInsolvencyBlock -> "false")
+  lazy val fakeRequestPost: FakeRequest[AnyContentAsEmpty.type] = FakeRequest("POST", "/")
+    .withSession(SessionKeys.insolventWithoutAccessKey -> "false", SessionKeys.futureInsolvencyBlock -> "false")
   lazy val fakeRequestWithClientsVRN: FakeRequest[AnyContentAsEmpty.type] =
     FakeRequest().withSession(AuthKeys.agentSessionVrn -> vrn)
   lazy val insolventRequest: FakeRequest[AnyContentAsEmpty.type] =
@@ -67,8 +68,6 @@ trait BaseSpec extends AnyWordSpecLike with Matchers with OptionValues with Guic
   lazy val agentUser: User[AnyContentAsEmpty.type] = User[AnyContentAsEmpty.type](vrn, Some(arn))(fakeRequestWithClientsVRN)
 
 
-  implicit val system: ActorSystem = ActorSystem()
   implicit lazy val hc: HeaderCarrier = HeaderCarrier()
   implicit lazy val ec: ExecutionContext = inject[ExecutionContext]
-
 }

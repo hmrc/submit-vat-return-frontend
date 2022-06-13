@@ -16,10 +16,9 @@
 
 package assets
 
-import java.time.{Instant, LocalDateTime, ZoneId}
+import java.time.{Instant, LocalDateTime, LocalDate, ZoneId}
 
 import models.nrs._
-import org.joda.time.LocalDate
 import play.api.libs.json.{JsObject, JsValue, Json}
 import uk.gov.hmrc.auth.core.AffinityGroup.Agent
 import uk.gov.hmrc.auth.core.retrieve._
@@ -126,7 +125,7 @@ object NrsTestData {
       "declaration" -> DeclarationTestData.correctJson
     )
 
-    val correctModel = ReceiptData(
+    val correctModel: ReceiptData = ReceiptData(
       EN, Seq(AnswersTestData.correctModel), DeclarationTestData.correctModel
     )
   }
@@ -157,6 +156,7 @@ object NrsTestData {
         |    "sessionId": "SessionId" },
         |  "itmpName" : {},
         |  "itmpAddress" : {},
+        |  "itmpDateOfBirth": "1985-02-02",
         |  "affinityGroup": "Agent",
         |  "credentialStrength": "strong",
         |  "loginTimes": {
@@ -181,7 +181,7 @@ object NrsTestData {
       credentialRole = Some(User),
       mdtpInformation = Some(MdtpInformation("DeviceId", "SessionId")),
       itmpName = ItmpName(None, None, None),
-      itmpDateOfBirth = None,
+      itmpDateOfBirth = Some(LocalDate.parse("1985-02-02")),
       itmpAddress = ItmpAddress(None, None, None, None, None, None, None, None),
       affinityGroup = Some(Agent),
       credentialStrength = Some("strong"),

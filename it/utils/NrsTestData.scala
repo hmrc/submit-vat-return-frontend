@@ -16,19 +16,16 @@
 
 package utils
 
-import java.time.{Instant, LocalDateTime, ZoneId}
-
+import java.time.{Instant, LocalDate, LocalDateTime, ZoneId}
 import models.nrs._
 import play.api.libs.json.{JsValue, Json}
 import uk.gov.hmrc.auth.core.AffinityGroup.Agent
 import uk.gov.hmrc.auth.core.retrieve._
-import uk.gov.hmrc.auth.core.{User, ConfidenceLevel}
+import uk.gov.hmrc.auth.core.{ConfidenceLevel, User}
 
 object NrsTestData {
 
   object IdentityDataTestData {
-
-    import org.joda.time.LocalDate
 
     val expectedJson: JsValue = Json.parse(
       """{

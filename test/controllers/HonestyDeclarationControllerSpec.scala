@@ -46,15 +46,11 @@ class HonestyDeclarationControllerSpec extends BaseSpec with MockAuth with MockM
 
     "user is authorised" should {
 
-      lazy val result = {
-        TestHonestyDeclarationController.show("18AA")(fakeRequest
-          .withSession(
-            SessionKeys.mandationStatus -> MandationStatuses.nonMTDfB,
-            SessionKeys.HonestyDeclaration.key -> "true",
-            SessionKeys.viewedDDInterrupt -> "true"
-          )
-        )
-      }
+      lazy val result = TestHonestyDeclarationController.show("18AA")(fakeRequest.withSession(
+        SessionKeys.mandationStatus -> MandationStatuses.nonMTDfB,
+        SessionKeys.HonestyDeclaration.key -> "true",
+        SessionKeys.viewedDDInterrupt -> "true"
+      ))
 
       "return 200" in {
         mockAuthorise(mtdVatAuthorisedResponse)
@@ -76,14 +72,10 @@ class HonestyDeclarationControllerSpec extends BaseSpec with MockAuth with MockM
 
     "user has no viewDDInterrupt in session" should {
 
-      lazy val result = {
-        TestHonestyDeclarationController.show("18BB")(fakeRequest
-          .withSession(
-            SessionKeys.mandationStatus -> MandationStatuses.nonMTDfB,
-            SessionKeys.HonestyDeclaration.key -> "true",
-          )
-        )
-      }
+      lazy val result = TestHonestyDeclarationController.show("18BB")(fakeRequest.withSession(
+        SessionKeys.mandationStatus -> MandationStatuses.nonMTDfB,
+        SessionKeys.HonestyDeclaration.key -> "true",
+      ))
 
       "return 303" in {
         mockAuthorise(mtdVatAuthorisedResponse)
@@ -104,11 +96,9 @@ class HonestyDeclarationControllerSpec extends BaseSpec with MockAuth with MockM
 
       "a valid form is submitted" should {
 
-        lazy val result = {
-          TestHonestyDeclarationController.submit("18AA")(fakeRequest.withFormUrlEncodedBody(
-            "checkbox" -> "true"
-          ).withSession(SessionKeys.mandationStatus -> MandationStatuses.nonMTDfB))
-        }
+        lazy val result = TestHonestyDeclarationController.submit("18AA")(fakeRequestPost.withFormUrlEncodedBody(
+          "checkbox" -> "true"
+        ).withSession(SessionKeys.mandationStatus -> MandationStatuses.nonMTDfB))
 
         "status is SEE_OTHER" in {
           mockAuthorise(mtdVatAuthorisedResponse)
@@ -126,9 +116,9 @@ class HonestyDeclarationControllerSpec extends BaseSpec with MockAuth with MockM
 
       "no form is submitted" should {
 
-        lazy val result = {
-          TestHonestyDeclarationController.submit("18AA")(fakeRequest.withSession(SessionKeys.mandationStatus -> MandationStatuses.nonMTDfB))
-        }
+        lazy val result = TestHonestyDeclarationController.submit("18AA")(
+          fakeRequestPost.withSession(SessionKeys.mandationStatus -> MandationStatuses.nonMTDfB)
+        )
 
         "status is BAD_REQUEST" in {
           mockAuthorise(mtdVatAuthorisedResponse)
@@ -139,5 +129,4 @@ class HonestyDeclarationControllerSpec extends BaseSpec with MockAuth with MockM
 
     authControllerChecks(TestHonestyDeclarationController.submit("18AA"), fakeRequest)
   }
-
 }
