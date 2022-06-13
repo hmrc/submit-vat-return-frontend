@@ -125,7 +125,7 @@ object NrsTestData {
       "declaration" -> DeclarationTestData.correctJson
     )
 
-    val correctModel = ReceiptData(
+    val correctModel: ReceiptData = ReceiptData(
       EN, Seq(AnswersTestData.correctModel), DeclarationTestData.correctModel
     )
   }
@@ -156,6 +156,7 @@ object NrsTestData {
         |    "sessionId": "SessionId" },
         |  "itmpName" : {},
         |  "itmpAddress" : {},
+        |  "itmpDateOfBirth": "1985-02-02",
         |  "affinityGroup": "Agent",
         |  "credentialStrength": "strong",
         |  "loginTimes": {
@@ -180,7 +181,7 @@ object NrsTestData {
       credentialRole = Some(User),
       mdtpInformation = Some(MdtpInformation("DeviceId", "SessionId")),
       itmpName = ItmpName(None, None, None),
-      itmpDateOfBirth = None,
+      itmpDateOfBirth = Some(LocalDate.parse("1985-02-02")),
       itmpAddress = ItmpAddress(None, None, None, None, None, None, None, None),
       affinityGroup = Some(Agent),
       credentialStrength = Some("strong"),

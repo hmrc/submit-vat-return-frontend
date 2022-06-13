@@ -16,7 +16,7 @@
 
 package models.nrs
 
-import java.time.{LocalDate, LocalDateTime, ZonedDateTime}
+import java.time.LocalDate
 
 import play.api.libs.json.{Format, Json, OFormat}
 import uk.gov.hmrc.auth.core.retrieve._
@@ -48,7 +48,6 @@ case class IdentityData(
 
 object IdentityData {
   implicit val localDateFormat: Format[LocalDate] = RestFormats.localDateFormats
-  implicit val dateTimeFormat: Format[ZonedDateTime] = RestFormats.dateTimeFormats
   implicit val credFormat: OFormat[Credentials] = Json.format[Credentials]
   implicit val nameFormat: OFormat[Name] = Json.format[Name]
   implicit val agentInfoFormat: OFormat[AgentInformation] = Json.format[AgentInformation]

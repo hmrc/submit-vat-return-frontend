@@ -16,13 +16,10 @@
 
 package audit
 
-import java.time.LocalDateTime
-
 import audit.models.ExtendedAuditModel
 import config.FrontendAppConfig
-import javax.inject.{Inject, Singleton}
 import play.api.http.HeaderNames
-import play.api.libs.json.{JsObject, JsString, JsValue, Json, Reads, Writes}
+import play.api.libs.json.{JsObject, JsValue, Json, Reads, Writes}
 import uk.gov.hmrc.http.HeaderCarrier
 import uk.gov.hmrc.play.audit.AuditExtensions
 import uk.gov.hmrc.play.audit.http.connector.{AuditConnector, AuditResult}
@@ -30,13 +27,18 @@ import uk.gov.hmrc.play.audit.http.connector.AuditResult.{Disabled, Failure, Suc
 import uk.gov.hmrc.play.audit.model.ExtendedDataEvent
 import utils.LoggerUtil
 
+import java.time.LocalDateTime
+import java.time.format.DateTimeFormatter
+import javax.inject.{Inject, Singleton}
 import scala.concurrent.{ExecutionContext, Future}
 
 @Singleton
 class AuditService @Inject()(appConfig: FrontendAppConfig, auditConnector: AuditConnector) extends LoggerUtil {
 
   implicit val dateTimeJsReader: Reads[LocalDateTime] = Reads.localDateTimeReads("yyyyMMddHHmmss")
-  implicit val dateTimeWriter: Writes[LocalDateTime] = dateTime => JsString(dateTime.toString)
+  implicit val dateTimeWriter: Writes[LocalDateTime] = dateTime => Json.toJson(dateTime.format(
+    DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm:ss")
+  ))
 
   implicit val extendedDataEventWrites: Writes[ExtendedDataEvent] = Json.writes[ExtendedDataEvent]
 
