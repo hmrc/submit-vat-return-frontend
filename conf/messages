@@ -1,15 +1,11 @@
 base.sign-out = Sign out
 navTitle.nonAgent = Manage your VAT account
 navTitle.agent = Your client’s VAT details
-navTitle.mtdfv = Making Tax Digital for VAT
 navTitle.vat = VAT
 common.fullStop = .
-common.finish = Finish
-common.submit = Submit
 common.dateRangeSeparator = to
 common.continue = Continue
 common.back = Back
-common.errorSummary.heading = You have one or more errors
 common.warning = Warning
 common.pageTitle = {0} - {1} - GOV.UK
 common.error.titlePrefix = Error: {0}
@@ -27,7 +23,6 @@ badRequest.title = Bad request
 badRequest.heading = Bad request
 badRequest.message = Please check that you have entered the correct web address.
 
-error.required = Please enter a value
 error.summary.title = There is a problem
 
 honesty_declaration.title = Honesty declaration
@@ -44,12 +39,8 @@ submit_form.error.emptyError = Enter a number in box {0}
 submit_form.error.tooManyCharacters = Enter a maximum of 13 digits for pounds in box {0}.\nEnter a maximum of 2 decimal places for pence.\nYou can use a negative amount eg -13.2
 submit_form.error.tooManyCharactersNoDecimal = Enter a maximum of 13 digits for pounds in box {0}.\nYou can use a negative amount eg -13
 submit_form.error.formatCheckError = Enter a number in the correct format in box {0}
-submit_form.error.negativeError = Enter a maximum of 11 digits for pounds in box {0}.\nEnter a maximum of 2 decimal places for pence.\nDo not use a negative amount eg -13.2
-submit_form.error.box3Error = Add the number from box 1 to the number from box 2 and write it here
-submit_form.error.box5Error = Subtract the number in box 4 away from the number in box 3 and write it here
 submit_form.error.wholePounds = Only enter whole pounds
 
-confirm_submission.title = Confirm your VAT Return
 confirm_submission.heading = Confirm return details
 confirm_submission.returnDueDate = Return due date: {0}
 confirm_submission.vatDetails = VAT details
@@ -65,7 +56,6 @@ confirm_submission.warning.common.checkFigures.part1 = Check the figures you ent
 confirm_submission.warning.common.checkFigures.part2 = change the amounts in the VAT Return
 confirm_submission.warning.common.checkFigures.part3 = if you need to.
 
-confirm_submission.amount = amount
 confirm_submission.additionalInfo = Additional information
 confirm_submission.boxOne = Box 1
 confirm_submission.boxOneDescription = VAT due in the period on sales and other outputs
@@ -82,7 +72,6 @@ confirm_submission.boxFourAmt = Box 4 amount
 confirm_submission.boxFive = Box 5
 confirm_submission.boxFiveDescription = Net VAT to pay to HMRC or reclaim (this is the difference between box 3 and 4)
 confirm_submission.boxFiveAmt = Box 5 amount
-confirm_submission.boxFiveContext = This is box 3 {0} take away box 4 {1}
 confirm_submission.boxSix = Box 6
 confirm_submission.boxSixNoFlatRate = Total value of sales and other supplies, excluding VAT
 confirm_submission.boxSixFlatRate = Total value of sales and other supplies, including VAT
@@ -123,7 +112,6 @@ confirmation_view.viewAccount = View your VAT account
 confirmation_view.viewVATReturn = View VAT Return
 confirmation_view.viewClientAccount = Back to client’s details
 
-incorrect_mandation.title = Submit VAT Return
 incorrect_mandation.heading = The business submits VAT Returns using Making Tax Digital
 incorrect_mandation.paragraph = The business has signed up to the Making Tax Digital service.
 incorrect_mandation.agent.text = You must submit your client’s VAT Returns to HMRC using compatible accounting software.
@@ -131,7 +119,6 @@ incorrect_mandation.nonAgent.text = You must submit your VAT Returns to HMRC usi
 incorrect_mandation.nonAgent.link = View your VAT Return deadlines
 incorrect_mandation.agent.client.link = View your client options
 
-submissionError.title = Submit return error
 submissionError.heading = Sorry, there is a problem with the service
 submissionError.p1 = We have been unable to submit the VAT Return.
 submissionError.p2 = We have not saved your answers. When the service is available, you will have to start again.
