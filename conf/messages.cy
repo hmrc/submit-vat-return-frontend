@@ -3,13 +3,11 @@ navTitle.nonAgent = Rheoli eich cyfrif TAW
 navTitle.agent = Manylion TAW y cleient
 navTitle.vat = TAW
 common.fullStop = .
-common.finish = Gorffen
-common.submit = Cyflwyno
 common.dateRangeSeparator = hyd at
 common.continue = Yn eich blaen
 common.back = Yn ôl
-common.errorSummary.heading = Mae gennych un neu fwy o wallau
 common.warning = Rhybudd
+common.pageTitle = {0} - {1} - GOV.UK
 common.error.titlePrefix = Gwall: {0}
 common.error = Gwall:
 
@@ -17,15 +15,14 @@ standardError.title = Mae problem gyda’r gwasanaeth
 standardError.heading = Mae’n ddrwg gennym – mae problem gyda’r gwasanaeth
 standardError.message = Rhowch gynnig arall arni yn nes ymlaen.
 
-badRequest.title = Cais drwg
-badRequest.heading = Cais drwg
-badRequest.message = Gwiriwch eich bod wedi nodi’r cyfeiriad gwe cywir.
-
 notFound.title = Heb ddod o hyd i’r dudalen
 notFound.heading = Ni ellir dod o hyd i’r dudalen hon
 notFound.message = Gwiriwch eich bod wedi nodi’r cyfeiriad gwe cywir.
 
-error.required = Nodwch werth
+badRequest.title = Cais drwg
+badRequest.heading = Cais drwg
+badRequest.message = Gwiriwch eich bod wedi nodi’r cyfeiriad gwe cywir.
+
 error.summary.title = Mae problem wedi codi
 
 honesty_declaration.title = Datganiad gonestrwydd
@@ -42,12 +39,8 @@ submit_form.error.emptyError = Nodwch rif ym mwlch {0}
 submit_form.error.tooManyCharacters = Nodwch uchafswm o 13 digid ar gyfer punnoedd ym mwlch {0}.\nNodwch uchafswm o 2 le degol ar gyfer ceiniogau.\nGallwch ddefnyddio swm negyddol e.e. -13.2
 submit_form.error.tooManyCharactersNoDecimal = Nodwch uchafswm o 13 digid ar gyfer punnoedd ym mwlch {0}.\nGallwch ddefnyddio swm negyddol e.e. -13
 submit_form.error.formatCheckError = Nodwch rif yn y fformat cywir ym mwlch {0}
-submit_form.error.negativeError = Nodwch uchafswm o 11 digid ar gyfer punnoedd ym mwlch {0}.\nNodwch uchafswm o 2 le degol ar gyfer ceiniogau.\nPeidiwch â defnyddio swm negyddol e.e. -13.2
-submit_form.error.box3Error = Ychwanegwch y rhif o flwch 1 at y rhif o flwch 2, a rhowch y canlyniad fan hyn
-submit_form.error.box5Error = Tynnwch y rhif ym mlwch 4 o’r rhif ym mlwch 3, a rhowch y canlyniad fan hyn
 submit_form.error.wholePounds = Nodwch bunnoedd cyfan yn unig
 
-confirm_submission.title = Cadarnhau’ch Ffurflen TAW
 confirm_submission.heading = Cadarnhau manylion y Ffurflen TAW
 confirm_submission.returnDueDate = Dyddiad cau ar gyfer cyflwyno’r Ffurflen TAW: {0}
 confirm_submission.vatDetails = Manylion TAW
@@ -63,7 +56,6 @@ confirm_submission.warning.common.checkFigures.part1 = Gwiriwch y ffigurau a nod
 confirm_submission.warning.common.checkFigures.part2 = newid y swm yn y Ffurflen TAW
 confirm_submission.warning.common.checkFigures.part3 = os oes angen.
 
-confirm_submission.amount = swm
 confirm_submission.additionalInfo = Gwybodaeth ychwanegol
 confirm_submission.boxOne = Blwch 1
 confirm_submission.boxOneDescription = TAW sy’n ddyledus yn y cyfnod ar werthiannau ac allbynnau eraill
@@ -80,7 +72,6 @@ confirm_submission.boxFourAmt = Swm Blwch 4
 confirm_submission.boxFive = Blwch 5
 confirm_submission.boxFiveDescription = TAW net i dalu i CThEM neu ei hadennill (dyma’r gwahaniaeth rhwng blychau 3 a 4)
 confirm_submission.boxFiveAmt = Swm Blwch 5
-confirm_submission.boxFiveContext = Dyma flwch 3 {0}, didynnu blwch 4 {1}
 confirm_submission.boxSix = Blwch 6
 confirm_submission.boxSixNoFlatRate = Cyfanswm gwerth y gwerthiannau a chyflenwadau eraill, ac eithrio TAW
 confirm_submission.boxSixFlatRate = Cyfanswm gwerth gwerthiannau a chyflenwadau eraill, gan gynnwys TAW
@@ -99,6 +90,7 @@ confirm_submission.acceptAndSend = Derbyn ac anfon
 confirm_submission.declarationHeading = Datganiad
 confirm_submission.agentDeclaration = Rwy’n cadarnhau bod fy nghleient wedi cael copi o’r wybodaeth sydd ar y Ffurflen TAW hon, ac wedi cytuno bod yr wybodaeth yn gywir ac yn gyflawn hyd eithaf ei wybodaeth a’i gred.
 confirm_submission.nonAgentDeclaration = Drwy gyflwyno’r Ffurflen TAW hon, rydych yn gwneud datganiad cyfreithiol bod yr wybodaeth yn gywir ac yn gyflawn hyd eithaf eich gwybodaeth a’ch cred. Gall datganiad ffug arwain at erlyniad.
+
 unauthorised_agent.title = Ni allwch ddefnyddio’r gwasanaeth hwn eto
 unauthorised_agent.useThisService = I ddefnyddio’r gwasanaeth hwn, bydd angen i chi
 unauthorised_agent.setUpAccount = greu cyfrif gwasanaethau asiantau
@@ -120,7 +112,6 @@ confirmation_view.viewAccount = Bwrw golwg dros eich cyfrif TAW
 confirmation_view.viewVATReturn = Bwrw golwg dros y Ffurflen TAW
 confirmation_view.viewClientAccount = Yn ôl i fanylion y cleient
 
-incorrect_mandation.title = Cyflwyno Ffurflen TAW
 incorrect_mandation.heading = Mae’r busnes yn cyflwyno Ffurflenni TAW drwy ddefnyddio’r cynllun Troi Treth yn Ddigidol
 incorrect_mandation.paragraph = Mae’r busnes wedi cofrestru ar gyfer y gwasanaeth Troi Treth yn Ddigidol.
 incorrect_mandation.agent.text = Mae’n rhaid i chi gyflwyno Ffurflenni TAW eich cleient i CThEM gan ddefnyddio meddalwedd gyfrifyddu sy’n cydweddu.
@@ -128,7 +119,6 @@ incorrect_mandation.nonAgent.text =  Mae’n rhaid i chi gyflwyno’ch Ffurflenn
 incorrect_mandation.nonAgent.link = Bwrw golwg dros y dyddiadau cau ar gyfer eich Ffurflenni TAW
 incorrect_mandation.agent.client.link = Bwrw golwg dros opsiynau eich cleient
 
-submissionError.title = Gwall wrth gyflwyno Ffurflen TAW
 submissionError.heading = Mae’n ddrwg gennym – mae problem gyda’r gwasanaeth
 submissionError.p1 = Nid ydym wedi gallu cyflwyno’r Ffurflen TAW.
 submissionError.p2 = Nid ydym wedi cadw’ch atebion. Pan fydd y gwasanaeth ar gael, bydd yn rhaid i chi ddechrau eto.
