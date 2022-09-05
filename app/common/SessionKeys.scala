@@ -26,7 +26,6 @@ object SessionKeys {
   val submittedReturn: String = "mtdVatvcSubmittedReturn"
   val insolventWithoutAccessKey: String = "insolventWithoutAccess"
   val futureInsolvencyBlock: String = "futureInsolvencyBlock"
-  val viewedDDInterrupt: String = "vatViewChangeHasViewedDDInterrupt"
 
   object HonestyDeclaration {
     val key = "mtdVatHonestyDeclaration"
