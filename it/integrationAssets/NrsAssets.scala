@@ -34,7 +34,7 @@ trait NrsAssets extends BaseISpec {
         |"externalId":".*?",
         |"agentCode":".*?",
         |"credentials":\{"providerId":".*?","providerType":".*?"\},
-        |"confidenceLevel":.*?,
+        |"confidenceLevel":".*?",
         |"nino":".*?",
         |"saUtr":".*?",
         |"name":\{"name":".*?","lastName":".*?"\},
