@@ -53,7 +53,7 @@ trait NrsAssets extends BaseISpec {
         |"previousLogin":"\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}\.\d{3}Z"\}
         |\},
         |"userAuthToken":"Bearer 1234",
-        |"headerData":\{"Csrf-Token":"nocheck","X-Request-ID":"govuk-tax-.*?","Timeout-Access":".*?",
+        |"headerData":\{"Csrf-Token":"nocheck","X-Session-ID":"session-.*?","X-Request-ID":"govuk-tax-.*?","Timeout-Access":".*?",
         |"Tls-Session-Info":".*?","X-Request-Timestamp":"\d*","Content-Length":"2","Accept":"\*\/\*","Content-Type":"application\/json","Cookie":".*?","Host":"localhost.*",
         |"Raw-Request-URI":"\/vat-through-software\/submit-vat-return\/18AA\/confirm-submission","Remote-Address":".*?"\},
         |"searchKeys":\{"vrn":"999999999","periodKey":"18AA"\},

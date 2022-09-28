@@ -1,6 +1,5 @@
 
 # Submit VAT Return Frontend
-This is a placeholder README.md for a new repository
 
 ## Running the service
 
