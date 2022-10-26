@@ -151,7 +151,7 @@ class SubmitFormControllerSpec extends BaseSpec
             "return 200" in {
               mockAuthorise(mtdVatAuthorisedResponse)
               setupAuditExtendedEvent
-              setupVatSubscriptionService(vatSubscriptionResponse)()
+              setupVatSubscriptionService(vatSubscriptionResponse)
               status(result) shouldBe Status.OK
             }
 
@@ -180,7 +180,7 @@ class SubmitFormControllerSpec extends BaseSpec
             "return 200" in {
               mockAuthorise(mtdVatAuthorisedResponse)
               setupAuditExtendedEvent
-              setupVatSubscriptionService(vatSubscriptionFailureResponse)()
+              setupVatSubscriptionService(vatSubscriptionFailureResponse)
               status(result) shouldBe Status.OK
             }
 
@@ -223,7 +223,7 @@ class SubmitFormControllerSpec extends BaseSpec
               "return 200" in {
                 mockAuthorise(mtdVatAuthorisedResponse)
                 setupAuditExtendedEvent
-                setupVatSubscriptionService(vatSubscriptionResponse)()
+                setupVatSubscriptionService(vatSubscriptionResponse)
                 setupVatObligationsService(vatObligationsResponse)()
                 mockDateHasPassed(response = true)
                 status(result) shouldBe Status.OK
@@ -250,7 +250,7 @@ class SubmitFormControllerSpec extends BaseSpec
               "return 400" in {
                 mockAuthorise(mtdVatAuthorisedResponse)
                 setupAuditExtendedEvent
-                setupVatSubscriptionService(vatSubscriptionResponse)()
+                setupVatSubscriptionService(vatSubscriptionResponse)
                 setupVatObligationsService(vatObligationsResponse)()
                 mockDateHasPassed(response = false)
                 status(result) shouldBe Status.BAD_REQUEST
@@ -286,7 +286,7 @@ class SubmitFormControllerSpec extends BaseSpec
             "return a 303" in {
               mockAuthorise(mtdVatAuthorisedResponse)
               setupAuditExtendedEvent
-              setupVatSubscriptionService(vatSubscriptionResponse)()
+              setupVatSubscriptionService(vatSubscriptionResponse)
               setupVatObligationsService(badPeriodKeyObsResponse)()
               status(result) shouldBe Status.SEE_OTHER
             }
@@ -307,7 +307,7 @@ class SubmitFormControllerSpec extends BaseSpec
 
               mockAuthorise(mtdVatAuthorisedResponse)
               setupAuditExtendedEvent
-              setupVatSubscriptionService(vatSubscriptionErrorResponse)()
+              setupVatSubscriptionService(vatSubscriptionErrorResponse)
               setupVatObligationsService(vatObligationsErrorResponse)()
 
               lazy val result = TestSubmitFormController.show("18AA")(fakeRequest.withSession(
@@ -355,7 +355,7 @@ class SubmitFormControllerSpec extends BaseSpec
           "status is SEE_OTHER" in {
             mockAuthorise(mtdVatAuthorisedResponse)
             mockDateHasPassed(response = true)
-            setupVatSubscriptionService(vatSubscriptionResponse)()
+            setupVatSubscriptionService(vatSubscriptionResponse)
             setupVatObligationsService(vatObligationsResponse)()
             status(result) shouldBe SEE_OTHER
           }
@@ -397,7 +397,7 @@ class SubmitFormControllerSpec extends BaseSpec
 
           "return a 303" in {
             mockAuthorise(mtdVatAuthorisedResponse)
-            setupVatSubscriptionService(vatSubscriptionResponse)()
+            setupVatSubscriptionService(vatSubscriptionResponse)
             setupVatObligationsService(badPeriodKeyObsResponse)()
             status(result) shouldBe Status.SEE_OTHER
           }
@@ -429,7 +429,7 @@ class SubmitFormControllerSpec extends BaseSpec
 
         "status is INTERNAL_SERVER_ERROR" in {
           mockAuthorise(mtdVatAuthorisedResponse)
-          setupVatSubscriptionService(vatSubscriptionResponse)()
+          setupVatSubscriptionService(vatSubscriptionResponse)
           setupVatObligationsService(vatObligationsErrorResponse)()
           status(result) shouldBe INTERNAL_SERVER_ERROR
         }
@@ -456,7 +456,7 @@ class SubmitFormControllerSpec extends BaseSpec
 
         "status is INTERNAL_SERVER_ERROR" in {
           mockAuthorise(mtdVatAuthorisedResponse)
-          setupVatSubscriptionService(vatSubscriptionFailureResponse)()
+          setupVatSubscriptionService(vatSubscriptionFailureResponse)
           setupVatObligationsService(vatObligationsResponse)()
           status(result) shouldBe INTERNAL_SERVER_ERROR
         }
@@ -489,7 +489,7 @@ class SubmitFormControllerSpec extends BaseSpec
       "return 400" in {
         mockAuthorise(mtdVatAuthorisedResponse)
         mockDateHasPassed(response = false)
-        setupVatSubscriptionService(vatSubscriptionResponse)()
+        setupVatSubscriptionService(vatSubscriptionResponse)
         setupVatObligationsService(vatObligationsResponse)()
         status(result) shouldBe BAD_REQUEST
       }
@@ -550,7 +550,7 @@ class SubmitFormControllerSpec extends BaseSpec
 
           "status is BAD_REQUEST" in {
             mockAuthorise(mtdVatAuthorisedResponse)
-            setupVatSubscriptionService(vatSubscriptionResponse)()
+            setupVatSubscriptionService(vatSubscriptionResponse)
             status(result) shouldBe BAD_REQUEST
           }
 
@@ -598,7 +598,7 @@ class SubmitFormControllerSpec extends BaseSpec
 
           "status is BAD_REQUEST" in {
             mockAuthorise(mtdVatAuthorisedResponse)
-            setupVatSubscriptionService(vatSubscriptionResponse)()
+            setupVatSubscriptionService(vatSubscriptionResponse)
             status(result) shouldBe BAD_REQUEST
           }
 
@@ -646,7 +646,7 @@ class SubmitFormControllerSpec extends BaseSpec
 
           "status is BAD_REQUEST" in {
             mockAuthorise(mtdVatAuthorisedResponse)
-            setupVatSubscriptionService(vatSubscriptionResponse)()
+            setupVatSubscriptionService(vatSubscriptionResponse)
             status(result) shouldBe BAD_REQUEST
           }
 
@@ -697,7 +697,7 @@ class SubmitFormControllerSpec extends BaseSpec
 
           "return BAD_REQUEST" in {
             mockAuthorise(mtdVatAuthorisedResponse)
-            setupVatSubscriptionService(vatSubscriptionFailureResponse)()
+            setupVatSubscriptionService(vatSubscriptionFailureResponse)
             status(result) shouldBe Status.BAD_REQUEST
           }
 
@@ -742,7 +742,7 @@ class SubmitFormControllerSpec extends BaseSpec
           "return 200" in {
             mockAuthorise(mtdVatAuthorisedResponse)
             mockDateHasPassed(response = true)
-            setupVatSubscriptionService(vatSubscriptionResponse)()
+            setupVatSubscriptionService(vatSubscriptionResponse)
             setupVatObligationsService(vatObligationsResponse)()
             status(result) shouldBe Status.OK
           }
@@ -769,7 +769,7 @@ class SubmitFormControllerSpec extends BaseSpec
 
           "return a 303" in {
             mockAuthorise(mtdVatAuthorisedResponse)
-            setupVatSubscriptionService(vatSubscriptionResponse)()
+            setupVatSubscriptionService(vatSubscriptionResponse)
             setupVatObligationsService(vatObligationsResponse)()
             status(result) shouldBe Status.SEE_OTHER
           }
@@ -790,7 +790,7 @@ class SubmitFormControllerSpec extends BaseSpec
 
             mockAuthorise(mtdVatAuthorisedResponse)
 
-            setupVatSubscriptionService(vatSubscriptionErrorResponse)()
+            setupVatSubscriptionService(vatSubscriptionErrorResponse)
             setupVatObligationsService(vatObligationsErrorResponse)()
 
             lazy val result = TestSubmitFormController.submit("18AA")(requestWithError)

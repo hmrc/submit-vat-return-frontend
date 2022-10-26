@@ -34,7 +34,7 @@ trait MockVatSubscriptionService extends AnyWordSpecLike with Matchers with Opti
 
   val mockVatSubscriptionService: VatSubscriptionService = mock[VatSubscriptionService]
 
-  def setupVatSubscriptionService(response: Future[HttpGetResult[CustomerDetails]])(): Unit = {
+  def setupVatSubscriptionService(response: Future[HttpGetResult[CustomerDetails]]): Unit = {
     (mockVatSubscriptionService.getCustomerDetails(_: String)(_: HeaderCarrier, _: ExecutionContext))
       .expects(*, *, *)
       .returns(response)

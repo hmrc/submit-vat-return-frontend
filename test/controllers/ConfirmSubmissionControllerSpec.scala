@@ -31,6 +31,7 @@ import models.vatReturnSubmission.SubmissionSuccessModel
 import models.{ConfirmSubmissionViewModel, CustomerDetails, SubmitVatReturnModel}
 import play.api.http.Status
 import play.api.libs.json.Json
+import play.api.mvc.Results.BadRequest
 import play.api.mvc.{AnyContentAsEmpty, Result}
 import play.api.test.Helpers._
 import uk.gov.hmrc.auth.core.BearerTokenExpired
@@ -114,7 +115,7 @@ class ConfirmSubmissionControllerSpec extends BaseSpec
               ))
 
             lazy val result: Future[Result] = {
-              setupVatSubscriptionService(successCustomerInfoResponse)()
+              setupVatSubscriptionService(successCustomerInfoResponse)
               TestConfirmSubmissionController.show("18AA")(requestWithSessionData)
             }
 
@@ -149,7 +150,7 @@ class ConfirmSubmissionControllerSpec extends BaseSpec
               ))
 
             lazy val result: Future[Result] = {
-              setupVatSubscriptionService(vatSubscriptionResponse)()
+              setupVatSubscriptionService(vatSubscriptionResponse)
               TestConfirmSubmissionController.show("18AA")(requestWithSessionData)
             }
 
@@ -230,7 +231,7 @@ class ConfirmSubmissionControllerSpec extends BaseSpec
               mockAuthorise(mtdVatAuthorisedResponse)
               mockDateHasPassed(response = true)
               mockVatReturnSubmission(Future.successful(Right(SubmissionSuccessModel("12345"))))()
-              setupVatSubscriptionService(successCustomerInfoResponse)()
+              setupVatSubscriptionService(successCustomerInfoResponse)
               mockFullAuthResponse(Future.successful(agentFullInformationResponse))
               mockNrsSubmission(Future.successful(Right(SuccessModel("1234567890"))))()
               mockExtractReceiptData(await(successReceiptDataResponse))()
@@ -261,7 +262,7 @@ class ConfirmSubmissionControllerSpec extends BaseSpec
             "return 500" in {
               mockAuthorise(mtdVatAuthorisedResponse)
               mockDateHasPassed(true)
-              setupVatSubscriptionService(successCustomerInfoResponse)()
+              setupVatSubscriptionService(successCustomerInfoResponse)
               mockExtractReceiptData(await(successReceiptDataResponse))()
               mockFullAuthResponse(Future.successful(agentFullInformationResponse))
               mockNrsSubmission(Future.successful(Right(SuccessModel("1234567890"))))()
@@ -348,7 +349,7 @@ class ConfirmSubmissionControllerSpec extends BaseSpec
 
       "return a SEE_OTHER" in {
 
-        setupVatSubscriptionService(successCustomerInfoResponse)()
+        setupVatSubscriptionService(successCustomerInfoResponse)
         mockFullAuthResponse(Future.successful(agentFullInformationResponse))
         mockNrsSubmission(Future.successful(Right(SuccessModel("1234567890"))))()
         mockVatReturnSubmission(Future.successful(Right(SubmissionSuccessModel("12345"))))()
@@ -371,7 +372,7 @@ class ConfirmSubmissionControllerSpec extends BaseSpec
       lazy val result = TestConfirmSubmissionController.submitToNrs("18AA", submitVatReturnModel)
 
       "return an ISE" in {
-        setupVatSubscriptionService(successCustomerInfoResponse)()
+        setupVatSubscriptionService(successCustomerInfoResponse)
         mockExtractReceiptData(await(successReceiptDataResponse))()
         mockFullAuthResponse(Future.failed(BearerTokenExpired()))
 
@@ -388,7 +389,7 @@ class ConfirmSubmissionControllerSpec extends BaseSpec
       lazy val result = TestConfirmSubmissionController.submitToNrs("18AA", submitVatReturnModel)
 
       "return an ISE" in {
-        setupVatSubscriptionService(successCustomerInfoResponse)()
+        setupVatSubscriptionService(successCustomerInfoResponse)
         mockFullAuthResponse(Future.successful(agentFullInformationResponse))
         mockExtractReceiptData(Left(ErrorModel(INTERNAL_SERVER_ERROR, "")))()
 
@@ -405,7 +406,7 @@ class ConfirmSubmissionControllerSpec extends BaseSpec
       lazy val result = TestConfirmSubmissionController.submitToNrs("18AA", submitVatReturnModel)
 
       "return an ISE" in {
-        setupVatSubscriptionService(successCustomerInfoResponse)()
+        setupVatSubscriptionService(successCustomerInfoResponse)
         mockFullAuthResponse(Future.successful(agentFullInformationResponse))
         mockExtractReceiptData(await(successReceiptDataResponse))()
         mockNrsSubmission(Future.successful(Left(ErrorModel(BAD_REQUEST, "error message"))))()
@@ -444,11 +445,11 @@ class ConfirmSubmissionControllerSpec extends BaseSpec
       }
 
       "return an internal server error" in {
-        status(Future.successful(await(result).left.get)) shouldBe 500
+        status(Future.successful(await(result).swap.getOrElse(BadRequest))) shouldBe 500
       }
 
       "return the correct view" in {
-        contentAsString(Future.successful(await(result).left.get)) shouldBe errorViewAsString()
+        contentAsString(Future.successful(await(result).swap.getOrElse(BadRequest))) shouldBe errorViewAsString()
       }
     }
   }

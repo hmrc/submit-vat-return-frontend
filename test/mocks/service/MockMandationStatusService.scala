@@ -31,7 +31,7 @@ trait MockMandationStatusService extends AnyWordSpecLike with Matchers with Opti
 
   val mockMandationStatusService: MandationStatusService = mock[MandationStatusService]
 
-  def setupMockMandationStatus(response: Future[HttpGetResult[MandationStatus]])(): Unit = {
+  def setupMockMandationStatus(response: Future[HttpGetResult[MandationStatus]]): Unit = {
     (mockMandationStatusService.getMandationStatus(_: String)(_: HeaderCarrier, _: ExecutionContext))
       .expects(*, *, *)
       .returns(response)
