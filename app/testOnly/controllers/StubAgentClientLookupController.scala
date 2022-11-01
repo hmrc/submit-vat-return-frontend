@@ -36,7 +36,7 @@ class StubAgentClientLookupController @Inject()(mcc: MessagesControllerComponent
     Ok(stubAgentClientLookup(StubAgentClientLookupForm.form, redirectUrl))
   }
 
-  def showAgentAction(): Action[AnyContent] = Action { implicit request =>
+  def showAgentAction: Action[AnyContent] = Action { implicit request =>
     Ok(stubAgentClientLookupAgentAction())
   }
 

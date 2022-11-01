@@ -28,7 +28,7 @@ trait MockDateService extends AnyWordSpecLike with Matchers with OptionValues wi
   val mockDateService: DateService = mock[DateService]
 
   def mockCurrentDate(currentDate: LocalDate): Unit = {
-    (mockDateService.now: () => LocalDate)
+    (() => mockDateService.now())
       .stubs()
       .returns(currentDate)
   }

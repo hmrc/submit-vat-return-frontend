@@ -24,6 +24,7 @@ import models.errors.ErrorModel
 import org.jsoup.Jsoup
 import play.api.http.Status.{BAD_REQUEST, SEE_OTHER}
 import play.api.mvc.AnyContentAsEmpty
+import play.api.mvc.Results._
 import play.mvc.Http.Status
 import play.api.test.Helpers._
 import base.BaseSpec
@@ -86,7 +87,7 @@ class MandationStatusPredicateSpec extends BaseSpec with MockMandationPredicate 
           User[AnyContentAsEmpty.type]("123456789")(fakeRequest.withSession(SessionKeys.mandationStatus -> "unsupportedMandationStatus"))
 
         lazy val result = {
-          await(mockMandationStatusPredicate.refine(userWithSession)).left.get
+          await(mockMandationStatusPredicate.refine(userWithSession)).swap.getOrElse(BadRequest)
         }
 
         "return a forbidden" in {
@@ -110,7 +111,7 @@ class MandationStatusPredicateSpec extends BaseSpec with MockMandationPredicate 
 
         lazy val result = {
           setupMockMandationStatus(Future.successful(Right(MandationStatus(MandationStatuses.nonMTDfB))))
-          await(mockMandationStatusPredicate.refine(userWithoutSession)).left.get
+          await(mockMandationStatusPredicate.refine(userWithoutSession)).swap.getOrElse(BadRequest)
         }
 
         "return a 303" in {
@@ -132,7 +133,7 @@ class MandationStatusPredicateSpec extends BaseSpec with MockMandationPredicate 
 
         lazy val result = {
           setupMockMandationStatus(Future.successful(Left(ErrorModel(BAD_REQUEST, "Error response"))))
-          await(mockMandationStatusPredicate.refine(userWithoutSession)).left.get
+          await(mockMandationStatusPredicate.refine(userWithoutSession)).swap.getOrElse(BadRequest)
         }
 
         "return an internal server error" in {
