@@ -21,6 +21,7 @@ import uk.gov.hmrc.sbtdistributables.SbtDistributablesPlugin.publishingSettings
 
 lazy val appDependencies: Seq[ModuleID] = compile ++ test
 val appName = "submit-vat-return-frontend"
+val bootstrapPlayVersion = "7.11.0"
 
 lazy val coverageSettings: Seq[Setting[_]] = {
   import scoverage.ScoverageKeys
@@ -51,12 +52,12 @@ lazy val coverageSettings: Seq[Setting[_]] = {
 val compile = Seq(
   play.sbt.PlayImport.ws,
   "uk.gov.hmrc"       %% "play-frontend-hmrc"         % "3.32.0-play-28",
-  "uk.gov.hmrc"       %% "bootstrap-frontend-play-28" % "7.8.0",
+  "uk.gov.hmrc"       %% "bootstrap-frontend-play-28" % bootstrapPlayVersion,
   "uk.gov.hmrc"       %% "domain"                     % "8.1.0-play-28",
 )
 
 val test = Seq(
-  "uk.gov.hmrc"            %% "bootstrap-test-play-28"      % "7.8.0",
+  "uk.gov.hmrc"            %% "bootstrap-test-play-28"      % bootstrapPlayVersion,
   "org.scalamock"          %% "scalamock"                   % "5.2.0",
   "org.mockito"             % "mockito-core"                % "3.2.4",
   "org.scalatestplus"      %% "scalatestplus-mockito"       % "1.0.0-M2"
