@@ -150,8 +150,3 @@ month.short.9 = Medi
 month.short.10 = Hyd
 month.short.11 = Tach
 month.short.12 = Rhag
-
-signUpForMTDBanner.title = Pwysig
-signUpForMTDBanner.heading = Newidiodd y ffordd o gyflwyno Ffurflenni TAW ar 1 Ebrill oherwydd Troi Treth yn Ddigidol
-signUpForMTDBanner.paragraphText = Ni allwch ddefnyddio’r gwasanaeth hwn i gyflwyno datganiadau ar gyfer cyfnodau cyfrifyddu sy’n dechrau ar ôl 1 Ebrill 2022. Yn lle hynny, rhaid cadw cofnodion digidol a rhaid cyflwyno Ffurflenni gan ddefnyddio meddalwedd sy’n gydnaws â CThEM.
-signUpForMTDBanner.linkText = Darganfod pryd i gofrestru a dechrau defnyddio Troi Treth yn Ddigidol ar gyfer TAW (yn agor tab newydd)

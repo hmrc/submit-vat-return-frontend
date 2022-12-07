@@ -21,7 +21,7 @@ import uk.gov.hmrc.sbtdistributables.SbtDistributablesPlugin.publishingSettings
 
 lazy val appDependencies: Seq[ModuleID] = compile ++ test
 val appName = "submit-vat-return-frontend"
-val bootstrapPlayVersion = "7.11.0"
+val bootstrapPlayVersion = "7.12.0"
 
 lazy val coverageSettings: Seq[Setting[_]] = {
   import scoverage.ScoverageKeys
@@ -29,16 +29,12 @@ lazy val coverageSettings: Seq[Setting[_]] = {
   val excludedPackages = Seq(
     "<empty>",
     ".*Reverse.*",
-    ".*MainTemplate*.*",
-    "testOnlyDoNotUseInAppConf.*",
     "app.*",
     "common.*",
     "config.*",
     "testOnly.*",
     "prod.*",
-    "views.*",
-    "com.kenshoo.play.metrics.*",
-    "controllers.javascript.*"
+    "views.*"
   )
 
   Seq(
@@ -51,7 +47,7 @@ lazy val coverageSettings: Seq[Setting[_]] = {
 
 val compile = Seq(
   play.sbt.PlayImport.ws,
-  "uk.gov.hmrc"       %% "play-frontend-hmrc"         % "3.32.0-play-28",
+  "uk.gov.hmrc"       %% "play-frontend-hmrc"         % "3.34.0-play-28",
   "uk.gov.hmrc"       %% "bootstrap-frontend-play-28" % bootstrapPlayVersion,
   "uk.gov.hmrc"       %% "domain"                     % "8.1.0-play-28",
 )

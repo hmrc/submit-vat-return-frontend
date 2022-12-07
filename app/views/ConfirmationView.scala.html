@@ -17,12 +17,10 @@
 @import config.AppConfig
 @import models.auth.User
 @import common.SessionKeys
-@import views.html.templates.MTDSignUpBanner
 
 @this(mainTemplate: MainTemplate,
       govukPanel: GovukPanel,
-      govukButton : GovukButton,
-      mtdSignUpBanner: MTDSignUpBanner)
+      govukButton : GovukButton)
 
 @(mandationStatus: String)(implicit messages: Messages, appConfig: AppConfig, user: User[_])
 
@@ -43,11 +41,11 @@
 }
 
 @vatSummaryUrl = @{
-    if(user.isAgent){
+  if(user.isAgent){
     appConfig.manageClientUrl
-    } else {
+  } else {
     appConfig.vatSummaryUrl
-}
+  }
 }
 
 
@@ -58,26 +56,23 @@
   user = Some(user)
 ) {
 
-@mtdSignUpBanner(mandationStatus)
-
-@govukPanel(Panel(
-title = Text(messages("confirmation_view.heading")),
-))
+  @govukPanel(Panel(
+    title = Text(messages("confirmation_view.heading")),
+  ))
 
   <h2 class="govuk-heading-m">@messages("confirmation_view.subHeading")</h2>
   <p class="govuk-body">@messages("confirmation_view.paragraph")</p>
 
-<div class="govuk-button-group">
+  <div class="govuk-button-group">
 
     @govukButton(Button(
-    content = Text(messages("confirmation_view.viewVATReturn")),
-    href = Some(s"$viewSubmittedReturnUrl")
+      content = Text(messages("confirmation_view.viewVATReturn")),
+      href = Some(s"$viewSubmittedReturnUrl")
     ))
     @govukButton(Button(
-    classes = "govuk-button--secondary",
-    content = Text(vatAccountText),
-    href = Some(vatSummaryUrl)
+      classes = "govuk-button--secondary",
+      content = Text(vatAccountText),
+      href = Some(vatSummaryUrl)
     ))
-    </div>
-
+  </div>
 }
