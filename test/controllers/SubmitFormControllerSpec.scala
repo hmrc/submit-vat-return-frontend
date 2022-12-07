@@ -86,11 +86,10 @@ class SubmitFormControllerSpec extends BaseSpec
     ec
   )
 
-  def nonDigitalViewAsString[A](form: Form[NineBoxModel],
+  def viewAsString[A](form: Form[NineBoxModel],
                                 clientName: Option[String] = Some("ABC Solutions"))(user: User[A]): String = submitForm(
     "18AA",
     clientName,
-    "Non Digital",
     flatRateScheme = true,
     obligations.obligations.head,
     form,
@@ -101,227 +100,223 @@ class SubmitFormControllerSpec extends BaseSpec
 
     "user is authorised" when {
 
-      "the user is non-digital" when {
+      "there is a SubmitVatReturn model in session" when {
 
-        "there is a SubmitVatReturn model in session" when {
+        val model = Map(
+          "box1" -> "1000",
+          "box2" -> "1000",
+          "box3" -> "1000",
+          "box4" -> "1000",
+          "box5" -> "1000",
+          "box6" -> "1000",
+          "box7" -> "1000",
+          "box8" -> "1000",
+          "box9" -> "1000"
+        )
 
-          val model = Map(
-            "box1" -> "1000",
-            "box2" -> "1000",
-            "box3" -> "1000",
-            "box4" -> "1000",
-            "box5" -> "1000",
-            "box6" -> "1000",
-            "box7" -> "1000",
-            "box8" -> "1000",
-            "box9" -> "1000"
+        val nineBoxModel: String = Json.stringify(Json.toJson(
+          SubmitVatReturnModel(
+            1000.00,
+            1000.00,
+            1000.00,
+            1000.00,
+            1000.00,
+            1000.00,
+            1000.00,
+            1000.00,
+            1000.00,
+            flatRateScheme = true,
+            LocalDate.parse("2019-01-12"),
+            LocalDate.parse("2019-04-12"),
+            LocalDate.parse("2019-05-12")
           )
+        ))
 
-          val nineBoxModel: String = Json.stringify(Json.toJson(
-            SubmitVatReturnModel(
-              1000.00,
-              1000.00,
-              1000.00,
-              1000.00,
-              1000.00,
-              1000.00,
-              1000.00,
-              1000.00,
-              1000.00,
-              flatRateScheme = true,
-              LocalDate.parse("2019-01-12"),
-              LocalDate.parse("2019-04-12"),
-              LocalDate.parse("2019-05-12")
-            )
+        "a successful response is received from the service" should {
+
+          lazy val requestWithSessionData = User[AnyContentAsEmpty.type]("123456789")(fakeRequest.withSession(
+            SessionKeys.returnData -> nineBoxModel,
+            SessionKeys.mandationStatus -> MandationStatuses.nonDigital,
+            SessionKeys.HonestyDeclaration.key -> s"$vrn-18AA",
+            SessionKeys.insolventWithoutAccessKey -> "false"
           ))
 
-          "a successful response is received from the service" should {
-
-            lazy val requestWithSessionData = User[AnyContentAsEmpty.type]("123456789")(fakeRequest.withSession(
-              SessionKeys.returnData -> nineBoxModel,
-              SessionKeys.mandationStatus -> MandationStatuses.nonDigital,
-              SessionKeys.HonestyDeclaration.key -> s"$vrn-18AA",
-              SessionKeys.insolventWithoutAccessKey -> "false"
-            ))
-
-            lazy val result: Future[Result] = {
-              TestSubmitFormController.show("18AA")(requestWithSessionData)
-            }
-
-            "return 200" in {
-              mockAuthorise(mtdVatAuthorisedResponse)
-              setupAuditExtendedEvent
-              setupVatSubscriptionService(vatSubscriptionResponse)
-              status(result) shouldBe Status.OK
-            }
-
-            "return HTML" in {
-              contentType(result) shouldBe Some("text/html")
-            }
-
-            "return the correct view" in {
-              contentAsString(result) shouldBe
-                nonDigitalViewAsString(SubmitVatReturnForm().nineBoxForm.bind(model))(requestWithSessionData)
-            }
+          lazy val result: Future[Result] = {
+            TestSubmitFormController.show("18AA")(requestWithSessionData)
           }
 
-          "an unsuccessful response is received from the service" should {
+          "return 200" in {
+            mockAuthorise(mtdVatAuthorisedResponse)
+            setupAuditExtendedEvent
+            setupVatSubscriptionService(vatSubscriptionResponse)
+            status(result) shouldBe Status.OK
+          }
 
-            lazy val requestWithSessionData = User[AnyContentAsEmpty.type]("123456789")(fakeRequest.withSession(
-              SessionKeys.returnData -> nineBoxModel,
-              SessionKeys.mandationStatus -> MandationStatuses.nonDigital,
-              SessionKeys.HonestyDeclaration.key -> s"$vrn-18AA")
-            )
+          "return HTML" in {
+            contentType(result) shouldBe Some("text/html")
+          }
 
-            lazy val result: Future[Result] = {
-              TestSubmitFormController.show("18AA")(requestWithSessionData)
-            }
-
-            "return 200" in {
-              mockAuthorise(mtdVatAuthorisedResponse)
-              setupAuditExtendedEvent
-              setupVatSubscriptionService(vatSubscriptionFailureResponse)
-              status(result) shouldBe Status.OK
-            }
-
-            "return HTML" in {
-              contentType(result) shouldBe Some("text/html")
-            }
-
-            "return the correct view" in {
-              contentAsString(result) shouldBe
-                nonDigitalViewAsString(SubmitVatReturnForm().nineBoxForm.bind(model), None)(requestWithSessionData)
-            }
+          "return the correct view" in {
+            contentAsString(result) shouldBe
+              viewAsString(SubmitVatReturnForm().nineBoxForm.bind(model))(requestWithSessionData)
           }
         }
 
-        "there is no view model in session" when {
+        "an unsuccessful response is received from the service" should {
 
-          "a successful response is received from the service" when {
+          lazy val requestWithSessionData = User[AnyContentAsEmpty.type]("123456789")(fakeRequest.withSession(
+            SessionKeys.returnData -> nineBoxModel,
+            SessionKeys.mandationStatus -> MandationStatuses.nonDigital,
+            SessionKeys.HonestyDeclaration.key -> s"$vrn-18AA")
+          )
 
-            "obligation end date is in the past" should {
-
-              val obligations: VatObligations = VatObligations(Seq(
-                VatObligation(
-                  LocalDate.parse("2019-01-12"),
-                  LocalDate.parse("2019-04-12"),
-                  LocalDate.parse("2019-05-12"),
-                  "18AA"
-                )
-              ))
-
-              val vatObligationsResponse: Future[HttpGetResult[VatObligations]] = Future.successful(Right(obligations))
-
-              lazy val result = {
-                TestSubmitFormController.show("18AA")(fakeRequest.withSession(
-                  SessionKeys.mandationStatus -> MandationStatuses.nonDigital,
-                  SessionKeys.HonestyDeclaration.key -> s"$vrn-18AA",
-                  SessionKeys.insolventWithoutAccessKey -> "false"
-                ))
-              }
-
-              "return 200" in {
-                mockAuthorise(mtdVatAuthorisedResponse)
-                setupAuditExtendedEvent
-                setupVatSubscriptionService(vatSubscriptionResponse)
-                setupVatObligationsService(vatObligationsResponse)()
-                mockDateHasPassed(response = true)
-                status(result) shouldBe Status.OK
-              }
-
-              "return HTML" in {
-                contentType(result) shouldBe Some("text/html")
-              }
-
-              "return the correct view" in {
-                contentAsString(result) shouldBe nonDigitalViewAsString(SubmitVatReturnForm().nineBoxForm)(user)
-              }
-            }
-
-            "obligation end date is in the future" should {
-
-              lazy val result = {
-                TestSubmitFormController.show("18AA")(fakeRequest.withSession(
-                  SessionKeys.mandationStatus -> MandationStatuses.nonMTDfB,
-                  SessionKeys.HonestyDeclaration.key -> s"$vrn-18AA"
-                ))
-              }
-
-              "return 400" in {
-                mockAuthorise(mtdVatAuthorisedResponse)
-                setupAuditExtendedEvent
-                setupVatSubscriptionService(vatSubscriptionResponse)
-                setupVatObligationsService(vatObligationsResponse)()
-                mockDateHasPassed(response = false)
-                status(result) shouldBe Status.BAD_REQUEST
-              }
-
-              "render generic Bad Request page" in {
-                contentAsString(result) shouldBe errorHandler.badRequestTemplate.toString()
-              }
-            }
+          lazy val result: Future[Result] = {
+            TestSubmitFormController.show("18AA")(requestWithSessionData)
           }
 
-          "an obligation doesn't match the provided period key" should {
-
-            lazy val result = {
-              TestSubmitFormController.show("18AA")(fakeRequest.withSession(
-                SessionKeys.mandationStatus -> MandationStatuses.nonMTDfB,
-                SessionKeys.HonestyDeclaration.key -> s"$vrn-18AA",
-                SessionKeys.insolventWithoutAccessKey -> "false"
-              ))
-            }
-
-            val badPeriodKeyObs: VatObligations = VatObligations(Seq(
-              VatObligation(
-                LocalDate.parse("2019-01-12"),
-                LocalDate.parse("2019-04-12"),
-                LocalDate.parse("2019-05-12"),
-                "17AA"
-              )
-            ))
-
-            val badPeriodKeyObsResponse: Future[HttpGetResult[VatObligations]] = Future.successful(Right(badPeriodKeyObs))
-
-            "return a 303" in {
-              mockAuthorise(mtdVatAuthorisedResponse)
-              setupAuditExtendedEvent
-              setupVatSubscriptionService(vatSubscriptionResponse)
-              setupVatObligationsService(badPeriodKeyObsResponse)()
-              status(result) shouldBe Status.SEE_OTHER
-            }
-
-            s"redirect to ${mockAppConfig.returnDeadlinesUrl}" in {
-              redirectLocation(result) shouldBe Some(mockAppConfig.returnDeadlinesUrl)
-            }
+          "return 200" in {
+            mockAuthorise(mtdVatAuthorisedResponse)
+            setupAuditExtendedEvent
+            setupVatSubscriptionService(vatSubscriptionFailureResponse)
+            status(result) shouldBe Status.OK
           }
 
-          "an error response is returned from the service" should {
+          "return HTML" in {
+            contentType(result) shouldBe Some("text/html")
+          }
 
-            "return an internal server status" in {
-
-              val vatSubscriptionErrorResponse: Future[HttpGetResult[CustomerDetails]] =
-                Future.successful(Left(ErrorModel(INTERNAL_SERVER_ERROR, "")))
-              val vatObligationsErrorResponse: Future[HttpGetResult[VatObligations]] =
-                Future.successful(Left(ErrorModel(INTERNAL_SERVER_ERROR, "")))
-
-              mockAuthorise(mtdVatAuthorisedResponse)
-              setupAuditExtendedEvent
-              setupVatSubscriptionService(vatSubscriptionErrorResponse)
-              setupVatObligationsService(vatObligationsErrorResponse)()
-
-              lazy val result = TestSubmitFormController.show("18AA")(fakeRequest.withSession(
-                SessionKeys.mandationStatus -> MandationStatuses.nonMTDfB,
-                SessionKeys.HonestyDeclaration.key -> s"$vrn-18AA",
-                SessionKeys.insolventWithoutAccessKey -> "false"
-              ))
-              status(result) shouldBe Status.INTERNAL_SERVER_ERROR
-
-            }
+          "return the correct view" in {
+            contentAsString(result) shouldBe
+              viewAsString(SubmitVatReturnForm().nineBoxForm.bind(model), None)(requestWithSessionData)
           }
         }
       }
 
+      "there is no view model in session" when {
+
+        "a successful response is received from the service" when {
+
+          "obligation end date is in the past" should {
+
+            val obligations: VatObligations = VatObligations(Seq(
+              VatObligation(
+                LocalDate.parse("2019-01-12"),
+                LocalDate.parse("2019-04-12"),
+                LocalDate.parse("2019-05-12"),
+                "18AA"
+              )
+            ))
+
+            val vatObligationsResponse: Future[HttpGetResult[VatObligations]] = Future.successful(Right(obligations))
+
+            lazy val result = {
+              TestSubmitFormController.show("18AA")(fakeRequest.withSession(
+                SessionKeys.mandationStatus -> MandationStatuses.nonDigital,
+                SessionKeys.HonestyDeclaration.key -> s"$vrn-18AA",
+                SessionKeys.insolventWithoutAccessKey -> "false"
+              ))
+            }
+
+            "return 200" in {
+              mockAuthorise(mtdVatAuthorisedResponse)
+              setupAuditExtendedEvent
+              setupVatSubscriptionService(vatSubscriptionResponse)
+              setupVatObligationsService(vatObligationsResponse)()
+              mockDateHasPassed(response = true)
+              status(result) shouldBe Status.OK
+            }
+
+            "return HTML" in {
+              contentType(result) shouldBe Some("text/html")
+            }
+
+            "return the correct view" in {
+              contentAsString(result) shouldBe viewAsString(SubmitVatReturnForm().nineBoxForm)(user)
+            }
+          }
+
+          "obligation end date is in the future" should {
+
+            lazy val result = {
+              TestSubmitFormController.show("18AA")(fakeRequest.withSession(
+                SessionKeys.mandationStatus -> MandationStatuses.nonMTDfB,
+                SessionKeys.HonestyDeclaration.key -> s"$vrn-18AA"
+              ))
+            }
+
+            "return 400" in {
+              mockAuthorise(mtdVatAuthorisedResponse)
+              setupAuditExtendedEvent
+              setupVatSubscriptionService(vatSubscriptionResponse)
+              setupVatObligationsService(vatObligationsResponse)()
+              mockDateHasPassed(response = false)
+              status(result) shouldBe Status.BAD_REQUEST
+            }
+
+            "render generic Bad Request page" in {
+              contentAsString(result) shouldBe errorHandler.badRequestTemplate.toString()
+            }
+          }
+        }
+
+        "an obligation doesn't match the provided period key" should {
+
+          lazy val result = {
+            TestSubmitFormController.show("18AA")(fakeRequest.withSession(
+              SessionKeys.mandationStatus -> MandationStatuses.nonMTDfB,
+              SessionKeys.HonestyDeclaration.key -> s"$vrn-18AA",
+              SessionKeys.insolventWithoutAccessKey -> "false"
+            ))
+          }
+
+          val badPeriodKeyObs: VatObligations = VatObligations(Seq(
+            VatObligation(
+              LocalDate.parse("2019-01-12"),
+              LocalDate.parse("2019-04-12"),
+              LocalDate.parse("2019-05-12"),
+              "17AA"
+            )
+          ))
+
+          val badPeriodKeyObsResponse: Future[HttpGetResult[VatObligations]] = Future.successful(Right(badPeriodKeyObs))
+
+          "return a 303" in {
+            mockAuthorise(mtdVatAuthorisedResponse)
+            setupAuditExtendedEvent
+            setupVatSubscriptionService(vatSubscriptionResponse)
+            setupVatObligationsService(badPeriodKeyObsResponse)()
+            status(result) shouldBe Status.SEE_OTHER
+          }
+
+          s"redirect to ${mockAppConfig.returnDeadlinesUrl}" in {
+            redirectLocation(result) shouldBe Some(mockAppConfig.returnDeadlinesUrl)
+          }
+        }
+
+        "an error response is returned from the service" should {
+
+          "return an internal server status" in {
+
+            val vatSubscriptionErrorResponse: Future[HttpGetResult[CustomerDetails]] =
+              Future.successful(Left(ErrorModel(INTERNAL_SERVER_ERROR, "")))
+            val vatObligationsErrorResponse: Future[HttpGetResult[VatObligations]] =
+              Future.successful(Left(ErrorModel(INTERNAL_SERVER_ERROR, "")))
+
+            mockAuthorise(mtdVatAuthorisedResponse)
+            setupAuditExtendedEvent
+            setupVatSubscriptionService(vatSubscriptionErrorResponse)
+            setupVatObligationsService(vatObligationsErrorResponse)()
+
+            lazy val result = TestSubmitFormController.show("18AA")(fakeRequest.withSession(
+              SessionKeys.mandationStatus -> MandationStatuses.nonMTDfB,
+              SessionKeys.HonestyDeclaration.key -> s"$vrn-18AA",
+              SessionKeys.insolventWithoutAccessKey -> "false"
+            ))
+            status(result) shouldBe Status.INTERNAL_SERVER_ERROR
+
+          }
+        }
+      }
     }
 
     authControllerChecks(TestSubmitFormController.show("18AA"), fakeRequest)
@@ -555,7 +550,7 @@ class SubmitFormControllerSpec extends BaseSpec
           }
 
           "return the correct view with errors" in {
-            contentAsString(result) shouldBe nonDigitalViewAsString(form = SubmitVatReturnForm().nineBoxForm.bind(inputs))(user)
+            contentAsString(result) shouldBe viewAsString(form = SubmitVatReturnForm().nineBoxForm.bind(inputs))(user)
           }
         }
 
@@ -603,7 +598,7 @@ class SubmitFormControllerSpec extends BaseSpec
           }
 
           "return the correct view with errors" in {
-            contentAsString(result) shouldBe nonDigitalViewAsString(form = SubmitVatReturnForm().nineBoxForm.bind(inputs))(user)
+            contentAsString(result) shouldBe viewAsString(form = SubmitVatReturnForm().nineBoxForm.bind(inputs))(user)
           }
         }
 
@@ -651,7 +646,7 @@ class SubmitFormControllerSpec extends BaseSpec
           }
 
           "return the correct view with errors" in {
-            contentAsString(result) shouldBe nonDigitalViewAsString(form = SubmitVatReturnForm().nineBoxForm.bind(inputs))(user)
+            contentAsString(result) shouldBe viewAsString(form = SubmitVatReturnForm().nineBoxForm.bind(inputs))(user)
           }
         }
 
@@ -707,7 +702,7 @@ class SubmitFormControllerSpec extends BaseSpec
 
           "return the correct view with errors" in {
             contentAsString(result) shouldBe
-              nonDigitalViewAsString(form = SubmitVatReturnForm().nineBoxForm.bind(inputs), clientName = None)(user)
+              viewAsString(form = SubmitVatReturnForm().nineBoxForm.bind(inputs), clientName = None)(user)
           }
         }
       }

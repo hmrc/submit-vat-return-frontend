@@ -22,7 +22,7 @@
       govukPanel: GovukPanel,
       govukButton : GovukButton)
 
-@(mandationStatus: String)(implicit messages: Messages, appConfig: AppConfig, user: User[_])
+@()(implicit messages: Messages, appConfig: AppConfig, user: User[_])
 
 @viewSubmittedReturnUrl = @{
   (user.session.get(SessionKeys.submissionYear), user.session.get(SessionKeys.inSessionPeriodKey)) match {

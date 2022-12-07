@@ -19,6 +19,7 @@ package assets.messages
 object SubmitFormPageMessages {
 
   val title = "Submit return 12 Jan to 12 Apr 2019 - Manage your VAT account - GOV.UK"
+  val agentTitle = "Submit return 12 Jan to 12 Apr 2019 - Your client’s VAT details - GOV.UK"
   val heading = "Submit return 12 Jan to 12 Apr 2019"
   val submitReturn = "Submit return"
   val returnDue: String => String = date => "Return due date: " + date

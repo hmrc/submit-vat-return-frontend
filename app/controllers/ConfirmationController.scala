@@ -35,7 +35,7 @@ class ConfirmationController @Inject()(val mandationStatusCheck: MandationStatus
                                        implicit val appConfig: AppConfig) extends FrontendController(mcc) with I18nSupport {
 
   val show: Action[AnyContent] = (authPredicate andThen mandationStatusCheck).async { implicit user =>
-    Future.successful(Ok(confirmationView(user.session.get(SessionKeys.mandationStatus).getOrElse(""))))
+    Future.successful(Ok(confirmationView()))
   }
 
   val submit: Action[AnyContent] = (authPredicate andThen mandationStatusCheck).async { implicit user =>

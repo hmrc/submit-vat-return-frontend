@@ -95,102 +95,101 @@ class ConfirmSubmissionControllerSpec extends BaseSpec
 
   "ConfirmSubmissionController .show" when {
 
-    "the user is non-digital" when {
+    "user is authorised" when {
 
-      "user is authorised" when {
+      val nineBoxModel: String = Json.stringify(Json.toJson(
+        submitVatReturnModel
+      ))
 
-        val nineBoxModel: String = Json.stringify(Json.toJson(
-          submitVatReturnModel
-        ))
+      "there is session data" when {
 
-        "there is session data" when {
+        "a successful response is returned from the vat subscription service" should {
 
-          "a successful response is returned from the vat subscription service" should {
+          lazy val requestWithSessionData: User[AnyContentAsEmpty.type] =
+            User[AnyContentAsEmpty.type]("123456789")(fakeRequest.withSession(
+              SessionKeys.returnData -> nineBoxModel,
+              SessionKeys.mandationStatus -> MandationStatuses.nonDigital,
+              SessionKeys.HonestyDeclaration.key -> s"$vrn-18AA"
+            ))
 
-            lazy val requestWithSessionData: User[AnyContentAsEmpty.type] =
-              User[AnyContentAsEmpty.type]("123456789")(fakeRequest.withSession(
-                SessionKeys.returnData -> nineBoxModel,
-                SessionKeys.mandationStatus -> MandationStatuses.nonDigital,
-                SessionKeys.HonestyDeclaration.key -> s"$vrn-18AA"
-              ))
-
-            lazy val result: Future[Result] = {
-              setupVatSubscriptionService(successCustomerInfoResponse)
-              TestConfirmSubmissionController.show("18AA")(requestWithSessionData)
-            }
-
-            "return 200" in {
-              mockAuthorise(mtdVatAuthorisedResponse)
-              status(result) shouldBe Status.OK
-            }
-
-            "return HTML" in {
-              contentType(result) shouldBe Some("text/html")
-            }
-
-            "return the correct view" in {
-              contentAsString(result) shouldBe viewAsString(ConfirmSubmissionViewModel(submitVatReturnModel, "18AA", Some("ABC Solutions"), "Non Digital"))
-            }
-
-            "add obligation data to session" in {
-              await(result).session.get("mtdVatvcSubmissionYear").get shouldBe LocalDate.now().getYear.toString
-              await(result).session.get("mtdVatvcInSessionPeriodKey").get shouldBe "18AA"
-            }
+          lazy val result: Future[Result] = {
+            setupVatSubscriptionService(successCustomerInfoResponse)
+            TestConfirmSubmissionController.show("18AA")(requestWithSessionData)
           }
 
-          "an error response is returned from the vat subscription service" should {
+          "return 200" in {
+            mockAuthorise(mtdVatAuthorisedResponse)
+            status(result) shouldBe Status.OK
+          }
 
-            val vatSubscriptionResponse: Future[HttpGetResult[CustomerDetails]] = Future.successful(Left(ErrorModel(INTERNAL_SERVER_ERROR, "")))
+          "return HTML" in {
+            contentType(result) shouldBe Some("text/html")
+          }
 
-            lazy val requestWithSessionData: User[AnyContentAsEmpty.type] =
-              User[AnyContentAsEmpty.type]("123456789")(fakeRequest.withSession(
-                SessionKeys.returnData -> nineBoxModel,
-                SessionKeys.mandationStatus -> MandationStatuses.nonDigital,
-                SessionKeys.HonestyDeclaration.key -> s"$vrn-18AA"
-              ))
+          "return the correct view" in {
+            contentAsString(result) shouldBe
+              viewAsString(ConfirmSubmissionViewModel(submitVatReturnModel, "18AA", Some("ABC Solutions")))
+          }
 
-            lazy val result: Future[Result] = {
-              setupVatSubscriptionService(vatSubscriptionResponse)
-              TestConfirmSubmissionController.show("18AA")(requestWithSessionData)
-            }
-
-            "return 200" in {
-              mockAuthorise(mtdVatAuthorisedResponse)
-              status(result) shouldBe Status.OK
-            }
-
-            "return HTML" in {
-              contentType(result) shouldBe Some("text/html")
-            }
-
-            "return the correct view" in {
-              contentAsString(result) shouldBe viewAsString(ConfirmSubmissionViewModel(submitVatReturnModel, "18AA", None, "Non Digital"))
-            }
+          "add obligation data to session" in {
+            await(result).session.get("mtdVatvcSubmissionYear").get shouldBe LocalDate.now().getYear.toString
+            await(result).session.get("mtdVatvcInSessionPeriodKey").get shouldBe "18AA"
           }
         }
 
-        "there is no session data" should {
+        "an error response is returned from the vat subscription service" should {
+
+          val vatSubscriptionResponse: Future[HttpGetResult[CustomerDetails]] =
+            Future.successful(Left(ErrorModel(INTERNAL_SERVER_ERROR, "")))
+
+          lazy val requestWithSessionData: User[AnyContentAsEmpty.type] =
+            User[AnyContentAsEmpty.type]("123456789")(fakeRequest.withSession(
+              SessionKeys.returnData -> nineBoxModel,
+              SessionKeys.mandationStatus -> MandationStatuses.nonDigital,
+              SessionKeys.HonestyDeclaration.key -> s"$vrn-18AA"
+            ))
 
           lazy val result: Future[Result] = {
-            TestConfirmSubmissionController.show("18AA")(fakeRequest.withSession(
-              SessionKeys.mandationStatus -> MandationStatuses.nonMTDfB,
-              SessionKeys.HonestyDeclaration.key -> s"$vrn-18AA")
-            )
+            setupVatSubscriptionService(vatSubscriptionResponse)
+            TestConfirmSubmissionController.show("18AA")(requestWithSessionData)
           }
 
-          "return 303" in {
+          "return 200" in {
             mockAuthorise(mtdVatAuthorisedResponse)
-            status(result) shouldBe Status.SEE_OTHER
+            status(result) shouldBe Status.OK
           }
 
-          s"redirect to ${controllers.routes.SubmitFormController.show("18AA").url}" in {
-            redirectLocation(result) shouldBe Some(controllers.routes.SubmitFormController.show("18AA").url)
+          "return HTML" in {
+            contentType(result) shouldBe Some("text/html")
+          }
+
+          "return the correct view" in {
+            contentAsString(result) shouldBe viewAsString(ConfirmSubmissionViewModel(submitVatReturnModel, "18AA", None))
           }
         }
       }
 
-      authControllerChecks(TestConfirmSubmissionController.show("18AA"), fakeRequest)
+      "there is no session data" should {
+
+        lazy val result: Future[Result] = {
+          TestConfirmSubmissionController.show("18AA")(fakeRequest.withSession(
+            SessionKeys.mandationStatus -> MandationStatuses.nonMTDfB,
+            SessionKeys.HonestyDeclaration.key -> s"$vrn-18AA")
+          )
+        }
+
+        "return 303" in {
+          mockAuthorise(mtdVatAuthorisedResponse)
+          status(result) shouldBe Status.SEE_OTHER
+        }
+
+        s"redirect to ${controllers.routes.SubmitFormController.show("18AA").url}" in {
+          redirectLocation(result) shouldBe Some(controllers.routes.SubmitFormController.show("18AA").url)
+        }
+      }
     }
+
+    authControllerChecks(TestConfirmSubmissionController.show("18AA"), fakeRequest)
   }
 
   "ConfirmSubmissionController .submit" when {
@@ -500,15 +499,11 @@ class ConfirmSubmissionControllerSpec extends BaseSpec
     }
   }
 
-  "ConfirmSubmissionController .renderConfirmSubmissionView" when {
+  "ConfirmSubmissionController .renderConfirmSubmissionView" should {
 
-    "the user is non-digital" should {
-
-      "return html if all parameters are provided" in {
-
-        TestConfirmSubmissionController.renderConfirmSubmissionView(
-          vrn, submitVatReturnModel, await(successCustomerInfoResponse), "Non Digital")(user).contentType shouldBe "text/html"
-      }
+    "return html if all parameters are provided" in {
+      TestConfirmSubmissionController.renderConfirmSubmissionView(
+        vrn, submitVatReturnModel, await(successCustomerInfoResponse))(user).contentType shouldBe "text/html"
     }
   }
 }
