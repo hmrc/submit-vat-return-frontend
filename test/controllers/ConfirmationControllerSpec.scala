@@ -27,7 +27,8 @@ import views.html.ConfirmationView
 
 import scala.concurrent.Future
 
-class ConfirmationControllerSpec extends BaseSpec with MockVatSubscriptionService with MockVatObligationsService with MockAuth with MockMandationPredicate {
+class ConfirmationControllerSpec extends BaseSpec with MockVatSubscriptionService with MockVatObligationsService
+  with MockAuth with MockMandationPredicate {
 
   val view: ConfirmationView = inject[ConfirmationView]
 
@@ -39,34 +40,31 @@ class ConfirmationControllerSpec extends BaseSpec with MockVatSubscriptionServic
     mockAppConfig
   )
 
-  def nonDigitalViewAsString: String = view("Non Digital")(messages, mockAppConfig, user).toString
+  def viewAsString: String = view()(messages, mockAppConfig, user).toString
 
   "ConfirmationController .show" when {
 
-    "the user is non-digital" when {
+    "user is authorised" should {
 
-      "user is authorised" should {
-
-        lazy val result = {
-          mockAuthorise(mtdVatAuthorisedResponse)
-          TestConfirmationController.show()(fakeRequest.withSession(SessionKeys.mandationStatus -> MandationStatuses.nonDigital))
-        }
-
-        "return a success response for .show" in {
-          status(result) shouldBe Status.OK
-        }
-
-        "return HTML for .show" in {
-          contentType(result) shouldBe Some("text/html")
-        }
-
-        "return the correct view" in {
-          contentAsString(result) shouldBe nonDigitalViewAsString
-        }
+      lazy val result = {
+        mockAuthorise(mtdVatAuthorisedResponse)
+        TestConfirmationController.show()(fakeRequest.withSession(SessionKeys.mandationStatus -> MandationStatuses.nonDigital))
       }
 
-      authControllerChecks(TestConfirmationController.show(), fakeRequest)
+      "return a success response for .show" in {
+        status(result) shouldBe Status.OK
+      }
+
+      "return HTML for .show" in {
+        contentType(result) shouldBe Some("text/html")
+      }
+
+      "return the correct view" in {
+        contentAsString(result) shouldBe viewAsString
+      }
     }
+
+    authControllerChecks(TestConfirmationController.show(), fakeRequest)
   }
 
   "ConfirmationController .submit as an agent" when {

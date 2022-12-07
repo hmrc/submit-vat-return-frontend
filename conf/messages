@@ -150,8 +150,3 @@ month.short.9 = Sep
 month.short.10 = Oct
 month.short.11 = Nov
 month.short.12 = Dec
-
-signUpForMTDBanner.title = Important
-signUpForMTDBanner.heading = The way to submit VAT returns changed on 1 April due to Making Tax Digital
-signUpForMTDBanner.paragraphText = You cannot use this service to submit returns for accounting periods starting after 1 April 2022. Instead, digital records must be kept and returns must be submitted using HMRC compatible software.
-signUpForMTDBanner.linkText = Find out when to sign up and start using Making Tax Digital for VAT (opens in a new tab)
