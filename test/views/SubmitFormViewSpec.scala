@@ -1,5 +1,5 @@
 /*
- * Copyright 2022 HM Revenue & Customs
+ * Copyright 2023 HM Revenue & Customs
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -40,7 +40,7 @@ class SubmitFormViewSpec extends ViewBaseSpec {
     val nextScreenSubmit = "#next-screen-submit"
     val submitButton = ".govuk-button"
     val form = "#content > form"
-    val errorHeading = "#error-summary-title"
+    val errorHeading = ".govuk-error-summary__title"
     def errorSummaryMessage(listItem: Int): String = s".govuk-error-summary__list > li:nth-child($listItem) > a"
     def boxLabel(boxNum: Int): String = s"div:nth-of-type($boxNum) > label"
     def boxCalculatedValue(boxNum: Int): String = s"div:nth-of-type($boxNum) > div > p"
