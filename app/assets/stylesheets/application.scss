@@ -4,6 +4,16 @@ $hmrc-assets-path: "/vat-through-software/submit-vat-return/assets/lib/hmrc-fron
 @import "lib/govuk-frontend/govuk/all";
 @import "lib/hmrc-frontend/hmrc/all";
 
+.vatvc-grey-paragraph-text {
+  font-family: "GDS Transport",arial,sans-serif;
+  -webkit-font-smoothing: antialiased;
+  font-weight: 400;
+  font-size: 1.1875rem;
+  line-height: 1.3157894737;
+  color: #505a5f;
+  padding-bottom: 10px;
+}
+
 .app-reference-number {
   display: block;
   font-weight: bold;
@@ -24,3 +34,5 @@ $hmrc-assets-path: "/vat-through-software/submit-vat-return/assets/lib/hmrc-fron
   background:#28a197;
   text-align:center;
 }
+
+
