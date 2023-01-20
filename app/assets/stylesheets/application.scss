@@ -4,14 +4,18 @@ $hmrc-assets-path: "/vat-through-software/submit-vat-return/assets/lib/hmrc-fron
 @import "lib/govuk-frontend/govuk/all";
 @import "lib/hmrc-frontend/hmrc/all";
 
+@media (min-width: 40.0625em) {
+  .vatvc-grey-paragraph-text {
+    font-size: 1.1875rem;
+  }
+}
+
 .vatvc-grey-paragraph-text {
   font-family: "GDS Transport",arial,sans-serif;
   -webkit-font-smoothing: antialiased;
   font-weight: 400;
-  font-size: 1.1875rem;
   line-height: 1.3157894737;
   color: #505a5f;
-  padding-bottom: 10px;
 }
 
 .app-reference-number {
