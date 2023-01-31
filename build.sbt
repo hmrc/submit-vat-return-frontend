@@ -17,7 +17,6 @@
 import play.sbt.routes.RoutesKeys
 import sbt.Tests.{Group, SubProcess}
 import uk.gov.hmrc.DefaultBuildSettings.{addTestReportOption, defaultSettings, scalaSettings}
-import uk.gov.hmrc.sbtdistributables.SbtDistributablesPlugin.publishingSettings
 
 lazy val appDependencies: Seq[ModuleID] = compile ++ test
 val appName = "submit-vat-return-frontend"
@@ -78,7 +77,6 @@ lazy val microservice: Project = Project(appName, file("."))
   .settings(PlayKeys.playDefaultPort := 9147)
   .settings(coverageSettings: _*)
   .settings(scalaSettings: _*)
-  .settings(publishingSettings: _*)
   .settings(defaultSettings(): _*)
   .settings(majorVersion := 0)
   .settings(
