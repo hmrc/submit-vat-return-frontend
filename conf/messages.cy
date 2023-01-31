@@ -70,7 +70,7 @@ confirm_submission.boxFour = Blwch 4
 confirm_submission.boxFourDescription = TAW a adenillwyd yn y cyfnod ar bryniadau a mewnbynnau eraill (gan gynnwys caffaeliadau yng Ngogledd Iwerddon o Aelod-wladwriaethau’r UE)
 confirm_submission.boxFourAmt = Swm Blwch 4
 confirm_submission.boxFive = Blwch 5
-confirm_submission.boxFiveDescription = TAW net i dalu i CThEM neu ei hadennill (dyma’r gwahaniaeth rhwng blychau 3 a 4)
+confirm_submission.boxFiveDescription = TAW net i dalu i CThEF neu ei hadennill (dyma’r gwahaniaeth rhwng blychau 3 a 4)
 confirm_submission.boxFiveAmt = Swm Blwch 5
 confirm_submission.boxSix = Blwch 6
 confirm_submission.boxSixNoFlatRate = Cyfanswm gwerth y gwerthiannau a chyflenwadau eraill, ac eithrio TAW
@@ -114,8 +114,8 @@ confirmation_view.viewClientAccount = Yn ôl i fanylion y cleient
 
 incorrect_mandation.heading = Mae’r busnes yn cyflwyno Ffurflenni TAW drwy ddefnyddio’r cynllun Troi Treth yn Ddigidol
 incorrect_mandation.paragraph = Mae’r busnes wedi cofrestru ar gyfer y gwasanaeth Troi Treth yn Ddigidol.
-incorrect_mandation.agent.text = Mae’n rhaid i chi gyflwyno Ffurflenni TAW eich cleient i CThEM gan ddefnyddio meddalwedd gyfrifyddu sy’n cydweddu.
-incorrect_mandation.nonAgent.text =  Mae’n rhaid i chi gyflwyno’ch Ffurflenni TAW i CThEM gan ddefnyddio meddalwedd gyfrifyddu sy’n cydweddu.
+incorrect_mandation.agent.text = Mae’n rhaid i chi gyflwyno Ffurflenni TAW eich cleient i CThEF gan ddefnyddio meddalwedd gyfrifyddu sy’n cydweddu.
+incorrect_mandation.nonAgent.text =  Mae’n rhaid i chi gyflwyno’ch Ffurflenni TAW i CThEF gan ddefnyddio meddalwedd gyfrifyddu sy’n cydweddu.
 incorrect_mandation.nonAgent.link = Bwrw golwg dros y dyddiadau cau ar gyfer eich Ffurflenni TAW
 incorrect_mandation.agent.client.link = Bwrw golwg dros opsiynau eich cleient
 

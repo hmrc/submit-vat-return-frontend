@@ -49,7 +49,7 @@ object SubmitFormPageMessages {
 
   val box5 = "Box 5"
   val box5Text = "Net VAT to pay to HMRC or reclaim (this is the difference between box 3 and 4)"
-  val box5TextWelsh = "TAW net i dalu i CThEM neu ei hadennill (dyma’r gwahaniaeth rhwng blychau 3 a 4)"
+  val box5TextWelsh = "TAW net i dalu i CThEF neu ei hadennill (dyma’r gwahaniaeth rhwng blychau 3 a 4)"
 
   val additionalInformation = "Additional information"
 
