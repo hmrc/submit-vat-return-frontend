@@ -16,7 +16,7 @@
 
 package connectors.httpParsers
 
-import connectors.httpParsers.ResponseHttpParsers.HttpGetResult
+import connectors.httpParsers.ResponseHttpParsers.HttpResult
 import models.errors.ErrorModel
 import models.nrs.SuccessModel
 import play.api.http.Status._
@@ -27,9 +27,9 @@ import scala.util.{Failure, Success, Try}
 
 object NrsSubmissionHttpParser extends ResponseHttpParsers with LoggerUtil {
 
-  implicit object NrsSubmissionReads extends HttpReads[HttpGetResult[SuccessModel]] {
+  implicit object NrsSubmissionReads extends HttpReads[HttpResult[SuccessModel]] {
 
-    override def read(method: String, url: String, response: HttpResponse): HttpGetResult[SuccessModel] = {
+    override def read(method: String, url: String, response: HttpResponse): HttpResult[SuccessModel] = {
       response.status match {
         case ACCEPTED => Try(response.json.as[SuccessModel]) match {
           case Success(model) =>

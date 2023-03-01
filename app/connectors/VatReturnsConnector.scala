@@ -17,7 +17,7 @@
 package connectors
 
 import config.AppConfig
-import connectors.httpParsers.ResponseHttpParsers.HttpGetResult
+import connectors.httpParsers.ResponseHttpParsers.HttpResult
 import connectors.httpParsers.SubmitVatReturnHttpParser
 import javax.inject.{Inject, Singleton}
 import models.nrs.{RequestModel, SuccessModel}
@@ -33,12 +33,12 @@ class VatReturnsConnector @Inject()(http: HttpClient,
                                     appConfig: AppConfig) {
 
   def submitVatReturn(vrn: String, model: SubmissionModel)
-                     (implicit hc: HeaderCarrier, ec: ExecutionContext): Future[HttpGetResult[SubmissionSuccessModel]] = {
+                     (implicit hc: HeaderCarrier, ec: ExecutionContext): Future[HttpResult[SubmissionSuccessModel]] = {
 
     val httpReads = SubmitVatReturnHttpParser(vrn, model.periodKey).SubmitVatReturnReads
     implicit val headerCarrier: HeaderCarrier = hc.withExtraHeaders("OriginatorID" -> "VATUI")
 
-    http.POST[SubmissionModel, HttpGetResult[SubmissionSuccessModel]](appConfig.submitReturnUrl(vrn), model)(
+    http.POST[SubmissionModel, HttpResult[SubmissionSuccessModel]](appConfig.submitReturnUrl(vrn), model)(
       implicitly[Writes[SubmissionModel]],
       httpReads,
       headerCarrier,
@@ -47,10 +47,10 @@ class VatReturnsConnector @Inject()(http: HttpClient,
   }
 
   def nrsSubmission(requestModel: RequestModel, vrn: String)
-                   (implicit hc: HeaderCarrier, ec: ExecutionContext): Future[HttpGetResult[SuccessModel]] = {
+                   (implicit hc: HeaderCarrier, ec: ExecutionContext): Future[HttpResult[SuccessModel]] = {
 
     import connectors.httpParsers.NrsSubmissionHttpParser._
 
-    http.POST[RequestModel, HttpGetResult[SuccessModel]](appConfig.submitNrsUrl + s"/$vrn", requestModel)
+    http.POST[RequestModel, HttpResult[SuccessModel]](appConfig.submitNrsUrl + s"/$vrn", requestModel)
   }
 }

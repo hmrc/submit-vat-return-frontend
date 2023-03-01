@@ -19,7 +19,7 @@ package connectors
 import base.BaseSpec
 import mocks.MockHttp
 import assets.CustomerDetailsTestAssets._
-import connectors.httpParsers.ResponseHttpParsers.HttpGetResult
+import connectors.httpParsers.ResponseHttpParsers.HttpResult
 import models.{CustomerDetails, MandationStatus}
 import common.MandationStatuses.nonMTDfB
 import play.api.http.Status
@@ -47,7 +47,7 @@ class VatSubscriptionConnectorSpec extends BaseSpec with MockHttp {
 
     "calling 'getCustomerDetails'" when {
 
-      def result: Future[HttpGetResult[CustomerDetails]] = TestVatSubscriptionConnector.getCustomerDetails(vrn)
+      def result: Future[HttpResult[CustomerDetails]] = TestVatSubscriptionConnector.getCustomerDetails(vrn)
 
       "a successful response is returned" should {
 
@@ -68,7 +68,7 @@ class VatSubscriptionConnectorSpec extends BaseSpec with MockHttp {
 
     "calling the 'getMandationStatus' method" when {
 
-      def result: Future[HttpGetResult[MandationStatus]] = TestVatSubscriptionConnector.getCustomerMandationStatus(vrn)
+      def result: Future[HttpResult[MandationStatus]] = TestVatSubscriptionConnector.getCustomerMandationStatus(vrn)
 
       "a successful response is returned" should {
 

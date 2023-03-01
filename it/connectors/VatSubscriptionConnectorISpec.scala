@@ -17,7 +17,7 @@
 package connectors
 
 import base.BaseISpec
-import connectors.httpParsers.ResponseHttpParsers.HttpGetResult
+import connectors.httpParsers.ResponseHttpParsers.HttpResult
 import models.CustomerDetails
 import models.errors.{ErrorModel, UnexpectedJsonError}
 import play.api.http.Status._
@@ -55,7 +55,7 @@ class VatSubscriptionConnectorISpec extends BaseISpec {
 
           stubGet(s"/vat-subscription/$vrn/customer-details", customerInformationSuccessJson.toString(), OK)
 
-          val result: HttpGetResult[CustomerDetails] = await(connector.getCustomerDetails(vrn))
+          val result: HttpResult[CustomerDetails] = await(connector.getCustomerDetails(vrn))
           result shouldBe Right(expectedModel)
         }
       }
@@ -66,7 +66,7 @@ class VatSubscriptionConnectorISpec extends BaseISpec {
 
           stubGet(s"/vat-subscription/$vrn/customer-details", vatSubscriptionInvalidJson.toString(), OK)
 
-          val result: HttpGetResult[CustomerDetails] = await(connector.getCustomerDetails(vrn))
+          val result: HttpResult[CustomerDetails] = await(connector.getCustomerDetails(vrn))
           result shouldBe Left(UnexpectedJsonError)
         }
       }
@@ -78,7 +78,7 @@ class VatSubscriptionConnectorISpec extends BaseISpec {
 
         stubGet(s"/vat-subscription/$vrn/customer-details", "", SERVICE_UNAVAILABLE)
 
-        val result: HttpGetResult[CustomerDetails] = await(connector.getCustomerDetails(vrn))
+        val result: HttpResult[CustomerDetails] = await(connector.getCustomerDetails(vrn))
         result shouldBe Left(ErrorModel(SERVICE_UNAVAILABLE, "Received downstream error when retrieving customer details."))
       }
     }

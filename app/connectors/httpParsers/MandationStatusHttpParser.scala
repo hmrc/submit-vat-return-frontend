@@ -16,7 +16,7 @@
 
 package connectors.httpParsers
 
-import connectors.httpParsers.ResponseHttpParsers.HttpGetResult
+import connectors.httpParsers.ResponseHttpParsers.HttpResult
 import models.MandationStatus
 import models.errors.{ErrorModel, UnexpectedJsonError}
 import uk.gov.hmrc.http.{HttpReads, HttpResponse}
@@ -27,8 +27,8 @@ import scala.util.{Failure, Success, Try}
 
 object MandationStatusHttpParser extends ResponseHttpParsers with LoggerUtil {
 
-  implicit object MandationStatusReads extends HttpReads[HttpGetResult[MandationStatus]] {
-    override def read(method: String, url: String, response: HttpResponse): HttpGetResult[MandationStatus] = {
+  implicit object MandationStatusReads extends HttpReads[HttpResult[MandationStatus]] {
+    override def read(method: String, url: String, response: HttpResponse): HttpResult[MandationStatus] = {
       response.status match {
         case OK => Try {
           response.json.as[MandationStatus]

@@ -21,7 +21,7 @@ import assets.CustomerDetailsTestAssets._
 import audit.mocks.MockAuditingService
 import base.BaseSpec
 import common.{MandationStatuses, SessionKeys}
-import connectors.httpParsers.ResponseHttpParsers.HttpGetResult
+import connectors.httpParsers.ResponseHttpParsers.HttpResult
 import forms.SubmitVatReturnForm
 import mocks.service.{MockDateService, MockVatObligationsService, MockVatSubscriptionService}
 import mocks.{MockAuth, MockHonestyDeclarationAction, MockMandationPredicate}
@@ -48,8 +48,8 @@ class SubmitFormControllerSpec extends BaseSpec
 
   val submitForm: SubmitForm = inject[SubmitForm]
 
-  val vatSubscriptionResponse: Future[HttpGetResult[CustomerDetails]] = Future.successful(Right(customerDetailsWithFRS))
-  val vatSubscriptionFailureResponse: Future[HttpGetResult[CustomerDetails]] =
+  val vatSubscriptionResponse: Future[HttpResult[CustomerDetails]] = Future.successful(Right(customerDetailsWithFRS))
+  val vatSubscriptionFailureResponse: Future[HttpResult[CustomerDetails]] =
     Future.successful(Left(ErrorModel(INTERNAL_SERVER_ERROR, "")))
 
   val obligations: VatObligations = VatObligations(Seq(
@@ -67,8 +67,8 @@ class SubmitFormControllerSpec extends BaseSpec
     )
   ))
 
-  val vatObligationsResponse: Future[HttpGetResult[VatObligations]] = Future.successful(Right(obligations))
-  val vatObligationsErrorResponse: Future[HttpGetResult[VatObligations]] =
+  val vatObligationsResponse: Future[HttpResult[VatObligations]] = Future.successful(Right(obligations))
+  val vatObligationsErrorResponse: Future[HttpResult[VatObligations]] =
     Future.successful(Left(ErrorModel(INTERNAL_SERVER_ERROR, "")))
 
   object TestSubmitFormController extends SubmitFormController(
@@ -207,7 +207,7 @@ class SubmitFormControllerSpec extends BaseSpec
               )
             ))
 
-            val vatObligationsResponse: Future[HttpGetResult[VatObligations]] = Future.successful(Right(obligations))
+            val vatObligationsResponse: Future[HttpResult[VatObligations]] = Future.successful(Right(obligations))
 
             lazy val result = {
               TestSubmitFormController.show("18AA")(fakeRequest.withSession(
@@ -278,7 +278,7 @@ class SubmitFormControllerSpec extends BaseSpec
             )
           ))
 
-          val badPeriodKeyObsResponse: Future[HttpGetResult[VatObligations]] = Future.successful(Right(badPeriodKeyObs))
+          val badPeriodKeyObsResponse: Future[HttpResult[VatObligations]] = Future.successful(Right(badPeriodKeyObs))
 
           "return a 303" in {
             mockAuthorise(mtdVatAuthorisedResponse)
@@ -297,9 +297,9 @@ class SubmitFormControllerSpec extends BaseSpec
 
           "return an internal server status" in {
 
-            val vatSubscriptionErrorResponse: Future[HttpGetResult[CustomerDetails]] =
+            val vatSubscriptionErrorResponse: Future[HttpResult[CustomerDetails]] =
               Future.successful(Left(ErrorModel(INTERNAL_SERVER_ERROR, "")))
-            val vatObligationsErrorResponse: Future[HttpGetResult[VatObligations]] =
+            val vatObligationsErrorResponse: Future[HttpResult[VatObligations]] =
               Future.successful(Left(ErrorModel(INTERNAL_SERVER_ERROR, "")))
 
             mockAuthorise(mtdVatAuthorisedResponse)
@@ -388,7 +388,7 @@ class SubmitFormControllerSpec extends BaseSpec
             )
           ))
 
-          val badPeriodKeyObsResponse: Future[HttpGetResult[VatObligations]] = Future.successful(Right(badPeriodKeyObs))
+          val badPeriodKeyObsResponse: Future[HttpResult[VatObligations]] = Future.successful(Right(badPeriodKeyObs))
 
           "return a 303" in {
             mockAuthorise(mtdVatAuthorisedResponse)
@@ -664,7 +664,7 @@ class SubmitFormControllerSpec extends BaseSpec
             "box9" -> ""
           )
 
-          val vatSubscriptionFailureResponse: Future[HttpGetResult[CustomerDetails]] =
+          val vatSubscriptionFailureResponse: Future[HttpResult[CustomerDetails]] =
             Future.successful(Left(ErrorModel(INTERNAL_SERVER_ERROR, "")))
 
           lazy val request = fakeRequestPost.withFormUrlEncodedBody(
@@ -730,7 +730,7 @@ class SubmitFormControllerSpec extends BaseSpec
 
         "a successful response is received from the service" should {
 
-          val vatObligationsResponse: Future[HttpGetResult[VatObligations]] = Future.successful(Right(obligations))
+          val vatObligationsResponse: Future[HttpResult[VatObligations]] = Future.successful(Right(obligations))
 
           lazy val result = TestSubmitFormController.submit("18AA")(requestWithError)
 
@@ -758,7 +758,7 @@ class SubmitFormControllerSpec extends BaseSpec
             )
           ))
 
-          val vatObligationsResponse: Future[HttpGetResult[VatObligations]] = Future.successful(Right(obligations))
+          val vatObligationsResponse: Future[HttpResult[VatObligations]] = Future.successful(Right(obligations))
 
           lazy val result = TestSubmitFormController.submit("18AA")(requestWithError)
 
@@ -778,9 +778,9 @@ class SubmitFormControllerSpec extends BaseSpec
 
           "return an internal server status" in {
 
-            val vatSubscriptionErrorResponse: Future[HttpGetResult[CustomerDetails]] =
+            val vatSubscriptionErrorResponse: Future[HttpResult[CustomerDetails]] =
               Future.successful(Left(ErrorModel(INTERNAL_SERVER_ERROR, "")))
-            val vatObligationsErrorResponse: Future[HttpGetResult[VatObligations]] =
+            val vatObligationsErrorResponse: Future[HttpResult[VatObligations]] =
               Future.successful(Left(ErrorModel(INTERNAL_SERVER_ERROR, "")))
 
             mockAuthorise(mtdVatAuthorisedResponse)

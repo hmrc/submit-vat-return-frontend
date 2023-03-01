@@ -16,7 +16,7 @@
 
 package connectors.httpParsers
 
-import connectors.httpParsers.ResponseHttpParsers.HttpGetResult
+import connectors.httpParsers.ResponseHttpParsers.HttpResult
 import models.CustomerDetails
 import models.errors.{ErrorModel, UnexpectedJsonError}
 import play.api.http.Status._
@@ -26,8 +26,8 @@ import utils.LoggerUtil
 import scala.util.{Failure, Success, Try}
 
 object CustomerDetailsHttpParser extends ResponseHttpParsers with LoggerUtil {
-  implicit object CustomerDetailsReads extends HttpReads[HttpGetResult[CustomerDetails]] {
-    override def read(method: String, url: String, response: HttpResponse): HttpGetResult[CustomerDetails] = {
+  implicit object CustomerDetailsReads extends HttpReads[HttpResult[CustomerDetails]] {
+    override def read(method: String, url: String, response: HttpResponse): HttpResult[CustomerDetails] = {
       response.status match {
         case OK => Try {
           response.json.as[CustomerDetails]

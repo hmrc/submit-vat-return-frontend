@@ -17,7 +17,7 @@
 package mocks.service
 
 import assets.CustomerDetailsTestAssets.{customerDetailsInsolvent, customerDetailsWithFRS}
-import connectors.httpParsers.ResponseHttpParsers.HttpGetResult
+import connectors.httpParsers.ResponseHttpParsers.HttpResult
 import models.CustomerDetails
 import models.errors.ErrorModel
 import org.scalamock.scalatest.MockFactory
@@ -34,16 +34,16 @@ trait MockVatSubscriptionService extends AnyWordSpecLike with Matchers with Opti
 
   val mockVatSubscriptionService: VatSubscriptionService = mock[VatSubscriptionService]
 
-  def setupVatSubscriptionService(response: Future[HttpGetResult[CustomerDetails]]): Unit = {
+  def setupVatSubscriptionService(response: Future[HttpResult[CustomerDetails]]): Unit = {
     (mockVatSubscriptionService.getCustomerDetails(_: String)(_: HeaderCarrier, _: ExecutionContext))
       .expects(*, *, *)
       .returns(response)
   }
 
-  val successCustomerInfoResponse: Future[HttpGetResult[CustomerDetails]] =
+  val successCustomerInfoResponse: Future[HttpResult[CustomerDetails]] =
     Future.successful(Right(customerDetailsWithFRS))
-  val customerInfoInsolventResponse: Future[HttpGetResult[CustomerDetails]] =
+  val customerInfoInsolventResponse: Future[HttpResult[CustomerDetails]] =
     Future.successful(Right(customerDetailsInsolvent))
-  val customerInfoFailureResponse: Future[HttpGetResult[CustomerDetails]] =
+  val customerInfoFailureResponse: Future[HttpResult[CustomerDetails]] =
     Future.successful(Left(ErrorModel(INTERNAL_SERVER_ERROR, "")))
 }

@@ -16,7 +16,7 @@
 
 package connectors.httpParsers
 
-import connectors.httpParsers.ResponseHttpParsers.HttpGetResult
+import connectors.httpParsers.ResponseHttpParsers.HttpResult
 import models.errors.{ErrorModel, UnexpectedJsonError}
 import models.vatReturnSubmission.SubmissionSuccessModel
 import play.api.http.Status._
@@ -28,9 +28,9 @@ import scala.util.{Failure, Success, Try}
 case class SubmitVatReturnHttpParser(vrn: String,
                                      periodKey: String) extends ResponseHttpParsers with LoggerUtil {
 
-  implicit object SubmitVatReturnReads extends HttpReads[HttpGetResult[SubmissionSuccessModel]] {
+  implicit object SubmitVatReturnReads extends HttpReads[HttpResult[SubmissionSuccessModel]] {
 
-    override def read(method: String, url: String, response: HttpResponse): HttpGetResult[SubmissionSuccessModel] = {
+    override def read(method: String, url: String, response: HttpResponse): HttpResult[SubmissionSuccessModel] = {
       response.status match {
         case OK => Try(response.json.as[SubmissionSuccessModel]) match {
           case Success(model) => Right(model)
