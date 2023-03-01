@@ -19,7 +19,7 @@ package services
 import java.time.LocalDate
 import base.BaseSpec
 import connectors.VatObligationsConnector
-import connectors.httpParsers.ResponseHttpParsers.HttpGetResult
+import connectors.httpParsers.ResponseHttpParsers.HttpResult
 import models.errors.ErrorModel
 import models.{VatObligation, VatObligations}
 import uk.gov.hmrc.http.HeaderCarrier
@@ -44,7 +44,7 @@ class VatObligationsServiceSpec extends BaseSpec {
           .expects(*, *, *)
           .returning(Future.successful(expectedResult))
 
-        val result: HttpGetResult[VatObligations] = await(service.getObligations("101202303"))
+        val result: HttpResult[VatObligations] = await(service.getObligations("101202303"))
         result shouldBe expectedResult
       }
     }
@@ -56,7 +56,7 @@ class VatObligationsServiceSpec extends BaseSpec {
           .expects(*, *, *)
           .returning(Future.successful(expectedResult))
 
-        val result: HttpGetResult[VatObligations] = await(service.getObligations("101202303"))
+        val result: HttpResult[VatObligations] = await(service.getObligations("101202303"))
         result shouldBe expectedResult
       }
     }

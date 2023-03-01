@@ -16,7 +16,7 @@
 
 package mocks.service
 
-import connectors.httpParsers.ResponseHttpParsers.HttpGetResult
+import connectors.httpParsers.ResponseHttpParsers.HttpResult
 import models.MandationStatus
 import org.scalamock.scalatest.MockFactory
 import org.scalatest.OptionValues
@@ -31,7 +31,7 @@ trait MockMandationStatusService extends AnyWordSpecLike with Matchers with Opti
 
   val mockMandationStatusService: MandationStatusService = mock[MandationStatusService]
 
-  def setupMockMandationStatus(response: Future[HttpGetResult[MandationStatus]]): Unit = {
+  def setupMockMandationStatus(response: Future[HttpResult[MandationStatus]]): Unit = {
     (mockMandationStatusService.getMandationStatus(_: String)(_: HeaderCarrier, _: ExecutionContext))
       .expects(*, *, *)
       .returns(response)

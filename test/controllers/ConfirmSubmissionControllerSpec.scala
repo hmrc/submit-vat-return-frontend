@@ -21,7 +21,7 @@ import assets.NrsTestData.IdentityDataTestData
 import audit.mocks.MockAuditingService
 import base.BaseSpec
 import common.{MandationStatuses, SessionKeys}
-import connectors.httpParsers.ResponseHttpParsers.HttpGetResult
+import connectors.httpParsers.ResponseHttpParsers.HttpResult
 import mocks.service.{MockDateService, MockVatReturnsService, MockVatSubscriptionService}
 import mocks.{MockAuth, MockHonestyDeclarationAction, MockMandationPredicate, MockReceiptDataService}
 import models.auth.User
@@ -139,7 +139,7 @@ class ConfirmSubmissionControllerSpec extends BaseSpec
 
         "an error response is returned from the vat subscription service" should {
 
-          val vatSubscriptionResponse: Future[HttpGetResult[CustomerDetails]] =
+          val vatSubscriptionResponse: Future[HttpResult[CustomerDetails]] =
             Future.successful(Left(ErrorModel(INTERNAL_SERVER_ERROR, "")))
 
           lazy val requestWithSessionData: User[AnyContentAsEmpty.type] =

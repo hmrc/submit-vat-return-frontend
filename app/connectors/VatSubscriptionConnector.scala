@@ -17,7 +17,7 @@
 package connectors
 
 import config.AppConfig
-import connectors.httpParsers.ResponseHttpParsers.HttpGetResult
+import connectors.httpParsers.ResponseHttpParsers.HttpResult
 import javax.inject.{Inject, Singleton}
 import models.{CustomerDetails, MandationStatus}
 import uk.gov.hmrc.http.HeaderCarrier
@@ -32,21 +32,21 @@ class VatSubscriptionConnector @Inject()(httpClient: HttpClient, appConfig: AppC
 
   private lazy val urlToCall: (String, String) => String = (vrn, endpoint) => vatSubscriptionUrl(vrn, endpoint)
 
-  def getCustomerDetails(vrn: String)(implicit hc: HeaderCarrier, ec: ExecutionContext): Future[HttpGetResult[CustomerDetails]] = {
+  def getCustomerDetails(vrn: String)(implicit hc: HeaderCarrier, ec: ExecutionContext): Future[HttpResult[CustomerDetails]] = {
 
     import connectors.httpParsers.CustomerDetailsHttpParser.CustomerDetailsReads
 
     val endpoint: String = "customer-details"
 
-    httpClient.GET[HttpGetResult[CustomerDetails]](urlToCall(vrn, endpoint))
+    httpClient.GET[HttpResult[CustomerDetails]](urlToCall(vrn, endpoint))
   }
 
-  def getCustomerMandationStatus(vrn: String)(implicit hc: HeaderCarrier, ec: ExecutionContext): Future[HttpGetResult[MandationStatus]] = {
+  def getCustomerMandationStatus(vrn: String)(implicit hc: HeaderCarrier, ec: ExecutionContext): Future[HttpResult[MandationStatus]] = {
 
     import connectors.httpParsers.MandationStatusHttpParser.MandationStatusReads
 
     val endpoint: String = "mandation-status"
 
-    httpClient.GET[HttpGetResult[MandationStatus]](urlToCall(vrn, endpoint))
+    httpClient.GET[HttpResult[MandationStatus]](urlToCall(vrn, endpoint))
   }
 }

@@ -16,7 +16,7 @@
 
 package connectors.httpParsers
 
-import connectors.httpParsers.ResponseHttpParsers.HttpGetResult
+import connectors.httpParsers.ResponseHttpParsers.HttpResult
 import models.VatObligations
 import models.errors.{ErrorModel, UnexpectedJsonError}
 import play.api.http.Status._
@@ -27,8 +27,8 @@ import scala.util.{Failure, Success, Try}
 
 object VatObligationsHttpParser extends ResponseHttpParsers with LoggerUtil {
 
-  implicit object VatObligationsReads extends HttpReads[HttpGetResult[VatObligations]] {
-    override def read(method: String, url: String, response: HttpResponse): HttpGetResult[VatObligations] = {
+  implicit object VatObligationsReads extends HttpReads[HttpResult[VatObligations]] {
+    override def read(method: String, url: String, response: HttpResponse): HttpResult[VatObligations] = {
       response.status match {
         case OK => Try(response.json.as[VatObligations]) match {
           case Success(model) => Right(model)

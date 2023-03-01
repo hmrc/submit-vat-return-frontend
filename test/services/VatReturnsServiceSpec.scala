@@ -18,7 +18,7 @@ package services
 
 import base.BaseSpec
 import connectors.VatReturnsConnector
-import connectors.httpParsers.ResponseHttpParsers.HttpGetResult
+import connectors.httpParsers.ResponseHttpParsers.HttpResult
 import models.auth.User
 import models.errors.ErrorModel
 import models.nrs.{RequestModel, SearchKeys, SuccessModel}
@@ -63,7 +63,7 @@ class VatReturnsServiceSpec extends BaseSpec {
           .expects(*, *, *, *)
           .returning(Future.successful(expectedResult))
 
-        val result: HttpGetResult[SubmissionSuccessModel] = await(service.submitVatReturn("999999999", submissionModel))
+        val result: HttpResult[SubmissionSuccessModel] = await(service.submitVatReturn("999999999", submissionModel))
 
         result shouldBe expectedResult
       }
@@ -78,7 +78,7 @@ class VatReturnsServiceSpec extends BaseSpec {
           .expects(*, *, *, *)
           .returning(Future.successful(expectedResult))
 
-        val result: HttpGetResult[SubmissionSuccessModel] = await(service.submitVatReturn("999999999", submissionModel))
+        val result: HttpResult[SubmissionSuccessModel] = await(service.submitVatReturn("999999999", submissionModel))
 
         result shouldBe expectedResult
       }
@@ -100,7 +100,7 @@ class VatReturnsServiceSpec extends BaseSpec {
           .expects(*, *, *, *)
           .returning(Future.successful(expectedResult))
 
-        val result: HttpGetResult[SuccessModel] =
+        val result: HttpResult[SuccessModel] =
           await(service.nrsSubmission("18AA", "payload", "checksum", testIdentityModel, testReceiptDataModel)(headerCarrierWithAuthorization, ec,request))
 
         result shouldBe expectedResult
@@ -117,7 +117,7 @@ class VatReturnsServiceSpec extends BaseSpec {
           .expects(*, *, *, *)
           .returning(Future.successful(expectedResult))
 
-        val result: HttpGetResult[SuccessModel] =
+        val result: HttpResult[SuccessModel] =
           await(service.nrsSubmission("18AA", "payload", "checksum", testIdentityModel, testReceiptDataModel)(headerCarrierWithAuthorization, ec, request))
 
         result shouldBe expectedResult

@@ -19,7 +19,7 @@ package services
 import base.BaseSpec
 import common.MandationStatuses.nonMTDfB
 import connectors.VatSubscriptionConnector
-import connectors.httpParsers.ResponseHttpParsers.HttpGetResult
+import connectors.httpParsers.ResponseHttpParsers.HttpResult
 import models.MandationStatus
 import models.errors.ErrorModel
 import uk.gov.hmrc.http.HeaderCarrier
@@ -42,7 +42,7 @@ class MandationStatusServiceSpec extends BaseSpec {
           .expects(*, *, *)
           .returning(Future.successful(expectedResult))
 
-        val result: HttpGetResult[MandationStatus] = await(service.getMandationStatus("101202303"))
+        val result: HttpResult[MandationStatus] = await(service.getMandationStatus("101202303"))
         result shouldBe expectedResult
       }
     }
@@ -54,7 +54,7 @@ class MandationStatusServiceSpec extends BaseSpec {
           .expects(*, *, *)
           .returning(Future.successful(expectedResult))
 
-        val result: HttpGetResult[MandationStatus] = await(service.getMandationStatus("101202303"))
+        val result: HttpResult[MandationStatus] = await(service.getMandationStatus("101202303"))
         result shouldBe expectedResult
       }
     }

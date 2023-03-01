@@ -20,7 +20,7 @@ import uk.gov.hmrc.DefaultBuildSettings.{addTestReportOption, defaultSettings, s
 
 lazy val appDependencies: Seq[ModuleID] = compile ++ test
 val appName = "submit-vat-return-frontend"
-val bootstrapPlayVersion = "7.12.0"
+val bootstrapPlayVersion = "7.14.0"
 
 lazy val coverageSettings: Seq[Setting[_]] = {
   import scoverage.ScoverageKeys
@@ -46,7 +46,7 @@ lazy val coverageSettings: Seq[Setting[_]] = {
 
 val compile = Seq(
   play.sbt.PlayImport.ws,
-  "uk.gov.hmrc"       %% "play-frontend-hmrc"         % "6.3.0-play-28",
+  "uk.gov.hmrc"       %% "play-frontend-hmrc"         % "6.7.0-play-28",
   "uk.gov.hmrc"       %% "bootstrap-frontend-play-28" % bootstrapPlayVersion,
   "uk.gov.hmrc"       %% "domain"                     % "8.1.0-play-28",
 )

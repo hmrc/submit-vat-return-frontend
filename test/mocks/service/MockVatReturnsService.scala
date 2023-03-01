@@ -16,7 +16,7 @@
 
 package mocks.service
 
-import connectors.httpParsers.ResponseHttpParsers.HttpGetResult
+import connectors.httpParsers.ResponseHttpParsers.HttpResult
 import models.auth.User
 import models.nrs.{IdentityData, ReceiptData, SuccessModel}
 import models.vatReturnSubmission.{SubmissionModel, SubmissionSuccessModel}
@@ -33,13 +33,13 @@ trait MockVatReturnsService extends AnyWordSpecLike with Matchers with OptionVal
 
   val mockVatReturnsService: VatReturnsService = mock[VatReturnsService]
 
-  def mockVatReturnSubmission(response: Future[HttpGetResult[SubmissionSuccessModel]])(): Unit = {
+  def mockVatReturnSubmission(response: Future[HttpResult[SubmissionSuccessModel]])(): Unit = {
     (mockVatReturnsService.submitVatReturn(_: String, _: SubmissionModel)(_: HeaderCarrier, _: ExecutionContext))
       .expects(*, *, *, *)
       .returns(response)
   }
 
-  def mockNrsSubmission[A](response: Future[HttpGetResult[SuccessModel]])(): Unit = {
+  def mockNrsSubmission[A](response: Future[HttpResult[SuccessModel]])(): Unit = {
     (mockVatReturnsService.nrsSubmission(_: String, _: String, _: String, _: IdentityData, _: ReceiptData)(_: HeaderCarrier, _: ExecutionContext, _: User[A]))
       .expects(*, *, *, *, *, *, *, *)
       .returns(response)

@@ -20,7 +20,7 @@ import java.net.URLDecoder
 import java.time.{LocalDateTime, ZoneOffset}
 
 import connectors.VatReturnsConnector
-import connectors.httpParsers.ResponseHttpParsers.HttpGetResult
+import connectors.httpParsers.ResponseHttpParsers.HttpResult
 import javax.inject.{Inject, Singleton}
 import models.auth.User
 import models.nrs._
@@ -33,7 +33,7 @@ import scala.concurrent.{ExecutionContext, Future}
 class VatReturnsService @Inject()(vatReturnsConnector: VatReturnsConnector) {
 
   def submitVatReturn(vrn: String, model: SubmissionModel)
-                     (implicit hc: HeaderCarrier, ec: ExecutionContext): Future[HttpGetResult[SubmissionSuccessModel]] = {
+                     (implicit hc: HeaderCarrier, ec: ExecutionContext): Future[HttpResult[SubmissionSuccessModel]] = {
     vatReturnsConnector.submitVatReturn(vrn, model)
   }
 
@@ -42,7 +42,7 @@ class VatReturnsService @Inject()(vatReturnsConnector: VatReturnsConnector) {
                        payloadCheckSum: String,
                        identityData: IdentityData,
                        receiptData: ReceiptData)
-                      (implicit hc: HeaderCarrier, ec: ExecutionContext, user: User[A]): Future[HttpGetResult[SuccessModel]] = {
+                      (implicit hc: HeaderCarrier, ec: ExecutionContext, user: User[A]): Future[HttpResult[SuccessModel]] = {
     val metaData = Metadata(
       payloadSha256Checksum = payloadCheckSum,
       userSubmissionTimestamp = LocalDateTime.now(ZoneOffset.UTC),

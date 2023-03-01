@@ -22,6 +22,5 @@ trait ResponseHttpParsers {
 }
 
 object ResponseHttpParsers {
-  type HttpGetResult[T] = Either[ErrorModel, T]
-  type HttpPostResult[T] = Either[ErrorModel, T]
+  type HttpResult[T] = Either[ErrorModel, T]
 }

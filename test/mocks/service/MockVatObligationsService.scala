@@ -16,7 +16,7 @@
 
 package mocks.service
 
-import connectors.httpParsers.ResponseHttpParsers.HttpGetResult
+import connectors.httpParsers.ResponseHttpParsers.HttpResult
 import models.VatObligations
 import org.scalamock.scalatest.MockFactory
 import org.scalatest.OptionValues
@@ -31,7 +31,7 @@ trait MockVatObligationsService extends AnyWordSpecLike with Matchers with Optio
 
   val mockVatObligationsService: VatObligationsService = mock[VatObligationsService]
 
-  def setupVatObligationsService(response: Future[HttpGetResult[VatObligations]])(): Unit = {
+  def setupVatObligationsService(response: Future[HttpResult[VatObligations]])(): Unit = {
     (mockVatObligationsService.getObligations(_: String)(_: HeaderCarrier, _: ExecutionContext))
       .expects(*, *, *)
       .returns(response)

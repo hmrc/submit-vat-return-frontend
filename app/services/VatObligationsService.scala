@@ -17,7 +17,7 @@
 package services
 
 import connectors.VatObligationsConnector
-import connectors.httpParsers.ResponseHttpParsers.HttpGetResult
+import connectors.httpParsers.ResponseHttpParsers.HttpResult
 import javax.inject.Inject
 import models.VatObligations
 import uk.gov.hmrc.http.HeaderCarrier
@@ -25,7 +25,7 @@ import uk.gov.hmrc.http.HeaderCarrier
 import scala.concurrent.{ExecutionContext, Future}
 
 class VatObligationsService @Inject()(vatObligationsConnector: VatObligationsConnector) {
-  def getObligations(vrn: String)(implicit hc: HeaderCarrier, ec: ExecutionContext): Future[HttpGetResult[VatObligations]] = {
+  def getObligations(vrn: String)(implicit hc: HeaderCarrier, ec: ExecutionContext): Future[HttpResult[VatObligations]] = {
     vatObligationsConnector.getObligations(vrn)
   }
 }
