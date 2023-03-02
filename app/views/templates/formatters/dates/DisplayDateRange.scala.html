@@ -20,6 +20,6 @@
 
 @(from: LocalDate, to: LocalDate, useShortDayFormat: Boolean = false)(implicit messages: Messages)
 
-@{
- displayDate(from, from.getYear != to.getYear, useShortDayFormat) + " " +  messages("common.dateRangeSeparator") + " " + displayDate(to, true, useShortDayFormat)
-}
+@displayDate(from, from.getYear != to.getYear, useShortDayFormat)
+@messages("common.dateRangeSeparator")
+@displayDate(to, true, useShortDayFormat)

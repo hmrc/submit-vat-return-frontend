@@ -89,7 +89,7 @@ class SubmitFormViewSpec extends ViewBaseSpec {
       }
 
       "have the return due date" in {
-        elementText(Selectors.returnDueDate) shouldBe returnDue("12 May 2019")
+        elementText(Selectors.returnDueDate) shouldBe returnDue("12\u00a0May\u00a02019")
       }
 
       "have the correct subheading for the last four boxes" in {
