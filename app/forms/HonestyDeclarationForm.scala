@@ -26,8 +26,8 @@ object HonestyDeclarationForm {
   val honestyDeclarationForm: Form[Boolean] = Form(
     "checkbox" -> boolean.verifying(
       StopOnFirstFail(
-        constraint[Boolean]("honesty_declaration.required", _.equals(true))
-        )
+        constraint[Boolean]("honesty_declaration.required", _ == true)
+      )
     )
   )
 
