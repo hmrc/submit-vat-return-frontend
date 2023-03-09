@@ -54,7 +54,7 @@ val compile = Seq(
 val test = Seq(
   "uk.gov.hmrc"            %% "bootstrap-test-play-28"      % bootstrapPlayVersion,
   "org.scalamock"          %% "scalamock"                   % "5.2.0",
-  "org.mockito"             % "mockito-core"                % "3.2.4",
+  "org.mockito"             % "mockito-core"                % "5.1.1",
   "org.scalatestplus"      %% "scalatestplus-mockito"       % "1.0.0-M2"
 ).map(_ % s"$Test, $IntegrationTest")
 
@@ -84,6 +84,7 @@ lazy val microservice: Project = Project(appName, file("."))
     Test / javaOptions += "-Dlogger.resource=logback-test.xml",
     scalaVersion := "2.13.8",
     libraryDependencies ++= appDependencies,
+    scalacOptions ++= Seq("-Wconf:cat=unused-imports&site=.*views.html.*:s"),
     retrieveManaged := true,
     RoutesKeys.routesImport := Seq.empty
   )
