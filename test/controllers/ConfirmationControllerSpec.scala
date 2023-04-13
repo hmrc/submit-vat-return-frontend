@@ -16,19 +16,14 @@
 
 package controllers
 
-import auth.AuthKeys
 import base.BaseSpec
 import common.{MandationStatuses, SessionKeys}
 import mocks.{MockAuth, MockMandationPredicate}
-import mocks.service.{MockVatObligationsService, MockVatSubscriptionService}
 import play.api.http.Status
 import play.api.test.Helpers._
 import views.html.ConfirmationView
 
-import scala.concurrent.Future
-
-class ConfirmationControllerSpec extends BaseSpec with MockVatSubscriptionService with MockVatObligationsService
-  with MockAuth with MockMandationPredicate {
+class ConfirmationControllerSpec extends BaseSpec with MockAuth with MockMandationPredicate {
 
   val view: ConfirmationView = inject[ConfirmationView]
 
@@ -36,15 +31,14 @@ class ConfirmationControllerSpec extends BaseSpec with MockVatSubscriptionServic
     mockMandationStatusPredicate,
     mockAuthPredicate,
     mcc,
-    view,
-    mockAppConfig
+    view
   )
 
   def viewAsString: String = view()(messages, mockAppConfig, user).toString
 
   "ConfirmationController .show" when {
 
-    "user is authorised" should {
+    "the user is authorised" should {
 
       lazy val result = {
         mockAuthorise(mtdVatAuthorisedResponse)
@@ -66,50 +60,4 @@ class ConfirmationControllerSpec extends BaseSpec with MockVatSubscriptionServic
 
     authControllerChecks(TestConfirmationController.show(), fakeRequest)
   }
-
-  "ConfirmationController .submit as an agent" when {
-
-    "user is authorised" should {
-
-      lazy val result = {
-        mockAuthoriseAsAgent(agentAuthorisedResponse, Future(agentServicesEnrolment))
-        TestConfirmationController.submit()(fakeRequest
-          .withSession(SessionKeys.mandationStatus -> MandationStatuses.nonMTDfB)
-          .withSession(SessionKeys.inSessionPeriodKey -> "19AA")
-          .withSession(SessionKeys.submissionYear -> "2019")
-          .withSession(AuthKeys.agentSessionVrn -> vrn)
-        )
-      }
-
-      "return a see other response for .submit" in {
-        status(result) shouldBe Status.SEE_OTHER
-      }
-      "return the redirect location" in {
-        redirectLocation(result) shouldBe Some("/agent-action")
-      }
-    }
-
-    authControllerChecks(TestConfirmationController.submit(), fakeRequest)
-  }
-
-  "ConfirmationController .submit as a non agent" when {
-
-    "user is authorised" should {
-
-      lazy val result = {
-        mockAuthorise(mtdVatAuthorisedResponse)
-        TestConfirmationController.submit()(fakeRequest.withSession(SessionKeys.mandationStatus -> MandationStatuses.nonMTDfB))
-      }
-
-      "return a see other response for .submit" in {
-        status(result) shouldBe Status.SEE_OTHER
-      }
-
-      s"redirect to ${mockAppConfig.vatSummaryUrl}" in {
-        redirectLocation(result) shouldBe Some(mockAppConfig.vatSummaryUrl)
-      }
-    }
-    authControllerChecks(TestConfirmationController.submit(), fakeRequest)
-  }
-
 }

@@ -16,44 +16,23 @@
 
 package controllers
 
-import common.SessionKeys
 import config.AppConfig
 import controllers.predicates.{AuthPredicate, MandationStatusPredicate}
-import javax.inject.{Inject, Singleton}
 import play.api.i18n.I18nSupport
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendController
 import views.html.ConfirmationView
 
-import scala.concurrent.Future
+import javax.inject.{Inject, Singleton}
 
 @Singleton
-class ConfirmationController @Inject()(val mandationStatusCheck: MandationStatusPredicate,
+class ConfirmationController @Inject()(mandationStatusCheck: MandationStatusPredicate,
                                        authPredicate: AuthPredicate,
                                        mcc: MessagesControllerComponents,
-                                       confirmationView: ConfirmationView,
-                                       implicit val appConfig: AppConfig) extends FrontendController(mcc) with I18nSupport {
+                                       confirmationView: ConfirmationView)
+                                      (implicit appConfig: AppConfig) extends FrontendController(mcc) with I18nSupport {
 
-  val show: Action[AnyContent] = (authPredicate andThen mandationStatusCheck).async { implicit user =>
-    Future.successful(Ok(confirmationView()))
+  val show: Action[AnyContent] = (authPredicate andThen mandationStatusCheck) { implicit user =>
+    Ok(confirmationView())
   }
-
-  val submit: Action[AnyContent] = (authPredicate andThen mandationStatusCheck).async { implicit user =>
-    if (user.isAgent) {
-      Future.successful(
-        Redirect(appConfig.manageClientUrl).removingFromSession(
-          SessionKeys.inSessionPeriodKey,
-          SessionKeys.submissionYear
-        )
-      )
-    } else {
-      Future.successful(
-        Redirect(appConfig.vatSummaryUrl).removingFromSession(
-          SessionKeys.inSessionPeriodKey,
-          SessionKeys.submissionYear)
-      )
-    }
-  }
-
-
 }

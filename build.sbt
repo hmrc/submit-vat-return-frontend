@@ -20,7 +20,7 @@ import uk.gov.hmrc.DefaultBuildSettings.{addTestReportOption, defaultSettings, s
 
 lazy val appDependencies: Seq[ModuleID] = compile ++ test
 val appName = "submit-vat-return-frontend"
-val bootstrapPlayVersion = "7.14.0"
+val bootstrapPlayVersion = "7.15.0"
 
 lazy val coverageSettings: Seq[Setting[_]] = {
   import scoverage.ScoverageKeys
@@ -46,16 +46,15 @@ lazy val coverageSettings: Seq[Setting[_]] = {
 
 val compile = Seq(
   play.sbt.PlayImport.ws,
-  "uk.gov.hmrc"       %% "play-frontend-hmrc"         % "6.7.0-play-28",
+  "uk.gov.hmrc"       %% "play-frontend-hmrc"         % "7.3.0-play-28",
   "uk.gov.hmrc"       %% "bootstrap-frontend-play-28" % bootstrapPlayVersion,
-  "uk.gov.hmrc"       %% "domain"                     % "8.1.0-play-28",
+  "uk.gov.hmrc"       %% "domain"                     % "8.2.0-play-28",
 )
 
 val test = Seq(
   "uk.gov.hmrc"            %% "bootstrap-test-play-28"      % bootstrapPlayVersion,
   "org.scalamock"          %% "scalamock"                   % "5.2.0",
-  "org.mockito"             % "mockito-core"                % "5.1.1",
-  "org.scalatestplus"      %% "scalatestplus-mockito"       % "1.0.0-M2"
+  "org.scalatestplus"      %% "mockito-3-4"                 % "3.2.9.0"
 ).map(_ % s"$Test, $IntegrationTest")
 
 TwirlKeys.templateImports ++= Seq(
