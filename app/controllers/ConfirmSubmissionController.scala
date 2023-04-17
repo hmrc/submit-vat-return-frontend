@@ -16,17 +16,12 @@
 
 package controllers
 
-import java.net.URLDecoder
-import java.time.format.DateTimeFormatter
-import java.time.{Instant, LocalDateTime, ZoneId}
 import audit.AuditService
 import audit.models.journey.{FailureAuditModel, SuccessAuditModel}
 import audit.models.{NrsErrorAuditModel, NrsSuccessAuditModel, SubmitVatReturnAuditModel}
 import common.SessionKeys
 import config.{AppConfig, ErrorHandler}
 import controllers.predicates.{AuthPredicate, HonestyDeclarationAction, MandationStatusPredicate}
-
-import javax.inject.{Inject, Singleton}
 import models.auth.User
 import models.errors.ErrorModel
 import models.nrs.{IdentityData, IdentityLoginTimes}
@@ -45,6 +40,10 @@ import utils.{HashUtil, LoggerUtil, ReceiptDataHelper}
 import views.html.ConfirmSubmission
 import views.html.errors.SubmissionError
 
+import java.net.URLDecoder
+import java.time.format.DateTimeFormatter
+import java.time.{Instant, LocalDateTime, ZoneId}
+import javax.inject.{Inject, Singleton}
 import scala.concurrent.{ExecutionContext, Future}
 import scala.util.{Failure, Success, Try}
 
@@ -153,12 +152,11 @@ class ConfirmSubmissionController @Inject()(mandationStatusCheck: MandationStatu
         )
         auditService.audit(
           SuccessAuditModel(user.vrn, periodKey, user.arn),
-          Some(controllers.routes.ConfirmSubmissionController.submit(periodKey).url)
+          Some(controllers.routes.ConfirmationController.show.url)
         )
         Redirect(controllers.routes.ConfirmationController.show.url)
           .removingFromSession(SessionKeys.returnData)
-          .addingToSession(
-            SessionKeys.submittedReturn -> "true")
+          .addingToSession(SessionKeys.submittedReturn -> "true")
       case Left(error) =>
         auditService.audit(
           FailureAuditModel(user.vrn, periodKey, user.arn, error.message),

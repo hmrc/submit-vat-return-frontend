@@ -12,7 +12,6 @@ GET        /:periodKey/submit-form              controllers.SubmitFormController
 POST       /:periodKey/submit-form              controllers.SubmitFormController.submit(periodKey: String)
 
 GET        /submission-confirmation             controllers.ConfirmationController.show
-POST       /submission-confirmation             controllers.ConfirmationController.submit
 
 GET        /:periodKey/confirm-submission       controllers.ConfirmSubmissionController.show(periodKey: String)
 POST       /:periodKey/confirm-submission       controllers.ConfirmSubmissionController.submit(periodKey: String)

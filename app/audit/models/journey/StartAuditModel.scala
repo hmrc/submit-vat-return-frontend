@@ -18,14 +18,20 @@ package audit.models.journey
 
 import audit.models.ExtendedAuditModel
 import play.api.libs.json.{Format, JsValue, Json}
+import utils.JsonObjectSugar
 
 case class StartAuditModel(vrn: String,
                            periodKey: String,
-                           agentReferenceNumber: Option[String]) extends ExtendedAuditModel {
+                           agentReferenceNumber: Option[String]) extends ExtendedAuditModel with JsonObjectSugar {
 
   override val transactionName: String = "journey-start"
   override val auditType: String = "SubmitVATReturnJourneyStart"
-  override val detail: JsValue = Json.toJson(this)
+  override val detail: JsValue = jsonObjNoNulls(
+    "vrn" -> vrn,
+    "periodKey" -> periodKey,
+    "agentReferenceNumber" -> agentReferenceNumber,
+    "isAgent" -> agentReferenceNumber.isDefined
+  )
 }
 
 object StartAuditModel {

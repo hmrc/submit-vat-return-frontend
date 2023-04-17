@@ -41,7 +41,8 @@ class SuccessAuditModelSpec extends BaseSpec {
       "have the correct detail for the audit event" in {
         model.detail shouldBe Json.obj(
           "vrn" -> "123456789",
-          "periodKey" -> "19AA"
+          "periodKey" -> "19AA",
+          "isAgent" -> false
         )
       }
     }
@@ -54,7 +55,8 @@ class SuccessAuditModelSpec extends BaseSpec {
         model.detail shouldBe Json.obj(
           "vrn" -> "123456789",
           "periodKey" -> "19AA",
-          "agentReferenceNumber" -> "XARN1234567"
+          "agentReferenceNumber" -> "XARN1234567",
+          "isAgent" -> true
         )
       }
     }
