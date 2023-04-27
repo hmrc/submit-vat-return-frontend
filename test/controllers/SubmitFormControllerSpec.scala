@@ -147,7 +147,6 @@ class SubmitFormControllerSpec extends BaseSpec
 
           "return 200" in {
             mockAuthorise(mtdVatAuthorisedResponse)
-            setupAuditExtendedEvent
             setupVatSubscriptionService(vatSubscriptionResponse)
             status(result) shouldBe Status.OK
           }
@@ -176,7 +175,6 @@ class SubmitFormControllerSpec extends BaseSpec
 
           "return 200" in {
             mockAuthorise(mtdVatAuthorisedResponse)
-            setupAuditExtendedEvent
             setupVatSubscriptionService(vatSubscriptionFailureResponse)
             status(result) shouldBe Status.OK
           }
@@ -219,7 +217,7 @@ class SubmitFormControllerSpec extends BaseSpec
 
             "return 200" in {
               mockAuthorise(mtdVatAuthorisedResponse)
-              setupAuditExtendedEvent
+              setupAuditExtendedEvent()
               setupVatSubscriptionService(vatSubscriptionResponse)
               setupVatObligationsService(vatObligationsResponse)()
               mockDateHasPassed(response = true)
@@ -246,7 +244,6 @@ class SubmitFormControllerSpec extends BaseSpec
 
             "return 400" in {
               mockAuthorise(mtdVatAuthorisedResponse)
-              setupAuditExtendedEvent
               setupVatSubscriptionService(vatSubscriptionResponse)
               setupVatObligationsService(vatObligationsResponse)()
               mockDateHasPassed(response = false)
@@ -282,7 +279,6 @@ class SubmitFormControllerSpec extends BaseSpec
 
           "return a 303" in {
             mockAuthorise(mtdVatAuthorisedResponse)
-            setupAuditExtendedEvent
             setupVatSubscriptionService(vatSubscriptionResponse)
             setupVatObligationsService(badPeriodKeyObsResponse)()
             status(result) shouldBe Status.SEE_OTHER
@@ -303,7 +299,6 @@ class SubmitFormControllerSpec extends BaseSpec
               Future.successful(Left(ErrorModel(INTERNAL_SERVER_ERROR, "")))
 
             mockAuthorise(mtdVatAuthorisedResponse)
-            setupAuditExtendedEvent
             setupVatSubscriptionService(vatSubscriptionErrorResponse)
             setupVatObligationsService(vatObligationsErrorResponse)()
 
@@ -312,8 +307,8 @@ class SubmitFormControllerSpec extends BaseSpec
               SessionKeys.HonestyDeclaration.key -> s"$vrn-18AA",
               SessionKeys.insolventWithoutAccessKey -> "false"
             ))
-            status(result) shouldBe Status.INTERNAL_SERVER_ERROR
 
+            status(result) shouldBe Status.INTERNAL_SERVER_ERROR
           }
         }
       }
@@ -736,6 +731,7 @@ class SubmitFormControllerSpec extends BaseSpec
 
           "return 200" in {
             mockAuthorise(mtdVatAuthorisedResponse)
+            setupAuditExtendedEvent()
             mockDateHasPassed(response = true)
             setupVatSubscriptionService(vatSubscriptionResponse)
             setupVatObligationsService(vatObligationsResponse)()

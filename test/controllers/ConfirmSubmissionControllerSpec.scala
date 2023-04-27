@@ -234,9 +234,9 @@ class ConfirmSubmissionControllerSpec extends BaseSpec
               mockFullAuthResponse(Future.successful(agentFullInformationResponse))
               mockNrsSubmission(Future.successful(Right(SuccessModel("1234567890"))))()
               mockExtractReceiptData(await(successReceiptDataResponse))()
-              setupAuditExtendedEvent
-              setupAuditExtendedEvent
-              setupAuditExtendedEvent
+              setupAuditExtendedEvent()
+              setupAuditExtendedEvent()
+              setupAuditExtendedEvent()
 
               status(result) shouldBe Status.SEE_OTHER
             }
@@ -265,9 +265,9 @@ class ConfirmSubmissionControllerSpec extends BaseSpec
               mockExtractReceiptData(await(successReceiptDataResponse))()
               mockFullAuthResponse(Future.successful(agentFullInformationResponse))
               mockNrsSubmission(Future.successful(Right(SuccessModel("1234567890"))))()
-              setupAuditExtendedEvent
+              setupAuditExtendedEvent()
               mockVatReturnSubmission(Future.successful(Left(ErrorModel(INTERNAL_SERVER_ERROR, ""))))()
-              setupAuditExtendedEvent
+              setupAuditExtendedEvent()
 
               status(result) shouldBe Status.INTERNAL_SERVER_ERROR
             }
@@ -353,9 +353,9 @@ class ConfirmSubmissionControllerSpec extends BaseSpec
         mockNrsSubmission(Future.successful(Right(SuccessModel("1234567890"))))()
         mockVatReturnSubmission(Future.successful(Right(SubmissionSuccessModel("12345"))))()
         mockExtractReceiptData(await(successReceiptDataResponse))()
-        setupAuditExtendedEvent
-        setupAuditExtendedEvent
-        setupAuditExtendedEvent
+        setupAuditExtendedEvent()
+        setupAuditExtendedEvent()
+        setupAuditExtendedEvent()
 
         status(result) shouldBe Status.SEE_OTHER
       }
@@ -409,7 +409,7 @@ class ConfirmSubmissionControllerSpec extends BaseSpec
         mockFullAuthResponse(Future.successful(agentFullInformationResponse))
         mockExtractReceiptData(await(successReceiptDataResponse))()
         mockNrsSubmission(Future.successful(Left(ErrorModel(BAD_REQUEST, "error message"))))()
-        setupAuditExtendedEvent
+        setupAuditExtendedEvent()
 
         status(result) shouldBe Status.INTERNAL_SERVER_ERROR
       }

@@ -22,6 +22,8 @@ import utils.JsonObjectSugar
 
 case class SuccessAuditModel(vrn: String,
                              periodKey: String,
+                             startDate: String,
+                             endDate: String,
                              agentReferenceNumber: Option[String]) extends ExtendedAuditModel with JsonObjectSugar {
 
   override val transactionName: String = "journey-success"
@@ -29,6 +31,8 @@ case class SuccessAuditModel(vrn: String,
   override val detail: JsValue = jsonObjNoNulls(
     "vrn" -> vrn,
     "periodKey" -> periodKey,
+    "periodStartDate" -> startDate,
+    "periodEndDate" -> endDate,
     "agentReferenceNumber" -> agentReferenceNumber,
     "isAgent" -> agentReferenceNumber.isDefined
   )

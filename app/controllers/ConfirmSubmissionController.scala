@@ -151,7 +151,7 @@ class ConfirmSubmissionController @Inject()(mandationStatusCheck: MandationStatu
           Some(controllers.routes.ConfirmSubmissionController.submit(periodKey).url)
         )
         auditService.audit(
-          SuccessAuditModel(user.vrn, periodKey, user.arn),
+          SuccessAuditModel(user.vrn, periodKey, sessionData.start.toString, sessionData.end.toString, user.arn),
           Some(controllers.routes.ConfirmationController.show.url)
         )
         Redirect(controllers.routes.ConfirmationController.show.url)
