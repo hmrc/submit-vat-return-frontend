@@ -28,7 +28,7 @@ class SuccessAuditModelSpec extends BaseSpec {
 
     "user is not an agent" should {
 
-      val model = SuccessAuditModel("123456789", "19AA", None)
+      val model = SuccessAuditModel("123456789", "19AA", "2019-01-01", "2019-02-02", None)
 
       s"have the correct transaction name of '$transactionName'" in {
         model.transactionName shouldBe transactionName
@@ -42,6 +42,8 @@ class SuccessAuditModelSpec extends BaseSpec {
         model.detail shouldBe Json.obj(
           "vrn" -> "123456789",
           "periodKey" -> "19AA",
+          "periodStartDate" -> "2019-01-01",
+          "periodEndDate" -> "2019-02-02",
           "isAgent" -> false
         )
       }
@@ -49,12 +51,14 @@ class SuccessAuditModelSpec extends BaseSpec {
 
     "user is an agent" should {
 
-      val model = SuccessAuditModel("123456789", "19AA", Some("XARN1234567"))
+      val model = SuccessAuditModel("123456789", "19AA", "2019-01-01", "2019-02-02", Some("XARN1234567"))
 
       "have the correct detail for the audit event" in {
         model.detail shouldBe Json.obj(
           "vrn" -> "123456789",
           "periodKey" -> "19AA",
+          "periodStartDate" -> "2019-01-01",
+          "periodEndDate" -> "2019-02-02",
           "agentReferenceNumber" -> "XARN1234567",
           "isAgent" -> true
         )

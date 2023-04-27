@@ -57,12 +57,6 @@ class SubmitFormController @Inject()(mcc: MessagesControllerComponents,
     andThen mandationStatusCheck
     andThen honestyDeclaration.authoriseForPeriodKey(periodKey)
   ).async { implicit user =>
-
-    auditService.audit(
-      StartAuditModel(user.vrn, periodKey, user.arn),
-      Some(controllers.routes.SubmitFormController.show(periodKey).url)
-    )
-
     user.session.get(SessionKeys.returnData) match {
       case Some(model) => renderViewWithSessionData(periodKey, model)
       case _ => renderViewWithoutSessionData(periodKey, SubmitVatReturnForm().nineBoxForm)
@@ -107,8 +101,7 @@ class SubmitFormController @Inject()(mcc: MessagesControllerComponents,
   }
 
   private def renderViewWithoutSessionData(periodKey: String, form: Form[NineBoxModel])
-                                          (implicit user: User[_], hc: HeaderCarrier) = {
-
+                                          (implicit user: User[_], hc: HeaderCarrier) =
     for {
       customerInformation <- vatSubscriptionService.getCustomerDetails(user.vrn)
       obligations <- vatObligationsService.getObligations(user.vrn)
@@ -126,6 +119,11 @@ class SubmitFormController @Inject()(mcc: MessagesControllerComponents,
                   obligation.start,
                   obligation.end,
                   obligation.due
+                )
+
+                auditService.audit(
+                  StartAuditModel(user.vrn, periodKey, obligation.start.toString, obligation.end.toString, user.arn),
+                  Some(controllers.routes.SubmitFormController.show(periodKey).url)
                 )
 
                 Ok(submitForm(
@@ -149,7 +147,6 @@ class SubmitFormController @Inject()(mcc: MessagesControllerComponents,
         case (_, _) => errorHandler.showInternalServerError
       }
     }
-  }
 
   def submit(periodKey: String): Action[AnyContent] = (authPredicate
     andThen mandationStatusCheck
@@ -196,7 +193,7 @@ class SubmitFormController @Inject()(mcc: MessagesControllerComponents,
   }
 
   private def submitSuccess(model: CalculatedNineBoxModel, periodKey: String)
-                           (implicit user: User[_], hc: HeaderCarrier) = {
+                           (implicit user: User[_], hc: HeaderCarrier) =
     for {
       customerInformation <- vatSubscriptionService.getCustomerDetails(user.vrn)
       obligations <- vatObligationsService.getObligations(user.vrn)
@@ -243,5 +240,4 @@ class SubmitFormController @Inject()(mcc: MessagesControllerComponents,
           errorHandler.showInternalServerError
       }
     }
-  }
 }
