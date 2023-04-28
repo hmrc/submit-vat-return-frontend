@@ -18,12 +18,10 @@
 @import uk.gov.hmrc.hmrcfrontend.views.html.helpers._
 @import models.auth.User
 @import config.AppConfig
-@import uk.gov.hmrc.hmrcfrontend.views.config.StandardBetaBanner
 
 @this(govukLayout: GovukLayout,
       hmrcLanguageSelect: HmrcLanguageSelect,
       hmrcTimeoutDialog: HmrcTimeoutDialog,
-      standardBetaBanner: StandardBetaBanner,
       hmrcStandardHeader: HmrcStandardHeader,
       hmrcStandardFooter: HmrcStandardFooter,
       hmrcReportTechnicalIssueHelper: HmrcReportTechnicalIssueHelper,
@@ -91,7 +89,6 @@
       serviceName = Some(titleServiceName),
       serviceUrl = titleServiceUrl,
       signOutUrl = if(showLogout) Some(routes.SignOutController.signOut(feedbackOnSignOut).url) else None,
-      phaseBanner = Some(standardBetaBanner(url = appConfig.feedbackUrl(request.uri))),
       displayHmrcBanner = false
     )
 }
