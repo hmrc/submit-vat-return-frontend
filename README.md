@@ -1,7 +1,13 @@
 
 # Submit VAT Return Frontend
 
-## Running the service
+## Summary
+
+This service provides the functionality to submit VAT returns without using external software.
+
+The service can only be used by users who are not subject to MTD (Non MTDfB, Non Digital or MTDfB Exempt) or agents acting on behalf of such a user.
+
+### Running the service
 
 In order to run this microservice, you must have SBT installed. You should then be able to start the application using:
 
