@@ -31,7 +31,7 @@ import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
 import services.{DateService, VatObligationsService, VatSubscriptionService}
 import uk.gov.hmrc.http.HeaderCarrier
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendController
-import utils.LoggerUtil
+import utils.LoggingUtil
 import views.html.SubmitForm
 
 import java.net.URLDecoder
@@ -51,7 +51,7 @@ class SubmitFormController @Inject()(mcc: MessagesControllerComponents,
                                      implicit val errorHandler: ErrorHandler,
                                      implicit val appConfig: AppConfig,
                                      implicit val executionContext: ExecutionContext) extends FrontendController(mcc)
-                                                                                      with I18nSupport with LoggerUtil {
+                                                                                      with I18nSupport with LoggingUtil {
 
   def show(periodKey: String): Action[AnyContent] = (authPredicate
     andThen mandationStatusCheck
@@ -136,12 +136,12 @@ class SubmitFormController @Inject()(mcc: MessagesControllerComponents,
                 )).addingToSession(SessionKeys.viewModel -> Json.toJson(viewModel).toString())
 
               } else {
-                logger.warn("[SubmitFormController][renderViewWithoutSessionData] " +
+                errorLog("[SubmitFormController][renderViewWithoutSessionData] " +
                   s"Obligation end date for period $periodKey has not yet passed.")
                 errorHandler.showBadRequestError
               }
             case _ =>
-              logger.warn(s"[SubmitFormController][Show]: Obligation not found for period key $periodKey")
+              errorLog(s"[SubmitFormController][Show]: Obligation not found for period key $periodKey")
               Redirect(appConfig.returnDeadlinesUrl)
           }
         case (_, _) => errorHandler.showInternalServerError
@@ -225,18 +225,18 @@ class SubmitFormController @Inject()(mcc: MessagesControllerComponents,
                   .addingToSession(SessionKeys.returnData -> Json.toJson(sessionModel).toString())
                   .removingFromSession(SessionKeys.viewModel)
               } else {
-                logger.warn(s"[SubmitFormController][submitSuccess] Obligation end date for period $periodKey has not yet passed.")
+                errorLog(s"[SubmitFormController][submitSuccess] Obligation end date for period $periodKey has not yet passed.")
                 errorHandler.showBadRequestError
               }
             case _ =>
-              logger.warn(s"[SubmitFormController][submitSuccess]: Obligation not found for period key $periodKey")
+              warnLog(s"[SubmitFormController][submitSuccess]: Obligation not found for period key $periodKey")
               Redirect(appConfig.returnDeadlinesUrl)
           }
         case (Left(error), _) =>
-          logger.warn(s"[SubmitFormController][submitSuccess] Error received when retrieving customer details $error")
+          errorLog(s"[SubmitFormController][submitSuccess] Error received when retrieving customer details $error")
           errorHandler.showInternalServerError
         case (_, Left(error)) =>
-          logger.warn(s"[SubmitFormController][submitSuccess] Error received when retrieving obligation details $error")
+          errorLog(s"[SubmitFormController][submitSuccess] Error received when retrieving obligation details $error")
           errorHandler.showInternalServerError
       }
     }

@@ -26,6 +26,7 @@ import uk.gov.hmrc.auth.core.{AffinityGroup, AuthorisationException}
 import uk.gov.hmrc.http.HeaderCarrier
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendController
 import uk.gov.hmrc.play.http.HeaderCarrierConverter
+import utils.LoggingUtil
 
 import scala.concurrent.{ExecutionContext, Future}
 
@@ -33,7 +34,7 @@ import scala.concurrent.{ExecutionContext, Future}
 class SignOutController @Inject()(mcc: MessagesControllerComponents,
                                   enrolmentsAuthService: EnrolmentsAuthService)
                                  (implicit val appConfig: AppConfig,
-                                  implicit val executionContext: ExecutionContext) extends FrontendController(mcc) with I18nSupport {
+                                  implicit val executionContext: ExecutionContext) extends FrontendController(mcc) with I18nSupport with LoggingUtil{
 
   def signOut(feedbackOnSignOut: Boolean) : Action[AnyContent] = Action.async { implicit request =>
 
@@ -45,7 +46,9 @@ class SignOutController @Inject()(mcc: MessagesControllerComponents,
         case Some(AffinityGroup.Agent) => Future.successful("VATCA")
         case _ => Future.successful("VATC")
       }.map(contactFormIdentifier => Redirect(appConfig.signOutUrl(contactFormIdentifier))).recover {
-        case _: AuthorisationException => Redirect(appConfig.unauthorisedSignOutUrl)
+        case error: AuthorisationException =>
+          errorLog(s"[SignOutController][signOut] - user unauthorised $error")
+          Redirect(appConfig.unauthorisedSignOutUrl)
       }
     } else {
       Future.successful(Redirect(appConfig.unauthorisedSignOutUrl))

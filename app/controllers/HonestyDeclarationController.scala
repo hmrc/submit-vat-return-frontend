@@ -25,6 +25,7 @@ import javax.inject.{Inject, Singleton}
 import play.api.i18n.I18nSupport
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendController
+import utils.LoggingUtil
 import views.html.HonestyDeclaration
 
 import scala.concurrent.Future
@@ -35,7 +36,7 @@ class HonestyDeclarationController @Inject()(val mandationStatusCheck: Mandation
                                              authPredicate: AuthPredicate,
                                              mcc: MessagesControllerComponents,
                                              honestyDeclaration: HonestyDeclaration,
-                                             implicit val appConfig: AppConfig) extends FrontendController(mcc) with I18nSupport {
+                                             implicit val appConfig: AppConfig) extends FrontendController(mcc) with I18nSupport with LoggingUtil{
 
   def show(periodKey: String): Action[AnyContent] = (authPredicate andThen mandationStatusCheck).async {
     implicit user =>
@@ -45,11 +46,13 @@ class HonestyDeclarationController @Inject()(val mandationStatusCheck: Mandation
 
   def submit(periodKey: String): Action[AnyContent] = (authPredicate andThen mandationStatusCheck).async { implicit user =>
     HonestyDeclarationForm.honestyDeclarationForm.bindFromRequest().fold(
-      error => Future.successful(BadRequest(honestyDeclaration(periodKey, error))),
+      error => {
+        errorLog(s"[HonestyDeclarationController][submit] - $error occured while binding honesty declaration form")
+        Future.successful(BadRequest(honestyDeclaration(periodKey, error)))
+      },
       _ =>
         Future.successful(Redirect(controllers.routes.SubmitFormController.show(periodKey))
           .addingToSession(SessionKeys.key -> s"${user.vrn}-$periodKey"))
     )
-
   }
 }

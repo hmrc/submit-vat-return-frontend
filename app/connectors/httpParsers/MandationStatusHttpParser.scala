@@ -21,25 +21,28 @@ import models.MandationStatus
 import models.errors.{ErrorModel, UnexpectedJsonError}
 import uk.gov.hmrc.http.{HttpReads, HttpResponse}
 import play.api.http.Status._
-import utils.LoggerUtil
+import utils.LoggingUtil
 
 import scala.util.{Failure, Success, Try}
 
-object MandationStatusHttpParser extends ResponseHttpParsers with LoggerUtil {
+object MandationStatusHttpParser extends ResponseHttpParsers with LoggingUtil {
 
   implicit object MandationStatusReads extends HttpReads[HttpResult[MandationStatus]] {
     override def read(method: String, url: String, response: HttpResponse): HttpResult[MandationStatus] = {
+      implicit val res: HttpResponse = response
       response.status match {
         case OK => Try {
           response.json.as[MandationStatus]
         } match {
           case Success(parsedModel) => Right(parsedModel)
           case Failure(reason) =>
-            logger.debug(s"[MandationStatusHttpParser][MandationStatusReads]: Invalid Json - $reason")
-            logger.warn("[MandationStatusHttpParser][MandationStatusReads]: Invalid Json returned")
+            debug(s"[MandationStatusHttpParser][MandationStatusReads]: Invalid Json - $reason")
+            errorLogRes("[MandationStatusHttpParser][MandationStatusReads]: Invalid Json returned")
             Left(UnexpectedJsonError)
         }
-        case _ => Left(ErrorModel(response.status, response.body))
+        case status =>
+          errorLogRes(s"[MandationStatusHttpParser][MandationStatusReads] - an unexpected error occured with status $status was returned ")
+          Left(ErrorModel(response.status, response.body))
       }
     }
   }
