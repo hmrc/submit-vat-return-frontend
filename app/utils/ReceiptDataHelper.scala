@@ -85,7 +85,7 @@ class ReceiptDataHelper @Inject()(implicit val messages: MessagesApi) extends Lo
           )
         )
         case None =>
-          errorLog("[ReceiptDataHelper][extractDeclaration] Client name missing")
+          warnLog("[ReceiptDataHelper][extractDeclaration] Client name missing")
           Left(ErrorModel(INTERNAL_SERVER_ERROR, "Client name missing"))
       }
       case Left(error) =>

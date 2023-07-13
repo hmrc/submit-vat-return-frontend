@@ -75,7 +75,7 @@ class AuthPredicate @Inject()(authService: EnrolmentsAuthService,
           Future.successful(errorHandler.showInternalServerError)
       } recover {
         case _: NoActiveSession =>
-          errorLog(s"[AuthPredicate][invokeBlock] - No active session. Redirecting to ${appConfig.signInUrl}")
+          warnLog(s"[AuthPredicate][invokeBlock] - No active session. Redirecting to ${appConfig.signInUrl}")
           Redirect(appConfig.signInUrl)
         case _: AuthorisationException =>
           errorLog("[AuthPredicate][invokeBlock] - Unauthorised exception when retrieving affinity and all enrolments")
@@ -120,7 +120,7 @@ class AuthPredicate @Inject()(authService: EnrolmentsAuthService,
               SessionKeys.futureInsolvencyBlock -> "true")
             )
           case _ =>
-            errorLog("[AuthPredicate][insolvencySubscriptionCall] - Authenticated as principle")
+            infoLog("[AuthPredicate][insolvencySubscriptionCall] - Authenticated as principle")
             block(user).map(result => result.addingToSession(
               SessionKeys.insolventWithoutAccessKey -> "false",
               SessionKeys.futureInsolvencyBlock -> "false")
@@ -151,21 +151,21 @@ class AuthPredicate @Inject()(authService: EnrolmentsAuthService,
               } match {
                 case Some(arn) => block(User(vrn, Some(arn)))
                 case None =>
-                  errorLog("[AuthPredicate][authoriseAsAgent] - Agent with no valid arn. Rendering unauthorised view.")
+                  warnLog("[AuthPredicate][authoriseAsAgent] - Agent with no valid arn. Rendering unauthorised view.")
                   Future.successful(Forbidden(unauthorisedAgent()))
               }
           } recover {
             case _: NoActiveSession =>
-              errorLog(s"AuthoriseAsAgentWithClient][authoriseAsAgent] - No active session. Redirecting to ${appConfig.signInUrl}")
+              warnLog(s"AuthoriseAsAgentWithClient][authoriseAsAgent] - No active session. Redirecting to ${appConfig.signInUrl}")
               Redirect(appConfig.signInUrl)
             case _: AuthorisationException =>
-              errorLog(s"[AuthoriseAsAgentWithClient][authoriseAsAgent] - Agent does not have delegated authority for Client. " +
+              warnLog(s"[AuthoriseAsAgentWithClient][authoriseAsAgent] - Agent does not have delegated authority for Client. " +
                 s"Redirecting to ${appConfig.agentClientUnauthorisedUrl(request.uri)}")
               Redirect(appConfig.agentClientUnauthorisedUrl(request.uri))
           }
 
       case None =>
-        errorLog(s"[AuthPredicate][authoriseAsAgent] - No Client VRN in session. Redirecting to ${appConfig.agentClientLookupStartUrl}")
+        warnLog(s"[AuthPredicate][authoriseAsAgent] - No Client VRN in session. Redirecting to ${appConfig.agentClientLookupStartUrl}")
         Future.successful(Redirect(appConfig.agentClientLookupStartUrl(request.uri)))
     }
   }

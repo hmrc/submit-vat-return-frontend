@@ -136,15 +136,17 @@ class SubmitFormController @Inject()(mcc: MessagesControllerComponents,
                 )).addingToSession(SessionKeys.viewModel -> Json.toJson(viewModel).toString())
 
               } else {
-                errorLog("[SubmitFormController][renderViewWithoutSessionData] " +
+                warnLog("[SubmitFormController][renderViewWithoutSessionData] " +
                   s"Obligation end date for period $periodKey has not yet passed.")
                 errorHandler.showBadRequestError
               }
             case _ =>
-              errorLog(s"[SubmitFormController][Show]: Obligation not found for period key $periodKey")
+              warnLog(s"[SubmitFormController][Show]: Obligation not found for period key $periodKey")
               Redirect(appConfig.returnDeadlinesUrl)
           }
-        case (_, _) => errorHandler.showInternalServerError
+        case (_, _) =>
+          warnLog(s"[SubmitFormController][Show]: could not retrieve customer details and obligations ")
+          errorHandler.showInternalServerError
       }
     }
 
@@ -225,7 +227,7 @@ class SubmitFormController @Inject()(mcc: MessagesControllerComponents,
                   .addingToSession(SessionKeys.returnData -> Json.toJson(sessionModel).toString())
                   .removingFromSession(SessionKeys.viewModel)
               } else {
-                errorLog(s"[SubmitFormController][submitSuccess] Obligation end date for period $periodKey has not yet passed.")
+                warnLog(s"[SubmitFormController][submitSuccess] Obligation end date for period $periodKey has not yet passed.")
                 errorHandler.showBadRequestError
               }
             case _ =>
