@@ -21,25 +21,26 @@ import models.CustomerDetails
 import models.errors.{ErrorModel, UnexpectedJsonError}
 import play.api.http.Status._
 import uk.gov.hmrc.http.{HttpReads, HttpResponse}
-import utils.LoggerUtil
+import utils.LoggingUtil
 
 import scala.util.{Failure, Success, Try}
 
-object CustomerDetailsHttpParser extends ResponseHttpParsers with LoggerUtil {
+object CustomerDetailsHttpParser extends ResponseHttpParsers with LoggingUtil {
   implicit object CustomerDetailsReads extends HttpReads[HttpResult[CustomerDetails]] {
     override def read(method: String, url: String, response: HttpResponse): HttpResult[CustomerDetails] = {
+      implicit val res: HttpResponse = response
       response.status match {
         case OK => Try {
           response.json.as[CustomerDetails]
         } match {
           case Success(parsedModel) => Right(parsedModel)
           case Failure(reason) =>
-            logger.debug(s"[CustomerDetailsHttpParser][CustomerDetailsReads]: Invalid Json - $reason")
-            logger.warn("[CustomerDetailsHttpParser][CustomerDetailsReads]: Invalid Json returned")
+            debug(s"[CustomerDetailsHttpParser][CustomerDetailsReads]: Invalid Json - $reason")
+            errorLogRes("[CustomerDetailsHttpParser][CustomerDetailsReads]: Invalid Json returned")
             Left(UnexpectedJsonError)
         }
         case status =>
-          logger.warn(s"[CustomerDetailsHttpParser][CustomerDetailsReads]: Unexpected Response, Status $status returned")
+          errorLogRes(s"[CustomerDetailsHttpParser][CustomerDetailsReads]: Unexpected Response, Status $status returned")
           Left(ErrorModel(status, "Received downstream error when retrieving customer details."))
       }
     }

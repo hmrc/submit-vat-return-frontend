@@ -25,7 +25,7 @@ import play.api.i18n.{Messages, MessagesApi}
 import play.api.http.Status._
 
 @Singleton
-class ReceiptDataHelper @Inject()(implicit val messages: MessagesApi) extends LoggerUtil {
+class ReceiptDataHelper @Inject()(implicit val messages: MessagesApi) extends LoggingUtil {
 
   def extractReceiptData(submitModel: SubmitVatReturnModel, customerDetails: Either[ErrorModel, CustomerDetails])
                         (implicit user: User[_]): Either[ErrorModel, ReceiptData] = {
@@ -85,12 +85,11 @@ class ReceiptDataHelper @Inject()(implicit val messages: MessagesApi) extends Lo
           )
         )
         case None =>
-          logger.warn("[ReceiptDataHelper][extractDeclaration] Client name missing")
+          warnLog("[ReceiptDataHelper][extractDeclaration] Client name missing")
           Left(ErrorModel(INTERNAL_SERVER_ERROR, "Client name missing"))
       }
       case Left(error) =>
-        logger.debug("[ReceiptDataHelper][extractDeclaration] Failed to retrieve customer details from vat-subscription\n" + error.message)
-        logger.warn("[ReceiptDataHelper][extractDeclaration] Failed to retrieve customer details from vat-subscription")
+        errorLog("[ReceiptDataHelper][extractDeclaration] Failed to retrieve customer details from vat-subscription\n" + error.message)
         Left(ErrorModel(error.status, error.message))
     }
   }

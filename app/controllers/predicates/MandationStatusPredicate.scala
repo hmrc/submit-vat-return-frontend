@@ -27,7 +27,7 @@ import uk.gov.hmrc.http.HeaderCarrier
 import common.{MandationStatuses, SessionKeys}
 import models.auth.User
 import uk.gov.hmrc.play.http.HeaderCarrierConverter
-import utils.LoggerUtil
+import utils.LoggingUtil
 import views.html.errors.MtdMandatedUser
 
 import scala.concurrent.{ExecutionContext, Future}
@@ -38,7 +38,7 @@ class MandationStatusPredicate @Inject()(mandationStatusService: MandationStatus
                                          mtdMandatedUser: MtdMandatedUser,
                                          implicit val appConfig: AppConfig,
                                          implicit val executionContext: ExecutionContext) extends ActionRefiner[User, User]
-                                         with I18nSupport with LoggerUtil {
+                                         with I18nSupport with LoggingUtil {
 
   override def refine[A](request: User[A]): Future[Either[Result, User[A]]] = {
 
@@ -50,7 +50,7 @@ class MandationStatusPredicate @Inject()(mandationStatusService: MandationStatus
     req.session.get(SessionKeys.mandationStatus) match {
       case Some(status) if supportedMandationStatuses.contains(status) => Future.successful(Right(request))
       case Some(unsupportedMandationStatus) =>
-        logger.debug("[MandationStatusPredicate][refine] - User has a non 'non MTDfB' status received. " +
+        debug("[MandationStatusPredicate][refine] - User has a non 'non MTDfB' status received. " +
           s"Status returned was: $unsupportedMandationStatus")
         Future.successful(Left(Forbidden(mtdMandatedUser())))
       case None => getMandationStatus
@@ -62,8 +62,7 @@ class MandationStatusPredicate @Inject()(mandationStatusService: MandationStatus
       case Right(status) =>
         Left(Redirect(user.uri).addingToSession(SessionKeys.mandationStatus -> status.mandationStatus))
       case Left(error) =>
-        logger.info(s"[MandationStatusPredicate][refine] - Error has been received $error")
-        logger.warn(s"[MandationStatusPredicate][refine] - Error has been received")
+        errorLog(s"[MandationStatusPredicate][refine] - Error has been received $error")
         Left(errorHandler.showInternalServerError)
     }
   }

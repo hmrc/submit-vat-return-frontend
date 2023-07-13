@@ -31,7 +31,7 @@ import uk.gov.hmrc.auth.core._
 import uk.gov.hmrc.auth.core.retrieve.v2.Retrievals._
 import uk.gov.hmrc.auth.core.retrieve.~
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendController
-import utils.LoggerUtil
+import utils.LoggingUtil
 import views.html.errors._
 
 import scala.concurrent.{ExecutionContext, Future}
@@ -50,7 +50,7 @@ class AuthPredicate @Inject()(authService: EnrolmentsAuthService,
                                                                  with I18nSupport
                                                                  with ActionBuilder[User, AnyContent]
                                                                  with ActionFunction[Request, User]
-                                                                 with LoggerUtil {
+                                                                 with LoggingUtil {
 
   override val parser: BodyParser[AnyContent] = mcc.parsers.defaultBodyParser
 
@@ -65,20 +65,20 @@ class AuthPredicate @Inject()(authService: EnrolmentsAuthService,
           if (enrolments.enrolments.exists(_.key == AuthKeys.agentEnrolmentId)){
             authoriseAsAgent(block)
           } else {
-            logger.debug("[AuthPredicate][invokeBlock] - Agent does not have correct agent enrolment ID")
+            debug("[AuthPredicate][invokeBlock] - Agent does not have correct agent enrolment ID")
             Future.successful(Forbidden(unauthorisedAgent()))
           }
 
         case Some(_) ~ enrolments => authoriseAsNonAgent(enrolments, block)
         case None ~ _ =>
-          logger.warn("[AuthPredicate][invokeBlock] - Missing affinity group")
+          errorLog("[AuthPredicate][invokeBlock] - Missing affinity group")
           Future.successful(errorHandler.showInternalServerError)
       } recover {
         case _: NoActiveSession =>
-          logger.debug(s"[AuthPredicate][invokeBlock] - No active session. Redirecting to ${appConfig.signInUrl}")
+          warnLog(s"[AuthPredicate][invokeBlock] - No active session. Redirecting to ${appConfig.signInUrl}")
           Redirect(appConfig.signInUrl)
         case _: AuthorisationException =>
-          logger.warn("[AuthPredicate][invokeBlock] - Unauthorised exception when retrieving affinity and all enrolments")
+          errorLog("[AuthPredicate][invokeBlock] - Unauthorised exception when retrieving affinity and all enrolments")
           errorHandler.showInternalServerError
       }
   }
@@ -97,7 +97,7 @@ class AuthPredicate @Inject()(authService: EnrolmentsAuthService,
           case _ => insolvencySubscriptionCall(user, block)
         }
       case None =>
-        logger.debug("[AuthPredicate][authoriseAsNonAgent] - Non-agent with no HMRC-MTD-VAT enrolment. Rendering unauthorised view.")
+        errorLog("[AuthPredicate][authoriseAsNonAgent] - Non-agent with no HMRC-MTD-VAT enrolment. Rendering unauthorised view.")
         Future.successful(Forbidden(unauthorisedNonAgent()))
     }
   }
@@ -107,27 +107,27 @@ class AuthPredicate @Inject()(authService: EnrolmentsAuthService,
       case Right(details) =>
         (details.isInsolventWithoutAccess, details.insolvencyDateFutureUserBlocked(dateService.now())) match {
           case (true, futureDateBlock) =>
-            logger.debug("[AuthPredicate][insolvencySubscriptionCall] - User is insolvent and not continuing to trade")
+            debug("[AuthPredicate][insolvencySubscriptionCall] - User is insolvent and not continuing to trade")
             Future.successful(
               Forbidden(userInsolventError()(user, request2Messages, appConfig)).addingToSession(
                 SessionKeys.insolventWithoutAccessKey -> "true",
                 SessionKeys.futureInsolvencyBlock -> s"$futureDateBlock")
             )
           case (_, true) =>
-            logger.debug("[AuthPredicate][insolvencySubscriptionCall] - User has a future insolvencyDate, throwing ISE")
+            errorLog("[AuthPredicate][insolvencySubscriptionCall] - User has a future insolvencyDate, throwing ISE")
             Future.successful(errorHandler.showInternalServerError.addingToSession(
               SessionKeys.insolventWithoutAccessKey -> "false",
               SessionKeys.futureInsolvencyBlock -> "true")
             )
           case _ =>
-            logger.debug("[AuthPredicate][insolvencySubscriptionCall] - Authenticated as principle")
+            infoLog("[AuthPredicate][insolvencySubscriptionCall] - Authenticated as principle")
             block(user).map(result => result.addingToSession(
               SessionKeys.insolventWithoutAccessKey -> "false",
               SessionKeys.futureInsolvencyBlock -> "false")
             )
         }
       case _ =>
-        logger.warn("[AuthPredicate][insolvencySubscriptionCall] - Failure obtaining insolvency status from Customer Info API")
+        errorLog("[AuthPredicate][insolvencySubscriptionCall] - Failure obtaining insolvency status from Customer Info API")
         Future.successful(errorHandler.showInternalServerError)
     }
   }
@@ -151,21 +151,21 @@ class AuthPredicate @Inject()(authService: EnrolmentsAuthService,
               } match {
                 case Some(arn) => block(User(vrn, Some(arn)))
                 case None =>
-                  logger.debug("[AuthPredicate][authoriseAsAgent] - Agent with no valid arn. Rendering unauthorised view.")
+                  warnLog("[AuthPredicate][authoriseAsAgent] - Agent with no valid arn. Rendering unauthorised view.")
                   Future.successful(Forbidden(unauthorisedAgent()))
               }
           } recover {
             case _: NoActiveSession =>
-              logger.debug(s"AuthoriseAsAgentWithClient][authoriseAsAgent] - No active session. Redirecting to ${appConfig.signInUrl}")
+              warnLog(s"AuthoriseAsAgentWithClient][authoriseAsAgent] - No active session. Redirecting to ${appConfig.signInUrl}")
               Redirect(appConfig.signInUrl)
             case _: AuthorisationException =>
-              logger.debug(s"[AuthoriseAsAgentWithClient][authoriseAsAgent] - Agent does not have delegated authority for Client. " +
+              warnLog(s"[AuthoriseAsAgentWithClient][authoriseAsAgent] - Agent does not have delegated authority for Client. " +
                 s"Redirecting to ${appConfig.agentClientUnauthorisedUrl(request.uri)}")
               Redirect(appConfig.agentClientUnauthorisedUrl(request.uri))
           }
 
       case None =>
-        logger.debug(s"[AuthPredicate][authoriseAsAgent] - No Client VRN in session. Redirecting to ${appConfig.agentClientLookupStartUrl}")
+        warnLog(s"[AuthPredicate][authoriseAsAgent] - No Client VRN in session. Redirecting to ${appConfig.agentClientLookupStartUrl}")
         Future.successful(Redirect(appConfig.agentClientLookupStartUrl(request.uri)))
     }
   }
