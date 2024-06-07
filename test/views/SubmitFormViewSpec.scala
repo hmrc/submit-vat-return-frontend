@@ -26,9 +26,10 @@ import views.html.SubmitForm
 
 class SubmitFormViewSpec extends ViewBaseSpec {
 
-  val submitFormView: SubmitForm = inject[SubmitForm]
+  val submitFormView: SubmitForm = injector.instanceOf[SubmitForm]
 
   object Selectors {
+    val title = "head > title"
     val backLink = ".govuk-back-link"
     val heading = "h1"
     val entityName = "h2"
@@ -70,14 +71,25 @@ class SubmitFormViewSpec extends ViewBaseSpec {
         isAgent = false,
       )(messages, mockAppConfig, user)
 
+      lazy val viewAsString = view.toString
+
       lazy implicit val document: Document = Jsoup.parse(view.body)
 
       "have the correct title" in {
         document.title shouldBe title
       }
 
+      "uses non breaking spaces to display the title" in {
+        viewAsString.contains(titleNBS)
+      }
+
+
       "have the correct page heading" in {
         elementText(Selectors.heading) shouldBe heading
+      }
+
+      "uses non breaking spaces to display the correct page heading" in {
+        viewAsString.contains(headingNBS)
       }
 
       "have the entity name as a subheading" in {
@@ -89,7 +101,11 @@ class SubmitFormViewSpec extends ViewBaseSpec {
       }
 
       "have the return due date" in {
-        elementText(Selectors.returnDueDate) shouldBe returnDue("12\u00a0May\u00a02019")
+        elementText(Selectors.returnDueDate) shouldBe returnDue("12 May 2019")
+      }
+
+      "have the return due date with non breaking spaces" in {
+        viewAsString.contains(returnDue("12\u00a0May\u00a02019"))
       }
 
       "have the correct subheading for the last four boxes" in {
@@ -225,9 +241,14 @@ class SubmitFormViewSpec extends ViewBaseSpec {
       )(messages, mockAppConfig, agentUser)
 
       lazy implicit val document: Document = Jsoup.parse(view.body)
+      lazy val viewAsString = view.toString
 
       "have the correct title" in {
         document.title shouldBe agentTitle
+      }
+
+      "have the correct title with non breaking speaces" in {
+        viewAsString.contains(agentTitleNBS)
       }
     }
   }

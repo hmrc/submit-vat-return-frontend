@@ -17,12 +17,11 @@
 package mocks
 
 import java.time.ZonedDateTime
-
-import akka.util.Timeout
 import assets.NrsTestData.IdentityDataTestData
 import base.BaseSpec
 import controllers.predicates.AuthPredicate
 import mocks.service.{MockDateService, MockVatSubscriptionService}
+import org.apache.pekko.util.Timeout
 import play.api.http.Status
 import play.api.mvc.{Action, AnyContent, Request}
 import play.api.test.Helpers.{redirectLocation, status}

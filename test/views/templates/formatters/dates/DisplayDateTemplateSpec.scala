@@ -35,9 +35,11 @@ class DisplayDateTemplateSpec extends TemplateBaseSpec {
 
       lazy val template = displayDate(date)
       lazy val document: Document = Jsoup.parse(template.body)
+      lazy val viewAsString = document.toString
+
 
       "render the date with year" in {
-        document.body().text() shouldEqual "1\u00a0January\u00a02017"
+        viewAsString contains "1\u00a0January\u00a02017"
       }
     }
 
@@ -45,9 +47,11 @@ class DisplayDateTemplateSpec extends TemplateBaseSpec {
 
       lazy val template = displayDate(date, useShortDayFormat = true)
       lazy val document: Document = Jsoup.parse(template.body)
+      lazy val viewAsString = document.toString
+
 
       "render the date with year" in {
-        document.body().text() shouldEqual "1\u00a0Jan\u00a02017"
+        viewAsString contains "1\u00a0Jan\u00a02017"
       }
     }
 
@@ -55,9 +59,11 @@ class DisplayDateTemplateSpec extends TemplateBaseSpec {
 
       lazy val template = displayDate(date, showYear = false)
       lazy val document: Document = Jsoup.parse(template.body)
+      lazy val viewAsString = document.toString
+
 
       "render the date without year" in {
-        document.body().text() shouldEqual "1\u00a0January"
+        viewAsString contains "1\u00a0January"
       }
     }
 
@@ -65,9 +71,11 @@ class DisplayDateTemplateSpec extends TemplateBaseSpec {
 
       lazy val template = displayDate(date, showYear = false, useShortDayFormat = true)
       lazy val document: Document = Jsoup.parse(template.body)
+      lazy val viewAsString = document.toString
+
 
       "render the date without year" in {
-        document.body().text() shouldEqual "1\u00a0Jan"
+        viewAsString contains "1\u00a0Jan"
       }
     }
   }
