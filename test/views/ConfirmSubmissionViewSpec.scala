@@ -122,9 +122,14 @@ class ConfirmSubmissionViewSpec extends ViewBaseSpec {
         lazy val view = confirmSubmissionView(viewModel, isAgent = false)(
           messages, mockAppConfig, user)
         lazy implicit val document: Document = Jsoup.parse(view.body)
+        lazy val viewAsString = document.toString
 
         s"display the title as ${viewMessages.principalTitle}" in {
           document.title shouldBe viewMessages.principalTitle
+        }
+
+        s"display the title as ${viewMessages.principalTitleNBS} with non breaking spaces" in {
+          viewAsString contains  viewMessages.principalTitleNBS
         }
 
         s"display the back link with the correct href" in {

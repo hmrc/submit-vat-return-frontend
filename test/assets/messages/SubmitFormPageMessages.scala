@@ -18,10 +18,12 @@ package assets.messages
 
 object SubmitFormPageMessages {
 
-  val title = "Submit return 12\u00a0Jan to 12\u00a0Apr\u00a02019 - Manage your VAT account - GOV.UK"
-  val agentTitle = "Submit return 12\u00a0Jan to 12\u00a0Apr\u00a02019 - Your client’s VAT details - GOV.UK"
-  val heading = "Submit return 12\u00a0Jan to 12\u00a0Apr\u00a02019"
-  val submitReturn = "Submit return"
+  val title = "Submit return 12 Jan to 12 Apr 2019 - Manage your VAT account - GOV.UK"
+  val titleNBS = "Submit return 12\u00a0Jan to 12\u00a0Apr\u00a02019 - Manage your VAT account - GOV.UK"
+  val agentTitle = "Submit return 12 Jan to 12 Apr 2019 - Your client’s VAT details - GOV.UK"
+  val agentTitleNBS = "Submit return 12\u00a0Jan to 12\u00a0Apr\u00a02019 - Your client’s VAT details - GOV.UK"
+  val heading = "Submit return 12 Jan to 12 Apr 2019"
+  val headingNBS = "Submit return 12\u00a0Jan to 12\u00a0Apr\u00a02019"
   val returnDue: String => String = date => "Return due date: " + date
   val vatDetails = "VAT details"
   val errorHeading = "There is a problem"

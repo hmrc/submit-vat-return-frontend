@@ -18,8 +18,10 @@ package assets.messages
 
 object ConfirmSubmissionMessages extends BaseMessages {
 
-  val title: String = "Confirm return details 12\u00a0Jan to 12\u00a0Apr\u00a02019"
+  val title: String = "Confirm return details 12 Jan to 12 Apr 2019"
+  val titleNBS: String = "Confirm return details 12\u00a0Jan to 12\u00a0Apr\u00a02019"
   val principalTitle: String = title + titleSuffix
+  val principalTitleNBS: String = titleNBS + titleSuffix
   val back: String = "Back"
   val agentTitle: String = title + agentTitleSuffix
   val heading = "Confirm return details"

@@ -20,7 +20,8 @@ import uk.gov.hmrc.DefaultBuildSettings.{addTestReportOption, defaultSettings, s
 
 lazy val appDependencies: Seq[ModuleID] = compile ++ test
 val appName = "submit-vat-return-frontend"
-val bootstrapPlayVersion = "7.15.0"
+val bootstrapPlayVersion       = "8.6.0"
+val playFrontendHmrc           = "9.11.0"
 
 lazy val coverageSettings: Seq[Setting[_]] = {
   import scoverage.ScoverageKeys
@@ -46,12 +47,12 @@ lazy val coverageSettings: Seq[Setting[_]] = {
 
 val compile = Seq(
   play.sbt.PlayImport.ws,
-  "uk.gov.hmrc"       %% "play-frontend-hmrc"         % "7.7.0-play-28",
-  "uk.gov.hmrc"       %% "bootstrap-frontend-play-28" % bootstrapPlayVersion
+  "uk.gov.hmrc"       %% "bootstrap-frontend-play-30" % bootstrapPlayVersion,
+  "uk.gov.hmrc"       %% "play-frontend-hmrc-play-30" % playFrontendHmrc
 )
 
 val test = Seq(
-  "uk.gov.hmrc"            %% "bootstrap-test-play-28"      % bootstrapPlayVersion,
+  "uk.gov.hmrc"            %% "bootstrap-test-play-30"      % bootstrapPlayVersion,
   "org.scalamock"          %% "scalamock"                   % "5.2.0",
   "org.scalatestplus"      %% "mockito-3-4"                 % "3.2.9.0"
 ).map(_ % s"$Test, $IntegrationTest")
@@ -61,13 +62,6 @@ TwirlKeys.templateImports ++= Seq(
   "uk.gov.hmrc.hmrcfrontend.views.html.components._",
   "uk.gov.hmrc.hmrcfrontend.views.html.helpers._"
 )
-
-def oneForkedJvmPerTest(tests: Seq[TestDefinition]): Seq[Group] = tests map {
-  test =>
-    Group(test.name, Seq(test), SubProcess(
-      ForkOptions().withRunJVMOptions(Vector("-Dtest.name=" + test.name, "-Dlogger.resource=logback-test.xml"))
-    ))
-}
 
 lazy val microservice: Project = Project(appName, file("."))
   .enablePlugins(play.sbt.PlayScala, SbtDistributablesPlugin)
@@ -80,7 +74,7 @@ lazy val microservice: Project = Project(appName, file("."))
   .settings(
     Test / Keys.fork := true,
     Test / javaOptions += "-Dlogger.resource=logback-test.xml",
-    scalaVersion := "2.13.8",
+    scalaVersion := "2.13.13",
     libraryDependencies ++= appDependencies,
     scalacOptions ++= Seq("-Wconf:cat=unused-imports&site=.*views.html.*:s"),
     retrieveManaged := true,
@@ -92,7 +86,6 @@ lazy val microservice: Project = Project(appName, file("."))
     IntegrationTest / Keys.fork := false,
     IntegrationTest / unmanagedSourceDirectories := (IntegrationTest / baseDirectory)(base => Seq(base / "it")).value,
     addTestReportOption(IntegrationTest, "int-test-reports"),
-    IntegrationTest / testGrouping := oneForkedJvmPerTest((IntegrationTest / definedTests).value),
     IntegrationTest / parallelExecution := false,
     IntegrationTest / resourceDirectory := baseDirectory.value / "it" / "resources"
   )

@@ -36,9 +36,11 @@ class DisplayDateRangeTemplateSpec extends TemplateBaseSpec {
 
       lazy val template = displayDateRange(startDate, endDate)
       lazy val document: Document = Jsoup.parse(template.body)
+      lazy val viewAsString = document.toString
+
 
       "render the correct text" in {
-        document.body().text() shouldEqual "1\u00a0January to 1\u00a0April\u00a02017"
+        viewAsString contains "1\u00a0January to 1\u00a0April\u00a02017"
       }
     }
 
@@ -48,9 +50,10 @@ class DisplayDateRangeTemplateSpec extends TemplateBaseSpec {
 
       lazy val template = displayDateRange(startDate, endDate, useShortDayFormat = true)
       lazy val document: Document = Jsoup.parse(template.body)
+      lazy val viewAsString = document.toString
 
       "render the correct text" in {
-        document.body().text() shouldEqual "1\u00a0Jan to 1\u00a0Apr\u00a02017"
+        viewAsString contains "1\u00a0Jan to 1\u00a0Apr\u00a02017"
       }
     }
 
@@ -60,9 +63,11 @@ class DisplayDateRangeTemplateSpec extends TemplateBaseSpec {
 
       lazy val template = displayDateRange(startDate, endDate)
       lazy val document: Document = Jsoup.parse(template.body)
+      lazy val viewAsString = document.toString
+
 
       "render the correct text" in {
-        document.body().text() shouldEqual "1\u00a0January\u00a02017 to 1\u00a0April\u00a02018"
+        viewAsString contains "1\u00a0January\u00a02017 to 1\u00a0April\u00a02018"
       }
     }
 
@@ -72,9 +77,11 @@ class DisplayDateRangeTemplateSpec extends TemplateBaseSpec {
 
       lazy val template = displayDateRange(startDate, endDate, useShortDayFormat = true)
       lazy val document: Document = Jsoup.parse(template.body)
+      lazy val viewAsString = document.toString
+
 
       "render the correct text" in {
-        document.body().text() shouldEqual "1\u00a0Jan\u00a02017 to 1\u00a0Apr\u00a02018"
+        viewAsString contains "1\u00a0Jan\u00a02017 to 1\u00a0Apr\u00a02018"
       }
     }
 

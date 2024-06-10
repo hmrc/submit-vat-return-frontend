@@ -106,7 +106,7 @@ class SubmitFormPageSpec extends BaseISpec {
 
               response.status shouldBe OK
               Jsoup.parse(response.body).select("h1 > span:nth-of-type(2)").text() should
-                include("1\u00a0Jan to 31\u00a0Mar\u00a02018")
+                include("1 Jan to 31 Mar 2018")
             }
           }
         }

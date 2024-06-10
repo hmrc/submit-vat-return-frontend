@@ -28,6 +28,7 @@ import org.scalatest.{BeforeAndAfterEach, OptionValues}
 import org.scalatestplus.play.guice._
 import play.api.Configuration
 import play.api.i18n.{Lang, Messages, MessagesApi}
+import play.api.inject.Injector
 import play.api.mvc.{AnyContentAsEmpty, MessagesControllerComponents}
 import play.api.test.{FakeRequest, Injecting}
 import uk.gov.hmrc.http.HeaderCarrier
@@ -40,6 +41,7 @@ trait BaseSpec extends AnyWordSpecLike with Matchers with OptionValues with Guic
   implicit val config: Configuration = app.configuration
 
   implicit val mockAppConfig: AppConfig = new MockConfig
+  lazy val injector: Injector = app.injector
 
   lazy val mcc: MessagesControllerComponents = inject[MessagesControllerComponents]
   lazy val messagesApi: MessagesApi = inject[MessagesApi]
