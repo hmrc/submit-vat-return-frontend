@@ -39,7 +39,7 @@ class SubmitVatReturnAuditModelSpec extends BaseSpec {
       BigDecimal(7),
       BigDecimal(8),
       BigDecimal(9),
-      true,
+      flatRateScheme = true,
       LocalDate.parse("2019-01-31"),
       LocalDate.parse("2019-04-30"),
       LocalDate.parse("2019-05-31")
