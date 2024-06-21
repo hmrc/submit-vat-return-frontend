@@ -43,11 +43,11 @@ class MoneyPoundsSpec extends AnyWordSpecLike with Matchers {
     }
 
     "return the formatted value (with grouping separators) and 2 decimal places rounding up" in {
-      MoneyPounds(9657876.93756, 2, true).quantity shouldBe "9,657,876.94"
+      MoneyPounds(9657876.93756, 2, roundUp = true).quantity shouldBe "9,657,876.94"
     }
 
     "return the formatted value (with grouping separators) and no decimal places rounding up" in {
-      MoneyPounds(9657876.93456, 0, true).quantity shouldBe "9,657,877"
+      MoneyPounds(9657876.93456, 0, roundUp = true).quantity shouldBe "9,657,877"
     }
 
   }

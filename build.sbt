@@ -53,8 +53,7 @@ val compile = Seq(
 
 val test = Seq(
   "uk.gov.hmrc"            %% "bootstrap-test-play-30"      % bootstrapPlayVersion,
-  "org.scalamock"          %% "scalamock"                   % "5.2.0",
-  "org.scalatestplus"      %% "mockito-3-4"                 % "3.2.9.0"
+  "org.scalamock"          %% "scalamock"                   % "5.2.0"
 ).map(_ % s"$Test, $IntegrationTest")
 
 TwirlKeys.templateImports ++= Seq(
