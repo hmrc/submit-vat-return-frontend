@@ -18,11 +18,12 @@ package config
 
 import common.ConfigKeys
 import config.features.Features
+
 import javax.inject.{Inject, Singleton}
 import play.api.Configuration
 import play.api.i18n.Lang
 import play.api.mvc.Call
-import uk.gov.hmrc.play.bootstrap.binders.SafeRedirectUrl
+import uk.gov.hmrc.http.StringContextOps
 import uk.gov.hmrc.play.bootstrap.config.ServicesConfig
 
 trait AppConfig {
@@ -111,7 +112,7 @@ class FrontendAppConfig @Inject()(configuration: Configuration, servicesConfig: 
 
   // Agent Client Lookup
   override lazy val platformHost: String = getString(ConfigKeys.platformHost)
-  private lazy val agentClientLookupRedirectUrl: String => String = uri => SafeRedirectUrl(platformHost + uri).encodedUrl
+  private lazy val agentClientLookupRedirectUrl: String => String = uri => url"${platformHost + uri}".toString
   private lazy val agentClientLookupHost = getString(ConfigKeys.vatAgentClientLookupFrontendHost)
   override lazy val agentClientLookupStartUrl: String => String = uri =>
     agentClientLookupHost +
@@ -136,7 +137,7 @@ class FrontendAppConfig @Inject()(configuration: Configuration, servicesConfig: 
   override lazy val staticDateValue: String = getString(ConfigKeys.staticDateValue)
 
   override def feedbackUrl(redirectUrl: String): String = s"$contactHost/contact/beta-feedback?service=$contactFormServiceIdentifier" +
-    s"&backUrl=${SafeRedirectUrl(platformHost + redirectUrl).encodedUrl}"
+    s"&backUrl=${url"${platformHost + redirectUrl}"}"
 
 
   override val vatObligationsBaseUrl: String = baseUrl("vat-obligations")
