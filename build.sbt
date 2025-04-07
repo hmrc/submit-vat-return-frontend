@@ -73,11 +73,11 @@ lazy val microservice: Project = Project(appName, file("."))
   .settings(
     Test / Keys.fork := true,
     Test / javaOptions += "-Dlogger.resource=logback-test.xml",
-    scalaVersion := "2.13.13",
+    scalaVersion := "2.13.16",
     libraryDependencies ++= appDependencies,
-    scalacOptions ++= Seq("-Wconf:cat=unused-imports&site=.*views.html.*:s"),
+    scalacOptions ++= Seq("-Wconf:cat=unused-imports&site=.*views.html.*:s", "-Wconf:cat=unused&src=routes/.*:s"),
     retrieveManaged := true,
-    RoutesKeys.routesImport := Seq.empty
+    RoutesKeys.routesImport := Seq("uk.gov.hmrc.play.bootstrap.binders.RedirectUrl")
   )
   .configs(IntegrationTest)
   .settings(inConfig(IntegrationTest)(Defaults.itSettings): _*)
