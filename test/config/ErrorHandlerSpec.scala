@@ -25,8 +25,6 @@ import play.api.test.Helpers.{contentAsString, defaultAwaitTimeout, status}
 import views.ViewBaseSpec
 import views.html.templates.ErrorTemplate
 
-import scala.concurrent.Future
-
 class ErrorHandlerSpec extends ViewBaseSpec {
 
   val errorTemplate: ErrorTemplate = inject[ErrorTemplate]
@@ -41,10 +39,10 @@ class ErrorHandlerSpec extends ViewBaseSpec {
 
         lazy val fakeRequest = FakeRequest().withCookies(Cookie("PLAY_LANG", "en"))
         lazy val result = service.showInternalServerError(fakeRequest)
-        implicit lazy val document: Document = Jsoup.parse(contentAsString(Future.successful(result)))
+        implicit lazy val document: Document = Jsoup.parse(contentAsString(result))
 
         "return 500" in {
-          status(Future.successful(result)) shouldBe INTERNAL_SERVER_ERROR
+          status(result) shouldBe INTERNAL_SERVER_ERROR
         }
 
         "render page in English" in {
@@ -56,10 +54,10 @@ class ErrorHandlerSpec extends ViewBaseSpec {
 
         lazy val fakeRequest = FakeRequest().withCookies(Cookie("PLAY_LANG", "cy"))
         lazy val result = service.showInternalServerError(fakeRequest)
-        implicit lazy val document: Document = Jsoup.parse(contentAsString(Future.successful(result)))
+        implicit lazy val document: Document = Jsoup.parse(contentAsString(result))
 
         "return 500" in {
-          status(Future.successful(result)) shouldBe INTERNAL_SERVER_ERROR
+          status(result) shouldBe INTERNAL_SERVER_ERROR
         }
 
         "render page in Welsh" in {
@@ -74,10 +72,10 @@ class ErrorHandlerSpec extends ViewBaseSpec {
 
         lazy val fakeRequest = FakeRequest().withCookies(Cookie("PLAY_LANG", "en"))
         lazy val result = service.showBadRequestError(fakeRequest)
-        implicit lazy val document: Document = Jsoup.parse(contentAsString(Future.successful(result)))
+        implicit lazy val document: Document = Jsoup.parse(contentAsString(result))
 
         "return 400" in {
-          status(Future.successful(result)) shouldBe BAD_REQUEST
+          status(result) shouldBe BAD_REQUEST
         }
 
         "render page in English" in {
@@ -89,10 +87,10 @@ class ErrorHandlerSpec extends ViewBaseSpec {
 
         lazy val fakeRequest = FakeRequest().withCookies(Cookie("PLAY_LANG", "cy"))
         lazy val result = service.showBadRequestError(fakeRequest)
-        implicit lazy val document: Document = Jsoup.parse(contentAsString(Future.successful(result)))
+        implicit lazy val document: Document = Jsoup.parse(contentAsString(result))
 
         "return 400" in {
-          status(Future.successful(result)) shouldBe BAD_REQUEST
+          status(result) shouldBe BAD_REQUEST
         }
 
         "render page in Welsh" in {

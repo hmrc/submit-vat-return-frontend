@@ -114,7 +114,7 @@ class ConfirmSubmissionController @Inject()(mandationStatusCheck: MandationStatu
                 submitToNrs(periodKey, model)
               } else {
                 debug(s"[ConfirmSubmissionController][submit] Obligation end date for period $periodKey has not yet passed.")
-                Future.successful(errorHandler.showBadRequestError)
+                errorHandler.showBadRequestError
               }
             case Failure(error) =>
               errorLog(s"[ConfirmSubmissionController][submit] Invalid session data found for key: ${SessionKeys.returnData}. Error: $error")

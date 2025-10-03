@@ -58,7 +58,7 @@ class AuthPredicate @Inject()(authService: EnrolmentsAuthService,
 
     implicit val req: Request[A] = request
 
-    authService
+    val result: Future[Result] = authService
       .authorised()
       .retrieve(affinityGroup and allEnrolments) {
         case Some(Agent) ~ enrolments =>
@@ -72,15 +72,17 @@ class AuthPredicate @Inject()(authService: EnrolmentsAuthService,
         case Some(_) ~ enrolments => authoriseAsNonAgent(enrolments, block)
         case None ~ _ =>
           errorLog("[AuthPredicate][invokeBlock] - Missing affinity group")
-          Future.successful(errorHandler.showInternalServerError)
-      } recover {
-        case _: NoActiveSession =>
-          warnLog(s"[AuthPredicate][invokeBlock] - No active session. Redirecting to ${appConfig.signInUrl}")
-          Redirect(appConfig.signInUrl)
-        case _: AuthorisationException =>
-          errorLog("[AuthPredicate][invokeBlock] - Unauthorised exception when retrieving affinity and all enrolments")
           errorHandler.showInternalServerError
       }
+    result.recoverWith {
+      case _: NoActiveSession =>
+        warnLog(s"[AuthPredicate][invokeBlock] - No active session. Redirecting to ${appConfig.signInUrl}")
+        Future.successful(Redirect(appConfig.signInUrl))
+
+      case _: AuthorisationException =>
+        errorLog("[AuthPredicate][invokeBlock] - Unauthorised exception")
+        errorHandler.showInternalServerError
+    }
   }
 
   private def authoriseAsNonAgent[A](enrolments: Enrolments, block: User[A] => Future[Result])
@@ -92,7 +94,7 @@ class AuthPredicate @Inject()(authService: EnrolmentsAuthService,
         val user = User(vrn)
         (request.session.get(SessionKeys.insolventWithoutAccessKey), request.session.get(SessionKeys.futureInsolvencyBlock)) match {
           case (Some("true"), _) => Future.successful(Forbidden(userInsolventError()(user,request2Messages,appConfig)))
-          case (Some("false"), Some("true")) => Future.successful(errorHandler.showInternalServerError)
+          case (Some("false"), Some("true")) => errorHandler.showInternalServerError
           case (Some("false"), Some("false")) => block(user)
           case _ => insolvencySubscriptionCall(user, block)
         }
@@ -115,20 +117,20 @@ class AuthPredicate @Inject()(authService: EnrolmentsAuthService,
             )
           case (_, true) =>
             errorLog("[AuthPredicate][insolvencySubscriptionCall] - User has a future insolvencyDate, throwing ISE")
-            Future.successful(errorHandler.showInternalServerError.addingToSession(
-              SessionKeys.insolventWithoutAccessKey -> "false",
-              SessionKeys.futureInsolvencyBlock -> "true")
+            errorHandler.showInternalServerError.map(_.addingToSession(
+                SessionKeys.insolventWithoutAccessKey -> "false",
+                SessionKeys.futureInsolvencyBlock -> "true")
             )
           case _ =>
-            infoLog("[AuthPredicate][insolvencySubscriptionCall] - Authenticated as principle")
-            block(user).map(result => result.addingToSession(
-              SessionKeys.insolventWithoutAccessKey -> "false",
-              SessionKeys.futureInsolvencyBlock -> "false")
+            infoLog("[AuthPredicate][insolvencySubscriptionCall] - Authenticated as principal")
+            block(user).map(_.addingToSession(
+                SessionKeys.insolventWithoutAccessKey -> "false",
+                SessionKeys.futureInsolvencyBlock -> "false")
             )
         }
       case _ =>
         errorLog("[AuthPredicate][insolvencySubscriptionCall] - Failure obtaining insolvency status from Customer Info API")
-        Future.successful(errorHandler.showInternalServerError)
+        errorHandler.showInternalServerError
     }
   }
 

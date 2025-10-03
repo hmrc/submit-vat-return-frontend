@@ -2,6 +2,7 @@ $govuk-assets-path: "/vat-through-software/submit-vat-return/assets/lib/govuk-fr
 $hmrc-assets-path: "/vat-through-software/submit-vat-return/assets/lib/hmrc-frontend/hmrc/assets/";
 
 @import "lib/govuk-frontend/dist/govuk/all";
+//@import "lib/govuk-frontend/dist/govuk/index";
 @import "lib/hmrc-frontend/hmrc/all";
 
 @media (min-width: 40.0625em) {
