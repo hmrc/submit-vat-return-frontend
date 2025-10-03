@@ -32,7 +32,9 @@ import play.api.data.Form
 import play.api.http.Status
 import play.api.libs.json.Json
 import play.api.mvc.{AnyContentAsEmpty, Result}
+import play.api.test.FakeRequest
 import play.api.test.Helpers._
+import play.twirl.api.Html
 import views.html.SubmitForm
 
 import scala.concurrent.Future
@@ -251,7 +253,9 @@ class SubmitFormControllerSpec extends BaseSpec
             }
 
             "render generic Bad Request page" in {
-              contentAsString(result) shouldBe errorHandler.badRequestTemplate.toString()
+              implicit lazy val fakeRequest: FakeRequest[AnyContentAsEmpty.type] = FakeRequest("", "")
+              val expectedHtml: Html = await(errorHandler.badRequestTemplate)
+              contentAsString(result) shouldBe expectedHtml.toString()
             }
           }
         }
@@ -485,7 +489,8 @@ class SubmitFormControllerSpec extends BaseSpec
       }
 
       "render generic Bad Request page" in {
-        contentAsString(result) shouldBe errorHandler.badRequestTemplate(request).toString()
+        val expectedHtml = await(errorHandler.badRequestTemplate(request))
+        contentAsString(result) shouldBe expectedHtml.toString()
       }
     }
 
@@ -790,7 +795,6 @@ class SubmitFormControllerSpec extends BaseSpec
         }
       }
     }
-
     authControllerChecks(TestSubmitFormController.submit(periodKey = "93DH"), fakeRequest)
   }
 }
