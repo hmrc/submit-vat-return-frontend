@@ -15,15 +15,14 @@
  */
 
 import play.sbt.routes.RoutesKeys
-import sbt.Tests.{Group, SubProcess}
 import uk.gov.hmrc.DefaultBuildSettings.{addTestReportOption, defaultSettings, scalaSettings}
 
 lazy val appDependencies: Seq[ModuleID] = compile ++ test
 val appName = "submit-vat-return-frontend"
 val bootstrapPlayVersion       = "8.6.0"
-val playFrontendHmrc           = "9.11.0"
+val playFrontendHmrc           = "12.11.0"
 
-lazy val coverageSettings: Seq[Setting[_]] = {
+lazy val coverageSettings: Seq[Setting[?]] = {
   import scoverage.ScoverageKeys
 
   val excludedPackages = Seq(
@@ -66,9 +65,9 @@ lazy val microservice: Project = Project(appName, file("."))
   .enablePlugins(play.sbt.PlayScala, SbtDistributablesPlugin)
   .disablePlugins(JUnitXmlReportPlugin)
   .settings(PlayKeys.playDefaultPort := 9147)
-  .settings(coverageSettings: _*)
-  .settings(scalaSettings: _*)
-  .settings(defaultSettings(): _*)
+  .settings(coverageSettings *)
+  .settings(scalaSettings *)
+  .settings(defaultSettings() *)
   .settings(majorVersion := 0)
   .settings(
     Test / Keys.fork := true,
@@ -80,7 +79,7 @@ lazy val microservice: Project = Project(appName, file("."))
     RoutesKeys.routesImport := Seq("uk.gov.hmrc.play.bootstrap.binders.RedirectUrl")
   )
   .configs(IntegrationTest)
-  .settings(inConfig(IntegrationTest)(Defaults.itSettings): _*)
+  .settings(inConfig(IntegrationTest)(Defaults.itSettings) *)
   .settings(
     IntegrationTest / Keys.fork := false,
     IntegrationTest / unmanagedSourceDirectories := (IntegrationTest / baseDirectory)(base => Seq(base / "it")).value,
