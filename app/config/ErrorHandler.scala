@@ -17,34 +17,35 @@
 package config
 
 import javax.inject.{Inject, Singleton}
-import play.api.i18n.MessagesApi
-import play.api.mvc.{Request, Result}
+import play.api.i18n.{I18nSupport, MessagesApi}
+import play.api.mvc.{RequestHeader, Result}
 import play.api.mvc.Results._
 import play.twirl.api.Html
 import uk.gov.hmrc.play.bootstrap.frontend.http.FrontendErrorHandler
 import views.html.templates.ErrorTemplate
 
+import scala.concurrent.{ExecutionContext, Future}
+
 @Singleton
 class ErrorHandler @Inject()(val messagesApi: MessagesApi,
                              errorTemplate: ErrorTemplate,
-                             implicit val appConfig: AppConfig) extends FrontendErrorHandler {
+                             implicit val appConfig: AppConfig) (implicit val ec: ExecutionContext)extends FrontendErrorHandler with I18nSupport {
+
 
   override def standardErrorTemplate(pageTitle: String, heading: String, message: String)
-                                    (implicit request: Request[_]): Html = {
-    errorTemplate(pageTitle, heading, message)
-  }
+                                    (implicit request: RequestHeader): Future[Html] =
+    Future.successful(errorTemplate(pageTitle, heading, message))
 
-  override def notFoundTemplate(implicit request: Request[_]): Html =
+  override def notFoundTemplate(implicit request: RequestHeader): Future[Html] =
     standardErrorTemplate("notFound.title", "notFound.heading", "notFound.message")
 
-  override def internalServerErrorTemplate(implicit request: Request[_]): Html =
+  override def internalServerErrorTemplate(implicit request: RequestHeader): Future[Html] =
     standardErrorTemplate("standardError.title", "standardError.heading", "standardError.message")
 
-  override def badRequestTemplate(implicit request: Request[_]): Html =
+  override def badRequestTemplate(implicit request: RequestHeader): Future[Html] =
     standardErrorTemplate("badRequest.title", "badRequest.heading", "badRequest.message")
 
-  def showInternalServerError(implicit request: Request[_]): Result = InternalServerError(internalServerErrorTemplate)
+  def showInternalServerError(implicit request: RequestHeader): Future[Result] = internalServerErrorTemplate.map(InternalServerError(_))
 
-  def showBadRequestError(implicit request: Request[_]): Result = BadRequest(badRequestTemplate)
-
+  def showBadRequestError(implicit request: RequestHeader): Future[Result] = badRequestTemplate.map(BadRequest(_))
 }

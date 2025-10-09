@@ -58,12 +58,12 @@ class MandationStatusPredicate @Inject()(mandationStatusService: MandationStatus
   }
 
   private def getMandationStatus[A](implicit user: User[A], hc: HeaderCarrier): Future[Left[Result, User[A]]] = {
-    mandationStatusService.getMandationStatus(user.vrn) map {
+    mandationStatusService.getMandationStatus(user.vrn).flatMap {
       case Right(status) =>
-        Left(Redirect(user.uri).addingToSession(SessionKeys.mandationStatus -> status.mandationStatus))
+        Future.successful(Left(Redirect(user.uri).addingToSession(SessionKeys.mandationStatus -> status.mandationStatus)))
       case Left(error) =>
         errorLog(s"[MandationStatusPredicate][refine] - Error has been received $error")
-        Left(errorHandler.showInternalServerError)
+        errorHandler.showInternalServerError.map(Left(_))
     }
   }
 }

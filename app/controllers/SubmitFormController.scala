@@ -27,7 +27,7 @@ import models.auth.User
 import play.api.data.Form
 import play.api.i18n.I18nSupport
 import play.api.libs.json.Json
-import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
+import play.api.mvc.{Action, AnyContent, MessagesControllerComponents, Result}
 import services.{DateService, VatObligationsService, VatSubscriptionService}
 import uk.gov.hmrc.http.HeaderCarrier
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendController
@@ -36,7 +36,7 @@ import views.html.SubmitForm
 
 import java.net.URLDecoder
 import javax.inject.{Inject, Singleton}
-import scala.concurrent.ExecutionContext
+import scala.concurrent.{ExecutionContext, Future}
 
 @Singleton
 class SubmitFormController @Inject()(mcc: MessagesControllerComponents,
@@ -56,7 +56,7 @@ class SubmitFormController @Inject()(mcc: MessagesControllerComponents,
   def show(periodKey: String): Action[AnyContent] = (authPredicate
     andThen mandationStatusCheck
     andThen honestyDeclaration.authoriseForPeriodKey(periodKey)
-  ).async { implicit user =>
+  ) async { implicit user =>
     user.session.get(SessionKeys.returnData) match {
       case Some(model) => renderViewWithSessionData(periodKey, model)
       case _ => renderViewWithoutSessionData(periodKey, SubmitVatReturnForm().nineBoxForm)
@@ -64,7 +64,7 @@ class SubmitFormController @Inject()(mcc: MessagesControllerComponents,
   }
 
   private def renderViewWithSessionData(periodKey: String, model: String)
-                                       (implicit user: User[_], hc: HeaderCarrier, appConfig: AppConfig) = {
+                                       (implicit user: User[_], hc: HeaderCarrier, appConfig: AppConfig): Future[Result] = {
 
     val sessionData = Json.parse(model).as[SubmitVatReturnModel]
 
@@ -101,12 +101,11 @@ class SubmitFormController @Inject()(mcc: MessagesControllerComponents,
   }
 
   private def renderViewWithoutSessionData(periodKey: String, form: Form[NineBoxModel])
-                                          (implicit user: User[_], hc: HeaderCarrier) =
+                                          (implicit user: User[_], hc: HeaderCarrier): Future[Result] = {
     for {
       customerInformation <- vatSubscriptionService.getCustomerDetails(user.vrn)
       obligations <- vatObligationsService.getObligations(user.vrn)
-    } yield {
-      (customerInformation, obligations) match {
+      result <- (customerInformation, obligations) match {
         case (Right(customerDetails), Right(obs)) =>
 
           val decodedPeriodKey: String = URLDecoder.decode(periodKey, "utf-8")
@@ -126,34 +125,37 @@ class SubmitFormController @Inject()(mcc: MessagesControllerComponents,
                   Some(controllers.routes.SubmitFormController.show(periodKey).url)
                 )
 
-                Ok(submitForm(
-                  periodKey,
-                  customerDetails.clientName,
-                  customerDetails.hasFlatRateScheme,
-                  obligation,
-                  form,
-                  user.isAgent
-                )).addingToSession(SessionKeys.viewModel -> Json.toJson(viewModel).toString())
-
+                Future.successful(
+                  Ok(submitForm(
+                    periodKey,
+                    customerDetails.clientName,
+                    customerDetails.hasFlatRateScheme,
+                    obligation,
+                    form,
+                    user.isAgent
+                  )).addingToSession(SessionKeys.viewModel -> Json.toJson(viewModel).toString())
+                )
               } else {
                 warnLog("[SubmitFormController][renderViewWithoutSessionData] " +
                   s"Obligation end date for period $periodKey has not yet passed.")
                 errorHandler.showBadRequestError
               }
+
             case _ =>
               warnLog(s"[SubmitFormController][Show]: Obligation not found for period key $periodKey")
-              Redirect(appConfig.returnDeadlinesUrl)
+              Future.successful(Redirect(appConfig.returnDeadlinesUrl))
           }
         case (_, _) =>
           warnLog(s"[SubmitFormController][Show]: could not retrieve customer details and obligations ")
           errorHandler.showInternalServerError
       }
-    }
+    } yield result
+  }
 
   def submit(periodKey: String): Action[AnyContent] = (authPredicate
     andThen mandationStatusCheck
     andThen honestyDeclaration.authoriseForPeriodKey(periodKey)
-  ).async { implicit user =>
+  ) async { implicit user =>
 
     val form = SubmitVatReturnForm()
 
@@ -165,7 +167,7 @@ class SubmitFormController @Inject()(mcc: MessagesControllerComponents,
 
             val sessionData = Json.parse(model).as[SubmitFormViewModel]
 
-            vatSubscriptionService.getCustomerDetails(user.vrn) map {
+            vatSubscriptionService.getCustomerDetails(user.vrn).map {
               case Right(customerDetails) =>
                 BadRequest(submitForm(
                   periodKey,
@@ -195,51 +197,53 @@ class SubmitFormController @Inject()(mcc: MessagesControllerComponents,
   }
 
   private def submitSuccess(model: CalculatedNineBoxModel, periodKey: String)
-                           (implicit user: User[_], hc: HeaderCarrier) =
+                           (implicit user: User[_], hc: HeaderCarrier): Future[Result] =
     for {
       customerInformation <- vatSubscriptionService.getCustomerDetails(user.vrn)
       obligations <- vatObligationsService.getObligations(user.vrn)
-    } yield {
-      (customerInformation, obligations) match {
+      result <- (customerInformation, obligations) match {
 
         case (Right(customerDetails), Right(obs)) =>
 
-          val decodedPeriodKey: String = URLDecoder.decode(periodKey, "utf-8")
-
+          val decodedPeriodKey = URLDecoder.decode(periodKey, "utf-8")
           obs.obligations.find(_.periodKey == decodedPeriodKey) match {
-            case Some(obligation) =>
-              if(dateService.dateHasPassed(obligation.end)){
-                val sessionModel = SubmitVatReturnModel(
-                  model.box1,
-                  model.box2,
-                  model.box3,
-                  model.box4,
-                  model.box5,
-                  model.box6,
-                  model.box7,
-                  model.box8,
-                  model.box9,
-                  customerDetails.hasFlatRateScheme,
-                  obligation.start,
-                  obligation.end,
-                  obligation.due)
+            case Some(obligation) if dateService.dateHasPassed(obligation.end) =>
+              val sessionModel = SubmitVatReturnModel(
+                model.box1,
+                model.box2,
+                model.box3,
+                model.box4,
+                model.box5,
+                model.box6,
+                model.box7,
+                model.box8,
+                model.box9,
+                customerDetails.hasFlatRateScheme,
+                obligation.start,
+                obligation.end,
+                obligation.due)
+              Future.successful(
                 Redirect(controllers.routes.ConfirmSubmissionController.show(periodKey))
                   .addingToSession(SessionKeys.returnData -> Json.toJson(sessionModel).toString())
                   .removingFromSession(SessionKeys.viewModel)
-              } else {
-                warnLog(s"[SubmitFormController][submitSuccess] Obligation end date for period $periodKey has not yet passed.")
-                errorHandler.showBadRequestError
-              }
-            case _ =>
+              )
+
+            case Some(_) =>
+              warnLog(s"[SubmitFormController][submitSuccess] Obligation end date for period $periodKey has not yet passed.")
+              errorHandler.showBadRequestError
+
+            case None =>
               warnLog(s"[SubmitFormController][submitSuccess]: Obligation not found for period key $periodKey")
-              Redirect(appConfig.returnDeadlinesUrl)
+              Future.successful(Redirect(appConfig.returnDeadlinesUrl))
           }
+
         case (Left(error), _) =>
           errorLog(s"[SubmitFormController][submitSuccess] Error received when retrieving customer details $error")
           errorHandler.showInternalServerError
+
         case (_, Left(error)) =>
           errorLog(s"[SubmitFormController][submitSuccess] Error received when retrieving obligation details $error")
           errorHandler.showInternalServerError
       }
-    }
-}
+    } yield result
+  }

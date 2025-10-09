@@ -33,7 +33,9 @@ import play.api.http.Status
 import play.api.libs.json.Json
 import play.api.mvc.Results.BadRequest
 import play.api.mvc.{AnyContentAsEmpty, Result}
+import play.api.test.FakeRequest
 import play.api.test.Helpers._
+import play.twirl.api.Html
 import uk.gov.hmrc.auth.core.BearerTokenExpired
 import uk.gov.hmrc.auth.core.retrieve._
 import views.html.ConfirmSubmission
@@ -293,7 +295,9 @@ class ConfirmSubmissionControllerSpec extends BaseSpec
           }
 
           "render generic Bad Request page" in {
-            contentAsString(result) shouldBe errorHandler.badRequestTemplate.toString()
+            implicit lazy val fakeRequest: FakeRequest[AnyContentAsEmpty.type] = FakeRequest("", "")
+            val expectedHtml: Html = await(errorHandler.badRequestTemplate)
+            contentAsString(result) shouldBe expectedHtml.toString()
           }
         }
       }
