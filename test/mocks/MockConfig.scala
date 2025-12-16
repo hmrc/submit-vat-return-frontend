@@ -61,4 +61,6 @@ class MockConfig(implicit val runModeConfiguration: Configuration) extends AppCo
 
   override val platformHost: String = "platform.host"
   override val btaHomeUrl: String = "bta-url"
+
+  override val urBannerUrl: String = "ur-banner-url"
 }

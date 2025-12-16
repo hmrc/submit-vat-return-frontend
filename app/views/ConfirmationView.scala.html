@@ -53,7 +53,8 @@
 @mainTemplate(
   messages("confirmation_view.title"),
   appConfig = appConfig,
-  user = Some(user)
+  user = Some(user),
+  urBanner = Some(UserResearchBanner(url = appConfig.urBannerUrl, hideCloseButton = true))
 ) {
 
   @govukPanel(Panel(

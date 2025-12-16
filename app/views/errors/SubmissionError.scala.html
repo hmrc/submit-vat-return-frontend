@@ -24,7 +24,8 @@
 @mainTemplate(
   pageTitle = messages("submissionError.heading"),
   appConfig = appConfig,
-  user = Some(user)
+  user = Some(user),
+  urBanner = Some(UserResearchBanner(url = appConfig.urBannerUrl))
 ) {
 
     <h1 class="govuk-heading-l">@messages("submissionError.heading")</h1>

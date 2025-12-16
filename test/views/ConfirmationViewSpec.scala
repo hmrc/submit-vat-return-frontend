@@ -53,7 +53,7 @@ class ConfirmationViewSpec extends ViewBaseSpec {
       }
 
       s"display the h2 as ${viewMessages.subHeading}" in {
-        elementText("h2") shouldBe viewMessages.subHeading
+        elementText("#content h2") shouldBe viewMessages.subHeading
       }
 
       s"display the paragraph text as ${viewMessages.paragraph}" in {

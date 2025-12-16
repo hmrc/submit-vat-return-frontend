@@ -20,7 +20,10 @@
 
 @()(implicit user : User[_], messages: Messages, appConfig: config.AppConfig)
 
-@mainTemplate(pageTitle = messages("insolventError.title"), appConfig, user = Some(user)) {
+@mainTemplate(pageTitle = messages("insolventError.title"),
+    appConfig, user = Some(user),
+    urBanner = Some(UserResearchBanner(url = appConfig.urBannerUrl))
+) {
 
     <h1 class="govuk-heading-l" id="insolvent-without-access-heading">
         @messages("insolventError.title")
