@@ -54,7 +54,7 @@
   messages("confirmation_view.title"),
   appConfig = appConfig,
   user = Some(user),
-  urBanner = Some(UserResearchBanner(url = appConfig.urBannerUrl, hideCloseButton = true))
+  urBanner = Some(UserResearchBanner(url = appConfig.urBannerUrl, hideCloseButton = true, language = if(messages.lang.code == "en") En else Cy))
 ) {
 
   @govukPanel(Panel(

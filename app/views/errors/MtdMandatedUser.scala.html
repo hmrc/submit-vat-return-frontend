@@ -25,7 +25,7 @@
   pageTitle = messages("incorrect_mandation.heading"),
   appConfig = appConfig,
   user = Some(user),
-  urBanner = Some(UserResearchBanner(url = appConfig.urBannerUrl))
+  urBanner = Some(UserResearchBanner(url = appConfig.urBannerUrl, language = if(messages.lang.code == "en") En else Cy))
 ) {
 
 <h1 class="govuk-heading-l">@messages("incorrect_mandation.heading")</h1>

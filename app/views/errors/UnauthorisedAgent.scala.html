@@ -20,7 +20,7 @@
 
 @mainTemplate(pageTitle = messages("unauthorised_agent.title"),
     appConfig = appConfig,
-    urBanner = Some(UserResearchBanner(url = appConfig.urBannerUrl))
+    urBanner = Some(UserResearchBanner(url = appConfig.urBannerUrl, language = if(messages.lang.code == "en") En else Cy))
 ) {
 
   <h1 class="govuk-heading-l">@messages("unauthorised_agent.title")</h1>
