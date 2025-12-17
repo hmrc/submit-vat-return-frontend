@@ -19,8 +19,8 @@ import uk.gov.hmrc.DefaultBuildSettings.{addTestReportOption, defaultSettings, s
 
 lazy val appDependencies: Seq[ModuleID] = compile ++ test
 val appName = "submit-vat-return-frontend"
-val bootstrapPlayVersion       = "10.2.0"
-val playFrontendHmrc           = "12.17.0"
+val bootstrapPlayVersion       = "10.4.0"
+val playFrontendHmrc           = "12.22.0"
 
 lazy val coverageSettings: Seq[Setting[?]] = {
   import scoverage.ScoverageKeys

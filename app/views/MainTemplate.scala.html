@@ -16,6 +16,7 @@
 
 @import play.twirl.api.HtmlFormat
 @import uk.gov.hmrc.hmrcfrontend.views.html.helpers._
+@import uk.gov.hmrc.hmrcfrontend.views.html.components._
 @import models.auth.User
 @import config.AppConfig
 @import views.html.helper.CSPNonce
@@ -26,7 +27,8 @@
       hmrcStandardHeader: HmrcStandardHeader,
       hmrcStandardFooter: HmrcStandardFooter,
       hmrcReportTechnicalIssueHelper: HmrcReportTechnicalIssueHelper,
-      hmrcTrackingConsentSnippet: HmrcTrackingConsentSnippet)
+      hmrcTrackingConsentSnippet: HmrcTrackingConsentSnippet,
+      hmrcUserResearchBanner : HmrcUserResearchBanner)
 
 @(pageTitle: String,
     appConfig: AppConfig,
@@ -35,7 +37,8 @@
     showLogout: Boolean = true,
     feedbackOnSignOut: Boolean = true,
     serviceInfoContent: Html = HtmlFormat.empty,
-    user: Option[User[_]] = None)(mainContent: Html)(implicit request: RequestHeader, messages: Messages)
+    user: Option[User[_]] = None,
+    urBanner: Option[UserResearchBanner] = None)(mainContent: Html)(implicit request: RequestHeader, messages: Messages)
 
 @titleServiceName = @{
     user.fold(messages("navTitle.vat"))(u => if(u.isAgent) messages("navTitle.agent") else messages("navTitle.nonAgent"))
@@ -92,7 +95,8 @@
       serviceName = Some(titleServiceName),
       serviceUrl = titleServiceUrl,
       signOutUrl = if(showLogout) Some(routes.SignOutController.signOut(feedbackOnSignOut).url) else None,
-      displayHmrcBanner = false
+      displayHmrcBanner = false,
+      additionalBannersBlock = urBanner.map(hmrcUserResearchBanner(_))
     )
 }
 

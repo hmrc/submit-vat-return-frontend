@@ -63,4 +63,5 @@ object ConfigKeys {
   val businessTaxAccountHost: String = "business-tax-account.host"
   val businessTaxAccountUrl: String = "business-tax-account.homeUrl"
 
+  val urBannerUrl: String = "urBanner.url"
 }

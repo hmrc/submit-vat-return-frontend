@@ -58,6 +58,7 @@ trait AppConfig {
   val gtmContainer: String
   val platformHost: String
   val btaHomeUrl: String
+  val urBannerUrl: String
 }
 
 @Singleton
@@ -147,5 +148,7 @@ class FrontendAppConfig @Inject()(configuration: Configuration, servicesConfig: 
   override val gtmContainer: String = servicesConfig.getString(ConfigKeys.gtmContainer)
   override lazy val btaHomeUrl: String =
     servicesConfig.getString(ConfigKeys.businessTaxAccountHost) + servicesConfig.getString(ConfigKeys.businessTaxAccountUrl)
+
+  override val urBannerUrl: String = getString(ConfigKeys.urBannerUrl)
 
 }
