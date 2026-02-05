@@ -17,10 +17,12 @@
 package config.features
 
 import common.ConfigKeys
+
 import javax.inject.{Inject, Singleton}
 import play.api.Configuration
 
 @Singleton
 class Features @Inject()(config: Configuration) {
   val staticDateEnabled = new Feature(ConfigKeys.staticDateEnabledFeature, config)
+  val showUserResearchBannerEnabled = new Feature(ConfigKeys.showUserResearchBannerEnabled, config)
 }
