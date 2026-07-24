@@ -65,4 +65,5 @@ object ConfigKeys {
 
   val showUserResearchBannerEnabled: String = "features.showUserResearchBanner.enabled"
   val urBannerUrl: String = "urBanner.url"
+  val serviceNavigationFlag: String = "play-frontend-hmrc.forceServiceNavigation"
 }
