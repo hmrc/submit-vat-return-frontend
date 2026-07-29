@@ -59,6 +59,7 @@ trait AppConfig {
   val platformHost: String
   val btaHomeUrl: String
   val urBannerUrl: String
+  val isServiceNavigationEnabled: Boolean
 }
 
 @Singleton
@@ -151,4 +152,5 @@ class FrontendAppConfig @Inject()(configuration: Configuration, servicesConfig: 
 
   override val urBannerUrl: String = getString(ConfigKeys.urBannerUrl)
 
+  override val isServiceNavigationEnabled: Boolean = getBoolean(ConfigKeys.serviceNavigationFlag)
 }

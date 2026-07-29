@@ -21,7 +21,6 @@
 @this(mainTemplate: MainTemplate,
       govukPanel: GovukPanel,
       govukButton : GovukButton)
-
 @()(implicit messages: Messages, appConfig: AppConfig, user: User[_])
 
 @viewSubmittedReturnUrl = @{
@@ -47,8 +46,6 @@
     appConfig.vatSummaryUrl
   }
 }
-
-
 
 @mainTemplate(
   messages("confirmation_view.title"),

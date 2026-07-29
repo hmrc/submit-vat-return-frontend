@@ -63,4 +63,5 @@ class MockConfig(implicit val runModeConfiguration: Configuration) extends AppCo
   override val btaHomeUrl: String = "bta-url"
 
   override val urBannerUrl: String = "ur-banner-url"
+  override val isServiceNavigationEnabled: Boolean = true
 }

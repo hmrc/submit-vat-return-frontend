@@ -70,7 +70,9 @@
     <div class="govuk-body govuk-!-margin-bottom-0">
         @serviceInfoContent
     </div>
-    @languageSelect
+    @if(!appConfig.isServiceNavigationEnabled){
+        @languageSelect
+    }
     @backLinkContent
 }
 
@@ -96,6 +98,7 @@
       serviceUrl = titleServiceUrl,
       signOutUrl = if(showLogout) Some(routes.SignOutController.signOut(feedbackOnSignOut).url) else None,
       displayHmrcBanner = false,
+      isWelshTranslationAvailable = true,
       additionalBannersBlock = if(appConfig.features.showUserResearchBannerEnabled()) urBanner.map(hmrcUserResearchBanner(_)) else None
     )
 }
