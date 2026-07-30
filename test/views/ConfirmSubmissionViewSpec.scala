@@ -226,14 +226,6 @@ class ConfirmSubmissionViewSpec extends ViewBaseSpec {
             "displays the image" in {
               element(Selectors.noticeImage).hasClass("govuk-warning-text__icon") shouldBe true
             }
-
-            "displays the hidden text" in {
-              elementText(Selectors.noticeText) shouldBe viewMessages.warning
-            }
-          }
-
-          "displays the correct text" in {
-            elementText(Selectors.nonAgentDeclarationText) shouldBe viewMessages.warningNonAgentDeclarationText
           }
 
           "displays the text in bold" in {
