@@ -35,8 +35,6 @@ object ConfirmSubmissionMessages extends BaseMessages {
     " information as being correct and complete to the best of their knowledge and belief."
   val nonAgentDeclarationText: String = "By submitting this return, you are making a legal declaration that the information is correct and" +
     " complete to the best of your knowledge and belief. A false declaration can result in prosecution."
-  val warning = "Warning"
-  val warningNonAgentDeclarationText = "Warning " + nonAgentDeclarationText
 
   object WarningMessages {
     val headerMultipleWarning = "The amounts you entered in boxes 1 and 4 are higher than what we would expect, based on the amounts in boxes 6 and 7."
