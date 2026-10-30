@@ -260,7 +260,7 @@ class ConfirmSubmissionControllerSpec extends BaseSpec
               SessionKeys.HonestyDeclaration.key -> s"$vrn-18AA"
             ))
 
-            "return 500" in {
+            "return 303" in {
               mockAuthorise(mtdVatAuthorisedResponse)
               mockDateHasPassed(true)
               setupVatSubscriptionService(successCustomerInfoResponse)
@@ -271,11 +271,15 @@ class ConfirmSubmissionControllerSpec extends BaseSpec
               mockVatReturnSubmission(Future.successful(Left(ErrorModel(INTERNAL_SERVER_ERROR, ""))))()
               setupAuditExtendedEvent()
 
-              status(result) shouldBe Status.INTERNAL_SERVER_ERROR
+              status(result) shouldBe Status.SEE_OTHER
             }
 
-            "return the correct view" in {
-              contentAsString(result) shouldBe errorViewAsString()
+            s"redirect to ${controllers.routes.ConfirmSubmissionController.submissionFailed}" in {
+              redirectLocation(result) shouldBe Some(controllers.routes.ConfirmSubmissionController.submissionFailed.url)
+            }
+
+            "not save the submitted return session key to session" in {
+              await(result).session.get(SessionKeys.submittedReturn) shouldBe None
             }
           }
         }
@@ -342,6 +346,31 @@ class ConfirmSubmissionControllerSpec extends BaseSpec
     authControllerChecks(TestConfirmSubmissionController.submit("18AA"), fakeRequest)
   }
 
+  "submissionFailed" when {
+
+    "user is authorised" should {
+
+      lazy val result: Future[Result] = TestConfirmSubmissionController.submissionFailed(fakeRequest.withSession(
+        SessionKeys.mandationStatus -> MandationStatuses.nonMTDfB
+      ))
+
+      "return 500" in {
+        mockAuthorise(mtdVatAuthorisedResponse)
+        status(result) shouldBe Status.INTERNAL_SERVER_ERROR
+      }
+
+      "return HTML" in {
+        contentType(result) shouldBe Some("text/html")
+      }
+
+      "return the submission error view" in {
+        contentAsString(result) shouldBe errorViewAsString()
+      }
+    }
+
+    authControllerChecks(TestConfirmSubmissionController.submissionFailed, fakeRequest)
+  }
+
   "ConfirmSubmissionController .submitToNrs" when {
 
     implicit lazy val nrsUser: User[AnyContentAsEmpty.type] = User[AnyContentAsEmpty.type](vrn)(fakeRequest)
@@ -391,16 +420,16 @@ class ConfirmSubmissionControllerSpec extends BaseSpec
 
       lazy val result = TestConfirmSubmissionController.submitToNrs("18AA", submitVatReturnModel)
 
-      "return an ISE" in {
+      "return a SEE_OTHER" in {
         setupVatSubscriptionService(successCustomerInfoResponse)
         mockFullAuthResponse(Future.successful(agentFullInformationResponse))
         mockExtractReceiptData(Left(ErrorModel(INTERNAL_SERVER_ERROR, "")))()
 
-        status(result) shouldBe Status.INTERNAL_SERVER_ERROR
+        status(result) shouldBe Status.SEE_OTHER
       }
 
-      "return the correct view" in {
-        contentAsString(result) shouldBe errorViewAsString()
+      s"redirect to ${controllers.routes.ConfirmSubmissionController.submissionFailed}" in {
+        redirectLocation(result) shouldBe Some(controllers.routes.ConfirmSubmissionController.submissionFailed.url)
       }
     }
 
@@ -408,18 +437,18 @@ class ConfirmSubmissionControllerSpec extends BaseSpec
 
       lazy val result = TestConfirmSubmissionController.submitToNrs("18AA", submitVatReturnModel)
 
-      "return an ISE" in {
+      "return a SEE_OTHER" in {
         setupVatSubscriptionService(successCustomerInfoResponse)
         mockFullAuthResponse(Future.successful(agentFullInformationResponse))
         mockExtractReceiptData(await(successReceiptDataResponse))()
         mockNrsSubmission(Future.successful(Left(ErrorModel(BAD_REQUEST, "error message"))))()
         setupAuditExtendedEvent()
 
-        status(result) shouldBe Status.INTERNAL_SERVER_ERROR
+        status(result) shouldBe Status.SEE_OTHER
       }
 
-      "return the correct view" in {
-        contentAsString(result) shouldBe errorViewAsString()
+      s"redirect to ${controllers.routes.ConfirmSubmissionController.submissionFailed}" in {
+        redirectLocation(result) shouldBe Some(controllers.routes.ConfirmSubmissionController.submissionFailed.url)
       }
     }
   }
