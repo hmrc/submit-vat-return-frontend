@@ -127,7 +127,7 @@ class ConfirmSubmissionPageSpec extends NrsAssets with GivenWhenThen {
 
           "NRS returns a BAD_REQUEST" should {
 
-            "return ISE" in {
+            "redirect to submission failure page" in {
               When("The user is authenticated and authorised")
               AuthStub.stubResponse(OK, mtdVatAuthResponse)
 
@@ -142,8 +142,39 @@ class ConfirmSubmissionPageSpec extends NrsAssets with GivenWhenThen {
 
               val response: WSResponse = request(fullSessionValues)
 
-              Then("The response should be 500")
-              response.status shouldBe INTERNAL_SERVER_ERROR
+              Then("The response should be 303")
+              response.status shouldBe SEE_OTHER
+
+              And("The redirect location is correct")
+              response.header("Location") shouldBe Some(controllers.routes.ConfirmSubmissionController.submissionFailed.url)
+            }
+          }
+
+          "NRS returns successful response and backend submission returns an error" should {
+
+            "redirect to submission failure page" in {
+              When("The user is authenticated and authorised")
+              AuthStub.stubResponse(OK, mtdVatAuthResponse)
+
+              And("The customer-details call is successful")
+              VatSubscriptionStub.stubResponse("customer-details", OK, customerDetails)
+
+              And("The auth call for full information is successful")
+              AuthStub.stubResponse(OK, fullNRSAuthResponse)
+
+              And("The POST to NRS is successful")
+              VatReturnsStub.stubResponse(nrsSubmissionUri)(ACCEPTED, Json.obj("nrSubmissionId" -> "nrsIDExample"))
+
+              And("The POST to vat-returns returns an internal server error")
+              VatReturnsStub.stubResponse(vatReturnUri("999999999"))(INTERNAL_SERVER_ERROR, Json.obj())
+
+              val response: WSResponse = request(fullSessionValues)
+
+              Then("The response should be 303")
+              response.status shouldBe SEE_OTHER
+
+              And("The redirect location is correct")
+              response.header("Location") shouldBe Some(controllers.routes.ConfirmSubmissionController.submissionFailed.url)
             }
           }
 
@@ -320,6 +351,55 @@ class ConfirmSubmissionPageSpec extends NrsAssets with GivenWhenThen {
 
         Then("The response should be 303")
         response.status shouldBe SEE_OTHER
+      }
+    }
+  }
+
+  "Calling /submission-failure" when {
+
+    val mandationStatusSessionValue = Map(SessionKeys.mandationStatus -> "Non MTDfB")
+
+    def request(sessionValues: Map[String, String] = Map.empty): WSResponse = get("/submission-failure", sessionValues)
+
+    "user is authorised" should {
+
+      "return 500" in {
+
+        When("The user is authenticated and authorised")
+        AuthStub.stubResponse(OK, mtdVatAuthResponse)
+
+        val response: WSResponse = request(mandationStatusSessionValue)
+
+        Then("The response should be 500")
+        response.status shouldBe INTERNAL_SERVER_ERROR
+      }
+    }
+
+    "user is unauthorised" should {
+
+      "return 403" in {
+
+        When("The user is unauthorised")
+        AuthStub.stubResponse(OK, otherEnrolmentAuthResponse)
+
+        val response: WSResponse = request()
+
+        Then("The response should be 403")
+        response.status shouldBe FORBIDDEN
+      }
+    }
+
+    "user is not opted-out" should {
+
+      "return 403" in {
+
+        When("The user is authenticated")
+        AuthStub.stubResponse(OK, mtdVatAuthResponse)
+
+        val response: WSResponse = request(Map(SessionKeys.mandationStatus -> "MTDfB Voluntary"))
+
+        Then("The response should be 403")
+        response.status shouldBe FORBIDDEN
       }
     }
   }

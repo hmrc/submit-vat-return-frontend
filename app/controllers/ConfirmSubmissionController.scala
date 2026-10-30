@@ -128,6 +128,10 @@ class ConfirmSubmissionController @Inject()(mandationStatusCheck: MandationStatu
       }
   }
 
+  def submissionFailed: Action[AnyContent] =  (authPredicate andThen mandationStatusCheck) { implicit user =>
+    InternalServerError(submissionError())
+  }
+
   private[controllers] def submitVatReturn[A](periodKey: String,
                                               sessionData: SubmitVatReturnModel)(implicit user: User[A]): Future[Result] = {
     val submissionModel = SubmissionModel(
@@ -162,7 +166,7 @@ class ConfirmSubmissionController @Inject()(mandationStatusCheck: MandationStatu
           Some(controllers.routes.ConfirmSubmissionController.submit(periodKey).url)
         )
         errorLog(s"[ConfirmSubmissionController][submitVatReturn] Error returned from vat-returns service: $error")
-        InternalServerError(submissionError())
+        Redirect(routes.ConfirmSubmissionController.submissionFailed)
     }
   }
 
@@ -188,7 +192,7 @@ class ConfirmSubmissionController @Inject()(mandationStatusCheck: MandationStatu
                 ),
                 Some(controllers.routes.ConfirmSubmissionController.submit(periodKey).url)
               )
-              Future.successful(InternalServerError(submissionError()))
+              Future.successful(Redirect(routes.ConfirmSubmissionController.submissionFailed))
             case Right(success) =>
               auditService.audit(
                 NrsSuccessAuditModel(
@@ -211,7 +215,7 @@ class ConfirmSubmissionController @Inject()(mandationStatusCheck: MandationStatu
         case (_, Left(error)) =>
           errorLog(s"[ConfirmSubmissionController][submitToNRS] - extractReceiptData helper returned error of: $error.status.toString")
           logger.warn("[ConfirmSubmissionController][submitToNRS] - extractReceiptData helper returned error")
-          Future.successful(InternalServerError(submissionError()))
+          Future.successful(Redirect(routes.ConfirmSubmissionController.submissionFailed))
       }
     } yield result
   }
