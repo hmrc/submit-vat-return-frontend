@@ -17,8 +17,9 @@
 package stubs
 
 import base.BaseISpec
+import com.github.tomakehurst.wiremock.client.WireMock.{aResponse, post, stubFor}
 import com.github.tomakehurst.wiremock.stubbing.StubMapping
-import play.api.http.Status.OK
+import play.api.http.Status.{OK, UNAUTHORIZED}
 import play.api.libs.json.{JsObject, Json}
 
 object AuthStub extends BaseISpec {
@@ -115,7 +116,15 @@ object AuthStub extends BaseISpec {
   )
 
   def stubResponse(status: Int, body: JsObject): StubMapping = {
-    stubPost(uri, Json.stringify(body), OK)
+    stubPost(uri, Json.stringify(body), status)
+  }
+
+  def stubUnauthorised(): StubMapping = {
+    stubFor(post(uri).willReturn(
+      aResponse()
+        .withStatus(UNAUTHORIZED)
+        .withHeader("WWW-Authenticate", s"""MDTP detail="MissingBearerToken"""")
+    ))
   }
 
 }

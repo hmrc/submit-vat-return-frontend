@@ -17,7 +17,6 @@
 package pages
 
 import java.time.LocalDate
-
 import common.SessionKeys
 import integrationAssets.NrsAssets
 import org.scalatest.GivenWhenThen
@@ -376,6 +375,23 @@ class ConfirmSubmissionPageSpec extends NrsAssets with GivenWhenThen {
     }
 
     "user is unauthorised" should {
+
+      "redirect to sign in" in {
+
+        When("The user has no active session")
+        AuthStub.stubUnauthorised()
+
+        val response: WSResponse = request()
+
+        Then("The response should be 303")
+        response.status shouldBe SEE_OTHER
+
+        And("The redirect location is the sign in page")
+        response.header("Location") shouldBe Some(appConfig.signInUrl)
+      }
+    }
+
+    "user does not have the valid enrolment" should {
 
       "return 403" in {
 
