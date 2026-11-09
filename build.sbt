@@ -72,7 +72,7 @@ lazy val microservice: Project = Project(appName, file("."))
   .settings(
     Test / Keys.fork := true,
     Test / javaOptions += "-Dlogger.resource=logback-test.xml",
-    scalaVersion := "2.13.16",
+    scalaVersion := "2.13.18",
     libraryDependencies ++= appDependencies,
     scalacOptions ++= Seq("-Wconf:cat=unused-imports&site=.*views.html.*:s", "-Wconf:cat=unused&src=routes/.*:s"),
     retrieveManaged := true,
