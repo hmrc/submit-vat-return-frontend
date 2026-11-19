@@ -27,7 +27,7 @@ import views.html.MainTemplate
 class MainTemplateSpec extends ViewBaseSpec {
 
   val injectedView: MainTemplate = inject[MainTemplate]
-  val userBannerHeading: String = "Help make GOV.UK better"
+  val userBannerHeading: String = "You may receive a voucher for feedback"
   lazy val urBanner: UserResearchBanner = UrBannerUtil.getUrBanner()(mockAppConfig, messages)
   lazy val urBannerWithCloseButton: UserResearchBanner = UrBannerUtil.getUrBanner(hideCloseButton = false)(mockAppConfig, messages)
 
